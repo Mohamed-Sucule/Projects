@@ -120,6 +120,16 @@ export const ATLAS = [
 
   /* ── games ────────────────────────────────────────────────────────────── */
   {
+    id: 'ember', title: 'Ember', href: 'play/ember/index.html',
+    kind: 'game', depth: 'study', minutes: 15,
+    blurb: 'An action game in the dark. Your flame is your life and your light: three acts, '
+         + 'three bosses, nine ash-stones, and one question — who put out the Beacon?',
+    hook: 'Every room, every shadow and every note of the score is made in your browser.',
+    tags: ['game', 'play', 'epic', 'action', 'adventure', 'rpg', 'roguelike', 'dungeon', 'boss',
+           'bosses', 'fight', 'sword', 'dark', 'fantasy', 'story', 'mystery', 'soulslike', 'zelda',
+           'lighting', 'shadows', 'soundtrack', 'longest game', 'biggest', 'impressive', 'best game'],
+  },
+  {
     id: 'ace', title: 'Ace', href: 'play/ace/index.html',
     kind: 'game', depth: 'skim', minutes: 2,
     blurb: 'Tap to fly a paper plane through a canyon. Do not hit the rocks.',
@@ -197,15 +207,6 @@ export const ATLAS = [
     hook: 'No 3D model, no texture — every pixel worked out from scratch.',
     tags: ['physics', 'beautiful', 'pretty', 'shader', 'webgl', 'gpu', 'liquid', 'metal',
            'ripples', 'reflection', 'raymarching', 'satisfying', 'relaxing', 'wow', 'art'],
-  },
-  {
-    id: 'flow', title: 'Flow', href: 'play/flow/index.html',
-    kind: 'physics', depth: 'skim', minutes: 3,
-    blurb: 'Twenty thousand particles riding an invisible current. Push them around and '
-         + 'save the result as a picture.',
-    hook: 'The prettiest thing here that you can hang on a wall.',
-    tags: ['physics', 'particles', 'flow field', 'generative', 'art', 'beautiful', 'pretty',
-           'relaxing', 'calm', 'paint', 'draw', 'wallpaper', 'save', 'export'],
   },
 
   /* ── instruments ──────────────────────────────────────────────────────── */

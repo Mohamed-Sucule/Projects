@@ -1,0 +1,731 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<link rel="icon" href="../../favicon.svg" />
+<meta name="theme-color" content="#0a0706" />
+<title>Ember — carry the last light through a kingdom in the dark</title>
+<meta name="description" content="An action game in the dark. Your flame is your life and your light: three acts, three bosses, and a question nobody in the kingdom will answer — who put out the Beacon?" />
+<meta property="og:title" content="Ember — carry the last light through a kingdom in the dark" />
+<meta property="og:description" content="Your flame is your life and your light. Three acts, three bosses, and one question: who put out the Beacon?" />
+<link rel="preload" href="../../assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin />
+<style>
+  @font-face { font-family: "Instrument Serif"; src: url("../../assets/fonts/instrument-serif.woff2") format("woff2"); font-display: swap; }
+  @font-face { font-family: "Instrument Serif"; font-style: italic; src: url("../../assets/fonts/instrument-serif-italic.woff2") format("woff2"); font-display: swap; }
+  @font-face { font-family: "JetBrains Mono Var"; src: url("../../assets/fonts/jetbrains-mono.woff2") format("woff2"); font-display: swap; }
+
+  :root {
+    --ink: #f3e7d6; --dim: rgba(243,231,214,.62); --faint: rgba(243,231,214,.34);
+    --fire: #ff9d4a; --fire-2: #ffcf8a; --blood: #d9432f; --panel: rgba(12,9,8,.78);
+    --serif: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+    --mono: "JetBrains Mono Var", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body {
+    margin: 0; height: 100%; overflow: hidden; background: #050404; color: var(--ink);
+    font-family: var(--serif);
+    -webkit-font-smoothing: antialiased; touch-action: none;
+    user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  canvas { position: fixed; inset: 0; display: block; }
+  [hidden] { display: none !important; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+
+  .back, .sound {
+    position: fixed; top: max(12px, env(safe-area-inset-top)); z-index: 20;
+    background: rgba(10,8,7,.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,.12); border-radius: 10px;
+    color: var(--dim); opacity: .6; transition: opacity .15s, color .15s;
+  }
+  .back { left: 12px; padding: 8px 12px; text-decoration: none; font: 600 11.5px/1 var(--mono); letter-spacing: .07em; }
+  .sound { right: 12px; width: 38px; height: 38px; font-size: 15px; line-height: 1; padding: 0; }
+  .back:hover, .sound:hover { opacity: 1; color: #fff; }
+
+  /* ── the HUD ── */
+  #hud { position: fixed; top: max(14px, env(safe-area-inset-top)); left: 100px; z-index: 10; display: flex; align-items: center; gap: 14px; pointer-events: none; }
+  .ember { display: flex; align-items: center; gap: 8px; }
+  .flame { width: 14px; height: 20px; border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%; background: radial-gradient(circle at 50% 70%, #fff3c9 0 18%, var(--fire) 45%, rgba(255,90,20,.0) 72%); filter: drop-shadow(0 0 6px rgba(255,140,60,.8)); animation: flick 1.3s infinite ease-in-out; }
+  @keyframes flick { 0%,100% { transform: scale(1,1); } 40% { transform: scale(.92,1.08); } 70% { transform: scale(1.05,.95); } }
+  .bar { position: relative; width: clamp(96px, 22vw, 190px); height: 8px; border-radius: 5px; background: rgba(255,255,255,.08); overflow: hidden; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
+  .bar i { position: absolute; inset: 0; transform-origin: 0 50%; background: linear-gradient(90deg, #c2410c, var(--fire) 60%, var(--fire-2)); box-shadow: 0 0 12px rgba(255,140,60,.6); }
+  .bar.low i { background: linear-gradient(90deg, #7f1d1d, var(--blood)); animation: pulse .7s infinite; }
+  @keyframes pulse { 50% { opacity: .55; } }
+  #emberNum { font: 600 12px/1 var(--mono); color: var(--dim); min-width: 2.5ch; }
+  .pip { font: 600 10px/1 var(--mono); letter-spacing: .12em; padding: 5px 7px; border-radius: 6px; border: 1px solid rgba(255,190,120,.35); color: var(--fire-2); transition: opacity .2s; }
+  .pip.off { opacity: .28; }
+  #ashes { font: 600 10.5px/1 var(--mono); letter-spacing: .1em; color: rgba(160,200,255,.72); }
+
+  #bossbar { position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%); width: min(620px, 86vw); z-index: 10; pointer-events: none; text-align: center; }
+  #bossbar .bname { font-size: 22px; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 6px; text-shadow: 0 2px 10px #000; }
+  #bossbar .bname i { font-size: 16px; letter-spacing: .02em; text-transform: none; color: var(--dim); margin-left: 6px; }
+  #bossbar .bbar { position: relative; height: 7px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14); }
+  #bossbar .bbar i { position: absolute; inset: 0; transform-origin: 0 50%; }
+  #bossLag { background: rgba(255,230,200,.5); }
+  #bossFill { background: linear-gradient(90deg, #7c1d12, #c2410c); }
+
+  /* ── cards: text that arrives, holds and goes ── */
+  .card { position: fixed; inset: 0; z-index: 30; display: grid; place-content: center; text-align: center; pointer-events: none; padding: 24px; }
+  .card.show { animation: card var(--hold, 3.2s) ease both; }
+  @keyframes card { 0% { opacity: 0; transform: translateY(8px); } 14% { opacity: 1; transform: none; } 80% { opacity: 1; } 100% { opacity: 0; } }
+  .card .num { font: 600 12px/1 var(--mono); letter-spacing: .3em; color: var(--fire-2); margin: 0 0 14px; }
+  .card h2 { margin: 0; font-weight: 400; font-size: clamp(40px, 8vw, 84px); letter-spacing: .06em; line-height: 1; text-shadow: 0 4px 40px rgba(0,0,0,.9); }
+  .card .line { margin: 14px 0 0; font-style: italic; font-size: clamp(17px, 2.4vw, 22px); color: var(--dim); }
+  #bossCard h2 { text-transform: uppercase; letter-spacing: .16em; font-size: clamp(34px, 7vw, 72px); }
+  #bossCard::before, #winCard::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 190px; transform: translateY(-50%); background: linear-gradient(90deg, transparent, rgba(0,0,0,.72) 20%, rgba(0,0,0,.72) 80%, transparent); z-index: -1; }
+  #winCard h2 { color: var(--fire-2); text-transform: uppercase; letter-spacing: .16em; font-size: clamp(28px, 6vw, 60px); }
+  #deadCard h2 { color: var(--blood); text-transform: uppercase; letter-spacing: .18em; font-size: clamp(30px, 6vw, 64px); }
+  #hint { position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%); z-index: 12; max-width: min(560px, 88vw); text-align: center; font-style: italic; font-size: 19px; color: var(--ink); text-shadow: 0 2px 12px #000, 0 0 2px #000; pointer-events: none; opacity: 0; transition: opacity .6s; }
+  #hint.on { opacity: 1; }
+
+  /* ── screens: things that wait for you ── */
+  .screen { position: fixed; inset: 0; z-index: 40; display: grid; place-content: center; justify-items: center; text-align: center; padding: 28px 20px; overflow: auto; }
+  .kicker { font: 600 11px/1.4 var(--mono); letter-spacing: .28em; text-transform: uppercase; color: var(--fire-2); margin: 0 0 16px; }
+
+  #title { background: radial-gradient(90% 70% at 50% 45%, rgba(5,4,4,.25), rgba(5,4,4,.85) 75%); }
+  #title h1 { margin: 0; font-weight: 400; font-size: clamp(76px, 17vw, 180px); letter-spacing: .12em; line-height: .9; padding-left: .12em;
+    background: linear-gradient(180deg, #fff1d6 10%, #ffb36b 55%, #c2410c 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 0 30px rgba(255,120,40,.35)); }
+  #title .q { font-style: italic; font-size: clamp(20px, 3.4vw, 30px); color: var(--ink); margin: 18px 0 30px; }
+  .menu { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+  .btn { min-width: 220px; padding: 13px 26px; border-radius: 999px; border: 1px solid rgba(255,190,120,.5); background: rgba(255,140,60,.1); font-size: 21px; letter-spacing: .04em; transition: background .15s, transform .15s, border-color .15s; }
+  .btn:hover, .btn:focus-visible { background: rgba(255,140,60,.24); border-color: var(--fire-2); outline: none; transform: translateY(-1px); }
+  .btn.quiet { border-color: rgba(255,255,255,.18); background: rgba(255,255,255,.04); font-size: 17px; }
+  .gentle { margin-top: 18px; font: 500 12.5px/1.4 var(--mono); color: var(--dim); display: flex; gap: 8px; align-items: center; cursor: pointer; }
+  .gentle input { accent-color: var(--fire); width: 16px; height: 16px; }
+  .keys { margin-top: 22px; font: 500 12px/1.7 var(--mono); color: var(--faint); max-width: 520px; }
+  .keys b { color: var(--dim); font-weight: 600; }
+
+  #boons { background: rgba(5,4,4,.72); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+  #boons h2 { margin: 0 0 22px; font-weight: 400; font-size: clamp(32px, 6vw, 48px); }
+  .opts { display: grid; grid-template-columns: repeat(3, minmax(0, 220px)); gap: 14px; }
+  .opt { text-align: left; padding: 18px 18px 16px; border-radius: 14px; border: 1px solid rgba(255,190,120,.28); background: linear-gradient(180deg, rgba(255,140,60,.1), rgba(255,140,60,.02)); transition: transform .15s, border-color .15s, background .15s; }
+  .opt:hover, .opt:focus-visible { transform: translateY(-3px); border-color: var(--fire-2); background: linear-gradient(180deg, rgba(255,140,60,.2), rgba(255,140,60,.04)); outline: none; }
+  .opt .k { font: 600 10.5px/1 var(--mono); color: var(--faint); letter-spacing: .15em; }
+  .opt b { display: block; font-weight: 400; font-size: 25px; margin: 8px 0 6px; color: var(--fire-2); }
+  .opt span { font-size: 17px; line-height: 1.35; color: var(--ink); }
+
+  #lore { background: rgba(4,5,8,.78); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+  #lore blockquote { margin: 0 0 28px; max-width: 560px; font-size: clamp(21px, 3.2vw, 27px); line-height: 1.42; color: #e9eef7; font-style: italic; }
+  #lore blockquote p { margin: 0 0 .7em; }
+  #lore .kicker { color: rgba(160,200,255,.85); }
+
+  #pause { background: rgba(5,4,4,.7); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+  #pause h2 { margin: 0 0 24px; font-weight: 400; font-size: 52px; letter-spacing: .1em; }
+
+  #ending { background: #050404; transition: background 4s; }
+  #ending::before, #ending::after { content: ""; position: absolute; inset: 0; opacity: 0; transition: opacity 5s ease; pointer-events: none; }
+  #ending::before { background: radial-gradient(60% 60% at 50% 55%, rgba(255,200,120,.95), rgba(255,120,40,.5) 35%, rgba(5,4,4,0) 70%); }
+  #ending::after { background: linear-gradient(180deg, #0b1330 0%, #2a3d73 38%, #c87b5b 70%, #ffc27a 84%, #ffe2a8 100%); }
+  #ending.relight::before, #ending.climb::after { opacity: 1; }
+  #ending > * { position: relative; z-index: 1; }
+  #ending.climb .sun { opacity: 1; transform: translate(-50%, 0); }
+  #ending > .sun { position: absolute; z-index: 0; left: 50%; bottom: -60px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, #fff7e0 30%, #ffd08a 55%, rgba(255,190,110,0) 70%); opacity: 0; transform: translate(-50%, 120px); transition: transform 9s ease-out 1s, opacity 4s ease 1s; }
+  .words { max-width: 620px; min-height: 40vh; display: grid; align-content: center; gap: 18px; }
+  .words p { margin: 0; font-size: clamp(22px, 3.4vw, 30px); line-height: 1.35; opacity: 0; transform: translateY(6px); transition: opacity 1.4s, transform 1.4s; }
+  .words p.on { opacity: 1; transform: none; }
+  .words p.who { font: 600 11px/1 var(--mono); letter-spacing: .3em; color: var(--faint); text-transform: uppercase; }
+  .choice { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 26px; }
+  .epilogue p.text { max-width: 600px; font-size: clamp(22px, 3.4vw, 30px); line-height: 1.4; margin: 0 0 26px; text-shadow: 0 2px 20px rgba(0,0,0,.5); }
+  .epilogue p.coda { font-style: italic; color: var(--dim); font-size: 20px; margin: -10px 0 26px; }
+  .climb .epilogue p.coda { color: #3a2a3a; }
+  .climb .epilogue p.text, .climb .fin { color: #1d1420; text-shadow: none; }
+  .stats { display: grid; grid-template-columns: repeat(4, auto); gap: 6px 26px; margin: 0 auto 26px; font: 500 12px/1.4 var(--mono); color: var(--dim); }
+  .climb .stats { color: #3a2a3a; }
+  .climb .btn { color: #1d1420; border-color: rgba(40,20,30,.4); background: rgba(255,255,255,.25); }
+  .stats dt { letter-spacing: .15em; text-transform: uppercase; font-size: 10px; opacity: .8; }
+  .stats dd { margin: 0; font-size: 16px; }
+  .fin { font-size: clamp(44px, 9vw, 96px); letter-spacing: .14em; margin: 0 0 12px; font-weight: 400; }
+
+  /* ── touch ── */
+  #touch { position: fixed; inset: 0; z-index: 15; pointer-events: none; }
+  #zone { position: absolute; left: 0; top: 60px; bottom: 0; width: 55%; pointer-events: auto; touch-action: none; }
+  #stick { position: absolute; width: 120px; height: 120px; margin: -60px 0 0 -60px; border-radius: 50%; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.03); left: 90px; bottom: 60px; top: auto; opacity: .55; }
+  #stick i { position: absolute; left: 50%; top: 50%; width: 50px; height: 50px; margin: -25px 0 0 -25px; border-radius: 50%; background: rgba(255,190,120,.25); border: 1px solid rgba(255,190,120,.5); }
+  .tb { position: absolute; pointer-events: auto; border-radius: 50%; border: 1px solid rgba(255,190,120,.45); background: rgba(20,12,8,.45); color: var(--fire-2); font: 600 11px/1 var(--mono); letter-spacing: .08em; touch-action: none; display: grid; place-items: center; }
+  .tb.down { background: rgba(255,140,60,.35); }
+  #tStrike { right: 22px; bottom: calc(76px + env(safe-area-inset-bottom)); width: 84px; height: 84px; font-size: 12px; }
+  #tDash { right: 118px; bottom: calc(64px + env(safe-area-inset-bottom)); width: 60px; height: 60px; }
+  #tFlare { right: 40px; bottom: calc(172px + env(safe-area-inset-bottom)); width: 60px; height: 60px; }
+  #tPause { right: 60px; top: max(12px, env(safe-area-inset-top)); width: 38px; height: 38px; border-radius: 10px; }
+  body.touch #bossbar { bottom: auto; top: 60px; }
+  body.touch #hint { bottom: auto; top: 110px; }
+
+  @media (max-width: 700px) {
+    .opts { grid-template-columns: minmax(0, 360px); }
+    #hud { left: 94px; gap: 10px; }
+    #ashes { display: none; }
+    .bar { width: clamp(64px, 20vw, 130px); }
+    body.touch #emberNum { display: none; }
+    .stats { grid-template-columns: repeat(2, auto); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .flame, .bar.low i { animation: none; }
+    .card.show { animation-duration: .01s; animation-delay: 0s; }
+  }
+</style>
+</head>
+<body>
+
+<a class="back" href="../../index.html">&larr; INDEX</a>
+<button class="sound" id="sound" type="button" aria-label="Mute">&#128266;</button>
+<canvas id="c"></canvas>
+
+<div id="hud" hidden>
+  <div class="ember"><div class="flame"></div><div class="bar" id="emberBar"><i id="emberFill"></i></div><span id="emberNum"></span></div>
+  <span class="pip" id="flarePip">FLARE</span>
+  <span id="ashes"></span>
+</div>
+<div id="bossbar" hidden>
+  <div class="bname"><span id="bossName"></span><i id="bossTitle"></i></div>
+  <div class="bbar"><i id="bossLag"></i><i id="bossFill"></i></div>
+</div>
+
+<div id="actCard" class="card" hidden><p class="num"></p><h2></h2><p class="line"></p></div>
+<div id="bossCard" class="card" hidden><h2></h2><p class="line"></p></div>
+<div id="winCard" class="card" hidden><h2></h2></div>
+<div id="deadCard" class="card" hidden><h2>The ember gutters</h2></div>
+<p id="hint"></p>
+
+<div id="title" class="screen">
+  <p class="kicker">A game in the dark</p>
+  <h1>EMBER</h1>
+  <p class="q">Who put out the Beacon?</p>
+  <div class="menu">
+    <button class="btn" id="begin" type="button">Begin</button>
+    <button class="btn quiet" id="continue" type="button" hidden></button>
+  </div>
+  <label class="gentle"><input type="checkbox" id="gentle" /> Gentle &mdash; everything hits half as hard</label>
+  <p class="keys" id="keys"><b>WASD</b> move &middot; <b>mouse</b> aim &middot; <b>click</b> strike &middot; <b>space</b> dash &middot; <b>E</b> or <b>right-click</b> flare &middot; <b>esc</b> pause</p>
+</div>
+
+<div id="boons" class="screen" hidden>
+  <p class="kicker" id="boonKicker"></p>
+  <h2>Take one</h2>
+  <div class="opts" id="opts"></div>
+</div>
+
+<div id="lore" class="screen" hidden>
+  <p class="kicker" id="loreKicker"></p>
+  <blockquote id="loreText"></blockquote>
+  <button class="btn quiet" id="loreGo" type="button">Go on</button>
+</div>
+
+<div id="pause" class="screen" hidden>
+  <h2>Paused</h2>
+  <div class="menu">
+    <button class="btn" id="resume" type="button">Resume</button>
+    <button class="btn quiet" id="quit" type="button">Back to the title</button>
+  </div>
+  <p class="keys">Your progress is kept at the start of each act.</p>
+</div>
+
+<div id="ending" class="screen" hidden>
+  <div class="sun"></div>
+  <div class="words" id="words"></div>
+  <div class="choice" id="choice" hidden>
+    <button class="btn" type="button" data-end="relight">Relight the Beacon</button>
+    <button class="btn" type="button" data-end="climb">Carry the ember up</button>
+  </div>
+  <div class="epilogue" id="epilogue" hidden>
+    <p class="text" id="epiText"></p>
+    <p class="coda" id="epiCoda"></p>
+    <p class="fin">EMBER</p>
+    <dl class="stats" id="stats"></dl>
+    <button class="btn quiet" id="again" type="button">Play again</button>
+  </div>
+</div>
+
+<div id="touch" hidden>
+  <div id="zone"><div id="stick"><i></i></div></div>
+  <button class="tb" id="tStrike" type="button">STRIKE</button>
+  <button class="tb" id="tDash" type="button">DASH</button>
+  <button class="tb" id="tFlare" type="button">FLARE</button>
+  <button class="tb" id="tPause" type="button" aria-label="Pause">II</button>
+</div>
+
+<script type="module">
+import { Game, ACTS, BOSSES, LORE, BOONS, autopilot } from './engine.js';
+import { Renderer } from './render.js';
+import { Sound } from './audio.js';
+
+const $ = (id) => document.getElementById(id);
+const canvas = $('c');
+const ctx = canvas.getContext('2d', { alpha: false });
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+  del(k) { try { localStorage.removeItem(k); } catch {} },
+};
+const ROMAN = ['', 'I', 'II', 'III'];
+
+let W = 0, H = 0, DPR = 1, SCALE = 1;
+function fit() {
+  W = innerWidth; H = innerHeight;
+  DPR = Math.min(2, devicePixelRatio || 1);
+  canvas.width = Math.round(W * DPR); canvas.height = Math.round(H * DPR);
+  canvas.style.width = `${W}px`; canvas.style.height = `${H}px`;
+  SCALE = Math.max(0.78, Math.min(2.1, Math.min(W, H) / 500));
+}
+addEventListener('resize', fit);
+fit();
+
+const coarse = matchMedia('(pointer: coarse)').matches;
+const sound = new Sound();
+sound.muted = store.get('ember.muted') === '1';
+let renderer = new Renderer();
+renderer.lowPower = coarse;
+
+const soundBtn = $('sound');
+const paintSound = () => { soundBtn.innerHTML = sound.muted ? '&#128263;' : '&#128266;'; soundBtn.setAttribute('aria-label', sound.muted ? 'Unmute' : 'Mute'); };
+paintSound();
+soundBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  sound.start();
+  sound.setMuted(!sound.muted);
+  store.set('ember.muted', sound.muted ? '1' : '0');
+  paintSound();
+  soundBtn.blur();
+});
+
+/* ── scenes ── */
+
+let scene = 'title';
+let game = null;
+let demo = null;
+const demoMem = {};
+const newDemo = () => { demo = new Game({ seed: (Math.random() * 1e9) | 0 }); demo.cheat.invulnerable = true; demo.drain(); };
+newDemo();
+
+function readSave() {
+  try { const s = JSON.parse(store.get('ember.save') || 'null'); return s && s.act >= 2 && s.act <= 3 ? s : null; } catch { return null; }
+}
+function paintTitle() {
+  const s = readSave();
+  const c = $('continue');
+  c.hidden = !s;
+  if (s) c.textContent = `Continue — Act ${ROMAN[s.act]}, ${ACTS[s.act].name}`;
+  if (coarse) $('keys').innerHTML = '<b>left thumb</b> move &middot; <b>strike</b>, <b>dash</b> and <b>flare</b> on the right &middot; strikes aim themselves';
+}
+paintTitle();
+
+function begin(save) {
+  sound.start();
+  const gentle = save ? !!save.gentle : $('gentle').checked;
+  game = save
+    ? new Game({ seed: save.seed, act: save.act, boons: save.boons, lore: save.lore, gentle })
+    : new Game({ seed: (Math.random() * 2 ** 31) | 0, gentle });
+  renderer = new Renderer();
+  renderer.lowPower = coarse;
+  scene = 'play';
+  $('title').hidden = true;
+  $('hud').hidden = false;
+  $('touch').hidden = !usingTouch;
+  for (const e of game.drain()) handle(e);
+}
+$('begin').addEventListener('click', () => begin(null));
+$('continue').addEventListener('click', () => begin(readSave()));
+
+function toTitle() {
+  scene = 'title';
+  game = null;
+  for (const id of ['hud', 'bossbar', 'pause', 'boons', 'lore', 'ending', 'touch']) $(id).hidden = true;
+  $('title').hidden = false;
+  $('ending').className = 'screen';
+  renderer = new Renderer();
+  renderer.lowPower = coarse;
+  newDemo();
+  paintTitle();
+  sound.setMusic('title', 1);
+  $('begin').focus();
+}
+
+function save() {
+  store.set('ember.save', JSON.stringify({ seed: game.seed, act: game.act, boons: game.boons, lore: [...game.lore], gentle: game.gentle }));
+}
+
+/* ── cards and hints ── */
+
+function card(id, hold) {
+  const el = $(id);
+  el.hidden = false;
+  el.classList.remove('show');
+  void el.offsetWidth;
+  el.style.setProperty('--hold', `${hold}s`);
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.hidden = true; el.classList.remove('show'); }, hold * 1000);
+}
+let hintT = 0;
+function hint(text, hold = 4.5) {
+  const el = $('hint');
+  el.textContent = text;
+  el.classList.add('on');
+  clearTimeout(hintT);
+  hintT = setTimeout(() => el.classList.remove('on'), hold * 1000);
+}
+const tipsSeen = new Set((store.get('ember.tips') || '').split(',').filter(Boolean));
+function tip(key, text, delay = 0) {
+  if (tipsSeen.has(key)) return;
+  tipsSeen.add(key);
+  store.set('ember.tips', [...tipsSeen].join(','));
+  setTimeout(() => { if (scene === 'play') hint(text, 5.5); }, delay);
+}
+
+/* ── what the game tells us ── */
+
+let bossLag = 1;
+function handle(e) {
+  renderer.fx(e, game);
+  sound.play(e);
+  switch (e.type) {
+    case 'music': sound.setMusic(e.mode, e.act ?? game.act, e.phase ?? 1); break;
+    case 'act': {
+      save();
+      $('hint').classList.remove('on');
+      $('bossbar').hidden = true;
+      const el = $('actCard');
+      el.querySelector('.num').textContent = `ACT ${ROMAN[e.act]}`;
+      el.querySelector('h2').textContent = ACTS[e.act].name;
+      el.querySelector('.line').textContent = ACTS[e.act].line;
+      card('actCard', 4);
+      if (e.act === 1) tip('light', 'Your flame is your life, and your light. When it burns low, the dark comes closer.', 4200);
+      break;
+    }
+    case 'lock': tip('telegraph', 'Red on the floor is about to land. Dash through it — nothing can touch you mid-dash.', 900); break;
+    case 'clear': tip('cinder', 'Cinders feed your flame. Lit braziers are where you will wake if it goes out.', 600); break;
+    case 'bossIntro': {
+      const el = $('bossCard');
+      el.querySelector('h2').textContent = e.name;
+      el.querySelector('.line').textContent = e.title;
+      card('bossCard', 2.9);
+      $('bossName').textContent = e.name;
+      $('bossTitle').textContent = e.title;
+      $('bossbar').hidden = false;
+      bossLag = 1;
+      break;
+    }
+    case 'bossDown': {
+      $('bossbar').hidden = true;
+      $('winCard').querySelector('h2').textContent = ['', 'The gate stands open', 'The Choir is silent', 'The last of the line'][e.act];
+      card('winCard', 3.4);
+      break;
+    }
+    case 'boon': showBoons(); break;
+    case 'lore': showLore(e.id); break;
+    case 'die': card('deadCard', 2.4); break;
+    case 'roar': hint('He is angry now.', 2.5); break;
+    case 'grieve': if (e.left === 1) hint('The last voice sings alone.', 3); break;
+    case 'eclipse': hint('The dark is his armour. Flare beside a brazier to light it.', 6); break;
+    case 'lastlight': hint('The dark is closing in. Stay inside the light.', 5); break;
+    case 'exposed': tip('heart', 'His heart is open. Strike now.'); break;
+    case 'exit': hint('The way on is open. Walk into the light.', 5); break;
+    case 'secondwind': hint('Not yet.', 2); break;
+    case 'ending': setTimeout(showEnding, 700); break;
+    default: break;
+  }
+}
+
+/* ── boons ── */
+
+function showBoons() {
+  const el = $('opts');
+  el.textContent = '';
+  $('boonKicker').textContent = game.afterBoon === 'next' ? `Before Act ${ROMAN[game.act + 1]}` : 'A shrine to the old fire';
+  game.offer.forEach((b, i) => {
+    const btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'opt';
+    btn.innerHTML = `<span class="k">${i + 1}</span><b></b><span></span>`;
+    btn.querySelector('b').textContent = b.name;
+    btn.querySelector('span:last-child').textContent = b.text;
+    btn.addEventListener('click', () => chooseBoon(b.id));
+    el.append(btn);
+  });
+  $('boons').hidden = false;
+  el.firstChild?.focus({ preventScroll: true });
+}
+function chooseBoon(id) {
+  if (!game || game.mode !== 'boon') return;
+  $('boons').hidden = true;
+  game.chooseBoon(id);
+  for (const e of game.drain()) handle(e);
+}
+
+/* ── lore ── */
+
+function showLore(id) {
+  $('loreKicker').textContent = `Ash-stone · ${game.lore.size} of 9`;
+  const q = $('loreText');
+  q.textContent = '';
+  for (const para of LORE[id].split('\n\n')) {
+    const p = document.createElement('p');
+    p.textContent = para;
+    p.style.whiteSpace = 'pre-line';
+    q.append(p);
+  }
+  $('lore').hidden = false;
+  $('loreGo').focus({ preventScroll: true });
+  if (game.lore.size === 1) tip('ashes', 'There are nine ash-stones. Between them, they answer the question.', 400);
+}
+function closeLore() {
+  if (!game || game.mode !== 'lore') return;
+  $('lore').hidden = true;
+  game.closeLore();
+}
+$('loreGo').addEventListener('click', closeLore);
+
+/* ── pause ── */
+
+function pause(on) {
+  if (!game || scene === 'ending') return;
+  if (on && scene !== 'play') return;
+  scene = on ? 'paused' : 'play';
+  $('pause').hidden = !on;
+  if (on) $('resume').focus({ preventScroll: true });
+  keys.clear();
+}
+$('resume').addEventListener('click', () => pause(false));
+$('quit').addEventListener('click', toTitle);
+document.addEventListener('visibilitychange', () => { if (document.hidden) pause(true); });
+
+/* ── the ending ── */
+
+const WORDS = [
+  'You came to feed it.',
+  'They always send a child, and they always call it an honour.',
+  'Two hundred and twelve. I counted every one. Then I put it out, so there would never be a two hundred and thirteenth.',
+  'There is a stair above the Beacon. I was too afraid to climb it.',
+];
+function showEnding() {
+  scene = 'ending';
+  store.del('ember.save');
+  for (const id of ['hud', 'bossbar', 'touch']) $(id).hidden = true;
+  const el = $('ending');
+  el.hidden = false;
+  const words = $('words');
+  words.textContent = '';
+  const who = document.createElement('p');
+  who.className = 'who'; who.textContent = 'The Hollow King';
+  words.append(who);
+  requestAnimationFrame(() => who.classList.add('on'));
+  WORDS.forEach((w, i) => {
+    const p = document.createElement('p');
+    p.textContent = `“${w}”`;
+    words.append(p);
+    setTimeout(() => p.classList.add('on'), 1200 + i * 2600);
+  });
+  setTimeout(() => {
+    $('choice').hidden = false;
+    $('choice').querySelector('button').focus({ preventScroll: true });
+  }, 1200 + WORDS.length * 2600);
+}
+for (const b of document.querySelectorAll('[data-end]')) {
+  b.addEventListener('click', () => {
+    const which = b.dataset.end;
+    $('choice').hidden = true;
+    $('words').hidden = true;
+    const el = $('ending');
+    el.classList.add(which);
+    sound.play({ type: which === 'climb' ? 'exit' : 'bossDown' });
+    sound.setMusic('ending', 3);
+    $('epiText').textContent = which === 'relight'
+      ? 'You set the ember in the Beacon’s bowl. It takes you gently, the way it took the others. Far below, Aster wakes to a light it believes it earned.'
+      : 'You climb for a long time. The stone gives way to something cold and blue, and at the edge of it a light you did not make is coming up. There was always a sun. Nobody had been brave enough to go and look.';
+    $('epiCoda').textContent = game.lore.size === 9
+      ? 'You found all nine ash-stones. You knew who put out the Beacon before he told you.'
+      : `You found ${game.lore.size} of the nine ash-stones.`;
+    const s = game.stats, m = Math.floor(s.time / 60), sec = String(Math.floor(s.time % 60)).padStart(2, '0');
+    const dl = $('stats');
+    dl.textContent = '';
+    for (const [k, v] of [['Time', `${m}:${sec}`], ['Deaths', s.deaths], ['Slain', s.kills], ['Boons', game.boons.length]]) {
+      const d = document.createElement('div');
+      d.innerHTML = '<dt></dt><dd></dd>';
+      d.querySelector('dt').textContent = k; d.querySelector('dd').textContent = v;
+      dl.append(d);
+    }
+    setTimeout(() => { $('epilogue').hidden = false; $('again').focus({ preventScroll: true }); }, which === 'climb' ? 3200 : 2400);
+  });
+}
+$('again').addEventListener('click', () => {
+  $('words').hidden = false; $('epilogue').hidden = true; $('choice').hidden = true;
+  toTitle();
+});
+
+/* ── input ── */
+
+const keys = new Set();
+const edge = { strike: false, dash: false, flare: false };
+const mouse = { x: 0, y: 0, at: -1e9, down: false };
+let usingTouch = false;
+const MOVE = { w: [0, -1], arrowup: [0, -1], s: [0, 1], arrowdown: [0, 1], a: [-1, 0], arrowleft: [-1, 0], d: [1, 0], arrowright: [1, 0] };
+
+addEventListener('keydown', (e) => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key.toLowerCase();
+  if (scene === 'title') { if (k === 'enter' && document.activeElement === document.body) begin(null); return; }
+  if (game?.mode === 'boon' && !$('boons').hidden) {
+    const i = ['1', '2', '3'].indexOf(k);
+    if (i >= 0 && game.offer[i]) chooseBoon(game.offer[i].id);
+    return;
+  }
+  if (game?.mode === 'lore' && !$('lore').hidden) {
+    if (k === 'enter' || k === ' ' || k === 'escape' || k === 'e') { e.preventDefault(); closeLore(); }
+    return;
+  }
+  if (k === 'escape' || k === 'p') { pause(scene === 'play'); return; }
+  if (scene !== 'play') return;
+  if (k in MOVE || [' ', 'shift', 'j', 'k', 'e', 'l'].includes(k)) e.preventDefault();
+  if (e.repeat) { keys.add(k); return; }
+  if (k === ' ' || k === 'shift' || k === 'k') edge.dash = true;
+  if (k === 'j') edge.strike = true;
+  if (k === 'e' || k === 'l') edge.flare = true;
+  keys.add(k);
+});
+addEventListener('keyup', (e) => keys.delete(e.key.toLowerCase()));
+addEventListener('blur', () => { keys.clear(); mouse.down = false; });
+
+canvas.addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') { mouse.x = e.clientX; mouse.y = e.clientY; mouse.at = performance.now(); } });
+canvas.addEventListener('pointerdown', (e) => {
+  if (e.pointerType !== 'mouse' || scene !== 'play') return;
+  mouse.x = e.clientX; mouse.y = e.clientY; mouse.at = performance.now();
+  if (e.button === 0) { mouse.down = true; edge.strike = true; }
+  if (e.button === 2) edge.flare = true;
+});
+addEventListener('pointerup', (e) => { if (e.pointerType === 'mouse' && e.button === 0) mouse.down = false; });
+canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+/* touch: a stick that appears under your thumb, and three buttons */
+const stick = { id: null, ox: 0, oy: 0, x: 0, y: 0 };
+const zone = $('zone'), knob = $('stick');
+function enableTouch() {
+  if (usingTouch) return;
+  usingTouch = true;
+  document.body.classList.add('touch');
+  if (scene === 'play' || scene === 'paused') $('touch').hidden = false;
+}
+addEventListener('touchstart', enableTouch, { passive: true });
+zone.addEventListener('pointerdown', (e) => {
+  if (stick.id !== null) return;
+  stick.id = e.pointerId; stick.ox = e.clientX; stick.oy = e.clientY; stick.x = stick.y = 0;
+  zone.setPointerCapture(e.pointerId);
+  knob.style.left = `${e.clientX}px`; knob.style.top = `${e.clientY - 60}px`; knob.style.bottom = 'auto';
+  knob.style.opacity = '0.9';
+});
+zone.addEventListener('pointermove', (e) => {
+  if (e.pointerId !== stick.id) return;
+  let dx = (e.clientX - stick.ox) / 48, dy = (e.clientY - stick.oy) / 48;
+  const l = Math.hypot(dx, dy);
+  if (l > 1) { dx /= l; dy /= l; }
+  stick.x = dx; stick.y = dy;
+  knob.firstElementChild.style.transform = `translate(${dx * 34}px, ${dy * 34}px)`;
+});
+const endStick = (e) => {
+  if (e.pointerId !== stick.id) return;
+  stick.id = null; stick.x = stick.y = 0;
+  knob.firstElementChild.style.transform = '';
+  knob.style.opacity = '';
+};
+zone.addEventListener('pointerup', endStick);
+zone.addEventListener('pointercancel', endStick);
+const held = { strike: false };
+function touchButton(id, on, off) {
+  const b = $(id);
+  b.addEventListener('pointerdown', (e) => { e.preventDefault(); b.classList.add('down'); b.setPointerCapture(e.pointerId); on(); });
+  const up = () => { b.classList.remove('down'); off?.(); };
+  b.addEventListener('pointerup', up);
+  b.addEventListener('pointercancel', up);
+}
+touchButton('tStrike', () => { edge.strike = true; held.strike = true; }, () => { held.strike = false; });
+touchButton('tDash', () => { edge.dash = true; });
+touchButton('tFlare', () => { edge.flare = true; });
+touchButton('tPause', () => pause(true));
+
+/* gamepad */
+const padWas = {};
+function pollPad(input) {
+  const pad = navigator.getGamepads?.()[0];
+  if (!pad) return;
+  const dz = (v) => (Math.abs(v) < 0.2 ? 0 : v);
+  const pressed = (i) => pad.buttons[i]?.pressed;
+  const edgeOf = (i) => { const p = pressed(i), was = padWas[i]; padWas[i] = p; return p && !was; };
+  if (edgeOf(9)) pause(scene === 'play');
+  if (scene !== 'play') return;
+  if (game?.mode === 'boon') { for (const [i, b] of [[2, 0], [3, 1], [1, 2]]) if (edgeOf(i) && game.offer[b]) chooseBoon(game.offer[b].id); return; }
+  if (game?.mode === 'lore') { if (edgeOf(0)) closeLore(); return; }
+  if (!input) return;
+  input.mx += dz(pad.axes[0]); input.my += dz(pad.axes[1]);
+  const ax = dz(pad.axes[2] ?? 0), ay = dz(pad.axes[3] ?? 0);
+  if (ax || ay) { input.ax = ax; input.ay = ay; }
+  if (edgeOf(0) || pressed(7)) input.strike = true;
+  if (edgeOf(1) || edgeOf(5)) input.dash = true;
+  if (edgeOf(2) || edgeOf(4)) input.flare = true;
+}
+
+function readInput() {
+  const input = { mx: 0, my: 0, ax: 0, ay: 0, strike: edge.strike || mouse.down || held.strike || keys.has('j'), dash: edge.dash, flare: edge.flare };
+  edge.strike = edge.dash = edge.flare = false;
+  for (const k of keys) if (MOVE[k]) { input.mx += MOVE[k][0]; input.my += MOVE[k][1]; }
+  input.mx += stick.x; input.my += stick.y;
+  if (!usingTouch && performance.now() - mouse.at < 2500 && game && renderer.scale) {
+    const p = game.player;
+    input.ax = mouse.x - (p.x - renderer.left) * renderer.scale;
+    input.ay = mouse.y - (p.y - renderer.top) * renderer.scale;
+  }
+  pollPad(input);
+  return input;
+}
+
+/* ── the loop ── */
+
+const emberFill = $('emberFill'), emberBar = $('emberBar'), emberNum = $('emberNum'), flarePip = $('flarePip'), ashes = $('ashes');
+const bossFill = $('bossFill'), bossLagEl = $('bossLag');
+let lastHud = '';
+function hud(dt) {
+  const p = game.player;
+  const f = Math.max(0, p.ember / p.maxEmber);
+  const ready = p.flareCd <= 0 && p.ember > p.flareCost + 1;
+  const key = `${f.toFixed(3)}|${ready}|${game.lore.size}|${Math.ceil(p.ember)}`;
+  if (key !== lastHud) {
+    lastHud = key;
+    emberFill.style.transform = `scaleX(${f})`;
+    emberBar.classList.toggle('low', p.ember < 30);
+    emberNum.textContent = Math.max(0, Math.ceil(p.ember));
+    flarePip.classList.toggle('off', !ready);
+    ashes.textContent = `ASH ${game.lore.size}/9`;
+  }
+  if (game.boss && !game.boss.done) {
+    const b = game.bossHp() / game.boss.maxHp;
+    bossLag = Math.max(b, bossLag - dt * 0.25);
+    bossFill.style.transform = `scaleX(${b})`;
+    bossLagEl.style.transform = `scaleX(${bossLag})`;
+  }
+}
+
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000);
+  last = now;
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  if (scene === 'title') {
+    pollPad(null);
+    demo.step(dt * 0.85, autopilot(demo, demoMem));
+    for (const e of demo.drain()) renderer.fx(e, demo);
+    if (demo.mode === 'ending' || demo.stats.time > 150) { newDemo(); renderer = new Renderer(); renderer.lowPower = coarse; }
+    renderer.draw(ctx, demo, { w: W, h: H, scale: SCALE * 0.9, dt, now });
+  } else if (game) {
+    if (scene === 'play') game.step(dt, readInput());
+    else pollPad(null);
+    for (const e of game.drain()) handle(e);
+    if (!$('lore').hidden && game.mode !== 'lore') $('lore').hidden = true;
+    if (!$('boons').hidden && game.mode !== 'boon') $('boons').hidden = true;
+    renderer.draw(ctx, game, { w: W, h: H, scale: SCALE, dt: scene === 'paused' ? 0 : dt, now });
+    if (scene !== 'ending') hud(dt);
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+window.__ember = { get game() { return game; }, get demo() { return demo; }, begin, get scene() { return scene; } };
+</script>
+<script type="module" src="../../shared/navigator.js"></script>
+</body>
+</html>

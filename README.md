@@ -311,12 +311,39 @@ wrong and why.
 | | |
 |---|---|
 | **[Sandbox](play/sandbox/)** | Pour sand. Add water. Set it on fire and watch the smoke rise. Ten materials that all behave the way you'd expect — water puts out fire, oil floats, lava turns water to steam, acid eats through stone. |
-| **[Flow](play/flow/)** | Twenty thousand particles riding an invisible current. Push them around with your mouse, then save the result as a picture. |
 
 ## III · Games
 
-No instructions, no tutorial, no menu. One control, and the first ten seconds teach you
-the rest.
+One long one, then five short ones. The short ones have no instructions, no tutorial and
+no menu: one control, and the first ten seconds teach you the rest.
+
+### [Ember](play/ember/) — an action game in the dark, three acts long
+
+Your flame is your life and your light. Take a hit and it burns lower, and the dark comes
+closer. Three acts, each generated from a seed. A gaoler, a choir of three masks and a king
+to beat. Five boons to choose between. Nine ash-stones that, between them, answer the
+question on the title screen: who put out the Beacon?
+
+Everything in it is made in the browser. The rooms come from the seed. The light is
+recomputed every frame: every wall and pillar casts a real shadow. The score is drums,
+bass, choir and bells, synthesised live with Web Audio. There are no image or sound files.
+
+The tests hold it to four things:
+
+- **Nothing hurts you without warning.** Every blow that can land is drawn on the floor
+  at least 0.3s before it lands. The tests play the whole game three times and check every
+  attack, every shot and every hit against that.
+- **It can be finished.** An autopilot plays from the first room to the ending, beating
+  each boss through each of its phases in order and finding all nine ash-stones.
+- **Nobody walks through walls.** Throughout those runs, nobody (you or an enemy) ends
+  up inside a wall or a pillar.
+- **Every boon does what its card says.**
+
+A 40-seed sweep caught 4 runs that never finished. In each, the last mite and the player
+were pinned against pillars on opposite sides, each walking straight at the other,
+forever. Now enemies walk a shortest-path map of the room whenever there is no clear line.
+
+[Full write-up](play/ember/README.md).
 
 ### [Ace](play/ace/) — tap to fly a paper plane through a canyon
 

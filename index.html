@@ -829,8 +829,8 @@
       <p class="lede">
         Games, physics you can put your finger in, instruments that make you something,
         and one horror story. <b>Shuffled on purpose</b> — two of a kind in a row gets
-        boring, so there never are two. Nothing here has a menu or a tutorial: the first
-        ten seconds teach you the rest.
+        boring, so there never are two. One long game to start, three acts deep; after
+        that, nothing has a menu or a tutorial, and the first ten seconds teach you the rest.
       </p>
     </header>
     <div class="figs" id="toys" style="--min:330px"></div>
@@ -1064,10 +1064,11 @@ const loadModules = Promise.all([
    the front door. Putting them here as well would be the same thing twice. */
 const TOYS = [
   {
-    href: 'play/ace/index.html', tag: 'game', kind: 'game', wide: true,
-    title: 'Ace',
-    blurb: 'Tap to fly a paper plane through a canyon. Do not hit the rocks. That is the whole game, and you will understand it before you have finished reading this.',
-    preview: acePreview,
+    href: 'play/ember/index.html', tag: 'the epic one', kind: 'game', wide: true,
+    note: 'three acts, three bosses',
+    title: 'Ember',
+    blurb: 'Your flame is your life and your light. Carry it down through a kingdom in the dark, past a gaoler, a choir and a king, and find out who put out the Beacon. Every room, every shadow and every note of the score is made in your browser.',
+    preview: emberPreview,
   },
   {
     href: 'apps/nightshift/index.html', tag: 'read it alone', kind: 'story',
@@ -1101,6 +1102,12 @@ const TOYS = [
     title: 'Sandbox',
     blurb: 'Pour sand. Add water. Set it on fire and watch the smoke rise. Ten materials that all behave the way you would expect them to, which is the whole trick.',
     preview: sandPreview,
+  },
+  {
+    href: 'play/ace/index.html', tag: 'game', kind: 'game',
+    title: 'Ace',
+    blurb: 'Tap to fly a paper plane through a canyon. Do not hit the rocks. That is the whole game, and you will understand it before you have finished reading this.',
+    preview: acePreview,
   },
   {
     href: 'play/beats/index.html', tag: 'music', kind: 'instrument',
@@ -1145,12 +1152,6 @@ const TOYS = [
     title: 'Tether',
     blurb: 'You swing round a planet on a tether. Tap and you let go, flying off exactly the way you were already pointing. If the line passes close enough to another planet, it catches you. One decision: when.',
     preview: tetherPreview,
-  },
-  {
-    href: 'play/flow/index.html', tag: 'toy', kind: 'physics',
-    title: 'Flow',
-    blurb: 'Twenty thousand particles riding an invisible current. Push them around with your mouse and save the result as a picture.',
-    preview: flowPreview,
   },
   {
     href: 'play/morph/index.html', tag: 'interface', kind: 'instrument',
@@ -1380,7 +1381,7 @@ noteArrows();
 /* ── fig. 1, the contact sheet ───────────────────────────────────────────────
    Every piece on the site as one frame of film, each frame the piece itself
    running. Read across a strip, no two neighbours are the same kind of thing;
-   the four the author would send you to first are ringed in grease pencil.
+   the five the author would send you to first are ringed in grease pencil.
 
    Titles, links and colours come from the atlas, so the sheet can never list
    something the navigator does not, or disagree with it about a name. */
@@ -1389,14 +1390,14 @@ const PREVIEW = {
   lamplighter: lamplighterPreview, room: roomPreview, nightshift: nightshiftPreview,
   covers: coversPreview, ace: acePreview, comet: cometPreview, stack: stackPreview,
   tether: tetherPreview, sumo: sumoPreview, tangle: tanglePreview, sandbox: sandPreview,
-  topple: topplePreview, mercury: mercuryPreview, flow: flowPreview, portrait: portraitPreview,
+  topple: topplePreview, mercury: mercuryPreview, ember: emberPreview, portrait: portraitPreview,
   loom: loomPreview, beats: beatsPreview, island: islandPreview, morph: morphPreview,
   sift: siftPreview,
 };
 const SHEET = [
-  'attention', 'lamplighter', 'ace', 'sandbox', 'room', 'tokens',
+  'attention', 'lamplighter', 'ember', 'sandbox', 'room', 'tokens',
   'comet', 'covers', 'mercury', 'evals', 'tangle', 'loom',
-  'nightshift', 'regex-lab', 'stack', 'flow', 'agents', 'island',
+  'nightshift', 'stack', 'regex-lab', 'ace', 'agents', 'island',
   'raft-lab', 'tether', 'beats', 'topple', 'query-planner', 'sumo',
   'morph', 'trace-explorer', 'sift', 'diff-forge', 'portrait', 'oklch-studio',
 ];
@@ -1404,6 +1405,7 @@ const PICKS = {
   attention: ['ring', 'start here'],
   lamplighter: ['ring', 'read this one'],
   room: ['ring', 'whodunnit?'],
+  ember: ['ring', 'play this one'],
   covers: ['ring', 'the big one'],
   tokens: ['tick'], evals: ['tick'], agents: ['tick'], mercury: ['tick'], portrait: ['tick'],
 };
@@ -1490,7 +1492,7 @@ atlasReady.then(({ KINDS, byId }) => {
     return true;
   };
 
-  /* Grease pencil: a ring round the four picks, a note under each, and a
+  /* Grease pencil: a ring round the five picks, a note under each, and a
      tick on five more. Worked out from where the frames actually are, and
      redrawn whenever they move. */
   const drawGrease = () => {
@@ -3408,50 +3410,37 @@ function islandPreview(api) {
   };
 }
 
-/** The flow field, at a tenth of the particle count. */
-function flowPreview(api) {
-  const N = 1400;
-  const px = new Float32Array(N), py = new Float32Array(N), pa = new Float32Array(N);
-  let seed = Math.random() * 100;
-  const hash = (x, y) => {
-    let h = x * 374761393 + y * 668265263 + seed * 1013904223;
-    h = (h ^ (h >> 13)) * 1274126177;
-    return ((h ^ (h >> 16)) & 0xffff) / 0xffff;
+/** Ember, playing itself: a boss fight in the real engine and renderer, fought by its own autopilot. */
+function emberPreview(api) {
+  let E = null, R = null, game = null, view = null, mem = {}, clock = 0, act = (Math.random() * 3) | 0;
+  Promise.all([import('./play/ember/engine.js'), import('./play/ember/render.js')])
+    .then(([e, r]) => { E = e; R = r; }).catch(() => {});
+  const fresh = () => {
+    act = (act % 3) + 1;
+    game = new E.Game({ seed: (Math.random() * 1e9) | 0, act, boons: ['kindling', 'wildfire', 'bright'].slice(0, act) });
+    game.cheat.invulnerable = true;
+    const room = game.map.boss;
+    for (const r of game.map.rooms) if (r.kind === 'fight') r.cleared = true;
+    game.map.shrine.used = true;
+    for (const s of game.map.stones) game.lore.add(s.id);
+    game.player.x = room.mx * E.T + E.T / 2;
+    game.player.y = (room.my + 4) * E.T + E.T / 2;
+    mem = {};
+    for (let i = 0; i < 200; i++) game.step(1 / 60, E.autopilot(game, mem));
+    view = new R.Renderer();
+    view.lowPower = true;
+    game.drain();
   };
-  const sm = (t) => t * t * (3 - 2 * t);
-  const noise = (x, y) => {
-    const xi = Math.floor(x), yi = Math.floor(y);
-    const xf = sm(x - xi), yf = sm(y - yi);
-    const a = hash(xi, yi), b = hash(xi + 1, yi), c = hash(xi, yi + 1), d = hash(xi + 1, yi + 1);
-    return (a + (b - a) * xf) + ((c + (d - c) * xf) - (a + (b - a) * xf)) * yf;
-  };
-  api.reset = () => {
-    for (let i = 0; i < N; i++) { px[i] = Math.random() * api.w; py[i] = Math.random() * api.h; pa[i] = Math.random() * 200; }
-    api.ctx.fillStyle = '#05060b';
-    api.ctx.fillRect(0, 0, api.w, api.h);
-  };
+  api.reset = () => {};
   api.frame = () => {
     const { ctx, w, h } = api;
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.fillStyle = 'rgba(5,6,11,.055)';
-    ctx.fillRect(0, 0, w, h);
-    ctx.globalCompositeOperation = 'lighter';
-    const t = api.t * 0.0022;
-    for (let i = 0; i < N; i++) {
-      const a = noise(px[i] * 0.009, py[i] * 0.009 + t) * Math.PI * 4;
-      const ox = px[i], oy = py[i];
-      px[i] += Math.cos(a) * 1.1;
-      py[i] += Math.sin(a) * 1.1;
-      const u = i / N;
-      const r = 34 + u * 210, g = 211 - u * 100, b = 238 - u * 56;
-      ctx.strokeStyle = `rgba(${r | 0},${g | 0},${b | 0},.2)`;
-      ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(px[i], py[i]); ctx.stroke();
-      if (--pa[i] < 0 || px[i] < 0 || px[i] > w || py[i] < 0 || py[i] > h) {
-        px[i] = Math.random() * w; py[i] = Math.random() * h; pa[i] = 120 + Math.random() * 180;
-      }
-    }
-    ctx.globalCompositeOperation = 'source-over';
+    if (!E) { ctx.fillStyle = '#050404'; ctx.fillRect(0, 0, w, h); return; }
+    if (!game || game.bossDone || game.mode === 'ending' || game.t > 90) fresh();
+    const dt = api.sheet ? 1 / 30 : 1 / 60;
+    game.step(dt, E.autopilot(game, mem));
+    for (const e of game.drain()) view.fx(e, game);
+    clock += dt * 1000;
+    view.draw(ctx, game, { w, h, scale: Math.max(0.42, Math.min(w, h) / 420), dt, now: clock, preview: true });
   };
 }
 
