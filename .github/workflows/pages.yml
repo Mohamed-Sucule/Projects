@@ -6,7 +6,7 @@ name: Deploy to GitHub Pages
 # ONE-TIME SETUP (about ten seconds, and it cannot be scripted — GitHub
 # refuses to let a workflow token switch Pages on for the first time):
 #
-#   https://github.com/mohamedsucule-debug/Projects/settings/pages
+#   https://github.com/Mohamed-Sucule/Projects/settings/pages
 #   → Build and deployment → Source → "GitHub Actions"
 #
 # After that, every push to main republishes the site automatically.

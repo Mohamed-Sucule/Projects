@@ -2,7 +2,7 @@
 
 A perfectly ordinary web page — until you swipe across it.
 
-**→ [Break it](https://mohamedsucule-debug.github.io/Projects/apps/topple/)**
+**→ [Break it](https://mohamed-sucule.github.io/Projects/apps/topple/)**
 
 Everything your finger passes through comes loose and falls. Cut the support out
 from under a paragraph and what was standing on it collapses on top. Pick a

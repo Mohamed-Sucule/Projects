@@ -3,7 +3,7 @@
 Tap a tile to turn it a quarter turn. The board is solved when no connector is
 left dangling.
 
-**→ [Play today's](https://mohamedsucule-debug.github.io/Projects/play/tangle/)**
+**→ [Play today's](https://mohamed-sucule.github.io/Projects/play/tangle/)**
 
 Everybody in the world gets the same board each day, and finishing gives you a
 line you can paste into a group chat. There is no timer pressure, no score to

@@ -2,7 +2,7 @@
 
 Drop in a photo and watch it rebuilt out of something that is not a photo.
 
-**→ [Open it](https://mohamedsucule-debug.github.io/Projects/play/portrait/)**
+**→ [Open it](https://mohamed-sucule.github.io/Projects/play/portrait/)**
 
 Four ways: thousands of dots, a mesh of triangles, tiles in colours the photo
 picked for itself, or one bit per pixel. The photograph is thrown away each

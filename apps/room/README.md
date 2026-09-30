@@ -3,7 +3,7 @@
 Edmund Harkness is dead at his desk. The door was locked from the inside and
 the key was in his pocket.
 
-**→ [Solve it](https://mohamedsucule-debug.github.io/Projects/apps/room/)**
+**→ [Solve it](https://mohamed-sucule.github.io/Projects/apps/room/)**
 
 Nineteen things to look at, four people to question, five contradictions hidden
 among them, and nothing anywhere that is a multiple-choice question.

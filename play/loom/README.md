@@ -2,7 +2,7 @@
 
 Build a picture by wiring boxes together.
 
-**→ [Open it](https://mohamedsucule-debug.github.io/Projects/play/loom/)**
+**→ [Open it](https://mohamed-sucule.github.io/Projects/play/loom/)**
 
 Every box produces an image. One makes a cloud of random fog, one bends
 whatever it is given using a second image as the map, one swaps grey for

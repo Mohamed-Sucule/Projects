@@ -3,7 +3,7 @@
 Thirty things I built. All of them run in a browser — no install, no signup,
 no API key, no video of someone else using it.
 
-**→ [Open the playground](https://mohamedsucule-debug.github.io/Projects/)**
+**→ [Open the playground](https://mohamed-sucule.github.io/Projects/)**
 
 | | | |
 |---|---|---:|

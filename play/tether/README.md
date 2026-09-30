@@ -2,7 +2,7 @@
 
 You swing round a planet on a tether. Tap and you let go.
 
-**→ [Play it](https://mohamedsucule-debug.github.io/Projects/play/tether/)**
+**→ [Play it](https://mohamed-sucule.github.io/Projects/play/tether/)**
 
 You fly off along the tangent — in a straight line, at the speed you were
 already going, in exactly the direction you were already pointing. If that line

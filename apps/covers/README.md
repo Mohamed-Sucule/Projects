@@ -2,7 +2,7 @@
 
 A working restaurant floor and booking system.
 
-**→ [Open it](https://mohamedsucule-debug.github.io/Projects/apps/covers/)**
+**→ [Open it](https://mohamed-sucule.github.io/Projects/apps/covers/)**
 
 You arrive at **19:42 on a Saturday**. Thirty-one bookings are in the book,
 eleven parties are eating, four are due in the next twenty minutes, one is

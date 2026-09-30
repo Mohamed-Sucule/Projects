@@ -2,7 +2,7 @@
 
 Tap to fly a paper plane through a canyon. Don't hit the rocks.
 
-**→ [Play it](https://mohamedsucule-debug.github.io/Projects/play/ace/)**
+**→ [Play it](https://mohamed-sucule.github.io/Projects/play/ace/)**
 
 That's the whole game. There is no menu, no difficulty select, no settings
 panel and no tutorial, because a game that has to be explained has already

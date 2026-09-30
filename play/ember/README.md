@@ -3,7 +3,7 @@
 An action game in the dark. Your flame is your life and your light: three acts, three
 bosses, nine ash-stones, and one question. Who put out the Beacon?
 
-**→ [Play it](https://mohamedsucule-debug.github.io/Projects/play/ember/)**
+**→ [Play it](https://mohamed-sucule.github.io/Projects/play/ember/)**
 
 | | |
 |---|---|

@@ -2,7 +2,7 @@
 
 Drop a CSV in and it tells you what is actually in it.
 
-**→ [Open it](https://mohamedsucule-debug.github.io/Projects/apps/sift/)**
+**→ [Open it](https://mohamed-sucule.github.io/Projects/apps/sift/)**
 
 Every column gets a type, a count of the gaps, a range and a shape. Then you can
 sort and filter a hundred thousand rows without it stuttering. Nothing is

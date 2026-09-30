@@ -2,7 +2,7 @@
 
 One gallery, seven layouts, and not a single CSS transition anywhere in it.
 
-**→ [Open it](https://mohamedsucule-debug.github.io/Projects/play/morph/)**
+**→ [Open it](https://mohamed-sucule.github.io/Projects/play/morph/)**
 
 Switch layout and every tile flies to its new place. Switch again before they
 land and they bend into the new arrangement carrying the speed they already
