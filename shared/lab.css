@@ -305,6 +305,14 @@ table.data td.r, table.data th.r { text-align: right; font-variant-numeric: tabu
 }
 .xp-btn:hover { background: color-mix(in oklab, var(--accent) 22%, transparent); color: var(--accent); }
 .xp-btn > span { color: var(--fg-dim); }
+/* First visit: the button breathes, so the explanation is found without
+   being forced on anybody. */
+.xp-btn.xp-new { animation: xp-pulse 2.2s ease-in-out infinite; }
+@keyframes xp-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--accent) 45%, transparent); }
+  50% { box-shadow: 0 0 0 7px color-mix(in oklab, var(--accent) 0%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) { .xp-btn.xp-new { animation: none; outline: 2px solid var(--accent); } }
 .xp-btn:hover > span { color: var(--fg); }
 
 .xp-wrap {

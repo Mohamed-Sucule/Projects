@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="../../favicon.svg" />
+<meta name="theme-color" content="#f3efe5" />
+<title>Tuner — play a note, see how far off it is, to the cent</title>
+<meta name="description" content="A chromatic tuner for guitar, bass, ukulele, violin and cello. Play a note into your microphone and see how sharp or flat it is to the cent. The pitch detection is written from scratch and nothing is recorded or sent." />
+<meta property="og:title" content="Tuner — play a note, see how far off it is" />
+<meta property="og:description" content="Guitar, bass, ukulele, violin, cello or any note, to the cent. Pitch detection written from nothing; your microphone never leaves the page." />
+<style>
+  @font-face { font-family: "Instrument Serif"; src: url("../../assets/fonts/instrument-serif.woff2") format("woff2"); font-display: swap; }
+  @font-face { font-family: "Instrument Serif"; src: url("../../assets/fonts/instrument-serif-italic.woff2") format("woff2"); font-style: italic; font-display: swap; }
+  @font-face { font-family: "Newsreader"; src: url("../../assets/fonts/newsreader.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
+  @font-face { font-family: "JetBrains Mono Var"; src: url("../../assets/fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 100 800; font-display: swap; }
+
+  :root {
+    --paper: #f3efe5; --card: #fbf9f3; --ink: #17140f; --ink-2: #4a4439; --ink-3: #857c6c;
+    --rule: rgba(23,20,15,.14); --rule-2: rgba(23,20,15,.3); --red: #cf2e1b; --green: #2c7a4b;
+    --display: "Instrument Serif", Georgia, serif; --text: "Newsreader", Georgia, serif;
+    --mono: "JetBrains Mono Var", ui-monospace, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--paper); color: var(--ink); }
+  body { font: 400 17px/1.5 var(--text); -webkit-font-smoothing: antialiased; }
+  [hidden] { display: none !important; }
+  button { font: inherit; color: inherit; }
+  .back {
+    position: fixed; top: 14px; left: 14px; z-index: 10; text-decoration: none;
+    font: 600 11px/1 var(--mono); letter-spacing: .1em; color: var(--ink-2);
+    border: 1px solid var(--rule-2); padding: 8px 11px; background: var(--paper);
+  }
+  .back:hover { color: var(--red); border-color: var(--red); }
+  main { max-width: 900px; margin: 0 auto; padding: 72px 24px 80px; }
+  header h1 { margin: 0; font: 400 clamp(46px, 7vw, 84px)/.95 var(--display); letter-spacing: -.02em; }
+  header h1 em { font-style: italic; color: var(--red); }
+  header p { margin: 14px 0 0; max-width: 58ch; color: var(--ink-2); font-size: 18px; }
+
+  .instruments { display: flex; flex-wrap: wrap; gap: 0; margin-top: 30px; border-bottom: 1px solid var(--ink); }
+  .instruments button {
+    background: none; border: 0; cursor: pointer; padding: 11px 13px 10px; margin-bottom: -1px;
+    font: 600 11.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3);
+    border-bottom: 3px solid transparent;
+  }
+  .instruments button[aria-pressed="true"] { color: var(--ink); border-bottom-color: var(--red); }
+
+  .meter { margin-top: 26px; background: var(--card); padding: 22px 22px 18px; position: relative;
+    box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 26px 50px -28px rgba(60,45,20,.5); transition: box-shadow .3s; }
+  .meter.tuned { box-shadow: 0 0 0 2px var(--green), 0 26px 50px -28px rgba(60,45,20,.5); }
+  #dial { display: block; width: 100%; height: auto; aspect-ratio: 2 / 1.08; }
+  .readout { display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 10px; margin-top: -8px; }
+  .note { text-align: center; font: 400 clamp(84px, 16vw, 132px)/.8 var(--display); letter-spacing: -.02em; min-width: 2ch; }
+  .note sub { font: 400 .32em var(--display); color: var(--ink-3); vertical-align: baseline; margin-left: 2px; }
+  .side { font: 500 13px/1.6 var(--mono); color: var(--ink-2); }
+  .side.right { text-align: right; }
+  .side b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .advice { text-align: center; margin: 14px 0 0; font: italic 400 22px/1.2 var(--display); color: var(--ink-2); min-height: 1.3em; }
+  .advice.good { color: var(--green); }
+
+  .strings { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 18px 0 0; }
+  .strings button {
+    min-width: 54px; padding: 10px 12px 9px; cursor: pointer; background: var(--paper); border: 1px solid var(--rule-2);
+    font: 400 22px/1 var(--display);
+  }
+  .strings button small { font: 600 9.5px/1 var(--mono); color: var(--ink-3); margin-left: 2px; }
+  .strings button.near { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+  .strings button.near small { color: rgba(243,239,229,.65); }
+  .strings-note { text-align: center; margin: 8px 0 0; font-size: 14px; color: var(--ink-3); }
+
+  .traces { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px; }
+  .traces figure { margin: 0; }
+  .traces canvas { display: block; width: 100%; height: 76px; background: var(--paper); }
+  .traces figcaption { font: 600 9.5px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); margin-top: 7px; }
+
+  .start { margin-top: 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+  .btn {
+    font: 700 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer;
+    padding: 15px 18px; border: 1.5px solid var(--ink); background: var(--ink); color: var(--paper);
+  }
+  .btn:hover { background: var(--red); border-color: var(--red); color: #fff; }
+  .btn.ghost { background: transparent; color: var(--ink); }
+  .btn.ghost:hover { color: #fff; }
+  .privacy { font-size: 14.5px; color: var(--ink-3); margin: 0; flex: 1 1 260px; }
+  .err { color: var(--red); margin: 12px 0 0; }
+
+  .demo { margin-top: 18px; padding: 16px 18px; border: 1px dashed var(--rule-2); }
+  .demo p { margin: 0 0 10px; font-size: 15.5px; color: var(--ink-2); }
+  .peg { display: flex; align-items: center; gap: 14px; }
+  .peg input { flex: 1; accent-color: var(--red); }
+  .peg label { font: 600 10px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); white-space: nowrap; }
+  .check { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; color: var(--ink-2); cursor: pointer; margin-top: 10px; }
+  .check input { accent-color: var(--red); width: 16px; height: 16px; }
+
+  .ref { display: flex; align-items: center; gap: 10px; justify-content: center; margin-top: 16px; font: 500 12px/1 var(--mono); color: var(--ink-3); }
+  .ref button { width: 30px; height: 30px; border: 1px solid var(--rule-2); background: var(--paper); cursor: pointer; font: 600 15px/1 var(--mono); }
+  .ref b { color: var(--ink); min-width: 7ch; text-align: center; }
+
+  @media (max-width: 560px) {
+    main { padding: 64px 16px 64px; }
+    .meter { padding: 14px 12px 14px; }
+    .traces { grid-template-columns: 1fr; }
+    .side { font-size: 11.5px; }
+  }
+</style>
+</head>
+<body>
+<a class="back" href="../../index.html">&larr; INDEX</a>
+<main>
+  <header>
+    <h1>Tuner, <em>to the cent</em></h1>
+    <p>Play a note and hold it. The pitch is worked out right here from your microphone, many times
+      a second &mdash; nothing is recorded, and nothing leaves the page.</p>
+  </header>
+
+  <div class="instruments" id="instruments"></div>
+
+  <section class="meter" id="meter" aria-live="polite">
+    <canvas id="dial" aria-hidden="true"></canvas>
+    <div class="readout">
+      <div class="side"><b id="hz">—</b> Hz<br />target <b id="target">—</b></div>
+      <div class="note" id="note">&mdash;</div>
+      <div class="side right"><b id="cents">—</b> cents<br /><span id="clarity">&nbsp;</span></div>
+    </div>
+    <p class="advice" id="advice">Press start, then play a note.</p>
+    <div class="strings" id="strings"></div>
+    <p class="strings-note" id="stringsNote" hidden>Tap a string to hear what it should sound like.</p>
+    <div class="traces">
+      <figure><canvas id="scope"></canvas><figcaption>The sound, two periods of it</figcaption></figure>
+      <figure><canvas id="trace"></canvas><figcaption>Cents off, the last five seconds</figcaption></figure>
+    </div>
+    <div class="ref">A4 =
+      <button type="button" id="refDown" aria-label="Lower the reference">&minus;</button>
+      <b id="ref">440 Hz</b>
+      <button type="button" id="refUp" aria-label="Raise the reference">+</button>
+    </div>
+  </section>
+
+  <div class="start">
+    <button class="btn" type="button" id="listen">Start listening</button>
+    <button class="btn ghost" type="button" id="demoBtn">No microphone? Tune a string here</button>
+    <p class="privacy">Your browser will ask for the microphone. The sound is analysed and thrown away, frame by frame.</p>
+  </div>
+  <p class="err" id="err" hidden></p>
+
+  <div class="demo" id="demo" hidden>
+    <p>A string, synthesised in the page and deliberately out of tune. Turn the peg until the needle
+      sits in the middle &mdash; the same detector that listens to your microphone is listening to this.</p>
+    <div class="peg"><label for="peg">Tuning peg</label><input type="range" id="peg" min="-80" max="80" step="0.5" value="-37" /></div>
+    <label class="check"><input type="checkbox" id="hear" /> Let me hear it</label>
+  </div>
+</main>
+
+<script type="module">
+/* ───────────────────────────────────────────────────────────────────────────
+   Tuner — the part you can see.
+
+   pitch.js does the hearing. Here: a microphone or a synthesised string
+   feeding it, a needle on a spring so it swings rather than jumps, and three
+   pieces of honesty a phone tuner usually leaves out — the waveform it is
+   actually looking at, a trace of how steady the note has been, and a string
+   you can tune without a microphone at all.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+import { yin, noteOf, nearestString, Steady, pluck, INSTRUMENTS, freqOf, NAMES } from './pitch.js';
+
+const $ = (id) => document.getElementById(id);
+const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let instrument = 'guitar', a4 = 440;
+let source = null;               // 'mic' | 'demo'
+let audio = null, analyser = null, micStream = null;
+const N = 4096;
+const frame = new Float32Array(N);
+const steady = new Steady(5);
+let needle = 0, velocity = 0, target = 0, live = false, tunedFor = 0, lastHeard = 0;
+const history = [];              // [time, cents|null]
+
+/* ── instruments ─────────────────────────────────────────────────────────── */
+
+for (const [id, ins] of Object.entries(INSTRUMENTS)) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.textContent = ins.label;
+  b.dataset.id = id;
+  b.addEventListener('click', () => { instrument = id; renderInstruments(); });
+  $('instruments').append(b);
+}
+
+function renderInstruments() {
+  for (const b of $('instruments').children) b.setAttribute('aria-pressed', String(b.dataset.id === instrument));
+  const host = $('strings');
+  host.innerHTML = '';
+  const strings = INSTRUMENTS[instrument].strings;
+  $('stringsNote').hidden = !strings.length;
+  for (const m of strings) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.dataset.midi = m;
+    b.innerHTML = `${NAMES[m % 12]}<small>${Math.floor(m / 12) - 1}</small>`;
+    b.addEventListener('click', () => playReference(freqOf(m, a4)));
+    host.append(b);
+  }
+}
+
+/* ── sound in ────────────────────────────────────────────────────────────── */
+
+function ensureAudio() {
+  if (!audio) audio = new (window.AudioContext || window.webkitAudioContext)();
+  if (audio.state === 'suspended') audio.resume();
+  return audio;
+}
+
+async function startMic() {
+  $('err').hidden = true;
+  try {
+    const ctx = ensureAudio();
+    /* The processing phones apply to calls — echo cancelling, noise
+       suppression, automatic gain — is built to make a voice clear, and it
+       does so partly by treating a sustained tone as noise to be removed.
+       All three are off, or a held note fades out under the needle. */
+    micStream = await navigator.mediaDevices.getUserMedia({
+      audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
+    });
+    const src = ctx.createMediaStreamSource(micStream);
+    analyser = ctx.createAnalyser();
+    analyser.fftSize = N;
+    src.connect(analyser);
+    stopDemo();
+    source = 'mic';
+    $('listen').textContent = 'Stop listening';
+    $('advice').textContent = 'Listening — play a note and let it ring.';
+  } catch (e) {
+    $('err').hidden = false;
+    $('err').textContent = e?.name === 'NotAllowedError'
+      ? 'The microphone was blocked. Allow it in the address bar and try again — or tune the synthesised string below.'
+      : 'No microphone is available here. Try the synthesised string instead.';
+    startDemo();
+  }
+}
+
+function stopMic() {
+  micStream?.getTracks().forEach((t) => t.stop());
+  micStream = null;
+  analyser = null;
+  if (source === 'mic') source = null;
+  $('listen').textContent = 'Start listening';
+}
+
+$('listen').addEventListener('click', () => (source === 'mic' ? stopMic() : startMic()));
+
+/* ── the synthesised string ─────────────────────────────────────────────── */
+
+let demoT = 0, demoNote = 45, demoVoice = null;
+function startDemo() {
+  stopMic();
+  source = 'demo';
+  $('demo').hidden = false;
+  demoNote = INSTRUMENTS[instrument].strings[1] ?? 57;
+  demoT = 0;
+  $('advice').textContent = 'Turn the peg below until the needle sits in the middle.';
+  $('demo').scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'nearest' });
+}
+function stopDemo() {
+  $('demo').hidden = true;
+  demoVoice?.stop();
+  demoVoice = null;
+  if (source === 'demo') source = null;
+}
+$('demoBtn').addEventListener('click', () => (source === 'demo' ? stopDemo() : startDemo()));
+const demoFreq = () => freqOf(demoNote, a4) * 2 ** (Number($('peg').value) / 1200);
+
+/* Heard, when asked for: a steady harmonic tone at the peg's pitch. The
+   analysis never listens to the speakers — it reads the same numbers the
+   sound is made from, so there is no feedback however loud it is. */
+function syncVoice() {
+  const want = source === 'demo' && $('hear').checked;
+  if (!want) { demoVoice?.stop(); demoVoice = null; return; }
+  const ctx = ensureAudio();
+  if (!demoVoice) {
+    const real = new Float32Array([0, 0.35, 0.5, 0.33, 0.25, 0.2, 0.16]);
+    const wave = ctx.createPeriodicWave(real, new Float32Array(real.length));
+    const osc = ctx.createOscillator();
+    osc.setPeriodicWave(wave);
+    const gain = ctx.createGain();
+    gain.gain.value = 0.08;
+    osc.connect(gain).connect(ctx.destination);
+    osc.start();
+    demoVoice = { osc, stop: () => { gain.gain.setTargetAtTime(0, ctx.currentTime, 0.05); osc.stop(ctx.currentTime + 0.3); } };
+  }
+  demoVoice.osc.frequency.setTargetAtTime(demoFreq(), ensureAudio().currentTime, 0.03);
+}
+$('hear').addEventListener('change', syncVoice);
+$('peg').addEventListener('input', syncVoice);
+
+/* ── reference tones ────────────────────────────────────────────────────── */
+
+function playReference(freq) {
+  const ctx = ensureAudio();
+  const osc = ctx.createOscillator(), gain = ctx.createGain();
+  osc.type = 'triangle';
+  osc.frequency.value = freq;
+  const t = ctx.currentTime;
+  gain.gain.setValueAtTime(0, t);
+  gain.gain.linearRampToValueAtTime(0.18, t + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t + 2.2);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start(t);
+  osc.stop(t + 2.3);
+}
+
+$('refDown').addEventListener('click', () => { a4 = Math.max(430, a4 - 1); $('ref').textContent = `${a4} Hz`; });
+$('refUp').addEventListener('click', () => { a4 = Math.min(450, a4 + 1); $('ref').textContent = `${a4} Hz`; });
+
+/* ── listening ───────────────────────────────────────────────────────────── */
+
+let tick = 0;
+function listen(now) {
+  if (!source) return;
+  if (source === 'mic' && analyser) analyser.getFloatTimeDomainData(frame);
+  if (source === 'demo') {
+    demoT += 1 / 20;
+    if (demoT > 3.2) demoT = 0.02;              // pluck it again
+    pluck(frame, 48000, demoFreq(), demoT + 0.03);
+  }
+  const rate = source === 'mic' ? audio.sampleRate : 48000;
+  const heard = yin(frame, rate, { minFreq: instrument === 'bass' ? 28 : 38 });
+  if (heard && heard.clarity > 0.8) {
+    lastHeard = now;
+    const strings = INSTRUMENTS[instrument].strings;
+    const n = noteOf(heard.freq, a4);
+    let cents = n.cents, midi = n.midi;
+    if (strings.length) {
+      const s = nearestString(heard.freq, strings, a4);
+      if (Math.abs(s.cents) < 450) { cents = s.cents; midi = s.midi; }
+    }
+    target = steady.push(Math.max(-60, Math.min(60, cents)));
+    live = true;
+    show(heard.freq, midi, target, heard.clarity);
+  } else if (now - lastHeard > 700) {
+    live = false;
+    steady.clear();
+    $('clarity').innerHTML = '&nbsp;';
+  }
+  history.push([now, live ? target : null]);
+  while (history.length && now - history[0][0] > 5000) history.shift();
+}
+
+function show(freq, midi, cents, clarity) {
+  $('hz').textContent = freq.toFixed(1);
+  $('target').textContent = `${freqOf(midi, a4).toFixed(1)}`;
+  $('note').innerHTML = `${NAMES[((midi % 12) + 12) % 12]}<sub>${Math.floor(midi / 12) - 1}</sub>`;
+  $('cents').textContent = `${cents > 0 ? '+' : cents < 0 ? '−' : ''}${Math.abs(cents).toFixed(0)}`;
+  $('clarity').textContent = clarity > 0.95 ? 'clean note' : 'a little noisy';
+  for (const b of $('strings').children) b.classList.toggle('near', Number(b.dataset.midi) === midi);
+  const inTune = Math.abs(cents) < 5;
+  tunedFor = inTune ? tunedFor + 1 : 0;
+  const advice = $('advice');
+  advice.classList.toggle('good', inTune);
+  advice.textContent = inTune ? (tunedFor > 8 ? 'In tune.' : 'Almost — hold it…')
+    : cents < 0 ? (cents < -20 ? 'Flat — tighten the string.' : 'A little flat — tighten slightly.')
+    : (cents > 20 ? 'Sharp — loosen the string.' : 'A little sharp — loosen slightly.');
+  $('meter').classList.toggle('tuned', inTune && tunedFor > 8);
+}
+
+/* ── drawing ─────────────────────────────────────────────────────────────── */
+
+function sizeCanvas(c) {
+  const dpr = Math.min(2, devicePixelRatio || 1);
+  const w = c.clientWidth, h = c.clientHeight;
+  if (c.width !== Math.round(w * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+  const g = c.getContext('2d');
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return [g, w, h];
+}
+
+function drawDial() {
+  const [g, w, h] = sizeCanvas($('dial'));
+  g.clearRect(0, 0, w, h);
+  const cx = w / 2, cy = h * 0.93, r = Math.min(w * 0.46, h * 0.86);
+  const ang = (c) => Math.PI * 1.5 + (c / 50) * (Math.PI * 0.42);
+  /* The green band: ±5 cents, which is about where a trained ear stops
+     being able to tell. */
+  g.beginPath();
+  g.arc(cx, cy, r * 0.93, ang(-5), ang(5));
+  g.strokeStyle = 'rgba(44,122,75,.35)';
+  g.lineWidth = r * 0.1;
+  g.stroke();
+  for (let c = -50; c <= 50; c += 5) {
+    const a = ang(c), major = c % 25 === 0;
+    const r0 = r * (major ? 0.84 : 0.88), r1 = r;
+    g.beginPath();
+    g.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0);
+    g.lineTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1);
+    g.strokeStyle = c === 0 ? '#17140f' : 'rgba(23,20,15,.45)';
+    g.lineWidth = c === 0 ? 2.5 : major ? 1.6 : 1;
+    g.stroke();
+    if (major) {
+      g.fillStyle = '#857c6c';
+      g.font = `600 ${Math.max(10, r * 0.055)}px "JetBrains Mono Var", ui-monospace, monospace`;
+      g.textAlign = 'center';
+      const tr = r * 0.74;
+      g.fillText(c === 0 ? '0' : `${c > 0 ? '+' : '−'}${Math.abs(c)}`, cx + Math.cos(a) * tr, cy + Math.sin(a) * tr + 4);
+    }
+  }
+  g.font = `italic 400 ${Math.max(14, r * 0.09)}px "Instrument Serif", Georgia, serif`;
+  g.fillStyle = '#857c6c';
+  g.textAlign = 'left';
+  g.fillText('flat', cx - r * 0.98, cy - r * 0.08);
+  g.textAlign = 'right';
+  g.fillText('sharp', cx + r * 0.98, cy - r * 0.08);
+
+  /* The needle, on a critically damped spring: it swings to a new reading
+     and settles, instead of teleporting between them. */
+  const goal = live ? target : 0;
+  if (calm) needle = goal;
+  else {
+    const k = 170, damp = 2 * Math.sqrt(k), dt = 1 / 60;
+    velocity += (k * (goal - needle) - damp * velocity) * dt;
+    needle += velocity * dt;
+  }
+  const a = ang(Math.max(-55, Math.min(55, needle)));
+  g.beginPath();
+  g.moveTo(cx, cy);
+  g.lineTo(cx + Math.cos(a) * r * 0.97, cy + Math.sin(a) * r * 0.97);
+  g.strokeStyle = live ? (Math.abs(needle) < 5 ? '#2c7a4b' : '#cf2e1b') : 'rgba(23,20,15,.25)';
+  g.lineWidth = 3;
+  g.lineCap = 'round';
+  g.stroke();
+  g.beginPath();
+  g.arc(cx, cy, 7, 0, Math.PI * 2);
+  g.fillStyle = '#17140f';
+  g.fill();
+}
+
+function drawScope() {
+  const [g, w, h] = sizeCanvas($('scope'));
+  g.clearRect(0, 0, w, h);
+  g.strokeStyle = 'rgba(23,20,15,.12)';
+  g.beginPath(); g.moveTo(0, h / 2); g.lineTo(w, h / 2); g.stroke();
+  if (!source) return;
+  /* Two periods of whatever was last heard, starting at an upward zero
+     crossing so the picture stands still instead of crawling. */
+  const rate = source === 'mic' && audio ? audio.sampleRate : 48000;
+  const period = live ? rate / ($('hz').textContent === '—' ? 200 : Number($('hz').textContent)) : 400;
+  let start = 0;
+  for (let i = 1; i < N / 2; i++) if (frame[i - 1] < 0 && frame[i] >= 0) { start = i; break; }
+  const span = Math.min(N - start - 1, Math.round(period * 2));
+  let peak = 0.02;
+  for (let i = 0; i < span; i++) peak = Math.max(peak, Math.abs(frame[start + i]));
+  g.beginPath();
+  for (let i = 0; i <= span; i++) {
+    const x = (i / span) * w, y = h / 2 - (frame[start + i] / peak) * h * 0.42;
+    i ? g.lineTo(x, y) : g.moveTo(x, y);
+  }
+  g.strokeStyle = '#17140f';
+  g.lineWidth = 1.5;
+  g.stroke();
+}
+
+function drawTrace(now) {
+  const [g, w, h] = sizeCanvas($('trace'));
+  g.clearRect(0, 0, w, h);
+  g.fillStyle = 'rgba(44,122,75,.12)';
+  g.fillRect(0, h / 2 - (5 / 50) * (h / 2), w, (10 / 50) * (h / 2));
+  g.strokeStyle = 'rgba(23,20,15,.15)';
+  g.beginPath(); g.moveTo(0, h / 2); g.lineTo(w, h / 2); g.stroke();
+  g.beginPath();
+  let pen = false;
+  for (const [t, c] of history) {
+    const x = w - ((now - t) / 5000) * w;
+    if (c === null) { pen = false; continue; }
+    const y = h / 2 - (Math.max(-50, Math.min(50, c)) / 50) * (h / 2 - 3);
+    pen ? g.lineTo(x, y) : g.moveTo(x, y);
+    pen = true;
+  }
+  g.strokeStyle = '#cf2e1b';
+  g.lineWidth = 1.6;
+  g.stroke();
+}
+
+function loop(now) {
+  /* The analysis runs every third frame — twenty times a second is faster
+     than a string settles — and the drawing every frame, so the needle is
+     smooth whatever the analysis is doing. */
+  if (tick++ % 3 === 0) listen(now);
+  drawDial();
+  drawScope();
+  drawTrace(now);
+  requestAnimationFrame(loop);
+}
+
+renderInstruments();
+document.fonts?.ready.then(drawDial);
+requestAnimationFrame(loop);
+window.tunerState = () => ({ source, live, target, note: $('note').textContent });   // for a headless check
+</script>
+<script type="module" src="../../shared/navigator.js"></script>
+</body>
+</html>

@@ -110,12 +110,16 @@ export function rng(seed = 1) {
    prettier kind of confusing. So each one carries a plain-English briefing:
    what it is, why anyone cares, how it works, and something to go and try.
 
-   It opens by itself the first time you arrive and never again after that —
-   the flag lives in localStorage, and if that throws (private windows, a
-   locked-down browser) the panel simply behaves as if you had never been.
+   It used to open by itself the first time you arrived. That meant the first
+   thing anybody saw of a tool was a wall of text covering the tool — which
+   is how a page gets called unintuitive by somebody who never saw it. So it
+   waits to be asked now: the tool is usable from the first second, and the
+   "?" button pulses on a first visit so the explanation is easy to find. The
+   seen flag lives in localStorage; if that throws (private windows, a
+   locked-down browser) the button just keeps pulsing.
    ─────────────────────────────────────────────────────────────────────────── */
 
-export function explainer({ key, title, tagline, sections, mount = document.body, openFirstVisit = true }) {
+export function explainer({ key, title, tagline, sections, mount = document.body, openFirstVisit = false }) {
   const seenKey = `lab.seen.${key}`;
   const wrap = h('div', { class: 'xp-wrap', hidden: true, role: 'dialog', 'aria-modal': 'true', 'aria-label': `About ${title}` });
 
@@ -139,6 +143,8 @@ export function explainer({ key, title, tagline, sections, mount = document.body
 
   let lastFocus = null;
   const open = () => {
+    try { localStorage.setItem(seenKey, '1'); } catch {}
+    for (const b of document.querySelectorAll('.xp-btn.xp-new')) b.classList.remove('xp-new');
     lastFocus = document.activeElement;
     wrap.hidden = false;
     requestAnimationFrame(() => wrap.classList.add('in'));
@@ -158,14 +164,14 @@ export function explainer({ key, title, tagline, sections, mount = document.body
     else if (e.key === '?' && wrap.hidden && !/^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName)) open();
   });
 
-  let seen = true;
+  let seen = false;
   try { seen = !!localStorage.getItem(seenKey); } catch {}
   if (openFirstVisit && !seen) open();
 
-  return { open, close, get isOpen() { return !wrap.hidden; } };
+  return { open, close, get isOpen() { return !wrap.hidden; }, seen };
 }
 
 /** The header button that reopens the explainer. */
 export function explainButton(panel, label = 'what is this?') {
-  return h('button', { class: 'xp-btn mono', onClick: () => panel.open(), title: 'What am I looking at? (?)' }, '?', h('span', {}, label));
+  return h('button', { class: `xp-btn mono${panel.seen ? '' : ' xp-new'}`, onClick: () => panel.open(), title: 'What am I looking at? (?)' }, '?', h('span', {}, label));
 }

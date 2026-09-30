@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="../../favicon.svg" />
+<meta name="theme-color" content="#f3efe5" />
+<title>Claims Desk — insurance paperwork to a decision, with evidence</title>
+<meta name="description" content="An insurance claim arrives as an email, a scanned claim form and an invoice. The desk reads the scans with OCR on your own device, checks them against the policy and against each other, and recommends a decision with the evidence for every line. A person approves." />
+<meta property="og:title" content="Claims Desk — insurance paperwork to a decision, with evidence" />
+<meta property="og:description" content="Watch it read three claims — one to pay, one the policy doesn't cover, and one with three things a claims handler is paid to notice." />
+<style>
+  @font-face { font-family: "Instrument Serif"; src: url("../../assets/fonts/instrument-serif.woff2") format("woff2"); font-display: swap; }
+  @font-face { font-family: "Instrument Serif"; src: url("../../assets/fonts/instrument-serif-italic.woff2") format("woff2"); font-style: italic; font-display: swap; }
+  @font-face { font-family: "Newsreader"; src: url("../../assets/fonts/newsreader.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
+  @font-face { font-family: "JetBrains Mono Var"; src: url("../../assets/fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 100 800; font-display: swap; }
+
+  :root {
+    --paper: #f3efe5; --card: #fbf9f3; --ink: #17140f; --ink-2: #4a4439; --ink-3: #857c6c;
+    --rule: rgba(23,20,15,.14); --rule-2: rgba(23,20,15,.3); --red: #cf2e1b; --green: #2c7a4b; --amber: #b06a10; --blue: #2f5d9c;
+    --display: "Instrument Serif", Georgia, serif; --text: "Newsreader", Georgia, serif;
+    --mono: "JetBrains Mono Var", ui-monospace, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--paper); color: var(--ink); }
+  body { font: 400 17px/1.5 var(--text); -webkit-font-smoothing: antialiased; }
+  [hidden] { display: none !important; }
+  button, input { font: inherit; color: inherit; }
+  .back { position: fixed; top: 14px; left: 14px; z-index: 10; text-decoration: none; font: 600 11px/1 var(--mono); letter-spacing: .1em; color: var(--ink-2); border: 1px solid var(--rule-2); padding: 8px 11px; background: var(--paper); }
+  .back:hover { color: var(--red); border-color: var(--red); }
+  main { max-width: 1240px; margin: 0 auto; padding: 76px 24px 100px; }
+  .kicker { margin: 0 0 14px; font: 600 11px/1.4 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--red); }
+  h1 { margin: 0; font: 400 clamp(52px, 8vw, 96px)/.92 var(--display); letter-spacing: -.02em; }
+  h1 em { color: var(--red); }
+  .lead { margin: 18px 0 0; max-width: 35em; font-size: clamp(19px, 2.2vw, 23px); line-height: 1.42; }
+  .facts { list-style: none; padding: 0; margin: 30px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--ink); }
+  .facts li { padding: 14px 18px 4px 0; border-right: 1px solid var(--rule); margin-right: 18px; }
+  .facts li:last-child { border-right: 0; margin-right: 0; }
+  .facts b { display: block; font: 400 24px/1.1 var(--display); }
+  .facts span { display: block; margin-top: 6px; color: var(--ink-2); font-size: 15.5px; line-height: 1.45; }
+  h2 { margin: 0 0 16px; font: 600 11px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); display: flex; align-items: center; gap: 12px; }
+  h2::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
+  section.band { margin-top: 84px; }
+
+  .calls { margin-top: 54px; }
+  .picker { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+  .pick { position: relative; text-align: left; cursor: pointer; background: var(--card); border: 1px solid var(--rule-2); padding: 13px 14px 14px; display: grid; gap: 5px; align-content: start; transition: border-color .15s, transform .15s; }
+  .pick:hover { border-color: var(--ink); transform: translateY(-1px); }
+  .pick b { font: 400 21px/1.1 var(--display); }
+  .pick span { font-size: 14.5px; line-height: 1.4; color: var(--ink-2); }
+  .pick.on { border-color: var(--red); box-shadow: inset 0 0 0 1px var(--red); }
+  .pick.you { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .pick.you span { color: rgba(243,239,229,.75); }
+  .pick.you input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+  .desk { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 18px; margin-top: 18px; align-items: start; }
+  .viewer { background: var(--card); border: 1px solid var(--rule-2); box-shadow: 0 24px 50px -34px rgba(60,45,20,.55); position: sticky; top: 12px; }
+  .tabs { display: flex; gap: 0; background: var(--ink); overflow-x: auto; }
+  .tabs button { border: 0; background: transparent; color: rgba(243,239,229,.65); cursor: pointer; padding: 12px 14px; font: 600 10.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
+  .tabs button.on { color: var(--paper); box-shadow: inset 0 -3px 0 var(--red); }
+  .tabs button i { font-style: normal; color: #7ee2a8; margin-left: 5px; }
+  .pane { padding: 14px; }
+  .scan { position: relative; line-height: 0; }
+  .scan canvas { width: 100%; height: auto; display: block; box-shadow: 0 6px 18px -8px rgba(0,0,0,.35); }
+  .scan svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .scan .sweep { position: absolute; left: 0; right: 0; height: 3px; background: var(--red); box-shadow: 0 0 16px 4px rgba(207,46,27,.35); top: 0; animation: sweep 1.6s ease-in-out infinite; }
+  @keyframes sweep { 0% { top: 0; } 50% { top: calc(100% - 3px); } 100% { top: 0; } }
+  .mail { font-size: 16px; }
+  .mail dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 12px; margin: 0 0 12px; padding-bottom: 10px; border-bottom: 1px solid var(--rule); font-size: 14.5px; }
+  .mail dt { font: 600 10px/1.8 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+  .mail dd { margin: 0; }
+  .mail pre { white-space: pre-wrap; font: inherit; margin: 0; line-height: 1.55; }
+  .mail mark, .wording mark { background: rgba(207,46,27,.13); border-bottom: 2px solid var(--red); color: inherit; }
+  .sched { width: 100%; border-collapse: collapse; font-size: 15px; margin-bottom: 14px; }
+  .sched th { text-align: left; font: 600 10px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); padding: 6px 10px 6px 0; border-bottom: 1px solid var(--rule); width: 150px; vertical-align: top; }
+  .sched td { padding: 6px 0; border-bottom: 1px solid var(--rule); }
+  .wording { display: grid; gap: 8px; }
+  .wording div { padding: 8px 10px; border-left: 3px solid var(--rule-2); font-size: 15px; }
+  .wording div.hit { border-color: var(--red); background: rgba(207,46,27,.05); }
+  .wording b { display: block; font: 600 10.5px/1.4 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); }
+
+  .side { display: grid; gap: 14px; }
+  .panel { background: var(--card); border: 1px solid var(--rule-2); padding: 14px 16px 15px; }
+  .panel h3 { margin: 0 0 11px; font: 600 10.5px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); display: flex; justify-content: space-between; gap: 10px; }
+  .progress { display: grid; gap: 8px; }
+  .prog { display: grid; grid-template-columns: 110px minmax(0, 1fr) 46px; gap: 10px; align-items: center; font: 600 10.5px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); }
+  .prog .bar { height: 6px; background: var(--rule); position: relative; }
+  .prog .bar i { position: absolute; inset: 0 auto 0 0; background: var(--ink); width: 0; transition: width .2s; }
+  .prog.done .bar i { background: var(--green); }
+  .readtab { width: 100%; border-collapse: collapse; font-size: 15px; }
+  .readtab th { text-align: left; font: 600 10px/1.3 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); padding: 5px 10px 5px 0; border-bottom: 1px solid var(--rule); width: 140px; font-weight: 600; }
+  .readtab td { padding: 5px 0; border-bottom: 1px solid var(--rule); font-family: var(--mono); font-size: 13.5px; }
+  .readtab td small { color: var(--ink-3); font-family: var(--text); font-size: 12.5px; margin-left: 6px; }
+  .readtab tr.miss td { color: var(--red); }
+  .acc { font: 600 11px/1.3 var(--mono); color: var(--green); letter-spacing: .04em; }
+  .checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .chk { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; padding: 8px 0; border-bottom: 1px dashed var(--rule); animation: rise .3s ease-out; }
+  .chk:last-child { border-bottom: 0; }
+  .chk > i { font-style: normal; font: 700 12px/20px var(--mono); text-align: center; width: 20px; height: 20px; border-radius: 50%; color: #fff; }
+  .chk.pass > i { background: var(--green); } .chk.fail > i { background: var(--red); } .chk.refer > i { background: var(--amber); } .chk.partial > i { background: var(--blue); }
+  .chk b { font-weight: 600; font-size: 16px; }
+  .chk p { margin: 2px 0 0; font-size: 15px; color: var(--ink-2); line-height: 1.45; }
+  .ev { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
+  .ev button { cursor: pointer; border: 1px solid var(--rule-2); background: #fff; padding: 3px 6px; font: 600 9.5px/1.2 var(--mono); letter-spacing: .04em; color: var(--ink-2); }
+  .ev button:hover { border-color: var(--red); color: var(--red); }
+  @keyframes rise { from { opacity: 0; transform: translateY(4px); } }
+  .rec { border: 2px solid var(--ink); background: #fff; padding: 16px 18px; }
+  .rec .k { font: 600 10.5px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+  .rec .d { font: 400 44px/1 var(--display); margin: 8px 0 6px; }
+  .rec.approve .d, .rec.partial .d { color: var(--green); } .rec.decline .d { color: var(--red); } .rec.refer .d { color: var(--amber); }
+  .rec p { margin: 0; font-size: 16px; color: var(--ink-2); }
+  .rec .row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .btn { font: 700 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; padding: 11px 14px; border: 1.5px solid var(--ink); background: var(--ink); color: var(--paper); white-space: nowrap; }
+  .btn.ghost { background: transparent; color: var(--ink); }
+  .btn:hover:not(:disabled) { background: var(--red); border-color: var(--red); color: #fff; }
+  .btn:disabled { opacity: .45; cursor: default; }
+  .audit { list-style: none; margin: 10px 0 0; padding: 0; font: 500 11.5px/1.5 var(--mono); color: var(--ink-3); }
+  .letter { white-space: pre-wrap; font: 400 15.5px/1.55 var(--text); background: #fff; border: 1px solid var(--rule); padding: 14px 16px; margin: 0; max-height: 380px; overflow-y: auto; }
+  .letter-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .letter-head b { font: 400 19px/1.2 var(--display); }
+  .wait { color: var(--ink-3); font-style: italic; font-size: 15.5px; }
+
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); counter-reset: s; border-top: 1px solid var(--ink); }
+  .steps li { padding: 16px 16px 4px 0; margin-right: 16px; border-right: 1px solid var(--rule); counter-increment: s; }
+  .steps li:last-child { border-right: 0; margin-right: 0; }
+  .steps li::before { content: counter(s, decimal-leading-zero); display: block; font: 600 11px/1 var(--mono); color: var(--red); letter-spacing: .1em; margin-bottom: 10px; }
+  .steps b { display: block; font: 400 24px/1.1 var(--display); margin-bottom: 6px; }
+  .steps p { margin: 0; font-size: 15.5px; line-height: 1.5; color: var(--ink-2); }
+  .ship { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 40px; }
+  .ship div { border-top: 1px solid var(--rule-2); padding-top: 12px; }
+  .ship b { display: block; font: 400 22px/1.15 var(--display); margin-bottom: 6px; }
+  .ship p { margin: 0; color: var(--ink-2); font-size: 16px; line-height: 1.55; }
+  .ship .state { font: 600 9.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; margin-left: 8px; vertical-align: 3px; }
+  .state.done { color: var(--green); } .state.todo { color: var(--ink-3); }
+  footer { margin-top: 80px; padding-top: 18px; border-top: 1px solid var(--ink); display: flex; flex-wrap: wrap; gap: 10px 24px; justify-content: space-between; font-size: 15px; color: var(--ink-2); }
+  footer a { color: var(--ink); }
+
+  @media (max-width: 1000px) {
+    .picker { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .desk { grid-template-columns: minmax(0, 1fr); }
+    .viewer { position: static; }
+    .steps { grid-template-columns: minmax(0, 1fr); }
+    .steps li { border-right: 0; margin-right: 0; border-bottom: 1px solid var(--rule); padding-bottom: 14px; }
+    .ship { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 640px) {
+    main { padding: 70px 16px 80px; }
+    .facts { grid-template-columns: minmax(0, 1fr); }
+    .facts li { border-right: 0; margin-right: 0; border-bottom: 1px solid var(--rule); padding-bottom: 12px; }
+    .picker { grid-template-columns: minmax(0, 1fr); }
+    .pick span { display: none; }
+    .readtab th { width: 104px; }
+    .rec .d { font-size: 36px; }
+  }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<a class="back" href="../../index.html">← INDEX</a>
+<main>
+  <header>
+    <p class="kicker">Case study · Document AI · Insurance</p>
+    <h1>Claims <em>Desk</em></h1>
+    <p class="lead">An insurance claim arrives as an email, a scanned claim form and an invoice. The desk reads all three, checks them against the policy and against each other, and recommends a decision — with the evidence for every line. A person approves it.</p>
+    <ul class="facts">
+      <li><b>Reads the scans itself</b><span>Text recognition runs on your own device — watch it read the form. Nothing is uploaded anywhere.</span></li>
+      <li><b>Every line has evidence</b><span>Each check points at a field on a document or a clause of the policy. Click it and the page shows you where.</span></li>
+      <li><b>A person decides</b><span>It recommends. And when a scan is hard to read, it sends the claim to a person rather than guessing.</span></li>
+    </ul>
+  </header>
+
+  <section class="calls" aria-labelledby="claimsHead">
+    <h2 id="claimsHead">Open a claim</h2>
+    <div class="picker" id="picker"></div>
+  </section>
+
+  <section class="desk" aria-label="The claim">
+    <div class="viewer">
+      <div class="tabs" id="tabs" role="tablist"></div>
+      <div class="pane" id="pane"><p class="wait">Pick a claim above.</p></div>
+    </div>
+    <div class="side">
+      <section class="panel"><h3>Reading the documents <small id="elapsed"></small></h3><div class="progress" id="progress"><p class="wait">Nothing to read yet.</p></div></section>
+      <section class="panel"><h3>What it read <span class="acc" id="acc"></span></h3><table class="readtab"><tbody id="readtab"><tr><td class="wait">—</td></tr></tbody></table></section>
+      <section class="panel"><h3>Checks <small id="checkCount"></small></h3><ul class="checks" id="checks"><li class="wait">The checks run once everything has been read.</li></ul></section>
+      <section id="recBox" hidden></section>
+      <section class="panel" id="letterBox" hidden>
+        <div class="letter-head"><b id="letterSubject"></b><button class="btn ghost" type="button" id="copyLetter" style="padding:7px 9px;font-size:10px">Copy</button></div>
+        <pre class="letter" id="letter"></pre>
+      </section>
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="howHead">
+    <h2 id="howHead">How it works</h2>
+    <ol class="steps">
+      <li><b>Reads</b><p>Tesseract, an open-source text recogniser, reads the scanned form and invoice in your browser. Every word comes back with a position, so every field can be boxed on the page.</p></li>
+      <li><b>Understands</b><p>Labels are matched loosely and values are cleaned for what they should be — £ read as E, O read as 0, a comma read as a full stop — so a smudge doesn't become a wrong number.</p></li>
+      <li><b>Checks</b><p>Is the policy in force? Is it covered? Do the email, the form and the invoice agree? Does the invoice add up? Anything unusual — a receipt dated after a theft — is flagged.</p></li>
+      <li><b>Recommends</b><p>Approve, decline with the clause, or refer to a person, with the payout worked out and the reply drafted. The claims handler approves or overrides, and that goes on the record.</p></li>
+    </ol>
+  </section>
+
+  <section class="band" aria-labelledby="shipHead">
+    <h2 id="shipHead">Taking it to a real insurer</h2>
+    <div class="ship">
+      <div><b>Their inbox and systems <span class="state todo">next step</span></b><p>Claims arrive from the claims inbox and the portal; the policy comes from the policy administration system, not a file. The checks don't change.</p></div>
+      <div><b>Their wording <span class="state done">designed for</span></b><p>Every rule cites a clause by name, so changing a policy wording is editing a clause, and every recommendation says which clause it rested on.</p></div>
+      <div><b>Safe when unsure <span class="state done">built</span></b><p>Tested against thousands of deliberately smudged scans: a misread can send a claim to a person, and never pays a claim it shouldn't or declines one it shouldn't.</p></div>
+      <div><b>A record of who decided <span class="state done">built</span></b><p>Recommendation, approval and any override are logged with the time and the reason — what a regulator, or the ombudsman, would ask to see.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Northgate Home Insurance, its customers and their suppliers are fictional.</span>
+    <span><a href="README.md">How it's built</a> · <a href="../../index.html">Everything else</a></span>
+  </footer>
+</main>
+
+<script type="module">
+import { CASES, POLICIES, WORDING, INSURER, EXCESS } from './cases.js';
+import { drawForm, drawInvoice, lines as sourceLines } from './render.js';
+import { readForm, readInvoice, readEmail } from './read.js';
+import { assess, nice, gbp } from './assess.js';
+
+const $ = (id) => document.getElementById(id);
+const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+const NS = 'http://www.w3.org/2000/svg';
+
+let run = 0, current = null, docs = {}, tab = 'email', result = null, highlight = null;
+
+/* ── OCR, loaded on first use and kept ── */
+let worker = null, progressFn = null;
+async function ocr() {
+  if (worker) return worker;
+  const { default: Tesseract } = await import('../../shared/vendor/tesseract/tesseract.esm.min.js');
+  const base = new URL('../../shared/vendor/tesseract/', import.meta.url).href;
+  worker = await Tesseract.createWorker('eng', 1, {
+    workerPath: `${base}worker.min.js`, corePath: base, langPath: base, workerBlobURL: false,
+    logger: (m) => { if (m.status === 'recognizing text') progressFn?.(m.progress); },
+  });
+  return worker;
+}
+async function recognise(canvas, onProgress) {
+  const w = await ocr();
+  progressFn = onProgress;
+  const { data } = await w.recognize(canvas, {}, { text: true, blocks: true });
+  progressFn = null;
+  const ocrLines = (data.blocks ?? []).flatMap((b) => b.paragraphs.flatMap((p) => p.lines))
+    .map((l) => ({ text: l.text.replace(/\n/g, ' ').trim(), bbox: l.bbox, conf: l.confidence }))
+    .filter((l) => l.text);
+  return { text: ocrLines.map((l) => l.text).join('\n'), lines: ocrLines };
+}
+
+/* ── picker ── */
+for (const c of CASES) {
+  const b = el('button', 'pick');
+  b.type = 'button'; b.dataset.id = c.id;
+  b.append(el('b', null, c.title), el('span', null, c.blurb));
+  b.addEventListener('click', () => open(c));
+  $('picker').append(b);
+}
+{
+  const b = el('label', 'pick you');
+  b.dataset.id = 'yours';
+  b.append(el('b', null, 'Read your own receipt'), el('span', null, 'Pick a photo of a receipt or invoice. It is read on this device and never leaves it.'));
+  const input = el('input');
+  input.type = 'file'; input.accept = 'image/*';
+  input.addEventListener('change', () => { if (input.files?.[0]) openYours(input.files[0]); input.value = ''; });
+  b.append(input);
+  $('picker').append(b);
+}
+const mark = (id) => { for (const b of $('picker').children) b.classList.toggle('on', b.dataset.id === id); };
+
+/* ── tabs and panes ── */
+function tabsFor(list) {
+  const host = $('tabs');
+  host.replaceChildren();
+  for (const [id, label] of list) {
+    const b = el('button', id === tab ? 'on' : null, label);
+    b.type = 'button'; b.dataset.id = id;
+    b.addEventListener('click', () => show(id));
+    host.append(b);
+  }
+}
+function markRead(id) { const b = $('tabs').querySelector(`[data-id="${id}"]`); if (b && !b.querySelector('i')) b.append(el('i', null, '✓')); }
+
+function show(id, focus = null) {
+  tab = id;
+  highlight = focus;
+  for (const b of $('tabs').children) b.classList.toggle('on', b.dataset.id === id);
+  const pane = $('pane');
+  pane.replaceChildren();
+  const c = current;
+  if (!c) return;
+  if (id === 'email') {
+    const m = el('div', 'mail');
+    const dl = el('dl');
+    dl.append(el('dt', null, 'From'), el('dd', null, c.email.from), el('dt', null, 'Subject'), el('dd', null, c.email.subject), el('dt', null, 'Received'), el('dd', null, nice(c.received)));
+    const pre = el('pre');
+    const hi = focus?.text;
+    const at = hi ? c.email.body.indexOf(hi) : -1;
+    if (at >= 0) pre.append(c.email.body.slice(0, at), el('mark', null, hi), c.email.body.slice(at + hi.length));
+    else pre.textContent = c.email.body;
+    m.append(dl, pre);
+    pane.append(m);
+  } else if (id === 'form' || id === 'invoice') {
+    const d = docs[id];
+    const wrap = el('div', 'scan');
+    wrap.append(d.canvas);
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', `0 0 ${d.canvas.width} ${d.canvas.height}`);
+    svg.setAttribute('preserveAspectRatio', 'none');
+    for (const box of d.boxes ?? []) {
+      const on = focus && focus.lines?.includes(box.line);
+      const r = document.createElementNS(NS, 'rect');
+      const b = box.bbox;
+      for (const [k, v] of Object.entries({ x: b.x0 - 6, y: b.y0 - 5, width: b.x1 - b.x0 + 12, height: b.y1 - b.y0 + 10, fill: on ? 'rgba(207,46,27,.16)' : 'rgba(44,122,75,.06)', stroke: on ? '#cf2e1b' : 'rgba(44,122,75,.7)', 'stroke-width': on ? 4 : 2, rx: 3 })) r.setAttribute(k, v);
+      svg.append(r);
+    }
+    wrap.append(svg);
+    if (d.reading) wrap.append(el('div', 'sweep'));
+    pane.append(wrap);
+    if (focus?.lines?.length) {
+      const b = d.boxes?.find((x) => x.line === focus.lines[0]);
+      if (b) requestAnimationFrame(() => { const rect = d.canvas.getBoundingClientRect(); const y = rect.top + (b.bbox.y0 / d.canvas.height) * rect.height; if (y < 0 || y > innerHeight) scrollTo({ top: scrollY + y - 140, behavior: 'smooth' }); });
+    }
+  } else if (id === 'policy') {
+    const p = POLICIES[c.form['Policy number']];
+    const t = el('table', 'sched');
+    const rows = [['Policy', p.number], ['Policyholder', p.holder], ['Period', `${nice(p.start)} – ${nice(p.end)}`], ['Sections', p.sections.map((s) => WORDING[s].title.split(' — ')[1]).join(', ')], ['Options', p.options.length ? p.options.map((o) => WORDING[o].title.split(' — ')[1]).join(', ') : 'None'], ['Specified items', p.specified.length ? p.specified.join(', ') : 'None'], ['Excess', `£${EXCESS.standard}; £${EXCESS['escape of water']} for escape of water`], ['Claims in last 3 years', String(p.previousClaims)]];
+    for (const [k, v] of rows) { const tr = el('tr'); tr.append(el('th', null, k), el('td', null, v)); t.append(tr); }
+    const w = el('div', 'wording');
+    for (const [key, cl] of Object.entries(WORDING)) {
+      const d = el('div', focus?.clause === key ? 'hit' : null);
+      d.append(el('b', null, cl.title), cl.text);
+      w.append(d);
+      if (focus?.clause === key) requestAnimationFrame(() => d.scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
+    }
+    pane.append(el('p', 'wait', `The schedule, from ${INSURER.short}’s own system, and the policy wording.`), t, w);
+  }
+}
+
+/* ── a claim ── */
+async function open(c) {
+  const token = ++run;
+  current = c; result = null;
+  mark(c.id);
+  await document.fonts.ready;
+  docs = {
+    form: { canvas: drawForm(c), boxes: [], reading: false },
+    invoice: { canvas: drawInvoice(c), boxes: [], reading: false },
+  };
+  tab = 'email';
+  tabsFor([['email', 'Email'], ['form', 'Claim form'], ['invoice', c.invoice.kind === 'quote' ? 'Quote' : c.invoice.kind === 'receipt' ? 'Receipt' : 'Invoice'], ['policy', 'Policy']]);
+  show('email');
+  $('readtab').replaceChildren(el('tr', null, ''));
+  $('acc').textContent = '';
+  $('checks').replaceChildren(el('li', 'wait', 'The checks run once everything has been read.'));
+  $('checkCount').textContent = '';
+  $('recBox').hidden = true; $('letterBox').hidden = true;
+  const prog = $('progress');
+  prog.replaceChildren();
+  const bars = {};
+  for (const [id, label] of [['email', 'Email'], ['form', 'Claim form'], ['invoice', c.invoice.kind]]) {
+    const row = el('div', 'prog');
+    const bar = el('div', 'bar'); const fill = el('i'); bar.append(fill);
+    const pct = el('span', null, '');
+    row.append(el('span', null, label), bar, pct);
+    prog.append(row);
+    bars[id] = { row, fill, pct };
+  }
+  const set = (id, p) => { bars[id].fill.style.width = `${Math.round(p * 100)}%`; bars[id].pct.textContent = `${Math.round(p * 100)}%`; if (p >= 1) bars[id].row.classList.add('done'); };
+  const t0 = performance.now();
+  const email = readEmail(c.email, c.received);
+  set('email', 1);
+  markRead('email');
+  try {
+    const read = {};
+    for (const id of ['form', 'invoice']) {
+      if (token !== run) return;
+      docs[id].reading = true;
+      show(id);
+      const r = await recognise(docs[id].canvas, (p) => { if (token === run) set(id, Math.min(0.99, p)); });
+      if (token !== run) return;
+      docs[id].reading = false;
+      docs[id].boxes = r.lines.map((l, i) => ({ line: i, bbox: l.bbox, text: l.text }));
+      read[id] = r;
+      set(id, 1);
+      markRead(id);
+      show(id);
+      await new Promise((res) => setTimeout(res, 350));
+    }
+    $('elapsed').textContent = `${((performance.now() - t0) / 1000).toFixed(1)} s, on this device`;
+    const form = readForm(read.form.text);
+    const invoice = readInvoice(read.invoice.text);
+    drawRead(c, form, invoice, email);
+    result = assess({ form, invoice, email }, { received: c.received });
+    result.read = { form, invoice, email };
+    await drawChecks(result, token);
+    drawRecommendation(c, result);
+  } catch (e) {
+    $('progress').append(el('p', 'wait', `The text recogniser could not run in this browser (${e.message}).`));
+  }
+}
+
+function drawRead(c, form, invoice, email) {
+  /* What the scans should have said, read from the source with the same code. */
+  const truthForm = readForm(sourceLines(c, 'form').join('\n')).fields;
+  const truthInv = readInvoice(sourceLines(c, 'invoice').join('\n')).fields;
+  const rows = [
+    ['Name', form.fields.name, truthForm.name, 'form', 'name'],
+    ['Policy', form.fields.policy, truthForm.policy, 'form', 'policy'],
+    ['Incident', form.fields.incident && nice(form.fields.incident), truthForm.incident && nice(truthForm.incident), 'form', 'incident'],
+    ['Reported', form.fields.reported && nice(form.fields.reported), truthForm.reported && nice(truthForm.reported), 'form', 'reported'],
+    ['Type', form.fields.type, truthForm.type, 'form', 'type'],
+    ['Claimed', form.fields.amount != null ? gbp(form.fields.amount) : null, truthForm.amount != null ? gbp(truthForm.amount) : null, 'form', 'amount'],
+    ['Crime ref.', form.fields.crimeRef ?? 'none', truthForm.crimeRef ?? 'none', 'form', 'crimeRef'],
+    [`${invoice.fields.kind[0].toUpperCase()}${invoice.fields.kind.slice(1)} date`, invoice.fields.date && nice(invoice.fields.date), truthInv.date && nice(truthInv.date), 'invoice', 'date'],
+    [`${invoice.fields.kind[0].toUpperCase()}${invoice.fields.kind.slice(1)} total`, invoice.fields.total != null ? gbp(invoice.fields.total) : null, truthInv.total != null ? gbp(truthInv.total) : null, 'invoice', 'total'],
+    ['Lines', `${invoice.fields.items.length} item${invoice.fields.items.length === 1 ? '' : 's'}`, `${truthInv.items.length} item${truthInv.items.length === 1 ? '' : 's'}`, 'invoice', 'items'],
+    ['Email date', email.incident && nice(email.incident), email.incident && nice(email.incident), 'email', null],
+  ];
+  const tb = $('readtab');
+  tb.replaceChildren();
+  let right = 0;
+  for (const [label, got, want, doc] of rows) {
+    const ok = got === want;
+    if (ok) right++;
+    const tr = el('tr', ok ? null : 'miss');
+    const td = el('td', null, got ?? 'unreadable');
+    td.append(el('small', null, doc === 'email' ? 'email' : doc === 'form' ? 'form' : invoice.fields.kind));
+    if (!ok) td.append(el('small', null, `should be ${want}`));
+    tr.append(el('th', null, label), td);
+    tb.append(tr);
+  }
+  $('acc').textContent = `${right} of ${rows.length} read correctly`;
+}
+
+function evidenceTarget(e) {
+  if (e.doc === 'form' || e.doc === 'invoice') {
+    const r = result.read[e.doc];
+    let lines = [];
+    if (e.doc === 'form') lines = r.raw[e.field] ? [r.raw[e.field].line] : [];
+    else if (e.field === 'items') lines = r.fields.items.map((i) => i.line);
+    else if (e.field === 'total') lines = r.at.total != null ? [r.at.total] : [];
+    else lines = r.raw[e.field] ? [r.raw[e.field].line] : [];
+    return [e.doc, { lines }];
+  }
+  if (e.doc === 'email') return ['email', { text: e.text }];
+  if (e.doc === 'wording') return ['policy', { clause: e.clause }];
+  return ['policy', {}];
+}
+const evLabel = (e) => e.doc === 'wording' ? WORDING[e.clause].title.replace(/^Section \d — /, '').replace('Claims conditions — ', '') : e.doc === 'policy' ? 'policy schedule' : e.doc === 'email' ? 'email' : `${e.doc === 'invoice' ? result.read.invoice.fields.kind : 'form'}: ${e.field}`;
+
+async function drawChecks(r, token) {
+  const host = $('checks');
+  host.replaceChildren();
+  const ICON = { pass: '✓', fail: '✕', refer: '!', partial: '½' };
+  for (const k of r.checks) {
+    if (token !== run) return;
+    const li = el('li', `chk ${k.status}`);
+    const body = el('div');
+    body.append(el('b', null, k.label), el('p', null, k.detail));
+    const ev = el('div', 'ev');
+    for (const e of k.evidence) {
+      const b = el('button', null, evLabel(e));
+      b.type = 'button';
+      b.addEventListener('click', () => { const [t, f] = evidenceTarget(e); show(t, f); });
+      ev.append(b);
+    }
+    body.append(ev);
+    li.append(el('i', null, ICON[k.status]), body);
+    host.append(li);
+    $('checkCount').textContent = `${r.checks.filter((x) => x.status === 'pass').length} of ${r.checks.length} clear`;
+    await new Promise((res) => setTimeout(res, 120));
+  }
+}
+
+function drawRecommendation(c, r) {
+  const box = $('recBox');
+  box.hidden = false;
+  box.replaceChildren();
+  const rec = el('div', `rec ${r.decision}`);
+  const words = { approve: `Approve · ${gbp(r.payout)}`, partial: `Approve in part · ${gbp(r.payout)}`, decline: 'Decline', refer: 'Refer to a person' };
+  const why = {
+    approve: `Covered, in force, and every document agrees. ${gbp(r.claimed)} claimed, less the ${gbp(r.excess)} excess.`,
+    partial: `Covered, with a limit applied. ${gbp(r.basis)} payable, less the ${gbp(r.excess)} excess.`,
+    decline: r.checks.find((k) => k.status === 'fail')?.detail ?? '',
+    refer: `${r.checks.filter((k) => k.status === 'refer').length} thing${r.checks.filter((k) => k.status === 'refer').length === 1 ? '' : 's'} a claims handler should look at first: ${r.checks.filter((k) => k.status === 'refer').map((k) => k.label.toLowerCase()).join('; ')}.${r.payout ? ` If they check out, the most payable is ${gbp(r.payout)}.` : ''}`,
+  };
+  rec.append(el('span', 'k', 'Recommendation'), el('div', 'd', words[r.decision]), el('p', null, why[r.decision]));
+  const row = el('div', 'row');
+  const ok = el('button', 'btn', r.decision === 'refer' ? 'Take the claim' : 'Approve recommendation');
+  const over = el('button', 'btn ghost', 'Override');
+  const audit = el('ul', 'audit');
+  const stamp = () => new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  audit.append(el('li', null, `${stamp()} · recommended: ${words[r.decision]}`));
+  ok.addEventListener('click', () => { audit.append(el('li', null, `${stamp()} · ${r.decision === 'refer' ? 'taken by' : 'approved by'} you`)); ok.disabled = true; over.disabled = true; });
+  over.addEventListener('click', () => {
+    const reason = prompt('Why are you overriding the recommendation?');
+    if (reason) { audit.append(el('li', null, `${stamp()} · overridden by you: “${reason.slice(0, 140)}”`)); ok.disabled = true; over.disabled = true; }
+  });
+  row.append(ok, over);
+  rec.append(row, audit);
+  box.append(rec);
+  $('letterBox').hidden = false;
+  $('letterSubject').textContent = r.reply.subject;
+  $('letter').textContent = r.reply.body;
+}
+$('copyLetter').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(`${$('letterSubject').textContent}\n\n${$('letter').textContent}`); $('copyLetter').textContent = 'Copied'; } catch { $('copyLetter').textContent = 'Select it'; }
+  setTimeout(() => { $('copyLetter').textContent = 'Copy'; }, 1500);
+});
+
+/* ── your own receipt ── */
+async function openYours(file) {
+  const token = ++run;
+  current = null; result = null;
+  mark('yours');
+  const img = new Image();
+  img.src = URL.createObjectURL(file);
+  try { await img.decode(); } catch { $('pane').replaceChildren(el('p', 'wait', 'That file could not be opened as an image.')); return; }
+  const scale = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(img.naturalWidth * scale); canvas.height = Math.round(img.naturalHeight * scale);
+  canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+  URL.revokeObjectURL(img.src);
+  docs = { invoice: { canvas, boxes: [], reading: true } };
+  current = { invoice: { kind: 'receipt' } };
+  tabsFor([['invoice', 'Your receipt']]);
+  show('invoice');
+  $('readtab').replaceChildren(); $('acc').textContent = '';
+  $('checks').replaceChildren(el('li', 'wait', 'The checks need a policy to check against, so they only run for the three claims. Here it just reads.'));
+  $('recBox').hidden = true; $('letterBox').hidden = true;
+  const prog = $('progress');
+  prog.replaceChildren();
+  const row = el('div', 'prog'); const bar = el('div', 'bar'); const fill = el('i'); bar.append(fill); const pct = el('span');
+  row.append(el('span', null, 'Your receipt'), bar, pct); prog.append(row);
+  const t0 = performance.now();
+  try {
+    const r = await recognise(canvas, (p) => { fill.style.width = `${Math.round(p * 100)}%`; pct.textContent = `${Math.round(p * 100)}%`; });
+    if (token !== run) return;
+    row.classList.add('done'); fill.style.width = '100%'; pct.textContent = '100%';
+    docs.invoice.reading = false;
+    docs.invoice.boxes = r.lines.map((l, i) => ({ line: i, bbox: l.bbox, text: l.text }));
+    show('invoice');
+    $('elapsed').textContent = `${((performance.now() - t0) / 1000).toFixed(1)} s, on this device`;
+    const inv = readInvoice(r.text).fields;
+    const rows = [['Shop', inv.supplier], ['Date', inv.date ? nice(inv.date) : null], ['Total', inv.total != null ? gbp(inv.total) : null], ['Items', inv.items.length ? inv.items.slice(0, 6).map((i) => `${i.desc} ${i.amount != null ? gbp(i.amount) : ''}`).join('\n') : null]];
+    const tb = $('readtab');
+    tb.replaceChildren();
+    for (const [k, v] of rows) { const tr = el('tr', v ? null : 'miss'); const td = el('td', null, v ?? 'not found'); td.style.whiteSpace = 'pre-line'; tr.append(el('th', null, k), td); tb.append(tr); }
+    $('acc').textContent = `${r.lines.length} lines of text found`;
+  } catch (e) {
+    prog.append(el('p', 'wait', `The text recogniser could not run in this browser (${e.message}).`));
+  }
+}
+
+window.claims = { open, CASES, get result() { return result; } };
+</script>
+<script type="module" src="../../shared/navigator.js"></script>
+</body>
+</html>

@@ -234,7 +234,7 @@ test('depth is understood', () => {
 /* ── the plain-English queries people actually type ─────────────────────── */
 
 const EXPECTED = [
-  ['the ai stuff', ['attention', 'tokens', 'evals', 'agents']],
+  ['the ai stuff', ['frontdesk', 'attention', 'tokens', 'evals', 'agents']],
   ['machine learning', ['attention', 'tokens', 'evals', 'agents']],
   ['murder mystery', ['room']],
   ['scary', ['nightshift']],
@@ -246,7 +246,13 @@ const EXPECTED = [
   ['distributed systems', ['raft-lab']],
   ['merge conflict', ['diff-forge']],
   ['colour palette', ['oklch-studio']],
-  ['drop a photo in', ['portrait']],
+  ['split the bill', ['split']],
+  ['who owes who after the holiday', ['split']],
+  ['tune my guitar', ['tuner']],
+  ['make a qr code', ['qr']],
+  ['wifi password for guests', ['qr']],
+  ['minesweeper', ['sweeper']],
+  ['sudoku', ['sudoku']],
   ['make a beat', ['beats']],
   ['restaurant', ['covers']],
   ['slow request', ['trace-explorer']],
@@ -265,11 +271,17 @@ test('a generic word does not outrank the meaningful one', () => {
      weight than "ai", and "the ai work" returned the restaurant booking system
      on the strength of its "client work" tag. Filler words that are common in
      English and accidentally rare here are stop words now. */
-  for (const q of ['the ai work', 'the ai stuff', 'machine learning', 'llm']) {
+  for (const q of ['machine learning', 'llm']) {
     const four = ids(q, 4);
     assert.deep(four.slice().sort(), ['agents', 'attention', 'evals', 'tokens'],
       `"${q}" returned ${four.join(', ')}`);
     assert.equal(four[0], 'attention', `"${q}" did not lead with the flagship`);
+  }
+  /* "AI" now also means the AI products, which is right — what must not come
+     back is anything that is neither, on the strength of a filler word. */
+  for (const q of ['the ai work', 'the ai stuff']) {
+    const four = ids(q, 4);
+    for (const id of four) assert.ok(['ai', 'ml'].includes(byId.get(id).kind), `"${q}" returned ${four.join(', ')}`);
   }
 });
 

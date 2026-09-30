@@ -130,12 +130,14 @@ const NUMBER_WORDS = {
   nine: 9, ten: 10, fifteen: 15, twenty: 20, thirty: 30,
 };
 
+const TIME = /(\d+|[a-z]+)\s*(?:-|\s)?\s*(?:min|mins|minute|minutes)\b/;
+
 export function detectIntent(query) {
   const q = String(query).toLowerCase();
   const intent = {};
 
   /* "I have 2 minutes", "five minutes", "a couple of minutes" */
-  const minutes = q.match(/(\d+|[a-z]+)\s*(?:-|\s)?\s*(?:min|mins|minute|minutes)\b/);
+  const minutes = q.match(TIME);
   if (minutes) {
     const n = /^\d+$/.test(minutes[1]) ? Number(minutes[1]) : NUMBER_WORDS[minutes[1]];
     if (n) intent.maxMinutes = n;
@@ -174,7 +176,9 @@ export const FEATURED = ['attention', 'covers', 'room', 'evals'];
  */
 export function search(query, index, { limit = 8, entries = null } = {}) {
   const intent = detectIntent(query);
-  const terms = tokenise(query);
+  /* A time budget is a filter, not words to match: "10 minutes" should offer
+     everything that fits in ten, not the few pieces tagged "two minutes". */
+  const terms = tokenise(intent.maxMinutes ? String(query).toLowerCase().replace(TIME, ' ') : query);
   const pool = index.docs.filter((d) => matchesIntent(d.entry, intent));
   const source = pool.length ? pool : index.docs;
 

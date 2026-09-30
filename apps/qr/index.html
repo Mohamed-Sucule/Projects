@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="../../favicon.svg" />
+<meta name="theme-color" content="#f3efe5" />
+<title>QR codes — made here, from the bits up</title>
+<meta name="description" content="Type a link, some text, a Wi-Fi password or an email and get a QR code as you type. Download it as PNG or SVG. The encoder is written from scratch, error correction and all, and nothing leaves your browser." />
+<meta property="og:title" content="QR codes — made here, from the bits up" />
+<meta property="og:description" content="A QR code maker with the encoder written from nothing: Reed–Solomon error correction, masking, the lot. Links, text, Wi-Fi and email. Nothing leaves your browser." />
+<style>
+  @font-face { font-family: "Instrument Serif"; src: url("../../assets/fonts/instrument-serif.woff2") format("woff2"); font-display: swap; }
+  @font-face { font-family: "Instrument Serif"; src: url("../../assets/fonts/instrument-serif-italic.woff2") format("woff2"); font-style: italic; font-display: swap; }
+  @font-face { font-family: "Newsreader"; src: url("../../assets/fonts/newsreader.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
+  @font-face { font-family: "JetBrains Mono Var"; src: url("../../assets/fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 100 800; font-display: swap; }
+
+  :root {
+    --paper: #f3efe5; --card: #fbf9f3; --ink: #17140f; --ink-2: #4a4439; --ink-3: #857c6c;
+    --rule: rgba(23,20,15,.16); --rule-2: rgba(23,20,15,.3); --red: #cf2e1b;
+    --display: "Instrument Serif", Georgia, serif; --text: "Newsreader", Georgia, serif;
+    --mono: "JetBrains Mono Var", ui-monospace, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--paper); color: var(--ink); }
+  body { font: 400 17px/1.55 var(--text); -webkit-font-smoothing: antialiased; }
+  [hidden] { display: none !important; }
+  .back {
+    position: fixed; top: 14px; left: 14px; z-index: 10; text-decoration: none;
+    font: 600 11px/1 var(--mono); letter-spacing: .1em; color: var(--ink-2);
+    border: 1px solid var(--rule-2); padding: 8px 11px; background: var(--paper);
+  }
+  .back:hover { color: var(--red); border-color: var(--red); }
+
+  main { max-width: 1120px; margin: 0 auto; padding: 72px 24px 80px; }
+  header h1 { margin: 0; font: 400 clamp(46px, 7vw, 84px)/.95 var(--display); letter-spacing: -.02em; }
+  header h1 em { font-style: italic; color: var(--red); }
+  header p { margin: 14px 0 0; max-width: 58ch; color: var(--ink-2); font-size: 18px; }
+
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 460px); gap: 48px; margin-top: 40px; align-items: start; }
+
+  /* ── the form ─────────────────────────────────────────── */
+  .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--ink); }
+  .tabs button {
+    font: 600 12px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3);
+    background: none; border: 0; padding: 12px 16px 11px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -1px;
+  }
+  .tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--red); }
+  .tabs button:hover { color: var(--ink); }
+  .fields { padding: 22px 0 6px; display: grid; gap: 16px; }
+  label.f { display: grid; gap: 7px; }
+  label.f > span { font: 600 10.5px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+  input[type="text"], input[type="url"], input[type="email"], input[type="password"], textarea, select {
+    width: 100%; font: 400 19px/1.35 var(--text); color: var(--ink); background: var(--card);
+    border: 1px solid var(--rule-2); border-radius: 0; padding: 12px 14px; outline: none;
+  }
+  textarea { min-height: 120px; resize: vertical; }
+  input:focus, textarea:focus, select:focus { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(207,46,27,.14); }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .check { display: flex; align-items: center; gap: 9px; font-size: 16px; color: var(--ink-2); cursor: pointer; }
+  .check input { width: 17px; height: 17px; accent-color: var(--red); }
+  .reveal-pw { position: relative; }
+  .reveal-pw button {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    font: 600 10px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase;
+    background: none; border: 0; color: var(--ink-3); cursor: pointer; padding: 8px;
+  }
+  .note { font-size: 14.5px; color: var(--ink-3); margin: 0; }
+
+  .section-h { margin: 30px 0 12px; font: 600 10.5px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+  .levels { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--ink); }
+  .levels button {
+    background: var(--card); border: 0; border-right: 1px solid var(--rule-2); padding: 11px 6px 10px; cursor: pointer;
+    font: 400 22px/1 var(--display); color: var(--ink-2); display: grid; gap: 5px; justify-items: center;
+  }
+  .levels button:last-child { border-right: 0; }
+  .levels button small { font: 600 10px/1 var(--mono); letter-spacing: .04em; color: var(--ink-3); }
+  .levels button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+  .levels button[aria-pressed="true"] small { color: rgba(243,239,229,.7); }
+  .colours { display: flex; flex-wrap: wrap; gap: 16px 22px; align-items: center; }
+  .colours label { display: flex; align-items: center; gap: 9px; font-size: 15.5px; color: var(--ink-2); cursor: pointer; }
+  .colours input[type="color"] { width: 34px; height: 34px; border: 1px solid var(--rule-2); padding: 2px; background: var(--card); cursor: pointer; }
+  .warn { color: var(--red); font-size: 14.5px; margin: 10px 0 0; }
+
+  /* ── the code ─────────────────────────────────────────── */
+  .code { position: sticky; top: 24px; }
+  .card {
+    background: var(--card); padding: 22px; box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 24px 48px -26px rgba(60,45,20,.45);
+  }
+  .card canvas { display: block; width: 100%; height: auto; aspect-ratio: 1; image-rendering: pixelated; }
+  .spec { margin: 14px 0 0; font: 500 11.5px/1.6 var(--mono); color: var(--ink-2); letter-spacing: .02em; }
+  .spec b { color: var(--ink); }
+  .spec .up { color: var(--red); }
+  .buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .btn {
+    font: 700 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer;
+    padding: 13px 16px; border: 1.5px solid var(--ink); background: var(--ink); color: var(--paper); text-decoration: none;
+  }
+  .btn.ghost { background: transparent; color: var(--ink); }
+  .btn:hover { background: var(--red); border-color: var(--red); color: #fff; }
+  .btn[disabled] { opacity: .35; pointer-events: none; }
+  .how { margin-top: 22px; border-top: 1px solid var(--rule-2); padding-top: 16px; }
+  .how .check { font-size: 16px; color: var(--ink); }
+  .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; margin: 14px 0 0; padding: 0; list-style: none; }
+  .legend li { display: flex; align-items: baseline; gap: 9px; font-size: 14.5px; line-height: 1.35; color: var(--ink-2); cursor: default; }
+  .legend i { width: 11px; height: 11px; flex: none; transform: translateY(1px); }
+  .legend li:hover { color: var(--ink); }
+  .explain { margin: 12px 0 0; font-size: 15px; color: var(--ink-2); min-height: 3em; }
+  .toast { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%); background: var(--ink); color: var(--paper);
+    font: 600 12px/1 var(--mono); letter-spacing: .08em; padding: 12px 16px; opacity: 0; transition: opacity .2s; pointer-events: none; }
+  .toast.on { opacity: 1; }
+
+  @media (max-width: 880px) {
+    .layout { grid-template-columns: 1fr; gap: 28px; }
+    .code { position: static; order: -1; }
+    .card { max-width: 420px; }
+  }
+  @media (max-width: 480px) {
+    main { padding: 64px 16px 60px; }
+    .two { grid-template-columns: 1fr; }
+    .tabs button { padding: 12px 11px 11px; }
+    .legend { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<a class="back" href="../../index.html">&larr; INDEX</a>
+<main>
+  <header>
+    <h1>QR codes, <em>from the bits up</em></h1>
+    <p>Type anything and it is a QR code before you finish typing. The encoder is written here from
+      nothing &mdash; error correction and all &mdash; and nothing you type leaves this page.</p>
+  </header>
+
+  <div class="layout">
+    <section aria-label="What goes in the code">
+      <div class="tabs" role="tablist">
+        <button role="tab" data-kind="link" aria-selected="true">Link</button>
+        <button role="tab" data-kind="text" aria-selected="false">Text</button>
+        <button role="tab" data-kind="wifi" aria-selected="false">Wi&#8209;Fi</button>
+        <button role="tab" data-kind="email" aria-selected="false">Email</button>
+      </div>
+
+      <div class="fields" data-for="link">
+        <label class="f"><span>Web address</span>
+          <input type="url" id="link" inputmode="url" autocomplete="off" spellcheck="false" value="https://mohamed-sucule.github.io/Projects/" /></label>
+        <p class="note">Shorter links make smaller, faster-scanning codes.</p>
+      </div>
+      <div class="fields" data-for="text" hidden>
+        <label class="f"><span>Anything at all</span>
+          <textarea id="text" spellcheck="false">Meet at the lighthouse at nine. Bring a torch.</textarea></label>
+      </div>
+      <div class="fields" data-for="wifi" hidden>
+        <div class="two">
+          <label class="f"><span>Network name</span><input type="text" id="ssid" autocomplete="off" spellcheck="false" placeholder="e.g. Home" /></label>
+          <label class="f"><span>Password</span>
+            <span class="reveal-pw"><input type="password" id="pw" autocomplete="off" spellcheck="false" /><button type="button" id="showPw">show</button></span></label>
+        </div>
+        <div class="two">
+          <label class="f"><span>Security</span>
+            <select id="sec"><option value="WPA">WPA / WPA2 / WPA3</option><option value="WEP">WEP (old)</option><option value="none">None — open network</option></select></label>
+          <label class="check" style="align-self:end;padding-bottom:12px"><input type="checkbox" id="hidden" /> Hidden network</label>
+        </div>
+        <p class="note">Guests point their camera at it and join &mdash; no spelling the password out. It is never stored or sent anywhere.</p>
+      </div>
+      <div class="fields" data-for="email" hidden>
+        <label class="f"><span>Send to</span><input type="email" id="to" autocomplete="off" spellcheck="false" placeholder="name@example.com" /></label>
+        <label class="f"><span>Subject</span><input type="text" id="subject" autocomplete="off" /></label>
+      </div>
+
+      <p class="section-h">How much damage should it survive?</p>
+      <div class="levels" id="levels"></div>
+      <p class="note" style="margin-top:9px">More survives a scratch, a logo on top or a bad printer &mdash; and makes a bigger code.</p>
+
+      <p class="section-h">Colours</p>
+      <div class="colours">
+        <label><input type="color" id="fg" value="#17140f" /> Dark</label>
+        <label><input type="color" id="bg" value="#ffffff" /> Light</label>
+        <button class="btn ghost" type="button" id="swap" style="padding:10px 12px">Reset</button>
+      </div>
+      <p class="warn" id="contrast" hidden></p>
+    </section>
+
+    <section class="code" aria-label="The code">
+      <div class="card"><canvas id="qr" role="img" aria-label="QR code"></canvas></div>
+      <p class="spec" id="spec"></p>
+      <p class="warn" id="dense" hidden></p>
+      <div class="buttons">
+        <button class="btn" type="button" id="png">Download PNG</button>
+        <button class="btn ghost" type="button" id="svg">SVG</button>
+        <button class="btn ghost" type="button" id="copy">Copy image</button>
+      </div>
+      <div class="how">
+        <label class="check"><input type="checkbox" id="anatomy" /> Show how it is built</label>
+        <div id="anatomyPanel" hidden>
+          <ul class="legend" id="legend"></ul>
+          <p class="explain" id="explain">Point at a part to see what it is for.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+/* ───────────────────────────────────────────────────────────────────────────
+   QR — the part you can see.
+
+   The encoding is all in qr.js. Here: a form for the four things people
+   actually put in QR codes, a square redrawn on every keystroke, and a way
+   to see what the square is made of — because a QR code is mostly not your
+   data. Most of it is the scaffolding a camera needs to find it, and the
+   error correction that lets it read one with a corner torn off.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+import { encode, toSVG, wifi, mailto, LEVELS, PART } from './qr.js';
+
+const $ = (id) => document.getElementById(id);
+const canvas = $('qr');
+const ctx = canvas.getContext('2d');
+let kind = 'link', level = 'M', qr = null, anatomy = false, focus = -1;
+
+/* ── the anatomy ─────────────────────────────────────────────────────────── */
+
+const PARTS = [
+  { part: PART.finder, colour: '#cf2e1b', name: 'Finder patterns', why: 'The three bullseyes a camera looks for first. Their 1:1:3:1:1 rings read the same from any angle, so the phone knows where the square is and which way up.' },
+  { part: PART.alignment, colour: '#e8962e', name: 'Alignment', why: 'Smaller bullseyes that let the camera correct for a code photographed at an angle or printed on something curved. Bigger codes have more of them.' },
+  { part: PART.timing, colour: '#2f7d4f', name: 'Timing lines', why: 'Two strict dark-light-dark rows between the finders. They tell the reader exactly how wide one module is, all the way across.' },
+  { part: PART.format, colour: '#7a3fc1', name: 'Format', why: 'Fifteen bits saying which error-correction level and which of the eight masks were used — written twice, with their own error correction, because nothing else can be read without them.' },
+  { part: PART.version, colour: '#b0337a', name: 'Version', why: 'From version 7 up, the size is written out too, in two copies of eighteen bits, because a big code is too dense to count reliably.' },
+  { part: PART.data, colour: '#1f5fbf', name: 'Your data', why: 'What you typed, packed into bits and snaked through the square in two-column strips from the bottom right, then scrambled by a mask so no pattern confuses the camera.' },
+  { part: PART.ecc, colour: '#3aa6c9', name: 'Error correction', why: 'Reed–Solomon bytes worked out from your data. Lose some of the square and the reader can solve for what was there — that is the damage level you chose.' },
+  { part: PART.remainder, colour: '#9c9280', name: 'Leftover', why: 'A few modules that do not make a whole byte at this size. Always zero, masked like the rest.' },
+];
+
+function buildLegend() {
+  const ul = $('legend');
+  ul.innerHTML = '';
+  const present = new Set(qr ? qr.parts : []);
+  PARTS.forEach((p, i) => {
+    if (!present.has(p.part)) return;
+    const li = document.createElement('li');
+    li.innerHTML = `<i style="background:${p.colour}"></i><span>${p.name}</span>`;
+    li.addEventListener('pointerenter', () => { focus = i; $('explain').textContent = p.why; draw(); });
+    li.addEventListener('pointerleave', () => { focus = -1; draw(); });
+    ul.append(li);
+  });
+}
+
+/* ── the form ────────────────────────────────────────────────────────────── */
+
+function payload() {
+  if (kind === 'link') return $('link').value.trim();
+  if (kind === 'text') return $('text').value;
+  if (kind === 'wifi') {
+    const ssid = $('ssid').value;
+    return ssid ? wifi({ ssid, password: $('pw').value, security: $('sec').value, hidden: $('hidden').checked }) : '';
+  }
+  const to = $('to').value.trim();
+  return to ? mailto({ to, subject: $('subject').value }) : '';
+}
+
+for (const b of document.querySelectorAll('.tabs button')) {
+  b.addEventListener('click', () => {
+    kind = b.dataset.kind;
+    for (const t of document.querySelectorAll('.tabs button')) t.setAttribute('aria-selected', String(t === b));
+    for (const f of document.querySelectorAll('.fields')) f.hidden = f.dataset.for !== kind;
+    document.querySelector(`.fields[data-for="${kind}"] input, .fields[data-for="${kind}"] textarea`)?.focus();
+    update();
+  });
+}
+
+for (const l of LEVELS) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.dataset.level = l.id;
+  b.setAttribute('aria-pressed', String(l.id === level));
+  b.innerHTML = `${l.survives}%<small>level ${l.id}</small>`;
+  b.title = `Still reads with about ${l.survives}% of it damaged`;
+  b.addEventListener('click', () => {
+    level = l.id;
+    for (const x of $('levels').children) x.setAttribute('aria-pressed', String(x === b));
+    update();
+  });
+  $('levels').append(b);
+}
+
+for (const id of ['link', 'text', 'ssid', 'pw', 'sec', 'hidden', 'to', 'subject', 'fg', 'bg']) {
+  $(id).addEventListener('input', update);
+}
+$('showPw').addEventListener('click', () => {
+  const pw = $('pw');
+  pw.type = pw.type === 'password' ? 'text' : 'password';
+  $('showPw').textContent = pw.type === 'password' ? 'show' : 'hide';
+});
+$('swap').addEventListener('click', () => { $('fg').value = '#17140f'; $('bg').value = '#ffffff'; update(); });
+$('anatomy').addEventListener('change', () => {
+  anatomy = $('anatomy').checked;
+  $('anatomyPanel').hidden = !anatomy;
+  if (anatomy) buildLegend();
+  draw();
+});
+
+/* ── contrast ────────────────────────────────────────────────────────────── */
+
+/* A camera reads luminance, and it needs the dark modules darker than the
+   light ones. People pick a brand colour for the dark and a pale one for the
+   background and it works; they pick them the other way round, or two
+   mid-tones, and it scans on nothing. Worth saying before they print it. */
+function luminance(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  const c = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => {
+    v /= 255;
+    return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+}
+function contrastWarning() {
+  const fg = luminance($('fg').value), bg = luminance($('bg').value);
+  const ratio = (Math.max(fg, bg) + 0.05) / (Math.min(fg, bg) + 0.05);
+  if (fg > bg) return 'The dark colour is lighter than the light one. Most phones will not read an inverted code.';
+  if (ratio < 3) return `Contrast is only ${ratio.toFixed(1)}:1. Aim for 4:1 or more, or cameras will struggle.`;
+  return '';
+}
+
+/* ── drawing ─────────────────────────────────────────────────────────────── */
+
+const MARGIN = 4;
+
+function draw() {
+  const box = canvas.clientWidth || 400;
+  const dpr = Math.min(3, devicePixelRatio || 1);
+  canvas.width = canvas.height = Math.round(box * dpr);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  const fg = $('fg').value, bg = $('bg').value;
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  if (!qr) {
+    ctx.fillStyle = '#857c6c';
+    ctx.font = `${14 * dpr}px Newsreader, Georgia, serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText('Type something to make a code', canvas.width / 2, canvas.height / 2);
+    return;
+  }
+  const n = qr.size + MARGIN * 2;
+  const m = canvas.width / n;
+  const colourOf = new Map(PARTS.map((p) => [p.part, p.colour]));
+  colourOf.set(PART.dark, colourOf.get(PART.format));
+  for (let y = 0; y < qr.size; y++) {
+    for (let x = 0; x < qr.size; x++) {
+      const i = y * qr.size + x;
+      const on = qr.modules[i] === 1;
+      let colour = on ? fg : null;
+      if (anatomy) {
+        const part = qr.parts[i];
+        const c = colourOf.get(part) ?? fg;
+        const dim = focus >= 0 && PARTS[focus].part !== part && !(part === PART.dark && PARTS[focus].part === PART.format);
+        ctx.globalAlpha = dim ? 0.12 : on ? 1 : 0.18;
+        colour = c;
+      }
+      if (!colour) continue;
+      ctx.fillStyle = colour;
+      /* Snapped to whole device pixels, so neighbouring modules meet
+         without the hairline seams that fractional rectangles leave. */
+      const x0 = Math.round((x + MARGIN) * m), y0 = Math.round((y + MARGIN) * m);
+      const x1 = Math.round((x + MARGIN + 1) * m), y1 = Math.round((y + MARGIN + 1) * m);
+      ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
+      ctx.globalAlpha = 1;
+    }
+  }
+}
+
+function update() {
+  const text = payload();
+  const warn = contrastWarning();
+  $('contrast').hidden = !warn;
+  $('contrast').textContent = warn;
+  try {
+    qr = text ? encode(text, { level }) : null;
+    $('dense').hidden = !(qr && qr.version > 20);
+    $('dense').textContent = qr && qr.version > 20
+      ? 'This one is dense. Phone cameras start to struggle past about version 20 — a shorter text or link scans much faster.' : '';
+  } catch (e) {
+    qr = null;
+    $('dense').hidden = false;
+    $('dense').textContent = e.message.replace(/^./, (c) => c.toUpperCase()) + '.';
+  }
+  for (const id of ['png', 'svg', 'copy']) $(id).disabled = !qr;
+  if (qr) {
+    const raised = qr.level !== level;
+    $('spec').innerHTML = `Version <b>${qr.version}</b> · ${qr.size}×${qr.size} · level <b>${qr.level}</b>`
+      + (raised ? ` <span class="up">(raised from ${level} — it fit for free)</span>` : '')
+      + ` · mask ${qr.mask} · ${qr.usedBytes} of ${qr.dataBytes} bytes · ${qr.mode}`;
+  } else {
+    $('spec').textContent = '';
+  }
+  if (anatomy) buildLegend();
+  draw();
+}
+
+/* ── getting it out ──────────────────────────────────────────────────────── */
+
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => t.classList.remove('on'), 1800);
+}
+
+function png() {
+  /* Sixteen pixels a module, so it prints sharp at any sensible size and
+     never needs smoothing — a blurred edge is a module the camera guesses. */
+  const scale = 16, n = qr.size + MARGIN * 2;
+  const c = document.createElement('canvas');
+  c.width = c.height = n * scale;
+  const g = c.getContext('2d');
+  g.fillStyle = $('bg').value;
+  g.fillRect(0, 0, c.width, c.height);
+  g.fillStyle = $('fg').value;
+  for (let y = 0; y < qr.size; y++) {
+    for (let x = 0; x < qr.size; x++) {
+      if (qr.modules[y * qr.size + x]) g.fillRect((x + MARGIN) * scale, (y + MARGIN) * scale, scale, scale);
+    }
+  }
+  return new Promise((res) => c.toBlob(res, 'image/png'));
+}
+
+function save(blob, name) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
+const fileName = () => `qr-${kind}`;
+$('png').addEventListener('click', async () => save(await png(), `${fileName()}.png`));
+$('svg').addEventListener('click', () => {
+  save(new Blob([toSVG(qr, { margin: MARGIN, dark: $('fg').value, light: $('bg').value })], { type: 'image/svg+xml' }), `${fileName()}.svg`);
+});
+$('copy').addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': png() })]);
+    toast('Copied — paste it anywhere');
+  } catch {
+    toast('This browser will not copy images — use Download instead');
+  }
+});
+
+new ResizeObserver(draw).observe(canvas);
+document.fonts?.ready.then(draw);
+update();
+window.qrState = () => qr;   // the seam a headless browser checks through
+</script>
+<script type="module" src="../../shared/navigator.js"></script>
+</body>
+</html>

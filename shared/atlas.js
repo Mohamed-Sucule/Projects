@@ -15,11 +15,13 @@
    whole job of a search box is to meet people where their vocabulary is. */
 
 export const KINDS = {
+  ai:         { label: 'AI product',       accent: '255,106,82'  },
   ml:         { label: 'machine learning', accent: '125,211,252' },
   fiction:    { label: 'fiction',          accent: '255,209,102' },
   game:       { label: 'game',             accent: '255,77,141'  },
   physics:    { label: 'physics',          accent: '125,211,252' },
   instrument: { label: 'instrument',       accent: '163,230,53'  },
+  app:        { label: 'app',              accent: '45,212,191'  },
   product:    { label: 'product',          accent: '90,169,255'  },
   tool:       { label: 'engineering tool', accent: '154,165,184' },
 };
@@ -29,6 +31,52 @@ export const KINDS = {
      play  — worth a few minutes with your hands on it
      study — it rewards actually reading, and has a write-up */
 export const ATLAS = [
+  /* ── AI products: the things a client would ask for ────────────────────── */
+  {
+    id: 'frontdesk', title: 'Front Desk', href: 'apps/frontdesk/index.html',
+    kind: 'ai', depth: 'play', minutes: 4,
+    blurb: 'An AI phone receptionist for a busy restaurant. It checks the real table plan, '
+         + 'offers the nearest free times and books straight into the host-stand system.',
+    hook: 'Listen in on a Saturday night, or ring it yourself.',
+    tags: ['ai', 'voice', 'voice ai', 'agent', 'ai agent', 'receptionist', 'phone', 'call', 'chatbot',
+           'conversational', 'restaurant', 'booking', 'reservation', 'nlu', 'speech', 'whisper',
+           'client work', 'product', 'business', 'automation', 'customer service', 'startup',
+           'book a table', 'impressive', 'best'],
+  },
+
+  {
+    id: 'handbook', title: 'Ask the Handbook', href: 'apps/handbook/index.html',
+    kind: 'ai', depth: 'play', minutes: 4,
+    blurb: 'A knowledge assistant that answers staff questions from company documents, quotes '
+         + 'its source, and says “the handbook doesn’t say” rather than guess.',
+    hook: 'Ask about holidays or a stolen laptop — then paste in your own documents.',
+    tags: ['ai', 'rag', 'retrieval', 'search', 'knowledge base', 'chatbot', 'assistant', 'hr', 'policies',
+           'handbook', 'documents', 'citations', 'hallucination', 'evals', 'bm25', 'embeddings', 'semantic search',
+           'internal tools', 'client work', 'product', 'business', 'startup', 'impressive'],
+  },
+
+  {
+    id: 'callcoach', title: 'Call Coach', href: 'apps/callcoach/index.html',
+    kind: 'ai', depth: 'play', minutes: 4,
+    blurb: 'A live assistant for sales calls: the right answer on screen the moment a prospect '
+         + 'objects, and the notes, CRM record and follow-up written when the call ends.',
+    hook: 'Three calls — a good one, a hard one and a polite no.',
+    tags: ['ai', 'sales', 'sales ai', 'copilot', 'call', 'calls', 'crm', 'meddicc', 'objection handling',
+           'battlecards', 'coaching', 'conversation intelligence', 'transcript', 'revenue', 'gong',
+           'client work', 'product', 'business', 'startup', 'impressive'],
+  },
+
+  {
+    id: 'claims', title: 'Claims Desk', href: 'apps/claims/index.html',
+    kind: 'ai', depth: 'play', minutes: 3,
+    blurb: 'Reads an insurance claim — email, scanned form, invoice — checks it against the policy '
+         + 'and itself, and recommends a decision with the evidence for every line.',
+    hook: 'Watch it read the scans, then spot what is wrong with the stolen bike.',
+    tags: ['ai', 'ocr', 'document ai', 'insurance', 'claims', 'automation', 'tesseract', 'extraction',
+           'fraud', 'rules', 'human in the loop', 'workflow', 'insurtech', 'fintech',
+           'client work', 'product', 'business', 'startup', 'impressive'],
+  },
+
   /* ── machine learning ─────────────────────────────────────────────────── */
   {
     id: 'attention', title: 'Attention', href: 'apps/attention/index.html',
@@ -138,14 +186,6 @@ export const ATLAS = [
            'plane', 'flying', 'reflex', 'shortest', 'fastest', 'two minutes', 'bored'],
   },
   {
-    id: 'comet', title: 'Comet', href: 'play/orbit/index.html',
-    kind: 'game', depth: 'skim', minutes: 3,
-    blurb: 'Move the mouse. Collect the gold. Do not touch the red. The levels never run out.',
-    hook: 'Mines and a spinning bar arrive about level four.',
-    tags: ['game', 'play', 'fun', 'arcade', 'mouse', 'dodge', 'levels', 'quick', 'easy',
-           'collect', 'reflex', 'bored', 'two minutes'],
-  },
-  {
     id: 'stack', title: 'Stack', href: 'play/stack/index.html',
     kind: 'game', depth: 'skim', minutes: 2,
     blurb: 'A block slides past. Tap. Whatever hangs over the edge is sliced off and falls.',
@@ -180,6 +220,25 @@ export const ATLAS = [
            'share', 'streak', 'logic', 'quiet'],
   },
 
+  {
+    id: 'sweeper', title: 'Minesweeper', href: 'play/sweeper/index.html',
+    kind: 'game', depth: 'play', minutes: 5,
+    blurb: 'Classic Minesweeper, except every board is proven solvable by logic before you '
+         + 'see it, so it never comes down to a coin flip.',
+    hook: 'Lose, and it shows you the square you could have proved safe.',
+    tags: ['game', 'minesweeper', 'mines', 'puzzle', 'logic', 'classic', 'windows', 'brain',
+           'think', 'no guessing', 'fair', 'solver', 'hint', 'play', 'fun', 'bored', 'deduction'],
+  },
+  {
+    id: 'sudoku', title: 'Sudoku', href: 'play/sudoku/index.html',
+    kind: 'game', depth: 'play', minutes: 10,
+    blurb: 'A daily Sudoku at three levels, each with exactly one answer and a way to it '
+         + 'that needs no guessing.',
+    hook: 'The hint names the technique and shows you where it applies.',
+    tags: ['game', 'sudoku', 'puzzle', 'daily', 'numbers', 'logic', 'brain', 'newspaper',
+           'think', 'relaxing', 'calm', 'hint', 'learn', 'techniques', 'solver', 'play', 'crossword'],
+  },
+
   /* ── physics ──────────────────────────────────────────────────────────── */
   {
     id: 'sandbox', title: 'Sandbox', href: 'play/sandbox/index.html',
@@ -189,15 +248,6 @@ export const ATLAS = [
     tags: ['physics', 'sandbox', 'toy', 'fun', 'sand', 'water', 'fire', 'falling sand',
            'simulation', 'particles', 'play', 'satisfying', 'relaxing', 'mess about',
            'kids', 'destroy'],
-  },
-  {
-    id: 'topple', title: 'Topple', href: 'apps/topple/index.html',
-    kind: 'physics', depth: 'skim', minutes: 3,
-    blurb: 'A perfectly ordinary web page — until you swipe across it and everything '
-         + 'your finger touches comes loose and falls.',
-    hook: 'Then hit rebuild and watch it put itself back together.',
-    tags: ['physics', 'fun', 'satisfying', 'destroy', 'break', 'demolish', 'gravity',
-           'rigid body', 'swipe', 'surprising', 'toy', 'party trick', 'wow'],
   },
   {
     id: 'mercury', title: 'Mercury', href: 'apps/mercury/index.html',
@@ -210,26 +260,6 @@ export const ATLAS = [
   },
 
   /* ── instruments ──────────────────────────────────────────────────────── */
-  {
-    id: 'portrait', title: 'Portrait', href: 'play/portrait/index.html',
-    kind: 'instrument', depth: 'play', minutes: 4,
-    blurb: 'Drop in a photo of your face and watch six thousand dots crawl out of random '
-         + 'noise until it is unmistakably you.',
-    hook: 'It never leaves your device.',
-    tags: ['photo', 'image', 'picture', 'face', 'selfie', 'upload', 'art', 'generative',
-           'stipple', 'dots', 'make something', 'personal', 'yours', 'privacy', 'offline',
-           'beautiful', 'wow', 'share'],
-  },
-  {
-    id: 'loom', title: 'Loom', href: 'play/loom/index.html',
-    kind: 'instrument', depth: 'play', minutes: 6,
-    blurb: 'Make a picture by wiring boxes together. One makes fog, one bends whatever it '
-         + 'is given, one swaps grey for colour.',
-    hook: 'The last box is the picture.',
-    tags: ['node editor', 'graph', 'nodes', 'wiring', 'visual programming', 'blender',
-           'touchdesigner', 'generative', 'art', 'make something', 'creative', 'shader',
-           'texture', 'noise', 'tinker', 'build'],
-  },
   {
     id: 'beats', title: 'Beat Lab', href: 'play/beats/index.html',
     kind: 'instrument', depth: 'play', minutes: 4,
@@ -250,17 +280,38 @@ export const ATLAS = [
            'fantasy', 'names', 'pretty', 'art', 'relaxing', 'button', 'again', 'seed'],
   },
   {
-    id: 'morph', title: 'Morph', href: 'play/morph/index.html',
-    kind: 'instrument', depth: 'skim', minutes: 3,
-    blurb: 'One gallery, seven layouts, and not one CSS transition anywhere.',
-    hook: 'Switch again before the tiles land and they bend into the new arrangement mid-flight.',
-    tags: ['animation', 'motion', 'layout', 'interface', 'ui', 'ux', 'design', 'spring',
-           'physics', 'transition', 'gallery', 'grid', 'frontend', 'css', 'satisfying',
-           'interaction design', 'polish'],
+    id: 'qr', title: 'QR codes', href: 'apps/qr/index.html',
+    kind: 'app', depth: 'play', minutes: 2,
+    blurb: 'Type a link, some text, a Wi-Fi password or an email and it is a QR code before '
+         + 'you finish typing. The encoder is written from scratch.',
+    hook: 'Tick "show how it is built" — most of a QR code is not your data.',
+    tags: ['qr', 'qr code', 'barcode', 'wifi', 'wi-fi', 'password', 'link', 'url', 'share', 'print',
+           'poster', 'menu', 'generator', 'useful', 'practical', 'app', 'reed solomon',
+           'error correction', 'encoding', 'download', 'svg', 'png', 'privacy', 'offline', 'make a qr code'],
+  },
+  {
+    id: 'split', title: 'Split', href: 'apps/split/index.html',
+    kind: 'app', depth: 'play', minutes: 3,
+    blurb: 'Who paid for what on a trip or at dinner, and the fewest bank transfers that '
+         + 'settle everybody up, to the penny.',
+    hook: 'Share the whole group with one link. Nothing is uploaded.',
+    tags: ['money', 'bill', 'split the bill', 'expenses', 'trip', 'holiday', 'flat', 'rent', 'friends',
+           'group', 'who owes', 'owe', 'settle up', 'splitwise', 'payments', 'useful', 'practical',
+           'app', 'algorithm', 'optimisation', 'finance', 'share', 'dinner'],
+  },
+  {
+    id: 'tuner', title: 'Tuner', href: 'apps/tuner/index.html',
+    kind: 'app', depth: 'play', minutes: 2,
+    blurb: 'Play a note into your microphone and see how sharp or flat it is, to the cent. '
+         + 'Guitar, bass, ukulele, violin or cello.',
+    hook: 'No microphone? There is an out-of-tune string on the page to fix.',
+    tags: ['music', 'guitar', 'bass', 'ukulele', 'violin', 'cello', 'tuner', 'tune', 'pitch',
+           'microphone', 'audio', 'sound', 'notes', 'in tune', 'useful', 'practical', 'app',
+           'signal processing', 'dsp', 'yin', 'tune my guitar'],
   },
   {
     id: 'sift', title: 'Sift', href: 'apps/sift/index.html',
-    kind: 'instrument', depth: 'play', minutes: 5,
+    kind: 'app', depth: 'play', minutes: 5,
     blurb: 'Drop a spreadsheet in and it tells you what is actually in it: what each column '
          + 'holds, where the gaps are, what the numbers look like.',
     hook: 'A hundred thousand rows without stuttering. Nothing is uploaded.',

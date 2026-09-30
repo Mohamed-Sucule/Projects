@@ -5,18 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="icon" href="favicon.svg" />
 <meta name="theme-color" content="#f3efe5" />
-<title>Playground — thirty things I built, all of them running, marked up by hand</title>
-<meta name="description" content="A transformer trained from scratch with hand-written backpropagation, and the exact step it learned to copy. A byte-pair tokeniser that trains itself in front of you. The statistics that decide whether a change to a model did anything at all. Plus a lighthouse, a locked-room murder and a restaurant booking system. Thirty things, all running in your browser, and a page of errata listing everything that was wrong with them." />
-<meta property="og:title" content="Playground — thirty things, all of them running right here" />
-<meta property="og:description" content="Four pieces on how language models actually work — a transformer trained with backpropagation written from nothing, a tokeniser you train yourself, the statistics nobody runs, and an agent loop you can break. Plus twenty-six other things, all live in the page, and the errata." />
+<title>Mohamed Sucule — four AI products, built for real work, all running here</title>
+<meta name="description" content="Forward deployed and AI engineer. Four AI products a business could ask me to build — a phone receptionist that books into a real table plan, a knowledge assistant that cites or refuses, a live sales-call coach and an insurance claims desk that reads scans — each working, measured, and running in your browser. Plus thirty more things built for fun and to learn." />
+<meta property="og:title" content="Four AI products, built for real work — all of them running right here" />
+<meta property="og:description" content="A phone receptionist, a knowledge assistant, a sales-call coach and a claims desk — each one working, measured on questions it never saw, and running in your browser with nothing sent anywhere. Plus thirty more to play with." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://mohamed-sucule.github.io/Projects/" />
 <meta property="og:image" content="https://mohamed-sucule.github.io/Projects/assets/og.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Playground — thirty things, all of them running right here" />
-<meta name="twitter:description" content="Watch an induction head form in a transformer trained from scratch. Train a tokeniser in 380ms. Then a lighthouse in a gale, a locked-room murder, and a page of errata. All in the browser, nothing to install." />
+<meta name="twitter:title" content="Four AI products, built for real work — all of them running right here" />
+<meta name="twitter:description" content="Ring an AI receptionist, ask a handbook that admits what it doesn't know, listen in on a coached sales call, and watch a claims desk read a scan. All in the browser, nothing to install." />
 <meta name="twitter:image" content="https://mohamed-sucule.github.io/Projects/assets/og.png" />
 <link rel="canonical" href="https://mohamed-sucule.github.io/Projects/" />
 <!-- Fonts are served from this repo rather than a font CDN. Every piece here
@@ -214,6 +214,84 @@
     border-bottom: 1px solid var(--rule-2); padding-bottom: 2px;
   }
   .quiet-link:hover { color: var(--red); border-color: var(--red); }
+  a.stamp { display: inline-block; text-decoration: none; }
+  button.quiet-link { background: none; border: 0; border-bottom: 1px solid var(--rule-2); cursor: pointer; padding: 0 0 2px; }
+  #surprise .face { min-width: 17ch; text-align: left; }
+
+  /* ── §1, the four products ──────────────────────────────────────────────
+     Each one opens on the sentence a client would actually say, then a
+     small picture of the thing working, set in the app's own type, then what
+     it does in plain English and what was measured. A recruiter should get
+     each of them from the brief and the picture alone. */
+  .cases { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px; }
+  a.case { display: flex; flex-direction: column; text-decoration: none; color: inherit; background: #fbf9f3; outline: 1px solid var(--ink); transition: transform .25s cubic-bezier(.2,.7,.3,1), box-shadow .25s; }
+  a.case:hover { transform: translateY(-4px); box-shadow: 0 26px 44px -26px rgba(40,28,10,.55); }
+  .case .brief { margin: 0; padding: 18px 22px 16px; font: italic 400 clamp(19px, 1.7vw, 23px)/1.3 var(--display); color: var(--ink-2); border-bottom: 1px solid var(--rule); }
+  .case .brief::before { content: 'THE BRIEF'; display: block; font: 600 10px/1 var(--mono); font-style: normal; letter-spacing: .16em; color: var(--red); margin-bottom: 8px; }
+  .case .mock { margin: 18px 22px 0; min-height: 214px; background: #fff; border: 1px solid var(--rule-2); font-size: 15px; line-height: 1.45; overflow: hidden; }
+  .case .said { padding: 18px 22px 22px; display: flex; flex-direction: column; flex: 1; }
+  .case .k { font: 600 10.5px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+  .case h3 { margin: 10px 0 8px; font: 400 clamp(40px, 4vw, 56px)/.95 var(--display); letter-spacing: -.02em; }
+  .case h3 em { color: var(--red); }
+  .case p { margin: 0; font-size: 17px; line-height: 1.5; color: var(--ink-2); }
+  .case ul { margin: 12px 0 0; padding-left: 18px; font-size: 15.5px; line-height: 1.5; color: var(--ink-2); }
+  .case ul li + li { margin-top: 3px; }
+  .case .measured { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--rule-2); font: 500 12px/1.55 var(--mono); color: var(--ink); letter-spacing: .01em; }
+  .case .measured::before { content: 'MEASURED  '; color: var(--green, #2c7a4b); font-weight: 700; letter-spacing: .12em; white-space: pre; }
+  .case .go { margin-top: auto; padding-top: 16px; font: 700 11.5px/1 var(--mono); letter-spacing: .14em; color: var(--red); }
+
+  /* the four little pictures */
+  .m-bar { display: flex; gap: 8px; align-items: center; padding: 8px 12px; background: var(--ink); color: #f3efe5; font: 600 10px/1 var(--mono); letter-spacing: .08em; }
+  .m-bar i { width: 7px; height: 7px; border-radius: 50%; background: #ff5a3d; }
+  .m-bar span:last-child { margin-left: auto; opacity: .7; }
+  .m-body { padding: 10px 12px; }
+  .m-line { display: grid; grid-template-columns: 62px 1fr; gap: 8px; padding: 5px 0; border-bottom: 1px dashed var(--rule); }
+  .m-line:last-child { border-bottom: 0; }
+  .m-line b { font: 600 9px/1.9 var(--mono); letter-spacing: .1em; color: var(--ink-3); text-transform: uppercase; }
+  .m-line.ai b { color: var(--red); }
+  .m-hl { border-bottom: 2px solid; padding: 0 1px; }
+  .m-hl.p { border-color: #2f5d9c; background: rgba(47,93,156,.09); } .m-hl.d { border-color: #2c7a4b; background: rgba(44,122,75,.09); }
+  .m-hl.t { border-color: #b06a10; background: rgba(176,106,16,.1); } .m-hl.n { border-color: #cf2e1b; background: rgba(207,46,27,.08); }
+  .m-chips { display: flex; flex-wrap: wrap; gap: 5px; padding: 8px 12px 10px; border-top: 1px solid var(--rule); }
+  .m-chips span { font: 600 9.5px/1 var(--mono); letter-spacing: .06em; padding: 5px 6px; border: 1px solid var(--rule-2); color: var(--ink-2); }
+  .m-chips span.ok { color: #2c7a4b; border-color: #2c7a4b; }
+  .m-q { font: 600 10px/1.4 var(--mono); letter-spacing: .06em; color: var(--ink-3); text-transform: uppercase; margin-bottom: 6px; }
+  .m-q::before { content: 'Q · '; color: var(--red); }
+  .m-short { font: 400 26px/1.05 var(--display); margin-bottom: 8px; }
+  .m-quote { border-left: 3px solid var(--red); padding-left: 10px; }
+  .m-src { margin-top: 8px; font: 600 10px/1.3 var(--mono); color: var(--ink-2); }
+  .m-src::before { content: '§ '; color: var(--red); }
+  .m-no { margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--rule); color: var(--ink-3); font-size: 14px; }
+  .m-tag { display: inline-block; margin-top: 6px; font: 600 9px/1 var(--mono); letter-spacing: .08em; padding: 4px 5px; border: 1px solid #cf2e1b; color: #cf2e1b; }
+  .m-card { margin-top: 10px; border: 1px solid var(--rule-2); padding: 8px 10px; background: #fbf9f3; }
+  .m-card small { display: block; font: 600 9px/1.2 var(--mono); letter-spacing: .1em; color: var(--ink-3); text-transform: uppercase; margin-top: 5px; }
+  .m-card small:first-child { margin-top: 0; color: #cf2e1b; }
+  .m-scan { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 12px; background: #e9e6de; min-height: 214px; }
+  .m-paper { background: #fbf9f2; box-shadow: 0 3px 8px -4px rgba(0,0,0,.35); padding: 10px 11px; font: 500 10.5px/1.7 var(--mono); color: #2c2a26; transform: rotate(-.6deg); }
+  .m-paper b { display: block; font: 700 11px/1.3 Georgia, serif; margin-bottom: 6px; }
+  .m-paper .box { outline: 2px solid #cf2e1b; background: rgba(207,46,27,.12); outline-offset: 1px; }
+  .m-paper .okb { outline: 1.5px solid rgba(44,122,75,.7); outline-offset: 1px; }
+  .m-verdict { align-self: end; }
+  .m-verdict .v { font: 400 22px/1.05 var(--display); color: #b06a10; }
+  .m-verdict small { display: block; font-size: 12.5px; color: var(--ink-2); margin-top: 4px; }
+
+  .howi { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin-top: 54px; border-top: 1px solid var(--ink); counter-reset: h; }
+  .howi div { padding: 16px 18px 4px 0; margin-right: 18px; border-right: 1px solid var(--rule); counter-increment: h; }
+  .howi div:last-child { border-right: 0; margin-right: 0; }
+  .howi div::before { content: counter(h, decimal-leading-zero); display: block; font: 600 11px/1 var(--mono); color: var(--red); letter-spacing: .1em; margin-bottom: 10px; }
+  .howi b { display: block; font: 400 25px/1.1 var(--display); margin-bottom: 6px; }
+  .howi p { margin: 0; font-size: 16px; line-height: 1.55; color: var(--ink-2); }
+  .howi-h { margin: 70px 0 0; font: 500 11.5px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); }
+  @media (max-width: 900px) {
+    .cases { grid-template-columns: minmax(0, 1fr); }
+    .howi { grid-template-columns: minmax(0, 1fr); }
+    .howi div { border-right: 0; margin-right: 0; border-bottom: 1px solid var(--rule); padding-bottom: 14px; }
+  }
+  @media (max-width: 520px) {
+    .case .brief, .case .said { padding-left: 16px; padding-right: 16px; }
+    .case .mock { margin: 14px 16px 0; }
+    .m-scan { grid-template-columns: minmax(0, 1fr); }
+  }
 
   /* The specification: four claims, each checked somewhere in the repo, set
      like the spec box on the back of a manual rather than as four giant
@@ -631,47 +709,49 @@
 
   <nav class="top" aria-label="Sections">
     <a class="brand" href="#top">Playground</a>
-    <a href="#ml"><span class="sec">&sect;1</span>The models</a>
-    <a href="#stories"><span class="sec">&sect;2</span>Stories</a>
-    <a href="#run"><span class="sec">&sect;3</span>Everything else</a>
-    <a href="#deep"><span class="sec">&sect;4</span>The serious ones</a>
+    <a href="#work"><span class="sec">&sect;1</span>For clients</a>
+    <a href="#stories"><span class="sec">&sect;2</span>Check these out</a>
+    <a href="#run"><span class="sec">&sect;3</span>Games &amp; apps</a>
+    <a href="#ml"><span class="sec">&sect;4</span>The models</a>
+    <a href="#deep"><span class="sec">&sect;5</span>Engineering</a>
     <a class="keep" href="#errata">Errata</a>
     <a class="keep write" href="#contact">Write to me</a>
   </nav>
 
   <div class="title">
     <!-- ↓↓ YOUR NAME AND TITLE — edit this line ↓↓ -->
-    <p class="byline"><b>Mohamed Sucule</b> &mdash; software engineer &mdash; thirty pieces, 2026</p>
+    <p class="byline"><b>Mohamed Sucule</b> &mdash; forward deployed engineer &middot; AI engineer &mdash; 2026</p>
     <h1 class="headline">
-      <span class="sr">Thirty things I built. All of them run right here.</span>
-      <span aria-hidden="true"><span class="fix"><span data-pen="strike" style="--pd:.7s">Twenty-nine</span><span class="ins hand later" style="--pd:1.25s">thirty</span></span> things I built.</span>
+      <span class="sr">Four AI products, built for real work. All of them run right here.</span>
+      <span aria-hidden="true">Four AI <span class="fix"><span data-pen="strike" style="--pd:.7s">demos</span><span class="ins hand later" style="--pd:1.25s">products</span></span>, built for real work.</span>
       <span aria-hidden="true"><em>All of them <span data-pen="underline2" style="--pd:1.7s">run right here.</span></em></span>
     </h1>
 
     <div class="under">
       <div>
         <p class="sub">
-          No videos, no screenshots, no &ldquo;request a demo&rdquo;. Every figure on this page is
-          the real thing, running in your browser &mdash; <b>click any of it and you are in it.</b>
-          Then read the errata: it is the list of everything here that was wrong.
+          I sit with a client, find the work that is costing them, and ship the software that does
+          it &mdash; usually with AI in it, always with the tests to prove it. Below are four things
+          a business could ask me to build: a phone receptionist, a knowledge assistant, a sales
+          coach and a claims desk. <b>Each one works. Click it and you are in it.</b>
         </p>
         <div class="actions">
-          <button class="stamp" id="surprise" type="button"><span class="face">Surprise me</span></button>
-          <a class="quiet-link" href="#ml">or start with the machine learning &darr;</a>
+          <a class="stamp" href="#work"><span class="face">See the four</span></a>
+          <button class="quiet-link" id="surprise" type="button"><span class="face">or surprise me</span></button>
         </div>
       </div>
       <div class="aside">
       <p class="headline-note hand later" style="--pd:2.2s">
         <svg viewBox="0 0 60 56" aria-hidden="true"><path d="M52 54 C 50 30, 36 12, 8 6 M20 1 L7 6 L17 16" /></svg>
-        live &mdash; not a screenshot, not a video. every one of them, see Fig. 1
+        live &mdash; not a screenshot, not a video. nothing you type leaves your browser
       </p>
       <div class="spec">
         <p class="hd">Specification</p>
         <dl>
-          <div><dt>Pieces, every one running</dt><dd data-atlas-count>30</dd></div>
-          <div><dt>Parameters, trained from nothing</dt><dd>45,440</dd></div>
-          <div><dt>Tests, run before publishing</dt><dd>800+</dd></div>
-          <div><dt>Frameworks, build steps, deps</dt><dd>0</dd></div>
+          <div><dt>AI products, working</dt><dd data-ai-count>4</dd></div>
+          <div><dt>More pieces, every one running</dt><dd data-atlas-count>30</dd></div>
+          <div><dt>Tests, run before publishing</dt><dd>850+</dd></div>
+          <div><dt>Servers, API keys, frameworks</dt><dd>0</dd></div>
         </dl>
       </div>
       </div>
@@ -680,12 +760,130 @@
 
   <div class="foot" aria-hidden="true">
     <span class="bar"><i style="background:#00a3e0"></i><i style="background:#e5007e"></i><i style="background:#ffe600"></i><i style="background:#17140f"></i><i style="background:#17140f;opacity:.6"></i><i style="background:#17140f;opacity:.3"></i><i style="background:#cf2e1b"></i></span>
-    <a class="cue" href="#sheet">Fig. 1 &mdash; four on machine learning, then twenty-six more &darr;</a>
+    <a class="cue" href="#work">The four products, then thirty more to play with &darr;</a>
     <span>p. i</span>
   </div>
 </header>
 
 <div class="page">
+
+  <!-- ── §1 for clients ──────────────────────────────────────────────────────
+       The four products. Each one opens on the sentence a client would say,
+       because that is where every real project starts. -->
+  <section class="section" id="work" style="--accent: 207,46,27">
+    <header>
+      <div class="runhead"><span class="no">&sect; 1</span><span>For clients</span><span class="nm">four products</span></div>
+      <h2>Four things a business could <em>ask me to build</em></h2>
+      <p class="lede">
+        Each one starts from a sentence a client might say, and ends as working software &mdash;
+        not a mock-up: open it and use it. Each one is measured, and the results are on its page,
+        the bad ones included. And each runs in your browser: <b>no account, no API key, nothing
+        you type sent anywhere.</b> The businesses are invented; the software is not.
+      </p>
+    </header>
+
+    <div class="cases">
+      <a class="case reveal" href="apps/frontdesk/index.html">
+        <p class="brief">&ldquo;We miss calls during service, and when we do pick up it&rsquo;s someone who should be serving.&rdquo;</p>
+        <div class="mock" aria-hidden="true">
+          <div class="m-bar"><i></i><span>ON A CALL</span><span>Bartlett &amp; Vine · 00:42</span></div>
+          <div class="m-body">
+            <div class="m-line"><b>Priya</b><span>Have you got a table for <span class="m-hl p">two</span> <span class="m-hl d">tonight</span>, around <span class="m-hl t">half eight</span>? It&rsquo;s our <span class="m-hl n">anniversary</span>.</span></div>
+            <div class="m-line ai"><b>Front desk</b><span>I&rsquo;m afraid 8:30 is fully booked for two. I can do 9 o&rsquo;clock or 9:15 &mdash; would either of those work?</span></div>
+          </div>
+          <div class="m-chips"><span>2 people</span><span>Tonight</span><span>21:00</span><span>anniversary</span><span class="ok">✓ booked · table 11</span></div>
+        </div>
+        <div class="said">
+          <span class="k">Case 1 · Voice AI · Restaurants</span>
+          <h3>Front <em>Desk</em></h3>
+          <p>An AI receptionist that answers the phone, works out what the caller wants, checks the real table plan and books them in.</p>
+          <ul>
+            <li>Offers the nearest free times when the one asked for has gone</li>
+            <li>Takes allergies and birthdays, and tells the kitchen</li>
+            <li>Hands over to a person for big parties, complaints and anything it can&rsquo;t follow</li>
+          </ul>
+          <p class="measured" data-proof="frontdesk">75 of 82 phrasings it had never seen, understood first time · 400 random callers, no double-bookings</p>
+          <span class="go">LISTEN IN ON A CALL &rarr;</span>
+        </div>
+      </a>
+
+      <a class="case reveal" href="apps/handbook/index.html" style="--d:70ms">
+        <p class="brief">&ldquo;Staff ask HR the same questions all day. The answers are in the handbook &mdash; nobody reads it.&rdquo;</p>
+        <div class="mock" aria-hidden="true">
+          <div class="m-body">
+            <div class="m-q">Can I claim for alcohol?</div>
+            <div class="m-short">No &mdash; with exceptions.</div>
+            <div class="m-quote">Alcohol is not reimbursed, except at a client dinner that a director has approved in advance.</div>
+            <div class="m-src">Expenses › Meals · updated 20 Nov 2025</div>
+            <div class="m-no"><span class="m-q" style="display:block">Can I bring my dog to the office?</span>The handbook doesn&rsquo;t say. It never mentions &ldquo;dog&rdquo;.</div>
+          </div>
+        </div>
+        <div class="said">
+          <span class="k">Case 2 · Knowledge assistant · Internal tools</span>
+          <h3>Ask the <em>Handbook</em></h3>
+          <p>Answers staff questions from the company&rsquo;s own documents, quoting the exact sentence and where it came from.</p>
+          <ul>
+            <li>Says &ldquo;the handbook doesn&rsquo;t say&rdquo; instead of guessing</li>
+            <li>Knows when a policy was replaced, and says what the old one said</li>
+            <li>Paste in your own documents and ask them anything</li>
+          </ul>
+          <p class="measured" data-proof="handbook">made up 4 answers in 164 test questions, 31 of them unanswerable on purpose · every answer cites its source</p>
+          <span class="go">ASK IT SOMETHING &rarr;</span>
+        </div>
+      </a>
+
+      <a class="case reveal" href="apps/callcoach/index.html">
+        <p class="brief">&ldquo;Our reps lose deals on the same objections, and nobody writes up their calls properly.&rdquo;</p>
+        <div class="mock" aria-hidden="true">
+          <div class="m-bar"><i></i><span>ON A CALL</span><span>Covers × Marlow Hospitality</span></div>
+          <div class="m-body">
+            <div class="m-line"><b>Jamie</b><span>That&rsquo;s more than double what we pay now, though.<br /><span class="m-tag">PRICE OBJECTION</span></span></div>
+            <div class="m-card"><small>Coach · Price</small>Usually &ldquo;I can&rsquo;t see the return yet&rdquo;, not &ldquo;we can&rsquo;t afford it&rdquo;.<small>Ask</small>What does a no-show cost you on a Saturday?</div>
+          </div>
+        </div>
+        <div class="said">
+          <span class="k">Case 3 · Sales AI · Revenue teams</span>
+          <h3>Call <em>Coach</em></h3>
+          <p>A live assistant for sales calls: the right answer on screen the moment a prospect objects, and the notes written when the call ends.</p>
+          <ul>
+            <li>Spots objections, competitors, pains and buying signals as they&rsquo;re said</li>
+            <li>Nudges the rep who is pitching before they&rsquo;ve found a problem</li>
+            <li>Writes the CRM record and follow-up email from what was actually said</li>
+          </ul>
+          <p class="measured" data-proof="callcoach">27 of 28 new lines tagged exactly right, first time · every quote in its notes checked against the call</p>
+          <span class="go">LISTEN TO THE CALLS &rarr;</span>
+        </div>
+      </a>
+
+      <a class="case reveal" href="apps/claims/index.html" style="--d:70ms">
+        <p class="brief">&ldquo;Claims come in as emails, scans and invoices. Our handlers spend their day retyping them.&rdquo;</p>
+        <div class="mock m-scan" aria-hidden="true">
+          <div class="m-paper"><b>VELO DEPOT — RECEIPT</b>Receipt no: VD-77310<br /><span class="box">Date: 04/03/2026</span><br /><span class="okb">Customer: T Hale</span><br />Road bike, size 56 <span style="float:right">£2,450.00</span><br /><span class="okb" style="float:right">Total paid £2,450.00</span></div>
+          <div class="m-verdict"><div class="v">Refer to a person</div><small>The receipt is dated three days <i>after</i> the theft, and the bike was stolen nine days after the policy started.</small></div>
+        </div>
+        <div class="said">
+          <span class="k">Case 4 · Document AI · Insurance</span>
+          <h3>Claims <em>Desk</em></h3>
+          <p>Reads an insurance claim &mdash; email, scanned form, invoice &mdash; checks it against the policy and itself, and recommends a decision with the evidence for every line.</p>
+          <ul>
+            <li>Reads the scans with text recognition, on your device</li>
+            <li>Approve, decline with the clause quoted, or refer to a person</li>
+            <li>A person approves; every override goes on the record</li>
+          </ul>
+          <p class="measured" data-proof="claims">11 of 11 fields read from each scan · 180 smudged scans, and a misread only ever sends a claim to a person</p>
+          <span class="go">OPEN A CLAIM &rarr;</span>
+        </div>
+      </a>
+    </div>
+
+    <p class="howi-h">How I work with a client</p>
+    <div class="howi">
+      <div><b>Sit with the people who do the job</b><p>The brief is rarely the problem. The receptionist knows which calls go wrong; the claims handler knows which forms waste an afternoon.</p></div>
+      <div><b>Find the number that matters</b><p>Missed calls, hours of admin, claims touched twice. Pick the one that costs the most, and agree how to measure it before building anything.</p></div>
+      <div><b>Ship something real, fast</b><p>Working software they can try on real work within weeks &mdash; not a slide deck, and not a demo that only works on the day.</p></div>
+      <div><b>Measure it in the open</b><p>A test set built from their own data, run on every change. When it gets something wrong, they see it before their customers do.</p></div>
+    </div>
+  </section>
 
   <!-- ── fig. 1 ──────────────────────────────────────────────────────────────
        The contact sheet. Built by script from the atlas, so it can never list
@@ -697,16 +895,71 @@
     </div>
     <figcaption>
       <span class="fn">Fig. 1</span>
-      <span>Contact sheet. Every piece on this site, running, and the author&rsquo;s picks in grease
-      pencil &mdash; <b id="liveCount">&hellip;</b> of them running as you read this.
+      <span>Contact sheet. Thirty more things I built for fun and to learn, every one of them running
+      &mdash; games along the top, the engineering at the bottom, my picks in grease pencil, and
+      <b id="liveCount">&hellip;</b> of them running as you read this.
       <span class="fine">Hold the loupe over a frame to look closer;</span> click a frame to go in.</span>
     </figcaption>
   </figure>
 
-  <!-- ── §1 inside the models ────────────────────────────────────────────── -->
+  <!-- ── §2 stories ──────────────────────────────────────────────────────── -->
+  <section class="section" id="stories" style="--accent: 255,209,102">
+    <header>
+      <div class="runhead"><span class="no">&sect; 2</span><span>Check these out</span><span class="nm">two figures</span></div>
+      <h2>Two to get <em>lost in</em></h2>
+      <p class="lede">
+        Off the clock: a murder you solve by looking at things, and a short story drawn from
+        scratch as you scroll. <b>Point at one and it takes the room.</b>
+      </p>
+    </header>
+    <div class="panes reveal">
+      <a class="pane light" href="apps/room/index.html" style="--accent: 224,177,100">
+        <canvas id="paneRoom"></canvas>
+        <div class="edge">
+          <span class="k"><span class="fn" data-fig></span> &middot; a murder &middot; ten minutes</span>
+          <h3>The <em>Room</em></h3>
+          <p>
+            Edmund Harkness is dead at his desk and the door was locked from inside.
+            <b>Look at nineteen things</b>, question four people, and the notebook works out
+            for itself which two of them cannot both be true. Then name somebody.
+          </p>
+          <span class="go">SOLVE IT &rarr;</span>
+        </div>
+      </a>
+      <a class="pane" href="apps/lamplighter/index.html" style="--accent: 255,209,102">
+        <canvas id="paneLamp"></canvas>
+        <div class="edge">
+          <span class="k"><span class="fn" data-fig></span> &middot; a short story &middot; five minutes</span>
+          <h3>The <em>Lamplighter</em></h3>
+          <p>
+            One night, and a keeper about to be replaced by a machine. <b>Scroll and the sun
+            goes down</b>, the gale gets up, the rain comes sideways, and the light keeps
+            turning. Not a photograph in it &mdash; the sea and the sky are worked out from scratch.
+          </p>
+          <span class="go">READ IT &rarr;</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ── §3 games and apps ───────────────────────────────────────────────── -->
+  <section class="section" id="run">
+    <header>
+      <div class="runhead"><span class="no">&sect; 3</span><span>Games &amp; apps</span><span class="nm">seventeen figures</span></div>
+      <h2>Things to put your <em>hands on</em></h2>
+      <p class="lede">
+        Games first, starting with the long one, then small apps you would actually use, then
+        physics you can put your finger in and one horror story. <b>After Ember, nothing here has
+        a menu or a tutorial</b>: the first ten seconds teach you the rest.
+      </p>
+    </header>
+    <div class="figs" id="toys" style="--min:330px"></div>
+  </section>
+
+  <!-- ── §4 inside the models ────────────────────────────────────────────── -->
   <section class="section" id="ml" style="--accent: 125,211,252">
     <header>
-      <div class="runhead"><span class="no">&sect; 1</span><span>Inside the models</span><span class="nm">four figures</span></div>
+      <div class="runhead"><span class="no">&sect; 4</span><span>Inside the models</span><span class="nm">four figures</span></div>
       <h2>How language models <em>actually</em> work</h2>
       <p class="lede">
         Four pieces built from the algorithm up rather than from an API call. A tokeniser that
@@ -781,65 +1034,10 @@
     </p>
   </section>
 
-  <!-- ── §2 stories ──────────────────────────────────────────────────────── -->
-  <section class="section" id="stories" style="--accent: 255,209,102">
-    <header>
-      <div class="runhead"><span class="no">&sect; 2</span><span>Stories</span><span class="nm">two figures</span></div>
-      <h2>Two to get <em>lost in</em></h2>
-      <p class="lede">
-        A short story drawn from scratch as you scroll, and a murder you solve by looking at
-        things. <b>Point at one and it takes the room.</b>
-      </p>
-    </header>
-    <div class="panes reveal">
-      <a class="pane" href="apps/lamplighter/index.html" style="--accent: 255,209,102">
-        <canvas id="paneLamp"></canvas>
-        <div class="edge">
-          <span class="k"><span class="fn" data-fig></span> &middot; a short story &middot; five minutes</span>
-          <h3>The <em>Lamplighter</em></h3>
-          <p>
-            One night, and a keeper about to be replaced by a machine. <b>Scroll and the sun
-            goes down</b>, the gale gets up, the rain comes sideways, and the light keeps
-            turning. Not a photograph in it &mdash; the sea and the sky are worked out from scratch.
-          </p>
-          <span class="go">READ IT &rarr;</span>
-        </div>
-      </a>
-      <a class="pane light" href="apps/room/index.html" style="--accent: 224,177,100">
-        <canvas id="paneRoom"></canvas>
-        <div class="edge">
-          <span class="k"><span class="fn" data-fig></span> &middot; a murder &middot; ten minutes</span>
-          <h3>The <em>Room</em></h3>
-          <p>
-            Edmund Harkness is dead at his desk and the door was locked from inside.
-            <b>Look at nineteen things</b>, question four people, and the notebook works out
-            for itself which two of them cannot both be true. Then name somebody.
-          </p>
-          <span class="go">SOLVE IT &rarr;</span>
-        </div>
-      </a>
-    </div>
-  </section>
-
-  <!-- ── §3 everything else ──────────────────────────────────────────────── -->
-  <section class="section" id="run">
-    <header>
-      <div class="runhead"><span class="no">&sect; 3</span><span>Everything else</span><span class="nm">seventeen figures</span></div>
-      <h2>Things to put your <em>hands on</em></h2>
-      <p class="lede">
-        Games, physics you can put your finger in, instruments that make you something,
-        and one horror story. <b>Shuffled on purpose</b> — two of a kind in a row gets
-        boring, so there never are two. One long game to start, three acts deep; after
-        that, nothing has a menu or a tutorial, and the first ten seconds teach you the rest.
-      </p>
-    </header>
-    <div class="figs" id="toys" style="--min:330px"></div>
-  </section>
-
-  <!-- ── §4 the serious ones ─────────────────────────────────────────────── -->
+  <!-- ── §5 the serious ones ─────────────────────────────────────────────── -->
   <section class="section" id="deep">
     <header>
-      <div class="runhead"><span class="no">&sect; 4</span><span>The serious ones</span><span class="nm">one figure, six entries</span></div>
+      <div class="runhead"><span class="no">&sect; 5</span><span>Engineering</span><span class="nm">one figure, six entries</span></div>
       <h2>Systems that <em>refuse to be simple</em></h2>
       <p class="lede">
         Same approach, harder subjects, and these take longer than ten seconds to get into.
@@ -884,7 +1082,7 @@
        write-up, and none of them would have thrown. -->
   <section class="section" id="errata">
     <header>
-      <div class="runhead"><span class="no">&sect; 5</span><span>Errata</span><span class="nm">ten corrections</span></div>
+      <div class="runhead"><span class="no">&sect; 6</span><span>Errata</span><span class="nm">eleven corrections</span></div>
       <h2>Everything here that was <em>wrong</em></h2>
       <p class="lede">
         I build fast and I am hard to satisfy. With modern tooling a working version exists in
@@ -897,7 +1095,7 @@
       <li class="reveal">
         <span class="en">E1</span>
         <div>
-          <p class="where"><a href="apps/attention/index.html">Attention</a> &middot; &sect;1</p>
+          <p class="where"><a href="apps/attention/index.html">Attention</a> &middot; &sect;4</p>
           <p class="for"><i>For</i> <s>an induction head, scoring 0.92</s> <i>read</i> <ins>a positional copy head</ins></p>
           <p class="why">It had memorised &ldquo;attend to <i>i</i> &minus; 31&rdquo; off the positional embeddings and never looked at a token. The period is now drawn fresh for every sequence, and the model is scored across all of them.</p>
           <p class="how">Caught by <b>distrusting a beautiful number</b></p>
@@ -906,7 +1104,7 @@
       <li class="reveal" style="--d:70ms">
         <span class="en">E2</span>
         <div>
-          <p class="where"><a href="apps/attention/index.html">Attention</a> &middot; &sect;1</p>
+          <p class="where"><a href="apps/attention/index.html">Attention</a> &middot; &sect;4</p>
           <p class="for"><i>For</i> <s>a head that works better at longer periods</s> <i>read</i> <ins>a bad measurement</ins></p>
           <p class="why">The score only counted the nearest earlier match, so at period 12 it saw about a fifth of the head&rsquo;s attention. Fixed, the spread across periods fell from 0.437 to 0.132: one head, matching on content.</p>
           <p class="how">Caught by <b>asking why the curve was so smooth</b></p>
@@ -942,28 +1140,28 @@
       <li class="reveal" style="--d:70ms">
         <span class="en">E6</span>
         <div>
-          <p class="where"><a href="play/loom/index.html">Loom</a> &middot; &sect;3</p>
-          <p class="for"><i>For</i> <s>Contrast</s> <i>read</i> <ins>Brightness</ins></p>
-          <p class="why">The knob applied a gamma curve, so turning it up raised the mean from 0.501 to 0.587 instead of spreading the values out &mdash; the opposite of what its own label promised.</p>
-          <p class="how">Caught by <b>looking at it, then measuring it</b></p>
+          <p class="where">This page &middot; &sect;5</p>
+          <p class="for"><i>For</i> <s>six quiet links</s> <i>read</i> <ins>six links in shouting capitals</ins></p>
+          <p class="why">A heading and a list both claimed the same <code>id</code>, so the heading&rsquo;s letter-spaced capitals landed on every tool&rsquo;s name. The browser does not complain about a duplicate id; there is now a test that does.</p>
+          <p class="how">Caught by <b>looking at it</b></p>
         </div>
       </li>
       <li class="reveal">
         <span class="en">E7</span>
         <div>
-          <p class="where"><a href="play/portrait/index.html">Portrait</a> &middot; &sect;3</p>
-          <p class="for"><i>For</i> <s>six thousand dots</s> <i>read</i> <ins>six thousand dots under a pixel wide</ins></p>
-          <p class="why">The radius was divided by a canvas scale that had already been applied. The data was right the whole time; it just could not be seen.</p>
-          <p class="how">Caught by <b>looking at it</b></p>
+          <p class="where"><a href="apps/tokens/index.html">Tokens</a> &middot; &sect;4</p>
+          <p class="for"><i>For</i> <s>fits a phone</s> <i>read</i> <ins>516 pixels wide on a 390-pixel phone</ins></p>
+          <p class="why">A <code>1fr</code> grid column&rsquo;s smallest size is its longest unbreakable line, so the column refused to shrink and pushed the page off the side. <code>minmax(0, 1fr)</code> and it behaves.</p>
+          <p class="how">Caught by <b>opening every page at phone width</b></p>
         </div>
       </li>
       <li class="reveal" style="--d:70ms">
         <span class="en">E8</span>
         <div>
-          <p class="where"><a href="play/morph/index.html">Morph</a> &middot; &sect;3</p>
-          <p class="for"><i>For</i> <s>in front of its backdrop</s> <i>read</i> <ins>behind it</ins></p>
-          <p class="why">The container carries <code>perspective</code> for the 3D layouts, which makes a stacking context &mdash; and no <code>z-index</code> inside one can lift a child above something outside it.</p>
-          <p class="how">Caught by <b>looking at it</b></p>
+          <p class="where"><a href="apps/qr/index.html">QR codes</a> &middot; &sect;3</p>
+          <p class="for"><i>For</i> <s>a bug in the encoder</s> <i>read</i> <ins>a bug in the test</ins></p>
+          <p class="why">Two checks failed: a capacity of 666 and a format word, both typed from memory. The encoder said 669 and a different word; an independent QR reader had already decoded fifty-six of its codes without a fault. The test was wrong, and was corrected against the published table.</p>
+          <p class="how">Caught by <b>not assuming the test is the one that is right</b></p>
         </div>
       </li>
       <li class="reveal">
@@ -979,9 +1177,18 @@
         <span class="en">E10</span>
         <div>
           <p class="where">This page &middot; p. i</p>
-          <p class="for"><i>For</i> <s>777 tests, 703 tests and 732 tests</s> <i>read</i> <ins>over 800</ins></p>
-          <p class="why">Three counts of the same suite in three places on the front page and the README, and every one of them stale. They now say a number that stays true as the suite grows.</p>
+          <p class="for"><i>For</i> <s>777 tests, 703 tests and 732 tests</s> <i>read</i> <ins>over 750</ins></p>
+          <p class="why">Three counts of the same suite in three places on the front page and the README, and every one of them stale. Then five pieces were cut and took their tests with them, and "over 800" went stale too. Now the test runner reads every count the site claims and fails if any of them is more than it just ran.</p>
           <p class="how">Caught by <b>reading this proof</b></p>
+        </div>
+      </li>
+      <li class="reveal">
+        <span class="en">E11</span>
+        <div>
+          <p class="where">The collection &middot; throughout</p>
+          <p class="for"><i>For</i> <s>Topple, Flow, Morph, Portrait and Loom</s> <i>read</i> <ins>Minesweeper, Sudoku, QR codes, Split and a Tuner</ins></p>
+          <p class="why">Five pieces that were clever to build and that nobody could tell the point of: a fake web page to knock over, a particle screensaver, a layout-animation demo and two picture makers. Replaced by two games and three things a person would actually use &mdash; each still built from the algorithm up.</p>
+          <p class="how">Caught by <b>somebody saying so</b></p>
         </div>
       </li>
     </ol>
@@ -1000,9 +1207,9 @@
     </div>
     <h2>Seen enough? <em>Write to me.</em></h2>
     <p>
-      I build things end to end and I care how they feel to use &mdash; and then I go looking for
-      what is wrong with them. If there is something you would like built like this, or taken
-      apart like the transformer was, this is the fastest way to reach me.
+      I build things end to end, I care how they feel to use, and then I go looking for what is
+      wrong with them. If your team has a problem like one of the four at the top of this page
+      &mdash; or one nobody has built software for yet &mdash; this is the fastest way to reach me.
     </p>
     <a class="mail" href="mailto:mohamedsucule@gmail.com">mohamedsucule@gmail.com</a>
     <div class="actions">
@@ -1017,8 +1224,9 @@
     <p>
       Set in Instrument Serif, Newsreader, JetBrains Mono and Caveat, served from this repository.
       No frameworks, no build step, no dependencies — every page here is plain HTML, CSS and
-      JavaScript, with the engine behind Ace, Morph, Portrait, Loom, Nightshift, The Room, Covers,
-      the transformer, the tokeniser and each of the tools unit-tested: over 800 tests, run in CI
+      JavaScript, with the engines behind Front Desk, Ask the Handbook, Call Coach, Claims Desk, Ace, Nightshift, The Room, Covers, the transformer, the
+      tokeniser, the QR encoder, the tuner, Minesweeper, Sudoku, Split and each of the tools
+      unit-tested, along with the four AI products: over 850 tests, run in CI
       before anything is published — including twenty gradient checks against finite differences,
       and a check that a 95% confidence interval really does contain the truth 95% of the time.
       The commit history is the full record.
@@ -1042,26 +1250,26 @@
    than the two parts that actually depend on it. */
 const loadModules = Promise.all([
   import('./shared/briefings.js'),
-  import('./play/loom/engine.js'),
-  import('./play/loom/presets.js'),
-  import('./play/portrait/engine.js'),
-  import('./play/morph/engine.js'),
 ]);
 
+/* Colours and faces for the newest previews. Up here rather than beside them
+   because the previews are called while the page is still being built, and a
+   const further down the script does not exist yet at that moment — which is
+   exactly how the first of them once took every figure after it down. */
+const PAPER = '#f7f4ec', INK = '#17140f', RED = '#cf2e1b', FAINT = 'rgba(23,20,15,.45)';
+const MONO = '"JetBrains Mono Var", ui-monospace, Menlo, monospace';
+const SERIF = '"Instrument Serif", Georgia, serif';
+
 /* ── the run ─────────────────────────────────────────────────────────────────
-   One order, hand-picked, and the rule behind it is that no two neighbours are
-   the same kind of thing. Five games in a row are five good things and one
-   monotonous stretch of page: by the third you have stopped reading the words
-   and started scrolling past pictures. Mixed, every card is a change of
-   subject, and the reader keeps going because they cannot guess what is next.
+   One order, hand-picked: games first, because that is what people came to
+   this part of the page for; then the small apps somebody would actually
+   use; then the physics toys, the instruments and one horror story. It used
+   to be shuffled so that no two neighbours were the same kind, which read
+   well and hid the games among everything else — and the note that came
+   back was "put the games at the top".
 
-   `kind` is only here to keep that promise honest — it is checked below rather
-   than trusted, because this list gets reordered by hand and an accidental pair
-   is invisible until somebody scrolls past it and feels bored without knowing
-   why.
-
-   The Lamplighter and The Room are not in this list: they are the two panes of
-   the front door. Putting them here as well would be the same thing twice. */
+   The Room and The Lamplighter are not in this list: they are the two panes
+   of §2. Putting them here as well would be the same thing twice. */
 const TOYS = [
   {
     href: 'play/ember/index.html', tag: 'the epic one', kind: 'game', wide: true,
@@ -1071,115 +1279,112 @@ const TOYS = [
     preview: emberPreview,
   },
   {
-    href: 'apps/nightshift/index.html', tag: 'read it alone', kind: 'story',
-    note: 'it reads you back',
-    title: 'Nightshift',
-    blurb: 'A coastal watch log from one night in 1987, transcribed from the original daybook. It opens with the weather and the shipping and it does not stay there. Read it to the end — it is reading you back.',
-    preview: nightshiftPreview,
+    href: 'play/sweeper/index.html', tag: 'no guessing', kind: 'game', wide: true,
+    note: 'every board solvable by logic',
+    title: 'Minesweeper',
+    blurb: 'Classic Minesweeper, except every board is played by a solver before you see it and thrown away unless it can be finished by reasoning. It never comes down to a coin flip — and when you lose, it rings the square you could have proved safe.',
+    preview: sweeperPreview,
   },
   {
-    href: 'apps/topple/index.html', tag: 'knock it over', kind: 'physics',
-    title: 'Topple',
-    blurb: 'A perfectly ordinary web page — until you swipe across it, and everything your finger touches comes loose and falls. Cut the legs out and watch the rest collapse on top. Then hit rebuild and watch it put itself back together, one row at a time.',
-    preview: topplePreview,
+    href: 'play/sudoku/index.html', tag: 'with reasons', kind: 'game',
+    title: 'Sudoku',
+    blurb: 'A daily puzzle at three levels, each checked for exactly one answer and a way to it without guessing. Stuck? The hint names the technique — a hidden single, a pointing pair, an X-Wing — and shows you where.',
+    preview: sudokuPreview,
   },
   {
-    href: 'play/portrait/index.html', tag: 'your photo', kind: 'instrument', wide: true,
-    note: 'never leaves your device',
-    title: 'Portrait',
-    blurb: 'Drop in a photo of your face and watch six thousand dots crawl out of random noise until it is unmistakably you. It never leaves your device.',
-    preview: portraitPreview,
-  },
-  {
-    href: 'play/orbit/index.html', tag: 'game', kind: 'game',
-    title: 'Comet',
-    blurb: 'Move the mouse. Collect the gold. Do not touch the red. Fill the bar to clear a level, then do it again with mines and a spinning bar in the way. The levels never run out.',
-    preview: cometPreview,
-  },
-  {
-    href: 'play/sandbox/index.html', tag: 'sandbox', kind: 'physics',
-    note: 'now set it on fire',
-    title: 'Sandbox',
-    blurb: 'Pour sand. Add water. Set it on fire and watch the smoke rise. Ten materials that all behave the way you would expect them to, which is the whole trick.',
-    preview: sandPreview,
-  },
-  {
-    href: 'play/ace/index.html', tag: 'game', kind: 'game',
+    href: 'play/ace/index.html', tag: 'game', kind: 'game', wide: true,
     title: 'Ace',
     blurb: 'Tap to fly a paper plane through a canyon. Do not hit the rocks. That is the whole game, and you will understand it before you have finished reading this.',
-    preview: acePreview,
-  },
-  {
-    href: 'play/beats/index.html', tag: 'music', kind: 'instrument',
-    title: 'Beat Lab',
-    blurb: 'A drum machine with no sound files in it — every kick and snare is generated from scratch. Press play, tap the squares, make something.',
-    preview: beatsPreview,
-  },
-  {
-    href: 'play/stack/index.html', tag: 'game', kind: 'game',
-    title: 'Stack',
-    blurb: 'A block slides past. Tap. Whatever hangs over the edge is sliced off and falls away, so every sloppy drop makes the next one harder. Land it dead centre and you lose nothing.',
-    preview: stackPreview,
-  },
-  {
-    href: 'apps/mercury/index.html', tag: 'touch it', kind: 'physics', gl: true, wide: true,
-    note: 'no 3D model, no texture — just maths',
-    title: 'Mercury',
-    blurb: 'A sheet of liquid metal under a sunset sky. Drag it and it ripples, and the ripples bend the reflections as they spread. There is no 3D model and no texture in it — every pixel is worked out from scratch, sixty times a second.',
-    preview: mercuryPreview,
-  },
-  {
-    href: 'play/island/index.html', tag: 'generator', kind: 'instrument',
-    title: 'Islandsmith',
-    blurb: 'Press the button, get a brand new world: coastline, mountains, forests, rivers and a name. Every island comes from a single random number.',
-    preview: islandPreview,
+    preview: acePreview
   },
   {
     href: 'play/tangle/index.html', tag: 'daily puzzle', kind: 'game',
     note: 'same board for everyone today',
     title: 'Tangle',
     blurb: 'Tap a tile to turn it. The board is solved when no connector is left dangling. Everybody in the world gets the same board each day, and finishing gives you a line you can paste into a group chat.',
-    preview: tanglePreview,
+    preview: tanglePreview
   },
   {
-    href: 'play/loom/index.html', tag: 'node editor', kind: 'instrument', wide: true,
-    title: 'Loom',
-    blurb: 'Make a picture by wiring boxes together. One makes fog, one bends whatever it is given, one swaps grey for colour. The last box is the picture.',
-    preview: loomPreview,
+    href: 'play/stack/index.html', tag: 'game', kind: 'game',
+    title: 'Stack',
+    blurb: 'A block slides past. Tap. Whatever hangs over the edge is sliced off and falls away, so every sloppy drop makes the next one harder. Land it dead centre and you lose nothing.',
+    preview: stackPreview
   },
   {
     href: 'play/tether/index.html', tag: 'game', kind: 'game',
     title: 'Tether',
     blurb: 'You swing round a planet on a tether. Tap and you let go, flying off exactly the way you were already pointing. If the line passes close enough to another planet, it catches you. One decision: when.',
-    preview: tetherPreview,
-  },
-  {
-    href: 'play/morph/index.html', tag: 'interface', kind: 'instrument',
-    title: 'Morph',
-    blurb: 'One gallery, seven layouts, and not one CSS transition. Switch again before the tiles land and they bend into the new arrangement mid-flight.',
-    preview: morphPreview,
+    preview: tetherPreview
   },
   {
     href: 'play/sumo/index.html', tag: 'two players', kind: 'game',
     note: 'one key each',
     title: 'Sumo',
     blurb: 'Two people, one keyboard, one key each. Hold it: your arrow stops turning and you charge that way. Knock the other one out of the ring before it closes under you. There is a bot if you are on your own.',
-    preview: sumoPreview,
+    preview: sumoPreview
   },
   {
-    href: 'apps/sift/index.html', tag: 'your data', kind: 'instrument',
+    href: 'apps/qr/index.html', tag: 'real app', kind: 'app',
+    note: 'read back by zxing: 56 of 56',
+    title: 'QR codes',
+    blurb: 'Type a link, some text or a Wi-Fi password and it is a QR code before you finish typing. Download it as PNG or SVG. The encoder is written from scratch — error correction and all — and nothing you type leaves the page.',
+    preview: qrPreview,
+  },
+  {
+    href: 'apps/split/index.html', tag: 'real app', kind: 'app',
+    title: 'Split',
+    blurb: 'Who paid for what on a trip or at dinner, and the fewest bank transfers that settle everyone up — to the penny, uneven splits and all. Share the whole group with one link. Nothing is uploaded.',
+    preview: splitPreview,
+  },
+  {
+    href: 'apps/tuner/index.html', tag: 'real app', kind: 'app', wide: true,
+    note: 'hears a note with its fundamental missing',
+    title: 'Tuner',
+    blurb: 'Play a note into your microphone and see how sharp or flat it is, to the cent — guitar, bass, ukulele, violin or cello. The pitch detection is written from nothing, and a string you can tune is built in for when there is no microphone.',
+    preview: tunerPreview,
+  },
+  {
+    href: 'apps/sift/index.html', tag: 'your data', kind: 'app',
     title: 'Sift',
     blurb: 'Drop a spreadsheet in and it tells you what is actually in it: what each column holds, where the gaps are, what the numbers look like. Then sort and filter a hundred thousand rows without it stuttering. Nothing is uploaded.',
-    preview: siftPreview,
+    preview: siftPreview
+  },
+  {
+    href: 'play/sandbox/index.html', tag: 'sandbox', kind: 'physics',
+    note: 'now set it on fire',
+    title: 'Sandbox',
+    blurb: 'Pour sand. Add water. Set it on fire and watch the smoke rise. Ten materials that all behave the way you would expect them to, which is the whole trick.',
+    preview: sandPreview
+  },
+  {
+    href: 'apps/mercury/index.html', tag: 'touch it', kind: 'physics', gl: true, wide: true,
+    note: 'no 3D model, no texture — just maths',
+    title: 'Mercury',
+    blurb: 'A sheet of liquid metal under a sunset sky. Drag it and it ripples, and the ripples bend the reflections as they spread. There is no 3D model and no texture in it — every pixel is worked out from scratch, sixty times a second.',
+    preview: mercuryPreview
+  },
+  {
+    href: 'play/beats/index.html', tag: 'music', kind: 'instrument',
+    title: 'Beat Lab',
+    blurb: 'A drum machine with no sound files in it — every kick and snare is generated from scratch. Press play, tap the squares, make something.',
+    preview: beatsPreview
+  },
+  {
+    href: 'play/island/index.html', tag: 'generator', kind: 'instrument',
+    title: 'Islandsmith',
+    blurb: 'Press the button, get a brand new world: coastline, mountains, forests, rivers and a name. Every island comes from a single random number.',
+    preview: islandPreview
+  },
+  {
+    href: 'apps/nightshift/index.html', tag: 'read it alone', kind: 'story',
+    note: 'it reads you back',
+    title: 'Nightshift',
+    blurb: 'A coastal watch log from one night in 1987, transcribed from the original daybook. It opens with the weather and the shipping and it does not stay there. Read it to the end — it is reading you back.',
+    preview: nightshiftPreview
   },
 ];
 
 /* The one rule the order exists to keep, checked rather than remembered. */
-for (let i = 1; i < TOYS.length; i++) {
-  if (TOYS[i].kind === TOYS[i - 1].kind) {
-    console.warn(`${TOYS[i - 1].title} and ${TOYS[i].title} are both "${TOYS[i].kind}" and sit next to each other`);
-  }
-}
 
 /* ── one canvas, one live miniature ──────────────────────────────────────────
    Five different things on this page hang a live scene on a canvas: the
@@ -1381,25 +1586,24 @@ noteArrows();
 /* ── fig. 1, the contact sheet ───────────────────────────────────────────────
    Every piece on the site as one frame of film, each frame the piece itself
    running. Read across a strip, no two neighbours are the same kind of thing;
-   the five the author would send you to first are ringed in grease pencil.
+   the four the author would send you to first are ringed in grease pencil.
 
    Titles, links and colours come from the atlas, so the sheet can never list
    something the navigator does not, or disagree with it about a name. */
 const PREVIEW = {
   attention: attentionPreview, tokens: tokensPreview, evals: evalsPreview, agents: agentsPreview,
   lamplighter: lamplighterPreview, room: roomPreview, nightshift: nightshiftPreview,
-  covers: coversPreview, ace: acePreview, comet: cometPreview, stack: stackPreview,
+  covers: coversPreview, ace: acePreview, ember: emberPreview, stack: stackPreview,
   tether: tetherPreview, sumo: sumoPreview, tangle: tanglePreview, sandbox: sandPreview,
-  topple: topplePreview, mercury: mercuryPreview, ember: emberPreview, portrait: portraitPreview,
-  loom: loomPreview, beats: beatsPreview, island: islandPreview, morph: morphPreview,
-  sift: siftPreview,
+  mercury: mercuryPreview, beats: beatsPreview, island: islandPreview, sift: siftPreview,
+  qr: qrPreview, split: splitPreview, tuner: tunerPreview, sweeper: sweeperPreview, sudoku: sudokuPreview,
 };
 const SHEET = [
-  'attention', 'lamplighter', 'ember', 'sandbox', 'room', 'tokens',
-  'comet', 'covers', 'mercury', 'evals', 'tangle', 'loom',
-  'nightshift', 'stack', 'regex-lab', 'ace', 'agents', 'island',
-  'raft-lab', 'tether', 'beats', 'topple', 'query-planner', 'sumo',
-  'morph', 'trace-explorer', 'sift', 'diff-forge', 'portrait', 'oklch-studio',
+  'ember', 'sweeper', 'room', 'ace', 'sudoku', 'tangle',
+  'stack', 'sumo', 'tether', 'lamplighter', 'nightshift', 'sandbox',
+  'qr', 'split', 'tuner', 'beats', 'island', 'mercury',
+  'attention', 'tokens', 'evals', 'agents', 'covers', 'sift',
+  'regex-lab', 'raft-lab', 'query-planner', 'trace-explorer', 'diff-forge', 'oklch-studio',
 ];
 const PICKS = {
   attention: ['ring', 'start here'],
@@ -1407,7 +1611,7 @@ const PICKS = {
   room: ['ring', 'whodunnit?'],
   ember: ['ring', 'play this one'],
   covers: ['ring', 'the big one'],
-  tokens: ['tick'], evals: ['tick'], agents: ['tick'], mercury: ['tick'], portrait: ['tick'],
+  tokens: ['tick'], evals: ['tick'], agents: ['tick'], sweeper: ['tick'], qr: ['tick'],
 };
 
 /* The six engineering tools are words rather than scenes, so their frames
@@ -1492,7 +1696,7 @@ atlasReady.then(({ KINDS, byId }) => {
     return true;
   };
 
-  /* Grease pencil: a ring round the five picks, a note under each, and a
+  /* Grease pencil: a ring round the four picks, a note under each, and a
      tick on five more. Worked out from where the frames actually are, and
      redrawn whenever they move. */
   const drawGrease = () => {
@@ -1652,6 +1856,7 @@ const ACCENT = {
   story: '255,209,102',
   physics: '125,211,252',
   instrument: '163,230,53',
+  app: '45,212,191',
 };
 
 const toysHost = document.getElementById('toys');
@@ -2688,9 +2893,6 @@ function mercuryPreview(api) {
   };
 }
 
-/** Topple, in miniature: the real physics engine, knocking over a tiny page.
-    The shapes are drawn rather than being DOM, but every position and angle
-    comes from the same solver the real one uses. */
 /* The headline runs the real floor plan, sharing floor.js and plan.js with the
    app itself, so the card can never show a restaurant the product does not
    have. The clock is wound forward faster than real time and looped, which
@@ -3123,101 +3325,6 @@ function nightshiftPreview(api) {
   };
 }
 
-function topplePreview(api) {
-  let E = null, world = null, parts = [], phase = 0, at = 0;
-  import('./apps/topple/engine.js').then((m) => { E = m; }).catch(() => null);
-
-  const LAYOUT = [
-    // x, y, w, h as fractions of the card, and how to draw it
-    [0.06, 0.10, 0.16, 0.055, 'logo'],
-    [0.30, 0.11, 0.10, 0.035, 'dim'],
-    [0.44, 0.11, 0.10, 0.035, 'dim'],
-    [0.80, 0.10, 0.14, 0.055, 'pill'],
-    [0.22, 0.30, 0.24, 0.10, 'head'],
-    [0.50, 0.30, 0.28, 0.10, 'head'],
-    [0.28, 0.46, 0.44, 0.045, 'dim'],
-    [0.34, 0.545, 0.32, 0.045, 'dim'],
-    [0.32, 0.65, 0.16, 0.075, 'cta'],
-    [0.52, 0.65, 0.16, 0.075, 'ghost'],
-    [0.06, 0.80, 0.26, 0.14, 'card'],
-    [0.37, 0.80, 0.26, 0.14, 'card'],
-    [0.68, 0.80, 0.26, 0.14, 'card'],
-  ];
-
-  const build = () => {
-    const { w, h } = api;
-    world = new E.World({ width: w, height: h });
-    parts = LAYOUT.map(([fx, fy, fw, fh, kind]) => {
-      const bw = fw * w, bh = fh * h;
-      const home = { x: (fx + fw / 2) * w, y: (fy + fh / 2) * h };
-      return { kind, home, body: world.add(new E.Body({ x: home.x, y: home.y, w: bw, h: bh })) };
-    });
-    phase = 0; at = 0;
-  };
-
-  api.reset = () => { world = null; };
-
-  api.frame = () => {
-    const { ctx, w, h } = api;
-    ctx.fillStyle = '#0b0d14';
-    ctx.fillRect(0, 0, w, h);
-    if (!E) return;
-    if (!world || world.width !== w) build();
-
-    at += 1 / 60;
-    if (phase === 0 && at > 1.6) {
-      phase = 1;
-      for (const p of parts) {
-        const up = 1 - p.home.y / h;
-        p.body.vel.x = (Math.random() - 0.5) * 220 * up;
-        p.body.spin = (Math.random() - 0.5) * 3.2 * up;
-      }
-    }
-    if (phase === 1) {
-      world.step(1 / 60);
-      if (at > 7.5) { phase = 2; }
-    } else if (phase === 2) {
-      let done = true;
-      for (const p of parts) {
-        if (!E.homeStep(p.body, { ...p.home, angle: 0 }, 1 / 60)) done = false;
-      }
-      if (done) { phase = 0; at = 0; }
-    }
-
-    const paint = {
-      logo: ['#e8ecf7', 0.92], pill: ['#e8ecf7', 0.5], dim: ['#8e9ab4', 0.5],
-      head: ['#dfe6f7', 0.95], cta: ['#8fb7ff', 0.95], ghost: ['#5d6685', 0.7],
-      card: ['#1a2032', 1],
-    };
-    for (const p of parts) {
-      const b = p.body;
-      const [fill, alpha] = paint[p.kind] || ['#888', 1];
-      ctx.save();
-      ctx.translate(b.p.x, b.p.y);
-      ctx.rotate(b.angle);
-      ctx.globalAlpha = alpha;
-      const r = Math.min(6, b.h / 3);
-      ctx.beginPath();
-      const x = -b.w / 2, y = -b.h / 2;
-      ctx.moveTo(x + r, y);
-      ctx.arcTo(x + b.w, y, x + b.w, y + b.h, r);
-      ctx.arcTo(x + b.w, y + b.h, x, y + b.h, r);
-      ctx.arcTo(x, y + b.h, x, y, r);
-      ctx.arcTo(x, y, x + b.w, y, r);
-      ctx.closePath();
-      ctx.fillStyle = fill;
-      ctx.fill();
-      if (p.kind === 'card') {
-        ctx.strokeStyle = 'rgba(255,255,255,.12)';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      }
-      ctx.restore();
-      ctx.globalAlpha = 1;
-    }
-  };
-}
-
 /** Falling sand, in miniature: the same rules as the real one, fewer grains. */
 function sandPreview(api) {
   const C = 4;
@@ -3422,7 +3529,7 @@ function emberPreview(api) {
     const room = game.map.boss;
     for (const r of game.map.rooms) if (r.kind === 'fight') r.cleared = true;
     game.map.shrine.used = true;
-    for (const s of game.map.stones) game.lore.add(s.id);
+    for (const st of game.map.stones) game.lore.add(st.id);
     game.player.x = room.mx * E.T + E.T / 2;
     game.player.y = (room.my + 4) * E.T + E.T / 2;
     mem = {};
@@ -3441,80 +3548,6 @@ function emberPreview(api) {
     for (const e of game.drain()) view.fx(e, game);
     clock += dt * 1000;
     view.draw(ctx, game, { w, h, scale: Math.max(0.42, Math.min(w, h) / 420), dt, now: clock, preview: true });
-  };
-}
-
-/** The game, played by a very simple robot. */
-function cometPreview(api) {
-  let ship, orbs, drones, sparks, target;
-  api.reset = () => {
-    ship = { x: api.w / 2, y: api.h / 2, vx: 0, vy: 0 };
-    orbs = Array.from({ length: 3 }, () => ({ x: Math.random() * api.w, y: Math.random() * api.h }));
-    drones = Array.from({ length: 3 }, () => ({ x: Math.random() * api.w, y: Math.random() * api.h, vx: 0, vy: 0 }));
-    sparks = [];
-    target = orbs[0];
-  };
-  api.frame = () => {
-    const { ctx, w, h } = api;
-    ctx.fillStyle = '#05060b';
-    ctx.fillRect(0, 0, w, h);
-    if (!target) target = orbs[0];
-
-    // the robot flies at the nearest orb, and is not very good at dodging
-    ship.vx += (target.x - ship.x) * 0.012;
-    ship.vy += (target.y - ship.y) * 0.012;
-    ship.vx *= 0.9; ship.vy *= 0.9;
-    ship.x += ship.vx; ship.y += ship.vy;
-    if (Math.hypot(target.x - ship.x, target.y - ship.y) < 12) {
-      for (let i = 0; i < 12; i++) {
-        const a = Math.random() * 6.28, s = Math.random() * 2.4;
-        sparks.push({ x: target.x, y: target.y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: 1 });
-      }
-      target.x = 24 + Math.random() * (w - 48);
-      target.y = 24 + Math.random() * (h - 48);
-      target = orbs[(Math.random() * orbs.length) | 0];
-    }
-
-    for (const d of drones) {
-      const dx = ship.x - d.x, dy = ship.y - d.y, len = Math.hypot(dx, dy) || 1;
-      d.vx += (dx / len) * 0.05; d.vy += (dy / len) * 0.05;
-      const s = Math.hypot(d.vx, d.vy);
-      if (s > 1.5) { d.vx = d.vx / s * 1.5; d.vy = d.vy / s * 1.5; }
-      d.x += d.vx; d.y += d.vy;
-      if (len < 14) { d.x = Math.random() * w; d.y = Math.random() * h; d.vx = d.vy = 0; }
-      ctx.fillStyle = '#ff4d6d';
-      const a = Math.atan2(d.vy, d.vx);
-      ctx.beginPath();
-      ctx.moveTo(d.x + Math.cos(a) * 9, d.y + Math.sin(a) * 9);
-      ctx.lineTo(d.x + Math.cos(a + 2.4) * 6, d.y + Math.sin(a + 2.4) * 6);
-      ctx.lineTo(d.x + Math.cos(a - 2.4) * 6, d.y + Math.sin(a - 2.4) * 6);
-      ctx.closePath(); ctx.fill();
-    }
-
-    for (const o of orbs) {
-      const g = ctx.createRadialGradient(o.x, o.y, 0, o.x, o.y, 22);
-      g.addColorStop(0, 'rgba(255,209,102,.4)'); g.addColorStop(1, 'transparent');
-      ctx.fillStyle = g;
-      ctx.beginPath(); ctx.arc(o.x, o.y, 22, 0, 6.283); ctx.fill();
-      ctx.fillStyle = '#ffd166';
-      ctx.beginPath(); ctx.arc(o.x, o.y, 6, 0, 6.283); ctx.fill();
-    }
-
-    for (const s of sparks) { s.x += s.vx; s.y += s.vy; s.vx *= 0.94; s.vy *= 0.94; s.life -= 0.03; }
-    sparks = sparks.filter((s) => s.life > 0);
-    for (const s of sparks) {
-      ctx.globalAlpha = s.life;
-      ctx.fillStyle = '#ffd166';
-      ctx.beginPath(); ctx.arc(s.x, s.y, 2, 0, 6.283); ctx.fill();
-    }
-    ctx.globalAlpha = 1;
-
-    const g = ctx.createRadialGradient(ship.x, ship.y, 0, ship.x, ship.y, 26);
-    g.addColorStop(0, 'rgba(255,255,255,.3)'); g.addColorStop(1, 'transparent');
-    ctx.fillStyle = g;
-    ctx.beginPath(); ctx.arc(ship.x, ship.y, 26, 0, 6.283); ctx.fill();
-    ctx.fillStyle = '#fff';
-    ctx.beginPath(); ctx.arc(ship.x, ship.y, 6, 0, 6.283); ctx.fill();
   };
 }
 
@@ -3597,169 +3630,254 @@ loadModules.then(([{ BRIEFINGS, BRIEFING_ORDER }]) => {
     localhost, or use the published site.</p></li>`;
 });
 
-/* ── previews for the three big ones ─────────────────────────────────────────
-   Each runs the project's own engine on a small canvas. They were three
-   full-height feature cards before, which pushed the grid — the actual design
-   of this page — almost three screens down. Same code, same honesty about
-   running the real thing, one twelfth of the vertical space. */
+/* ── previews for the five newest ────────────────────────────────────────────
+   Two games and three things you would actually use, each running its own
+   engine in miniature — the real encoder, the real settling, the real pitch
+   detector, the real no-guess generator, the real hints. Paper-coloured,
+   like the pages they open, so they read as a set on the contact sheet. */
 
-/** Morph: the real layout functions and the real spring integrator. */
-function morphPreview(api) {
-  let M = null, tiles = null, targets = [], which = 0, held = 0;
-  const ORDER = ['masonry', 'grid', 'justified', 'spiral', 'deck'];
-  const TINTS = ['#ffd166', '#ff4d8d', '#7dd3fc', '#a3e635', '#f472b6', '#c084fc'];
-  const ASPECTS = [1, 0.75, 1.4, 1, 1.2, 0.85];
 
-  loadModules.then(([, , , , morph]) => { M = morph; }).catch(() => {});
-
-  const retarget = () => {
-    const { w, h } = api;
-    targets = M.LAYOUTS[ORDER[which]].fn(tiles, {
-      width: w, height: h, gap: 5, columns: 5,
-      targetHeight: h / 3.4, size: ORDER[which] === 'deck' ? h * 0.6 : h / 7, focus: tiles.length / 2,
-    });
-    // every layout is laid out at its natural size and then scaled to fit
-    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
-    for (const t of targets) {
-      x0 = Math.min(x0, t.x); y0 = Math.min(y0, t.y);
-      x1 = Math.max(x1, t.x + t.w); y1 = Math.max(y1, t.y + t.h);
-    }
-    const pad = 10;
-    const k = Math.min((w - pad * 2) / (x1 - x0), (h - pad * 2) / (y1 - y0), 1);
-    const ox = (w - (x1 - x0) * k) / 2, oy = (h - (y1 - y0) * k) / 2;
-    for (const t of targets) {
-      t.x = ox + (t.x - x0) * k; t.y = oy + (t.y - y0) * k;
-      t.w *= k; t.h *= k;
-    }
-  };
-
-  api.reset = () => { tiles = null; };
-
+/** QR: the real encoder, redrawn on every keystroke of something being typed. */
+function qrPreview(api) {
+  let Q = null;
+  import('./apps/qr/qr.js').then((m) => { Q = m; }).catch(() => {});
+  const TEXTS = ['https://mohamed-sucule.github.io/Projects/', 'WIFI:T:WPA;S:Harkness Hall;P:lamplight;;', 'Meet at the lighthouse at nine.'];
+  let which = 0, typed = 1, hold = 0, code = null, shownText = '';
   api.frame = () => {
     const { ctx, w, h } = api;
-    ctx.fillStyle = '#05060b';
+    ctx.fillStyle = PAPER;
     ctx.fillRect(0, 0, w, h);
-    if (!M) return;
-    if (!tiles) {
-      tiles = Array.from({ length: 16 }, (_, i) => ({
-        aspect: ASPECTS[i % ASPECTS.length],
-        tint: TINTS[i % TINTS.length],
-        sp: { x: M.makeSpring(w / 2), y: M.makeSpring(h / 2), w: M.makeSpring(4), h: M.makeSpring(4), rot: M.makeSpring(0) },
-        wobble: 1 + ((i * 29) % 9) / 36,
-      }));
-      retarget();
+    if (!Q) return;
+    const text = TEXTS[which];
+    if (typed < text.length) { if (api.t % 2 === 0) typed++; }
+    else if ((hold += 1 / 30) > 2.4) { hold = 0; typed = 1; which = (which + 1) % TEXTS.length; }
+    const now = text.slice(0, typed);
+    if (now !== shownText) { shownText = now; code = Q.encode(now, { level: 'M' }); }
+    const wide = w > h * 1.35;
+    const side = Math.min(wide ? h * 0.8 : h * 0.66, wide ? w * 0.5 : w * 0.8);
+    const ox = wide ? h * 0.1 + 6 : (w - side) / 2, oy = wide ? (h - side) / 2 : h * 0.07;
+    const m = side / code.size;
+    for (let y = 0; y < code.size; y++) {
+      for (let x = 0; x < code.size; x++) {
+        const i = y * code.size + x;
+        if (!code.modules[i]) continue;
+        ctx.fillStyle = code.parts[i] === Q.PART.finder ? RED : INK;
+        ctx.fillRect(ox + x * m, oy + y * m, Math.ceil(m), Math.ceil(m));
+      }
     }
-    held += 1 / 60;
-    if (held > 2.6) { held = 0; which = (which + 1) % ORDER.length; retarget(); }
-    tiles.forEach((t, i) => {
-      const g = targets[i];
-      const cfg = { stiffness: 190 * t.wobble, damping: 19, mass: 1 };
-      M.stepSpring(t.sp.x, g.x, cfg, 1 / 60); M.stepSpring(t.sp.y, g.y, cfg, 1 / 60);
-      M.stepSpring(t.sp.w, g.w, cfg, 1 / 60); M.stepSpring(t.sp.h, g.h, cfg, 1 / 60);
-      M.stepSpring(t.sp.rot, g.rot || 0, cfg, 1 / 60);
-      const { x, y, w: tw, h: th, rot } = t.sp;
-      ctx.save();
-      ctx.translate(x.value + tw.value / 2, y.value + th.value / 2);
-      if (rot.value) ctx.rotate((rot.value * Math.PI) / 180);
-      ctx.fillStyle = t.tint;
-      ctx.globalAlpha = 0.92;
-      const r = Math.min(5, Math.abs(tw.value) / 3, Math.abs(th.value) / 3);
-      ctx.beginPath();
-      ctx.roundRect(-tw.value / 2, -th.value / 2, Math.max(1, tw.value), Math.max(1, th.value), r);
-      ctx.fill();
-      ctx.restore();
-    });
-    ctx.globalAlpha = 1;
+    ctx.fillStyle = FAINT;
+    ctx.font = `600 ${Math.max(8, Math.min(11, w / 40))}px ${MONO}`;
+    const info = `VERSION ${code.version} · ${code.size}×${code.size} · MASK ${code.mask}`;
+    if (wide) {
+      const tx = ox + side + h * 0.1, maxW = w - tx - 10;
+      ctx.fillText(info, tx, oy + 12);
+      ctx.fillStyle = INK;
+      ctx.font = `400 ${Math.max(12, Math.min(20, w / 24))}px ${SERIF}`;
+      let line = '', y = oy + 44;
+      for (const ch of now) {
+        if (ctx.measureText(line + ch).width > maxW) { ctx.fillText(line, tx, y); line = ''; y += 22; }
+        line += ch;
+      }
+      ctx.fillText(line + (api.t % 40 < 20 ? '|' : ''), tx, y);
+    } else {
+      ctx.textAlign = 'center';
+      ctx.fillText(info, w / 2, oy + side + 16);
+      ctx.textAlign = 'left';
+    }
   };
 }
 
-/** Portrait: the real stippler, relaxing a real image, on loop. */
-function portraitPreview(api) {
-  let P = null, weight = null, src = 0, stip = null, holding = 0;
-  const SRC = 132, DOTS = 1500, PASSES = 30;
-
-  loadModules.then(([, loom, presets, portrait]) => {
-    P = portrait;
-    const g = loom.deserialize(structuredClone(presets.PRESETS[1].graph));   // Marble
-    const out = g.nodes.find((n) => n.type === 'output');
-    const img = loom.evaluate(g, out.id, SRC, SRC).image;
-    const gray = P.adjust(P.luma(loom.toRGBA(img), SRC, SRC), { contrast: 1.25 });
-    weight = new Float32Array(gray.length);
-    for (let i = 0; i < weight.length; i++) weight[i] = 1 - gray[i];
-    src = SRC;
-  }).catch(() => {});
-
+/** Split: the real settling, as a weekend's expenses arrive one at a time. */
+function splitPreview(api) {
+  let S = null, g = null;
+  import('./apps/split/split.js').then((m) => { S = m; g = m.example(); }).catch(() => {});
+  let k = 1, hold = 0;
   api.frame = () => {
     const { ctx, w, h } = api;
-    ctx.fillStyle = '#f6f3ec';
+    ctx.fillStyle = PAPER;
     ctx.fillRect(0, 0, w, h);
-    if (!weight) return;
-    if (!stip) stip = new P.Stippler(weight, src, src, DOTS, 5, { start: 'uniform' });
-    if (stip.passes < PASSES) stip.step();
-    else if ((holding += 1 / 60) > 3.6) { holding = 0; stip = null; return; }
-
-    const k = Math.min(w / src, h / src);
-    const ox = (w - src * k) / 2, oy = (h - src * k) / 2;
-    ctx.save();
-    ctx.translate(ox, oy);
-    ctx.scale(k, k);
-    ctx.fillStyle = '#12141a';
-    const base = stip.spacing * 0.46;
-    for (let i = 0; i < stip.n; i++) {
-      const r = base * (0.18 + stip.weightAt(i) * 0.92);
-      ctx.beginPath();
-      ctx.arc(stip.pts[i * 2], stip.pts[i * 2 + 1], r, 0, 6.2832);
-      ctx.fill();
+    if (!g) return;
+    if ((hold += 1 / 30) > (k >= g.expenses.length ? 3.5 : 1.1)) { hold = 0; k = k >= g.expenses.length ? 1 : k + 1; }
+    const spent = g.expenses.slice(0, k);
+    const plan = S.settle(S.balances(g.people, spent));
+    const naive = S.naivePayments(g.people, spent);
+    const name = (id) => g.people.find((p) => p.id === id).name;
+    const fs = Math.max(9, Math.min(13, w / 30));
+    const pad = Math.max(8, w * 0.04);
+    ctx.fillStyle = INK;
+    ctx.font = `400 ${Math.max(18, Math.min(34, w / 12))}px ${SERIF}`;
+    ctx.fillText(`${plan.length} payment${plan.length === 1 ? '' : 's'}`, pad, pad + fs * 2);
+    ctx.fillStyle = FAINT;
+    ctx.font = `600 ${fs * 0.8}px ${MONO}`;
+    ctx.fillText(naive > plan.length ? `INSTEAD OF ${naive}` : 'SETTLE EVERYTHING', pad, pad + fs * 3.4);
+    let y = pad + fs * 5.4;
+    ctx.font = `500 ${fs}px ${MONO}`;
+    for (const t of plan) {
+      if (y > h - pad) break;
+      ctx.fillStyle = INK;
+      ctx.fillText(`${name(t.from)} → ${name(t.to)}`, pad, y);
+      ctx.textAlign = 'right';
+      ctx.fillText(S.money(t.amount, g.currency, 'en-GB'), w - pad, y);
+      ctx.textAlign = 'left';
+      y += fs * 1.7;
     }
-    ctx.restore();
+    /* The newest expense, in red, arriving. */
+    const last = spent[spent.length - 1];
+    ctx.fillStyle = RED;
+    ctx.font = `italic 400 ${fs * 1.15}px ${SERIF}`;
+    ctx.textAlign = 'right';
+    ctx.fillText(`+ ${last.what}`, w - pad, pad + fs * 2);
+    ctx.textAlign = 'left';
   };
 }
 
-/** Loom: its own presets, rendered by its own engine, cross-fading. */
-function loomPreview(api) {
-  const RES = 200;
-  const frames = [];
-  let queued = false, cur = 0, fade = 1, hold = 0;
-
+/** Tuner: the real detector, listening to a synthesised string drifting in and out of tune. */
+function tunerPreview(api) {
+  let P = null;
+  import('./apps/tuner/pitch.js').then((m) => { P = m; }).catch(() => {});
+  const buf = new Float32Array(2048);
+  let t = 0, needle = 0, reading = null;
   api.frame = () => {
     const { ctx, w, h } = api;
-    ctx.fillStyle = '#05060b';
+    ctx.fillStyle = PAPER;
     ctx.fillRect(0, 0, w, h);
-
-    if (!queued) {
-      queued = true;
-      loadModules.then(([, loom, presets]) => {
-        let i = 0;
-        const next = () => {
-          if (i >= presets.PRESETS.length) return;
-          try {
-            const g = loom.deserialize(structuredClone(presets.PRESETS[i++].graph));
-            const out = g.nodes.find((n) => n.type === 'output');
-            const img = loom.evaluate(g, out.id, RES, RES).image;
-            const off = document.createElement('canvas');
-            off.width = off.height = RES;
-            off.getContext('2d').putImageData(new ImageData(loom.toRGBA(img), RES, RES), 0, 0);
-            frames.push(off);
-          } catch {}
-          (window.requestIdleCallback || ((f) => setTimeout(f, 60)))(next);
-        };
-        next();
-      }).catch(() => {});
+    if (!P) return;
+    t += 1 / 30;
+    const cents = 34 * Math.sin(t * 0.55) * Math.max(0.05, Math.abs(Math.cos(t * 0.21)));
+    if (api.t % 3 === 0) {
+      P.pluck(buf, 48000, 110 * 2 ** (cents / 1200), 0.05 + (t % 2.5));
+      const r = P.yin(buf, 48000, { minFreq: 60 });
+      if (r) reading = { ...P.noteOf(r.freq), freq: r.freq };
     }
-    if (!frames.length) return;
+    if (!reading) return;
+    needle += (reading.cents - needle) * 0.2;
+    const cx = w / 2, cy = h * 0.7, r = Math.min(w * 0.42, h * 0.58);
+    const ang = (c) => Math.PI * 1.5 + (c / 50) * (Math.PI * 0.42);
+    ctx.lineWidth = r * 0.09;
+    ctx.strokeStyle = 'rgba(44,122,75,.3)';
+    ctx.beginPath(); ctx.arc(cx, cy, r * 0.92, ang(-5), ang(5)); ctx.stroke();
+    ctx.lineWidth = 1;
+    for (let c = -50; c <= 50; c += 10) {
+      const a = ang(c);
+      ctx.strokeStyle = c === 0 ? INK : FAINT;
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(a) * r * 0.84, cy + Math.sin(a) * r * 0.84);
+      ctx.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+      ctx.stroke();
+    }
+    const a = ang(Math.max(-50, Math.min(50, needle)));
+    ctx.strokeStyle = Math.abs(needle) < 5 ? '#2c7a4b' : RED;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(a) * r * 0.95, cy + Math.sin(a) * r * 0.95); ctx.stroke();
+    ctx.fillStyle = INK;
+    ctx.beginPath(); ctx.arc(cx, cy, 4, 0, 6.2832); ctx.fill();
+    ctx.textAlign = 'center';
+    ctx.font = `400 ${Math.max(22, r * 0.5)}px ${SERIF}`;
+    ctx.fillText(`${reading.name}${reading.octave}`, cx, h - Math.max(8, h * 0.06));
+    ctx.font = `600 ${Math.max(8, Math.min(11, w / 40))}px ${MONO}`;
+    ctx.fillStyle = FAINT;
+    ctx.fillText(`${reading.freq.toFixed(1)} HZ · ${needle > 0 ? '+' : '−'}${Math.abs(needle).toFixed(0)} CENTS`, cx, Math.max(14, h * 0.1));
+    ctx.textAlign = 'left';
+  };
+}
 
-    if (fade >= 1) { if ((hold += 1 / 60) > 2.4) { hold = 0; fade = 0; } }
-    else { fade = Math.min(1, fade + 1 / 42); if (fade >= 1) cur = (cur + 1) % frames.length; }
+/** Minesweeper: the real generator and solver, playing a board on hints alone. */
+function sweeperPreview(api) {
+  let E = null, game = null, seed = 7, wait = 0, ring = -1;
+  import('./play/sweeper/engine.js').then((m) => { E = m; }).catch(() => {});
+  const COLS = 16, ROWS = 10;
+  const COLOURS = ['', '#1f5fbf', '#2c7a4b', '#cf2e1b', '#23306e', '#7a1f1f', '#1f7a7a', INK, FAINT];
+  api.frame = () => {
+    const { ctx, w, h } = api;
+    ctx.fillStyle = '#c9bfa9';
+    ctx.fillRect(0, 0, w, h);
+    if (!E) return;
+    if (!game) {
+      game = new E.Game({ w: COLS, h: ROWS, mines: 26, seed: seed++ });
+      game.reveal(game.idx(8, 5));
+    }
+    if (game.status === 'won') {
+      if ((wait += 1 / 30) > 2.2) { game = null; wait = 0; ring = -1; }
+    } else if (api.t % 12 === 0) {
+      const hint = game.hint();
+      if (hint) { ring = hint.cell; game.reveal(hint.cell); } else game = null;
+    }
+    if (!game) return;
+    const cell = Math.min(w / COLS, h / ROWS);
+    const ox = (w - cell * COLS) / 2, oy = (h - cell * ROWS) / 2;
+    ctx.font = `700 ${cell * 0.55}px ${MONO}`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    for (let i = 0; i < game.n; i++) {
+      const x = ox + (i % COLS) * cell, y = oy + Math.floor(i / COLS) * cell;
+      const open = game.open[i];
+      ctx.fillStyle = open ? PAPER : game.status === 'won' && game.mines[i] ? '#b3a78e' : '#e4ddcc';
+      ctx.fillRect(x + 0.5, y + 0.5, cell - 1, cell - 1);
+      if (open && game.counts[i]) {
+        ctx.fillStyle = COLOURS[game.counts[i]];
+        ctx.fillText(String(game.counts[i]), x + cell / 2, y + cell / 2 + 1);
+      }
+      if (i === ring) {
+        ctx.strokeStyle = RED;
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(x + cell / 2, y + cell / 2, cell * 0.62, 0, 6.2832); ctx.stroke();
+      }
+    }
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+  };
+}
 
-    // the square render is drawn to cover the card, cropped rather than squashed
-    const a = frames[cur % frames.length], b = frames[(cur + 1) % frames.length];
-    const k = Math.max(w / RES, h / RES);
-    const dw = RES * k, dh = RES * k, dx = (w - dw) / 2, dy = (h - dh) / 2;
-    ctx.drawImage(a, dx, dy, dw, dh);
-    if (fade < 1 && frames.length > 1) {
-      ctx.globalAlpha = 1 - fade;
-      ctx.drawImage(b, dx, dy, dw, dh);
-      ctx.globalAlpha = 1;
+/** Sudoku: the real generator and hints, one reasoned square at a time. */
+function sudokuPreview(api) {
+  let E = null, puzzle = null, grid = null, solution = null, seed = 41, ring = -1, unit = [], tech = '', wait = 0;
+  import('./play/sudoku/engine.js').then((m) => { E = m; }).catch(() => {});
+  api.frame = () => {
+    const { ctx, w, h } = api;
+    ctx.fillStyle = PAPER;
+    ctx.fillRect(0, 0, w, h);
+    if (!E) return;
+    if (!grid) {
+      const g = E.generate({ level: 'medium', seed: seed++ });
+      puzzle = g.puzzle; solution = g.solution; grid = puzzle.slice(); ring = -1; unit = []; tech = '';
+    }
+    if (grid.every((d) => d)) {
+      if ((wait += 1 / 30) > 2.5) { grid = null; wait = 0; }
+    } else if (api.t % 14 === 0) {
+      const hint = E.hint(grid, solution);
+      if (hint) { grid[hint.cell] = hint.digit; ring = hint.cell; unit = hint.cells; tech = hint.technique; }
+    }
+    if (!grid) return;
+    const side = Math.min(h * 0.9, w * 0.62), ox = (w - side) / 2 - (w > h * 1.4 ? w * 0.12 : 0), oy = (h - side) / 2;
+    const c = side / 9;
+    const inUnit = new Set(unit);
+    for (let i = 0; i < 81; i++) {
+      const x = ox + (i % 9) * c, y = oy + Math.floor(i / 9) * c;
+      if (inUnit.has(i) && i !== ring) { ctx.fillStyle = 'rgba(207,46,27,.09)'; ctx.fillRect(x, y, c, c); }
+      if (!grid[i]) continue;
+      ctx.fillStyle = puzzle[i] ? INK : '#1f4fbf';
+      ctx.font = `${puzzle[i] ? 600 : 400} ${c * 0.62}px Newsreader, Georgia, serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText(String(grid[i]), x + c / 2, y + c * 0.72);
+    }
+    ctx.textAlign = 'left';
+    for (let k = 0; k <= 9; k++) {
+      ctx.strokeStyle = k % 3 === 0 ? INK : 'rgba(23,20,15,.22)';
+      ctx.lineWidth = k % 3 === 0 ? 1.6 : 0.8;
+      ctx.beginPath(); ctx.moveTo(ox + k * c, oy); ctx.lineTo(ox + k * c, oy + side); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(ox, oy + k * c); ctx.lineTo(ox + side, oy + k * c); ctx.stroke();
+    }
+    if (ring >= 0) {
+      ctx.strokeStyle = RED;
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.arc(ox + (ring % 9) * c + c / 2, oy + Math.floor(ring / 9) * c + c / 2, c * 0.46, 0, 6.2832);
+      ctx.stroke();
+    }
+    if (tech && w > h * 1.4) {
+      ctx.fillStyle = RED;
+      ctx.font = `600 ${Math.max(8, Math.min(11, w / 42))}px ${MONO}`;
+      ctx.fillText(tech.toUpperCase(), ox + side + w * 0.05, oy + side * 0.5);
     }
   };
 }
