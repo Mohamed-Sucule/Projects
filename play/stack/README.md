@@ -2,7 +2,7 @@
 
 A block slides back and forth. You tap. It drops.
 
-**→ [Play it](https://mohamedsucule-debug.github.io/Projects/play/stack/)**
+**→ [Play it](https://mohamed-sucule.github.io/Projects/play/stack/)**
 
 Whatever hangs over the edge of the block below is sliced off and falls away,
 so the tower gets narrower every time you are sloppy and stays exactly as wide

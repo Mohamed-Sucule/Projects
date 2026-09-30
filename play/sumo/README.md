@@ -2,7 +2,7 @@
 
 Two players. One keyboard. One key each.
 
-**→ [Play it](https://mohamedsucule-debug.github.io/Projects/play/sumo/)**
+**→ [Play it](https://mohamed-sucule.github.io/Projects/play/sumo/)**
 
 Your blob has an arrow on it that sweeps round and round on its own. Hold your
 key and two things happen at once: **the arrow stops turning, and you charge the

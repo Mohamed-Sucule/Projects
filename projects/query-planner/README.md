@@ -3,7 +3,7 @@
 A database deciding how to answer a question, with its reasoning still
 attached.
 
-**→ [Open it](https://mohamedsucule-debug.github.io/Projects/projects/query-planner/)**
+**→ [Open it](https://mohamed-sucule.github.io/Projects/projects/query-planner/)**
 
 Write a query on the left, get the plan on the right: a tree of the steps the
 database would actually perform, read bottom to top. Every step carries the

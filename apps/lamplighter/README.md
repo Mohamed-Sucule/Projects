@@ -3,7 +3,7 @@
 A five-minute illustrated story about a lighthouse keeper's last winter.
 Scroll, and the night goes by.
 
-**→ [Read it](https://mohamedsucule-debug.github.io/Projects/apps/lamplighter/)**
+**→ [Read it](https://mohamed-sucule.github.io/Projects/apps/lamplighter/)**
 
 There is not an image file in this directory. The sky, the sea, the rock, the
 tower, the rain and the light are all arithmetic.

@@ -2,7 +2,7 @@
 
 A sheet of liquid metal under a sunset sky. Drag it and it ripples.
 
-**→ [Touch it](https://mohamedsucule-debug.github.io/Projects/apps/mercury/)**
+**→ [Touch it](https://mohamed-sucule.github.io/Projects/apps/mercury/)**
 
 Drag the metal and you draw waves into it. Drag the sky and you walk around it.
 That's the whole interface — which gesture you get depends on what's under your

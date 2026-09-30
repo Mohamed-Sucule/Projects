@@ -3,7 +3,7 @@
 A coastal watch log from the night of 14 November 1987, transcribed from the
 original daybook. It opens with the weather and the shipping.
 
-**→ [Read it](https://mohamedsucule-debug.github.io/Projects/apps/nightshift/)**
+**→ [Read it](https://mohamed-sucule.github.io/Projects/apps/nightshift/)**
 — alone, with sound on, all the way to the end.
 
 ---
