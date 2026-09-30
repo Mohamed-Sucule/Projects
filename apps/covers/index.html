@@ -1797,6 +1797,7 @@ if (bus) {
       return;
     }
     if (msg.kind === 'ping') { showStations(); return; }
+    if (msg.kind === 'desk') { applyDesk(msg); return; }
     if (msg.kind === 'state') {
       applyRemote(msg);
       toast(`Updated from station ${msg.from}`);
@@ -1826,6 +1827,31 @@ if (bus) {
     state.seq = Math.max(state.seq, msg.seq || 0);
     if (state.selected && !state.book.some((b) => b.id === state.selected)) state.selected = null;
     render();
+  };
+
+  /* The Front Desk receptionist, in another tab, sends the change it made
+     rather than the whole book: it may have been looking at a copy of the
+     night from a minute ago, and a whole-book overwrite from a stale copy
+     would undo whatever the host has done since. A booking added or a
+     booking changed lands on the book as it is now, and then this station
+     tells everyone — Front Desk included — what the room looks like. */
+  const applyDesk = (msg) => {
+    let touched = null;
+    for (const op of msg.ops || []) {
+      if (op.op === 'add' && op.booking && !state.book.some((b) => b.id === op.booking.id)) {
+        state.book.push({ ...op.booking, tableIds: [...op.booking.tableIds] });
+        touched = op.booking.id;
+      }
+      if (op.op === 'update') {
+        const b = state.book.find((x) => x.id === op.id);
+        if (b) {
+          Object.assign(b, op.changes, op.changes.tableIds ? { tableIds: [...op.changes.tableIds] } : {});
+          touched = b.id;
+        }
+      }
+    }
+    if (touched && state.book.find((b) => b.id === touched && b.status !== 'cancelled')) state.selected = touched;
+    announce(msg.text || 'Updated by Front Desk');
   };
 
   const showStations = () => {

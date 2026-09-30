@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="../../favicon.svg" />
+<meta name="theme-color" content="#f3efe5" />
+<title>Call Coach — a live assistant for sales calls</title>
+<meta name="description" content="Listen in on three sales calls while an assistant spots objections, competitors, pains and buying signals as they are said, puts the right answer on screen, and writes the notes, CRM record and follow-up email when the call ends." />
+<meta property="og:title" content="Call Coach — a live assistant for sales calls" />
+<meta property="og:description" content="The right card the moment a prospect objects, a nudge when the rep talks too much, and honest notes afterwards — including for the call that went nowhere." />
+<style>
+  @font-face { font-family: "Instrument Serif"; src: url("../../assets/fonts/instrument-serif.woff2") format("woff2"); font-display: swap; }
+  @font-face { font-family: "Instrument Serif"; src: url("../../assets/fonts/instrument-serif-italic.woff2") format("woff2"); font-style: italic; font-display: swap; }
+  @font-face { font-family: "Newsreader"; src: url("../../assets/fonts/newsreader.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
+  @font-face { font-family: "JetBrains Mono Var"; src: url("../../assets/fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 100 800; font-display: swap; }
+
+  :root {
+    --paper: #f3efe5; --card: #fbf9f3; --ink: #17140f; --ink-2: #4a4439; --ink-3: #857c6c;
+    --rule: rgba(23,20,15,.14); --rule-2: rgba(23,20,15,.3); --red: #cf2e1b; --green: #2c7a4b; --amber: #b06a10; --blue: #2f5d9c;
+    --display: "Instrument Serif", Georgia, serif; --text: "Newsreader", Georgia, serif;
+    --mono: "JetBrains Mono Var", ui-monospace, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--paper); color: var(--ink); }
+  body { font: 400 17px/1.5 var(--text); -webkit-font-smoothing: antialiased; }
+  [hidden] { display: none !important; }
+  button, input, textarea { font: inherit; color: inherit; }
+  .back { position: fixed; top: 14px; left: 14px; z-index: 10; text-decoration: none; font: 600 11px/1 var(--mono); letter-spacing: .1em; color: var(--ink-2); border: 1px solid var(--rule-2); padding: 8px 11px; background: var(--paper); }
+  .back:hover { color: var(--red); border-color: var(--red); }
+  main { max-width: 1240px; margin: 0 auto; padding: 76px 24px 100px; }
+
+  .kicker { margin: 0 0 14px; font: 600 11px/1.4 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--red); }
+  h1 { margin: 0; font: 400 clamp(52px, 8vw, 96px)/.92 var(--display); letter-spacing: -.02em; }
+  h1 em { color: var(--red); }
+  .lead { margin: 18px 0 0; max-width: 35em; font-size: clamp(19px, 2.2vw, 23px); line-height: 1.42; }
+  .facts { list-style: none; padding: 0; margin: 30px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--ink); }
+  .facts li { padding: 14px 18px 4px 0; border-right: 1px solid var(--rule); margin-right: 18px; }
+  .facts li:last-child { border-right: 0; margin-right: 0; }
+  .facts b { display: block; font: 400 24px/1.1 var(--display); }
+  .facts span { display: block; margin-top: 6px; color: var(--ink-2); font-size: 15.5px; line-height: 1.45; }
+  h2 { margin: 0 0 16px; font: 600 11px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); display: flex; align-items: center; gap: 12px; }
+  h2::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
+  section.band { margin-top: 84px; }
+
+  .calls { margin-top: 54px; }
+  .picker { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+  .pick { text-align: left; cursor: pointer; background: var(--card); border: 1px solid var(--rule-2); padding: 13px 14px 14px; display: grid; gap: 5px; align-content: start; transition: border-color .15s, transform .15s; }
+  .pick:hover { border-color: var(--ink); transform: translateY(-1px); }
+  .pick b { font: 400 21px/1.1 var(--display); display: flex; align-items: center; gap: 8px; }
+  .pick b::before { content: '▶'; font: 600 10px/1 var(--mono); color: var(--red); }
+  .pick span { font-size: 14.5px; line-height: 1.4; color: var(--ink-2); }
+  .pick.on { border-color: var(--red); box-shadow: inset 0 0 0 1px var(--red); }
+  .pick.you { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .pick.you b::before { content: '✎'; font-size: 13px; color: #ff8a73; }
+  .pick.you span { color: rgba(243,239,229,.75); }
+
+  /* ── the console ── */
+  .console { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 18px; margin-top: 18px; align-items: start; }
+  .call { background: var(--card); border: 1px solid var(--rule-2); box-shadow: 0 24px 50px -34px rgba(60,45,20,.55); display: flex; flex-direction: column; }
+  .callbar { display: flex; align-items: center; gap: 12px; padding: 11px 16px; background: var(--ink); color: var(--paper); font: 600 11px/1.2 var(--mono); letter-spacing: .06em; }
+  .callbar .dot { width: 8px; height: 8px; border-radius: 50%; background: #6d665a; flex: none; }
+  .callbar.live .dot { background: #ff5a3d; animation: blip 1.4s infinite; }
+  .callbar .who { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: rgba(243,239,229,.75); }
+  .callbar .clock { font-variant-numeric: tabular-nums; }
+  @keyframes blip { 50% { opacity: .35; } }
+  .ratio { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--rule); font: 600 10.5px/1 var(--mono); letter-spacing: .06em; color: var(--ink-3); }
+  .ratio .track { height: 8px; background: rgba(47,93,156,.25); position: relative; overflow: hidden; }
+  .ratio .fill { position: absolute; inset: 0 auto 0 0; background: var(--ink); transition: width .4s; }
+  .ratio .mid { position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: var(--red); }
+  .lines { list-style: none; margin: 0; padding: 12px 16px 8px; min-height: 420px; max-height: 600px; overflow-y: auto; }
+  .ln { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 12px; padding: 8px 0; border-bottom: 1px dashed var(--rule); animation: rise .3s ease-out; }
+  .ln:last-child { border-bottom: 0; }
+  .ln .who { font: 600 10px/1.9 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--blue); }
+  .ln.rep .who { color: var(--ink-3); }
+  .ln .t { font-size: 17.5px; line-height: 1.5; }
+  .ln.rep .t { color: var(--ink-2); }
+  .ln .w { opacity: 0; transition: opacity .1s; } .ln .w.on { opacity: 1; }
+  .ln .ts { display: block; font: 500 10px/1 var(--mono); color: var(--ink-3); margin-top: 4px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+  .tg { font: 600 9.5px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; padding: 4px 6px; border: 1px solid; animation: rise .3s ease-out; }
+  .tg.objection { color: var(--red); } .tg.signal { color: var(--green); } .tg.pain { color: var(--amber); }
+  @keyframes rise { from { opacity: 0; transform: translateY(4px); } }
+  .empty { color: var(--ink-3); font-style: italic; padding: 60px 10px; text-align: center; list-style: none; }
+  .empty b { display: block; font: 400 30px/1.1 var(--display); color: var(--ink); font-style: normal; margin-bottom: 8px; }
+  .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--rule); }
+  .controls .grow { flex: 1; }
+  .btn { font: 700 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; padding: 11px 14px; border: 1.5px solid var(--ink); background: var(--ink); color: var(--paper); white-space: nowrap; }
+  .btn.ghost { background: transparent; color: var(--ink); }
+  .btn:hover:not(:disabled) { background: var(--red); border-color: var(--red); color: #fff; }
+  .btn.small { padding: 8px 10px; font-size: 10px; }
+  .toggle { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; font: 600 10.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); }
+  .toggle input { accent-color: var(--red); width: 15px; height: 15px; margin: 0; }
+  .live-in { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--rule); }
+  .live-in input { flex: 1 1 260px; min-width: 0; font: 400 17px/1.3 var(--text); background: #fff; border: 1px solid var(--rule-2); padding: 11px 12px; outline: none; }
+  .live-in input:focus { border-color: var(--ink); }
+  .seg { display: inline-flex; border: 1.5px solid var(--ink); }
+  .seg button { border: 0; background: transparent; padding: 9px 11px; cursor: pointer; font: 700 10.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+  .seg button.on { background: var(--ink); color: var(--paper); }
+
+  /* coach side */
+  .coach { display: grid; gap: 14px; }
+  .panel { background: var(--card); border: 1px solid var(--rule-2); padding: 14px 16px 15px; }
+  .panel h3 { margin: 0 0 11px; font: 600 10.5px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); display: flex; justify-content: space-between; gap: 10px; }
+  .check { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 14px; font-size: 15px; }
+  .check li { display: flex; align-items: center; gap: 8px; color: var(--ink-3); }
+  .check li::before { content: ''; width: 13px; height: 13px; border: 1.5px solid var(--rule-2); flex: none; }
+  .check li.on { color: var(--ink); }
+  .check li.on::before { background: var(--green); border-color: var(--green); box-shadow: inset 0 0 0 2px var(--card); }
+  .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--rule); }
+  .stats b { display: block; font: 400 28px/1 var(--display); }
+  .stats span { font: 600 9.5px/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+  .stats svg { width: 100%; height: 30px; display: block; }
+  .feed { display: grid; gap: 10px; max-height: 560px; overflow-y: auto; }
+  .card { border: 1px solid var(--rule-2); background: #fff; padding: 12px 14px; animation: rise .35s ease-out; }
+  .card .k { font: 600 9.5px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--red); }
+  .card.comp .k { color: var(--blue); }
+  .card h4 { margin: 5px 0 6px; font: 400 23px/1.1 var(--display); }
+  .card .q { margin: 0 0 8px; font-size: 14.5px; color: var(--ink-3); font-style: italic; }
+  .card dl { margin: 0; display: grid; gap: 6px; }
+  .card dt { font: 600 9.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+  .card dd { margin: 2px 0 0; font-size: 15.5px; line-height: 1.45; }
+  .card ul { margin: 4px 0 0; padding-left: 18px; font-size: 15px; line-height: 1.45; }
+  .nudge { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 8px; font-size: 15.5px; line-height: 1.4; padding: 9px 12px; border-left: 3px solid var(--amber); background: rgba(176,106,16,.07); animation: rise .35s ease-out; }
+  .nudge i { font-style: normal; font: 700 12px/1.3 var(--mono); color: var(--amber); }
+  .nudge.good { border-color: var(--green); background: rgba(44,122,75,.07); } .nudge.good i { color: var(--green); }
+  .nudge.go { border-color: var(--green); background: rgba(44,122,75,.1); } .nudge.go i { color: var(--green); }
+  .nudge.ask { border-color: var(--blue); background: rgba(47,93,156,.07); } .nudge.ask i { color: var(--blue); }
+  .feed .none { font-style: italic; color: var(--ink-3); font-size: 15px; }
+
+  /* after the call */
+  .after { margin-top: 26px; }
+  .verdict { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px; align-items: center; padding: 18px 20px; background: var(--ink); color: var(--paper); }
+  .verdict .stage { font: 700 11px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; padding: 8px 10px; border: 1.5px solid currentColor; }
+  .verdict.Qualified .stage, .verdict.Proposal .stage { color: #7ee2a8; }
+  .verdict.Nurture .stage { color: #ffb86b; }
+  .verdict p { margin: 0; font: 400 22px/1.3 var(--display); }
+  .after-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; margin-top: 18px; align-items: start; }
+  .meddicc { width: 100%; border-collapse: collapse; font-size: 15.5px; }
+  .meddicc th { text-align: left; vertical-align: top; width: 150px; padding: 9px 12px 9px 0; font: 600 10.5px/1.4 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); border-bottom: 1px solid var(--rule); }
+  .meddicc th small { display: block; text-transform: none; letter-spacing: 0; color: var(--ink-3); font-weight: 500; }
+  .meddicc td { padding: 9px 0; border-bottom: 1px solid var(--rule); line-height: 1.45; }
+  .meddicc td q { display: block; quotes: '“' '”'; }
+  .meddicc td q + q { margin-top: 4px; }
+  .meddicc td.gap { color: var(--red); }
+  .meddicc td.gap::before { content: 'Missing — ask: '; font: 600 10px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+  .crm { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 7px 14px; margin: 0; font-size: 15.5px; }
+  .crm dt { font: 600 10px/1.6 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+  .crm dd { margin: 0; }
+  .email { white-space: pre-wrap; font: 400 15.5px/1.55 var(--text); background: #fff; border: 1px solid var(--rule); padding: 14px 16px; margin: 0; max-height: 420px; overflow-y: auto; }
+  .email-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .email-head b { font: 400 19px/1.2 var(--display); }
+  .obj { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 15px; }
+  .obj li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 6px; }
+  .obj li i { font-style: normal; font: 700 12px/1.4 var(--mono); color: var(--green); }
+  .obj li.open i { color: var(--red); }
+
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); counter-reset: s; border-top: 1px solid var(--ink); }
+  .steps li { padding: 16px 16px 4px 0; margin-right: 16px; border-right: 1px solid var(--rule); counter-increment: s; }
+  .steps li:last-child { border-right: 0; margin-right: 0; }
+  .steps li::before { content: counter(s, decimal-leading-zero); display: block; font: 600 11px/1 var(--mono); color: var(--red); letter-spacing: .1em; margin-bottom: 10px; }
+  .steps b { display: block; font: 400 24px/1.1 var(--display); margin-bottom: 6px; }
+  .steps p { margin: 0; font-size: 15.5px; line-height: 1.5; color: var(--ink-2); }
+  .scores { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+  .score { border-top: 2px solid var(--ink); padding-top: 12px; }
+  .score .big { font: 400 clamp(42px, 5vw, 62px)/1 var(--display); letter-spacing: -.02em; }
+  .score .big small { font-size: .45em; color: var(--ink-3); }
+  .score p { margin: 8px 0 0; font-size: 15px; color: var(--ink-2); line-height: 1.5; }
+  .ship { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 40px; }
+  .ship div { border-top: 1px solid var(--rule-2); padding-top: 12px; }
+  .ship b { display: block; font: 400 22px/1.15 var(--display); margin-bottom: 6px; }
+  .ship p { margin: 0; color: var(--ink-2); font-size: 16px; line-height: 1.55; }
+  .ship .state { font: 600 9.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; margin-left: 8px; vertical-align: 3px; }
+  .state.done { color: var(--green); } .state.todo { color: var(--ink-3); }
+  footer { margin-top: 80px; padding-top: 18px; border-top: 1px solid var(--ink); display: flex; flex-wrap: wrap; gap: 10px 24px; justify-content: space-between; font-size: 15px; color: var(--ink-2); }
+  footer a { color: var(--ink); }
+
+  @media (max-width: 1000px) {
+    .picker { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .console, .after-grid { grid-template-columns: minmax(0, 1fr); }
+    .steps { grid-template-columns: minmax(0, 1fr); }
+    .steps li { border-right: 0; margin-right: 0; border-bottom: 1px solid var(--rule); padding-bottom: 14px; }
+    .scores, .ship { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 640px) {
+    main { padding: 70px 16px 80px; }
+    .facts { grid-template-columns: minmax(0, 1fr); }
+    .facts li { border-right: 0; margin-right: 0; border-bottom: 1px solid var(--rule); padding-bottom: 12px; }
+    .picker { grid-template-columns: minmax(0, 1fr); }
+    .pick span { display: none; }
+    .ln { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+    .lines { min-height: 300px; max-height: 460px; }
+    .verdict { grid-template-columns: minmax(0, 1fr); }
+    .verdict p { font-size: 19px; }
+    .meddicc th { width: 100px; }
+  }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<a class="back" href="../../index.html">← INDEX</a>
+<main>
+  <header>
+    <p class="kicker">Case study · Sales AI · Revenue teams</p>
+    <h1>Call <em>Coach</em></h1>
+    <p class="lead">A live assistant for sales calls. It puts the right answer on screen the moment a prospect objects, tells the rep when they're talking too much — and when the call ends, writes the notes, fills in the CRM and drafts the follow-up.</p>
+    <ul class="facts">
+      <li><b>The right card, right then</b><span>Price, a competitor, "I'd need to ask my boss" — each brings up what it usually means, the question to ask back and one way to answer.</span></li>
+      <li><b>Notes from what was said</b><span>Every line in the notes is a quote from the call or a number read off one. Anything the call didn't cover is marked as the question to ask next time.</span></li>
+      <li><b>Honest about bad calls</b><span>A polite "just send me an email" is written up as a polite no, with the one thing still worth doing.</span></li>
+    </ul>
+  </header>
+
+  <section class="calls" aria-labelledby="callsHead">
+    <h2 id="callsHead">Listen in on a call</h2>
+    <div class="picker" id="picker"></div>
+  </section>
+
+  <section class="console" aria-label="The call">
+    <div class="call">
+      <div class="callbar" id="callbar"><span class="dot"></span><span id="state">READY</span><span class="who" id="callWho">Pick a call</span><span class="clock" id="clock">00:00</span></div>
+      <div class="ratio"><span id="repLbl">REP</span><div class="track"><div class="fill" id="fill" style="width:0%"></div><div class="mid"></div></div><span id="shareLbl">talk time</span></div>
+      <ol class="lines" id="lines" aria-live="polite"><li class="empty"><b>Pick a call to listen in.</b>The words are scripted; every card, nudge and note is worked out from them as they are said.</li></ol>
+      <div class="controls" id="controls">
+        <button class="btn" id="playBtn" type="button">▶ Play</button>
+        <button class="btn ghost small" id="skipBtn" type="button">Skip to the notes</button>
+        <span class="grow"></span>
+        <label class="toggle"><input type="checkbox" id="fast" /> Faster</label>
+        <label class="toggle"><input type="checkbox" id="sound" /> Sound</label>
+      </div>
+      <form class="live-in" id="liveForm" hidden autocomplete="off">
+        <div class="seg" role="group" aria-label="Who is speaking"><button type="button" data-who="rep" class="on">Rep</button><button type="button" data-who="prospect">Prospect</button></div>
+        <input id="liveInput" placeholder="Type a line of the call…" aria-label="A line of the call" />
+        <button class="btn" type="submit">Add</button>
+        <button class="btn ghost" type="button" id="endLive">End call</button>
+      </form>
+    </div>
+
+    <aside class="coach">
+      <section class="panel">
+        <h3>Discovery checklist</h3>
+        <ul class="check" id="check"></ul>
+        <div class="stats">
+          <div><b id="stQ">0</b><span>questions<br /><em id="stOpen" style="font-style:normal">0 open</em></span></div>
+          <div><b id="stSig">0</b><span>buying<br />signals</span></div>
+          <div><svg id="mood" viewBox="0 0 100 30" preserveAspectRatio="none" aria-label="How the prospect sounded"></svg><span>how they<br />sounded</span></div>
+        </div>
+      </section>
+      <section class="panel">
+        <h3>Coach <small id="feedCount"></small></h3>
+        <div class="feed" id="feed"><p class="none">Cards and nudges appear here as the call goes.</p></div>
+      </section>
+    </aside>
+  </section>
+
+  <section class="after" id="after" hidden aria-label="After the call">
+    <div class="verdict" id="verdict"><span class="stage" id="stage"></span><p id="verdictText"></p></div>
+    <div class="after-grid">
+      <div class="panel">
+        <h3>The notes <small>MEDDICC — the qualification fields sales teams use</small></h3>
+        <table class="meddicc"><tbody id="meddicc"></tbody></table>
+      </div>
+      <div style="display:grid;gap:14px">
+        <div class="panel"><h3>CRM record</h3><dl class="crm" id="crm"></dl></div>
+        <div class="panel"><h3>Objections</h3><ul class="obj" id="objs"></ul></div>
+        <div class="panel">
+          <div class="email-head"><b id="emailSubject"></b><button class="btn ghost small" type="button" id="copyEmail">Copy</button></div>
+          <pre class="email" id="email"></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="howHead">
+    <h2 id="howHead">How it works</h2>
+    <ol class="steps">
+      <li><b>Hears each line</b><p>On a real call, speech-to-text turns each speaker's audio into lines as they finish speaking. Here the lines are written out, and the same code reads them.</p></li>
+      <li><b>Tags the moment</b><p>Seventeen kinds of moment — eight objections, five buying signals, four pains — each a set of patterns a sales manager would recognise, checked against labelled examples.</p></li>
+      <li><b>Coaches, once</b><p>Each card appears the first time its moment comes up, never twice. Nudges watch talk time, questions asked, and whether a buying signal was followed by a next step.</p></li>
+      <li><b>Writes it up</b><p>The notes, the CRM record and the email are built only from what was said: quotes, numbers read off quotes, and the gaps as questions.</p></li>
+    </ol>
+  </section>
+
+  <section class="band" aria-labelledby="scoreHead">
+    <h2 id="scoreHead">How well it hears</h2>
+    <div class="scores">
+      <div class="score"><div class="big" id="sTune">–</div><p>lines tagged exactly right in the set it was built against.</p></div>
+      <div class="score"><div class="big" id="sHeld">–</div><p id="sHeldText">lines tagged exactly right, first time, in a set written afterwards.</p></div>
+      <div class="score"><div class="big" id="sPR">–</div><p>precision and recall on the held-out set: how often a card was right, and how many moments it caught.</p></div>
+    </div>
+    <p style="max-width:48em;color:var(--ink-2);font-size:16px;margin:18px 0 0">Read the held-out number with a pinch of salt: the rules and the test lines were written by the same person, and people are bad at writing tests that surprise their own rules. The real test for a tagger like this is a week of a client's own call transcripts — the first thing I would ask for.</p>
+  </section>
+
+  <section class="band" aria-labelledby="shipHead">
+    <h2 id="shipHead">Taking it to a real sales team</h2>
+    <div class="ship">
+      <div><b>The call audio <span class="state todo">next step</span></b><p>Zoom, Teams and dialler recordings stream to a speech-to-text service with speaker labels. Everything on this page already works one line at a time.</p></div>
+      <div><b>Their playbook <span class="state done">designed for</span></b><p>The cards, competitors and price are one file their best rep can edit. The tagger's patterns grow from their own transcripts, with every change scored against the labelled set.</p></div>
+      <div><b>Their CRM <span class="state todo">next step</span></b><p>The record and the notes map straight onto Salesforce or HubSpot fields, written as a draft the rep approves — never updated behind their back.</p></div>
+      <div><b>Coaching the coach <span class="state done">built</span></b><p>Each tag is scored on its own for precision and recall, so "the price card fires too often" is a number that can be watched, not a feeling.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>The people, the companies and the competitors are fictional. The product being sold is <a href="../covers/index.html">Covers</a>.</span>
+    <span><a href="README.md">How it's built</a> · <a href="../../index.html">Everything else</a></span>
+  </footer>
+</main>
+
+<script type="module">
+import { CALLS, timeline } from './calls.js';
+import { createAnalysis, hear, summarise, CHECKLIST } from './analyse.js';
+import { TUNING, HELD_OUT, HELD_OUT_FIRST_RUN, TAGS, score } from './labels.js';
+import { tag } from './analyse.js';
+
+const $ = (id) => document.getElementById(id);
+const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch { /* private */ } } };
+const mmss = (s) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+
+let state = null, meta = null, run = 0, paused = false, skipping = false, mode = 'idle', current = null;
+class Stop extends Error {}
+const settings = { sound: store.get('callcoach.sound') === '1', fast: store.get('callcoach.fast') === '1' };
+$('sound').checked = settings.sound; $('fast').checked = settings.fast;
+$('sound').addEventListener('change', (e) => { settings.sound = e.target.checked; store.set('callcoach.sound', settings.sound ? '1' : '0'); if (!settings.sound) window.speechSynthesis?.cancel(); });
+$('fast').addEventListener('change', (e) => { settings.fast = e.target.checked; store.set('callcoach.fast', settings.fast ? '1' : '0'); });
+
+/* ── picker ── */
+for (const c of CALLS) {
+  const b = el('button', 'pick');
+  b.type = 'button'; b.dataset.id = c.id;
+  b.append(el('b', null, c.title), el('span', null, c.blurb));
+  b.addEventListener('click', () => play(c));
+  $('picker').append(b);
+}
+{
+  const b = el('button', 'pick you');
+  b.type = 'button'; b.dataset.id = 'you';
+  b.append(el('b', null, 'Try it yourself'), el('span', null, 'Type both sides of a call and watch the coach react.'));
+  b.addEventListener('click', startLive);
+  $('picker').append(b);
+}
+const mark = (id) => { for (const b of $('picker').children) b.classList.toggle('on', b.dataset.id === id); };
+
+/* ── pacing ── */
+async function wait(ms, token) {
+  if (skipping) { if (token !== run) throw new Stop(); return; }
+  let left = ms;
+  while (left > 0) {
+    if (token !== run) throw new Stop();
+    await new Promise((r) => setTimeout(r, Math.min(60, left)));
+    if (!paused) left -= 60;
+  }
+  if (token !== run) throw new Stop();
+}
+const synth = 'speechSynthesis' in window ? window.speechSynthesis : null;
+let voices = [];
+const loadVoices = () => { voices = synth?.getVoices() ?? []; };
+synth?.addEventListener?.('voiceschanged', loadVoices); loadVoices();
+function speak(text, who) {
+  if (!synth || !settings.sound || skipping) return null;
+  return new Promise((resolve) => {
+    const u = new SpeechSynthesisUtterance(text.replace(/—/g, ','));
+    const en = voices.filter((v) => /^en[-_]/i.test(v.lang));
+    const pool = en.length ? en : voices;
+    if (pool.length) u.voice = pool[who === 'rep' ? 0 : Math.min(1, pool.length - 1)];
+    u.rate = settings.fast ? 1.25 : 1.05;
+    u.pitch = who === 'rep' ? 1 : 1.15;
+    let done = false; const fin = () => { if (!done) { done = true; resolve(); } };
+    u.onend = fin; u.onerror = fin;
+    setTimeout(fin, 1500 + text.split(/\s+/).length * 520);
+    synth.speak(u);
+  });
+}
+
+/* ── drawing ── */
+function reset(m) {
+  meta = m;
+  state = createAnalysis(m);
+  $('lines').replaceChildren();
+  $('feed').replaceChildren(el('p', 'none', 'Cards and nudges appear here as the call goes.'));
+  $('feedCount').textContent = '';
+  $('after').hidden = true;
+  $('callWho').textContent = `${m.rep.company} × ${m.prospect.company} · ${m.prospect.name}, ${m.prospect.role}`;
+  $('repLbl').textContent = (m.rep.name || 'REP').toUpperCase();
+  drawMetrics();
+}
+
+function addLine(line, name) {
+  const li = el('li', `ln ${line.who}`);
+  const who = el('span', 'who', name);
+  const body = el('div');
+  const t = el('div', 't');
+  body.append(t);
+  if (line.at != null) body.append(el('span', 'ts', mmss(line.at)));
+  li.append(who, body);
+  $('lines').append(li);
+  $('lines').scrollTop = $('lines').scrollHeight;
+  return { li, t, body };
+}
+
+async function reveal(t, text, who, token) {
+  const parts = text.split(/(\s+)/);
+  const spans = parts.map((p) => { const s = el('span', /\s/.test(p) ? null : 'w', p); t.append(s); return s; });
+  const speech = speak(text, who);
+  const per = speech ? 300 : 55 * (settings.fast ? 0.45 : 1);
+  for (const s of spans) { if (!s.classList.contains('w')) continue; s.classList.add('on'); if (!skipping) await wait(per, token); }
+  if (speech) await speech;
+  for (const s of spans) s.classList.add('on');
+  $('lines').scrollTop = $('lines').scrollHeight;
+}
+
+function showResult(r, body) {
+  if (r.line.tags.length) {
+    const tags = el('div', 'tags');
+    for (const t of r.line.tags) tags.append(el('span', `tg ${t.split(':')[0]}`, TAGS[t] ?? t));
+    body.append(tags);
+  }
+  const feed = $('feed');
+  feed.querySelector('.none')?.remove();
+  const add = (node) => { feed.prepend(node); };
+  for (const n of r.nudges) {
+    const d = el('div', `nudge ${n.kind}`);
+    d.append(el('i', null, { good: '✓', go: '→', ask: '?', warn: '!' }[n.kind] ?? '·'), el('span', null, n.text));
+    add(d);
+  }
+  for (const c of r.cards) {
+    const d = el('div', `card${c.type === 'competitor' ? ' comp' : ''}`);
+    d.append(el('span', 'k', c.type === 'competitor' ? 'Competitor mentioned' : 'Objection'), el('h4', null, c.title));
+    d.append(el('p', 'q', `“${c.quote.length > 110 ? c.quote.slice(0, 108) + '…' : c.quote}”`));
+    const dl = el('dl');
+    if (c.type === 'competitor') {
+      dl.append(el('dt', null, 'Who they are'), el('dd', null, c.summary), el('dt', null, 'Where Covers wins'));
+      const ul = el('ul'); for (const v of c.vs) ul.append(el('li', null, v));
+      const dd = el('dd'); dd.append(ul); dl.append(dd);
+      dl.append(el('dt', null, 'Ask'), el('dd', null, c.ask));
+    } else {
+      dl.append(el('dt', null, 'Usually means'), el('dd', null, c.means), el('dt', null, 'Ask'), el('dd', null, c.ask), el('dt', null, 'Answer'), el('dd', null, c.say));
+    }
+    d.append(dl);
+    add(d);
+  }
+  $('feedCount').textContent = `${feed.children.length} so far`;
+  drawMetrics(r.metrics);
+}
+
+function drawMetrics(m = null) {
+  const covered = new Set(m?.covered ?? []);
+  const ul = $('check');
+  ul.replaceChildren();
+  for (const [k, label] of CHECKLIST) ul.append(el('li', covered.has(k) ? 'on' : null, label));
+  const share = m ? m.repShare : 0;
+  $('fill').style.width = `${Math.round(share * 100)}%`;
+  $('shareLbl').textContent = m ? `${Math.round(share * 100)}% · them ${Math.round((1 - share) * 100)}%` : 'talk time';
+  $('stQ').textContent = m?.questions ?? 0;
+  $('stOpen').textContent = `${m?.open ?? 0} open`;
+  $('stSig').textContent = m?.signals ?? 0;
+  const svg = $('mood');
+  svg.replaceChildren();
+  const pts = state?.tones ?? [];
+  if (pts.length > 1) {
+    let acc = 0;
+    const smooth = pts.map((p, i) => (acc = i ? acc * 0.5 + p.v * 0.5 : p.v));
+    const d = smooth.map((v, i) => `${i ? 'L' : 'M'}${(i / (smooth.length - 1)) * 100},${15 - v * 13}`).join(' ');
+    const ns = 'http://www.w3.org/2000/svg';
+    const base = document.createElementNS(ns, 'line');
+    for (const [k, v] of Object.entries({ x1: 0, x2: 100, y1: 15, y2: 15, stroke: 'rgba(23,20,15,.2)', 'stroke-dasharray': '2 2' })) base.setAttribute(k, v);
+    const path = document.createElementNS(ns, 'path');
+    for (const [k, v] of Object.entries({ d, fill: 'none', stroke: smooth[smooth.length - 1] >= 0 ? '#2c7a4b' : '#cf2e1b', 'stroke-width': 2, 'vector-effect': 'non-scaling-stroke' })) path.setAttribute(k, v);
+    svg.append(base, path);
+  }
+}
+
+function showSummary() {
+  const s = summarise(state);
+  $('after').hidden = false;
+  $('verdict').className = `verdict ${s.stage}`;
+  $('stage').textContent = s.stage;
+  $('verdictText').textContent = s.verdict;
+  const tb = $('meddicc');
+  tb.replaceChildren();
+  for (const f of s.meddicc) {
+    const tr = el('tr');
+    const th = el('th', null, f.label);
+    th.append(el('small', null, f.hint));
+    const td = el('td', f.found ? null : 'gap');
+    /* Quotes get quotation marks; the coach's own notes do not. */
+    if (f.found) for (const q of f.found) td.append(el(q.note ? 'div' : 'q', null, q.quote));
+    else td.append(f.ask);
+    tr.append(th, td);
+    tb.append(tr);
+  }
+  const crm = $('crm');
+  crm.replaceChildren();
+  for (const [k, v] of [['Company', s.crm.company], ['Contact', s.crm.contact], ['Stage', s.crm.stage], ['Deal size', s.crm.size], ['Competitor', s.crm.competitor], ['Their timeline', s.crm.timeline], ['Next step', s.crm.next], ['Open risks', s.crm.risks.length ? s.crm.risks.join(', ') : 'None']]) {
+    crm.append(el('dt', null, k), el('dd', null, v));
+  }
+  const objs = $('objs');
+  objs.replaceChildren();
+  if (!s.objections.length) objs.append(el('li', null, 'None raised.'));
+  for (const o of s.objections) {
+    const li = el('li', o.answered ? null : 'open');
+    li.append(el('i', null, o.answered ? '✓' : '✕'), el('span', null, `${o.title}${o.times > 1 ? ` (×${o.times})` : ''} — ${o.answered ? 'answered' : 'left hanging'}: “${o.quote}”`));
+    objs.append(li);
+  }
+  $('emailSubject').textContent = s.email.subject;
+  $('email').textContent = s.email.body;
+  $('after').scrollIntoView({ behavior: skipping ? 'instant' : 'smooth', block: 'start' });
+}
+$('copyEmail').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(`${$('emailSubject').textContent}\n\n${$('email').textContent}`); $('copyEmail').textContent = 'Copied'; }
+  catch { $('copyEmail').textContent = 'Select and copy'; }
+  setTimeout(() => { $('copyEmail').textContent = 'Copy'; }, 1600);
+});
+
+/* ── a sample call ── */
+let clockTimer = null;
+function setLive(on, label) { $('callbar').classList.toggle('live', on); $('state').textContent = label; }
+
+async function play(call) {
+  const token = ++run;
+  paused = false; skipping = false; mode = 'sample'; current = call;
+  window.speechSynthesis?.cancel();
+  mark(call.id);
+  $('controls').hidden = false; $('liveForm').hidden = true;
+  reset(call);
+  setLive(true, 'ON A CALL');
+  $('playBtn').textContent = '❚❚ Pause';
+  const lines = timeline(call.lines);
+  const start = performance.now();
+  clearInterval(clockTimer);
+  let shown = 0;
+  clockTimer = setInterval(() => { $('clock').textContent = mmss(lines[Math.max(0, shown - 1)]?.at ?? 0); }, 250);
+  try {
+    for (const line of lines) {
+      const name = line.who === 'rep' ? `${call.rep.name}` : call.prospect.name.split(' ')[0];
+      const { t, body } = addLine(line, name);
+      shown++;
+      await reveal(t, line.text, line.who, token);
+      const r = hear(state, line);
+      showResult(r, body);
+      await wait(r.cards.length || r.nudges.length ? 700 : 350, token);
+    }
+    void start;
+    setLive(false, 'CALL ENDED');
+    clearInterval(clockTimer);
+    $('clock').textContent = mmss(lines[lines.length - 1].at + lines[lines.length - 1].dur);
+    $('playBtn').textContent = '↺ Play again';
+    mode = 'ended';
+    showSummary();
+    skipping = false;
+  } catch (e) { if (!(e instanceof Stop)) throw e; }
+}
+$('playBtn').addEventListener('click', () => {
+  if (mode === 'sample' && !paused) { paused = true; window.speechSynthesis?.pause(); $('playBtn').textContent = '▶ Resume'; setLive(true, 'PAUSED'); return; }
+  if (mode === 'sample' && paused) { paused = false; window.speechSynthesis?.resume(); $('playBtn').textContent = '❚❚ Pause'; setLive(true, 'ON A CALL'); return; }
+  play(current ?? CALLS[0]);
+});
+$('skipBtn').addEventListener('click', () => {
+  if (mode !== 'sample') play(current ?? CALLS[0]);
+  skipping = true; paused = false; window.speechSynthesis?.cancel();
+});
+
+/* ── typing a call ── */
+let who = 'rep';
+for (const b of document.querySelectorAll('.seg button')) b.addEventListener('click', () => { who = b.dataset.who; for (const x of document.querySelectorAll('.seg button')) x.classList.toggle('on', x === b); $('liveInput').focus(); });
+function startLive() {
+  ++run; mode = 'live'; paused = false; skipping = false;
+  window.speechSynthesis?.cancel();
+  clearInterval(clockTimer);
+  mark('you');
+  $('controls').hidden = true; $('liveForm').hidden = false;
+  reset({ rep: { name: 'You', company: 'Covers' }, prospect: { name: 'The prospect', role: 'Prospect', company: 'Your prospect' } });
+  setLive(true, 'ON A CALL');
+  $('liveInput').placeholder = 'Type what the rep says, then switch to Prospect…';
+  $('liveInput').focus({ preventScroll: true });
+}
+$('liveForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const text = $('liveInput').value.trim();
+  if (!text || mode !== 'live') return;
+  $('liveInput').value = '';
+  const line = { who, text };
+  const { t, body } = addLine(line, who === 'rep' ? 'You' : 'Prospect');
+  t.textContent = text;
+  showResult(hear(state, line), body);
+  /* Conversations alternate; save a click. */
+  const other = who === 'rep' ? 'prospect' : 'rep';
+  document.querySelector(`.seg button[data-who="${other}"]`).click();
+});
+$('endLive').addEventListener('click', () => {
+  if (!state?.lines.length) return;
+  setLive(false, 'CALL ENDED');
+  showSummary();
+});
+
+/* ── the scores ── */
+{
+  const t = score(tag, TUNING), h = score(tag, HELD_OUT);
+  $('sTune').innerHTML = `${t.exact}<small> / ${t.lines}</small>`;
+  $('sHeld').innerHTML = `${HELD_OUT_FIRST_RUN.exact}<small> / ${HELD_OUT_FIRST_RUN.lines}</small>`;
+  $('sHeldText').textContent = `lines tagged exactly right, the first time, in a set written afterwards${h.exact !== HELD_OUT_FIRST_RUN.exact ? ` (today ${h.exact})` : ''}.`;
+  $('sPR').innerHTML = `${Math.round(h.precision * 100)}%<small> / ${Math.round(h.recall * 100)}%</small>`;
+}
+drawMetrics();
+current = CALLS[0];
+window.callcoach = { get state() { return state; }, play, CALLS };
+</script>
+<script type="module" src="../../shared/navigator.js"></script>
+</body>
+</html>

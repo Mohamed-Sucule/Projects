@@ -1,0 +1,956 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="../../favicon.svg" />
+<meta name="theme-color" content="#f3efe5" />
+<title>Front Desk — an AI receptionist that books straight into the table plan</title>
+<meta name="description" content="An AI phone receptionist for a busy restaurant. It understands what the caller wants, checks the real table plan, offers the nearest free times, takes allergies and occasions, and books straight into the restaurant's system — running entirely in your browser." />
+<meta property="og:title" content="Front Desk — an AI receptionist that books straight into the table plan" />
+<meta property="og:description" content="Listen in on calls to a busy restaurant, or ring it yourself. It checks the real floor plan, never double-books, and hands over to a person when it should." />
+<style>
+  @font-face { font-family: "Instrument Serif"; src: url("../../assets/fonts/instrument-serif.woff2") format("woff2"); font-display: swap; }
+  @font-face { font-family: "Instrument Serif"; src: url("../../assets/fonts/instrument-serif-italic.woff2") format("woff2"); font-style: italic; font-display: swap; }
+  @font-face { font-family: "Newsreader"; src: url("../../assets/fonts/newsreader.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
+  @font-face { font-family: "JetBrains Mono Var"; src: url("../../assets/fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 100 800; font-display: swap; }
+
+  :root {
+    --paper: #f3efe5; --card: #fbf9f3; --ink: #17140f; --ink-2: #4a4439; --ink-3: #857c6c;
+    --rule: rgba(23,20,15,.14); --rule-2: rgba(23,20,15,.3); --red: #cf2e1b; --green: #2c7a4b;
+    --display: "Instrument Serif", Georgia, serif; --text: "Newsreader", Georgia, serif;
+    --mono: "JetBrains Mono Var", ui-monospace, Menlo, monospace;
+    --c-party: #2f5d9c; --c-date: #2c7a4b; --c-time: #b06a10; --c-name: #7a3e9d; --c-phone: #1f6f78; --c-notes: #cf2e1b; --c-late: #b06a10;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--paper); color: var(--ink); }
+  body { font: 400 17px/1.5 var(--text); -webkit-font-smoothing: antialiased; }
+  [hidden] { display: none !important; }
+  button, input { font: inherit; color: inherit; }
+  a { color: inherit; }
+  .back {
+    position: fixed; top: 14px; left: 14px; z-index: 10; text-decoration: none;
+    font: 600 11px/1 var(--mono); letter-spacing: .1em; color: var(--ink-2);
+    border: 1px solid var(--rule-2); padding: 8px 11px; background: var(--paper);
+  }
+  .back:hover { color: var(--red); border-color: var(--red); }
+  main { max-width: 1200px; margin: 0 auto; padding: 76px 24px 100px; }
+
+  /* ── the top ─────────────────────────────────────────────────────────── */
+  .kicker { margin: 0 0 14px; font: 600 11px/1.4 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--red); }
+  h1 { margin: 0; font: 400 clamp(52px, 8vw, 96px)/.92 var(--display); letter-spacing: -.02em; }
+  h1 em { color: var(--red); }
+  .lead { margin: 18px 0 0; max-width: 34em; font-size: clamp(19px, 2.2vw, 23px); line-height: 1.42; color: var(--ink); }
+  .facts { list-style: none; padding: 0; margin: 30px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--ink); }
+  .facts li { padding: 14px 18px 4px 0; border-right: 1px solid var(--rule); margin-right: 18px; }
+  .facts li:last-child { border-right: 0; margin-right: 0; }
+  .facts b { display: block; font: 400 24px/1.1 var(--display); }
+  .facts span { display: block; margin-top: 6px; color: var(--ink-2); font-size: 15.5px; line-height: 1.45; }
+
+  h2 { margin: 0 0 16px; font: 600 11px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); display: flex; align-items: center; gap: 12px; }
+  h2::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
+
+  /* ── choosing a call ─────────────────────────────────────────────────── */
+  .calls { margin-top: 54px; }
+  .picker { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+  .pick {
+    text-align: left; cursor: pointer; background: var(--card); border: 1px solid var(--rule-2); padding: 13px 14px 14px;
+    display: grid; gap: 5px; align-content: start; transition: border-color .15s, transform .15s, box-shadow .15s;
+  }
+  .pick:hover { border-color: var(--ink); transform: translateY(-1px); box-shadow: 0 10px 22px -18px rgba(40,30,10,.6); }
+  .pick b { font: 400 21px/1.1 var(--display); display: flex; align-items: center; gap: 8px; }
+  .pick b::before { content: '▶'; font: 600 10px/1 var(--mono); color: var(--red); }
+  .pick span { font-size: 14.5px; line-height: 1.4; color: var(--ink-2); }
+  .pick.on { border-color: var(--red); box-shadow: inset 0 0 0 1px var(--red); }
+  .pick.you { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .pick.you b::before { content: '☎'; font-size: 14px; color: #ff8a73; }
+  .pick.you span { color: rgba(243,239,229,.75); }
+  .pick.you.on { box-shadow: inset 0 0 0 2px var(--red); }
+
+  /* ── the console ─────────────────────────────────────────────────────── */
+  .console { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; margin-top: 18px; align-items: start; }
+  .handset { background: var(--card); border: 1px solid var(--rule-2); box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 24px 50px -34px rgba(60,45,20,.55); display: flex; flex-direction: column; min-height: 560px; }
+  .handset-bar { display: flex; align-items: center; gap: 12px; padding: 11px 16px; background: var(--ink); color: var(--paper); font: 600 11px/1.2 var(--mono); letter-spacing: .08em; }
+  .handset-bar .dot { width: 8px; height: 8px; border-radius: 50%; background: #6d665a; flex: none; }
+  .handset-bar.live .dot { background: #ff5a3d; animation: blip 1.4s ease-in-out infinite; }
+  .handset-bar .who { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: rgba(243,239,229,.8); letter-spacing: .04em; }
+  .handset-bar .who i { font-style: normal; color: rgba(243,239,229,.5); }
+  .handset-bar .clock { font-variant-numeric: tabular-nums; }
+  @keyframes blip { 50% { opacity: .35; } }
+
+  .transcript { list-style: none; margin: 0; padding: 18px 18px 8px; flex: 1; overflow-y: auto; max-height: 560px; min-height: 380px; }
+  .turn { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 12px; padding: 9px 0; border-bottom: 1px dashed var(--rule); }
+  .turn:last-child { border-bottom: 0; }
+  .turn .who { font: 600 10px/1.9 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+  .turn.desk .who { color: var(--red); }
+  .turn .words { font-size: 18px; line-height: 1.5; }
+  .turn.caller .words { color: var(--ink-2); }
+  .turn.desk .words { color: var(--ink); }
+  .turn .words .w { opacity: 0; transition: opacity .12s; }
+  .turn .words .w.on { opacity: 1; }
+  .turn .typing { display: inline-flex; gap: 4px; padding-top: 10px; }
+  .turn .typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--ink-3); animation: dots 1s infinite; }
+  .turn .typing i:nth-child(2) { animation-delay: .15s; } .turn .typing i:nth-child(3) { animation-delay: .3s; }
+  @keyframes dots { 0%, 60%, 100% { opacity: .25; } 30% { opacity: 1; } }
+  .turn .model { display: inline-block; margin-left: 8px; font: 600 9.5px/1 var(--mono); letter-spacing: .08em; color: var(--ink-3); border: 1px solid var(--rule-2); padding: 3px 5px; vertical-align: 2px; }
+
+  mark { background: none; color: inherit; border-bottom: 2px solid; padding: 0 1px; transition: background .3s; }
+  mark.party { border-color: var(--c-party); background: rgba(47,93,156,.09); }
+  mark.date { border-color: var(--c-date); background: rgba(44,122,75,.09); }
+  mark.time { border-color: var(--c-time); background: rgba(176,106,16,.1); }
+  mark.name { border-color: var(--c-name); background: rgba(122,62,157,.09); }
+  mark.phone { border-color: var(--c-phone); background: rgba(31,111,120,.09); }
+  mark.notes { border-color: var(--c-notes); background: rgba(207,46,27,.08); }
+  mark.late { border-color: var(--c-late); background: rgba(176,106,16,.1); }
+
+  .empty { color: var(--ink-3); font-style: italic; padding: 40px 0; text-align: center; }
+  .empty b { display: block; font: 400 30px/1.1 var(--display); font-style: normal; color: var(--ink); margin-bottom: 6px; }
+
+  .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--rule); }
+  .btn {
+    font: 700 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer;
+    padding: 11px 14px; border: 1.5px solid var(--ink); background: var(--ink); color: var(--paper); white-space: nowrap;
+  }
+  .btn.ghost { background: transparent; color: var(--ink); }
+  .btn:hover:not(:disabled) { background: var(--red); border-color: var(--red); color: #fff; }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .btn.small { padding: 8px 10px; font-size: 10px; }
+  .controls .grow { flex: 1; }
+  .toggle { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; font: 600 10.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); user-select: none; }
+  .toggle input { accent-color: var(--red); width: 15px; height: 15px; margin: 0; }
+
+  .say { display: flex; gap: 8px; padding: 12px 16px 6px; border-top: 1px solid var(--rule); }
+  .say input { flex: 1; min-width: 0; font: 400 18px/1.3 var(--text); background: #fff; border: 1px solid var(--rule-2); padding: 11px 12px; outline: none; }
+  .say input:focus { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(207,46,27,.14); }
+  .mic { position: relative; }
+  .mic.rec { background: var(--red); border-color: var(--red); animation: blip 1.2s infinite; }
+  .suggest { display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 16px 12px; }
+  .suggest button { cursor: pointer; border: 1px solid var(--rule-2); background: transparent; padding: 6px 9px; font-size: 14px; color: var(--ink-2); }
+  .suggest button:hover { border-color: var(--ink); color: var(--ink); }
+  .models { padding: 0 16px 14px; font-size: 14px; color: var(--ink-2); display: grid; gap: 6px; }
+  .models .row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .ai-chip { font: 600 10px/1.3 var(--mono); letter-spacing: .04em; color: var(--ink-3); }
+  .ai-chip.ai-ready { color: var(--green); }
+  .ai-chip.ai-loading { color: var(--c-time); }
+  .ai-chip.ai-unavailable { color: var(--red); }
+
+  /* ── the side panels ─────────────────────────────────────────────────── */
+  .side { display: grid; gap: 14px; }
+  .card { background: var(--card); border: 1px solid var(--rule-2); padding: 14px 16px 15px; }
+  .card h3 { margin: 0 0 12px; font: 600 10.5px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); display: flex; justify-content: space-between; gap: 10px; }
+  .card h3 small { font: inherit; letter-spacing: .06em; text-transform: none; color: var(--ink-3); }
+  .slots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 14px; margin: 0; }
+  .slot dt { font: 600 9.5px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); display: flex; align-items: center; gap: 6px; }
+  .slot dt i { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+  .slot dd { margin: 6px 0 0; font: 400 21px/1.15 var(--display); min-height: 24px; overflow-wrap: anywhere; }
+  .slot dd.none { color: rgba(23,20,15,.25); }
+  .slot.flash dd { animation: flash 1.2s ease-out; }
+  @keyframes flash { 0% { background: rgba(207,46,27,.18); } 100% { background: transparent; } }
+  .slot.wide { grid-column: 1 / -1; }
+  .slot.notes dd { font: 400 16px/1.35 var(--text); }
+  .task { font: 600 10px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--paper); background: var(--ink); padding: 4px 6px; }
+
+  .log { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; max-height: 250px; overflow-y: auto; }
+  .log li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 8px; font-size: 15px; line-height: 1.35; animation: rise .35s ease-out; }
+  .log li i { font: 700 11px/1.5 var(--mono); font-style: normal; color: var(--ink-3); text-align: center; }
+  .log li.book i, .log li.book { color: var(--green); }
+  .log li.book { font-weight: 600; }
+  .log li.staff i, .log li.handoff i { color: var(--red); }
+  .log li.staff, .log li.handoff { color: var(--red); }
+  .log li.cancel i, .log li.move i { color: var(--c-time); }
+  .log .sms-text { grid-column: 2; margin-top: 3px; background: #e7f3ea; border-radius: 12px 12px 12px 3px; padding: 8px 11px; font: 400 14px/1.4 -apple-system, "Segoe UI", system-ui, sans-serif; color: #1f3326; max-width: 330px; }
+  .log .none { color: var(--ink-3); font-style: italic; }
+  @keyframes rise { from { opacity: 0; transform: translateY(4px); } }
+
+  .room svg { display: block; width: 100%; height: auto; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 8px 0 0; font: 600 10px/1.2 var(--mono); letter-spacing: .06em; color: var(--ink-3); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 11px; height: 11px; display: inline-block; border: 1.5px solid var(--ink); }
+  .legend .free { background: var(--card); } .legend .taken { background: #4d463b; border-color: #4d463b; }
+  .legend .this { background: var(--red); border-color: var(--red); } .legend .rel { background: transparent; border: 1.5px dashed var(--green); }
+  .held { animation: held 1.3s ease-in-out infinite; }
+  @keyframes held { 50% { opacity: .55; } }
+
+  .covers-link { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin: 16px 0 0; font-size: 16px; color: var(--ink-2); }
+  .covers-link a { font: 700 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; border: 1.5px solid var(--ink); padding: 10px 12px; color: var(--ink); }
+  .covers-link a:hover { background: var(--ink); color: var(--paper); }
+  .linked { font: 600 10.5px/1 var(--mono); letter-spacing: .06em; color: var(--green); display: inline-flex; align-items: center; gap: 6px; }
+  .linked i { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: blip 2s infinite; }
+
+  /* ── below the demo ──────────────────────────────────────────────────── */
+  section.band { margin-top: 84px; }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; counter-reset: s; border-top: 1px solid var(--ink); }
+  .steps li { padding: 16px 16px 4px 0; margin-right: 16px; border-right: 1px solid var(--rule); counter-increment: s; }
+  .steps li:last-child { border-right: 0; margin-right: 0; }
+  .steps li::before { content: counter(s, decimal-leading-zero); display: block; font: 600 11px/1 var(--mono); color: var(--red); letter-spacing: .1em; margin-bottom: 10px; }
+  .steps b { display: block; font: 400 24px/1.1 var(--display); margin-bottom: 6px; }
+  .steps p { margin: 0; font-size: 15.5px; line-height: 1.5; color: var(--ink-2); }
+  .steps .tag { display: inline-block; margin-top: 10px; font: 600 9.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 4px 6px; border: 1px solid currentColor; }
+  .tag.ai { color: var(--red); } .tag.code { color: var(--ink-3); }
+
+  .scores { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+  .score { border-top: 2px solid var(--ink); padding-top: 12px; }
+  .score .big { font: 400 clamp(46px, 6vw, 68px)/1 var(--display); letter-spacing: -.02em; }
+  .score .big small { font-size: .45em; color: var(--ink-3); }
+  .score p { margin: 8px 0 0; font-size: 15.5px; color: var(--ink-2); line-height: 1.5; }
+  details.cases { margin-top: 22px; border-top: 1px solid var(--rule-2); }
+  details.cases summary { cursor: pointer; padding: 12px 0; font: 600 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); }
+  .case-list { list-style: none; margin: 0; padding: 0; columns: 2; column-gap: 34px; font-size: 14.5px; }
+  .case-list li { break-inside: avoid; padding: 5px 0; border-bottom: 1px dashed var(--rule); display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 8px; }
+  .case-list li i { font-style: normal; font: 700 11px/1.6 var(--mono); color: var(--green); }
+  .case-list li.bad i { color: var(--red); }
+  .case-list .got { display: block; font: 500 11px/1.4 var(--mono); color: var(--ink-3); }
+  .case-list .set { font: 600 9px/1 var(--mono); color: var(--ink-3); letter-spacing: .08em; text-transform: uppercase; margin-left: 6px; }
+
+  .ship { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 40px; }
+  .ship div { border-top: 1px solid var(--rule-2); padding-top: 12px; }
+  .ship b { display: block; font: 400 22px/1.15 var(--display); margin-bottom: 6px; }
+  .ship p { margin: 0; color: var(--ink-2); font-size: 16px; line-height: 1.55; }
+  .ship .state { font: 600 9.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; margin-left: 8px; vertical-align: 3px; }
+  .state.done { color: var(--green); } .state.todo { color: var(--ink-3); }
+
+  footer { margin-top: 80px; padding-top: 18px; border-top: 1px solid var(--ink); display: flex; flex-wrap: wrap; gap: 10px 24px; justify-content: space-between; font-size: 15px; color: var(--ink-2); }
+  footer a { color: var(--ink); }
+
+  @media (max-width: 980px) {
+    .picker { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .console { grid-template-columns: minmax(0, 1fr); }
+    .steps { grid-template-columns: minmax(0, 1fr); }
+    .steps li { border-right: 0; margin-right: 0; border-bottom: 1px solid var(--rule); padding-bottom: 14px; }
+    .scores, .ship { grid-template-columns: minmax(0, 1fr); }
+    .case-list { columns: 1; }
+  }
+  @media (max-width: 640px) {
+    main { padding: 70px 16px 80px; }
+    .facts { grid-template-columns: minmax(0, 1fr); }
+    .facts li { border-right: 0; margin-right: 0; border-bottom: 1px solid var(--rule); padding-bottom: 12px; }
+    .picker { grid-template-columns: minmax(0, 1fr); }
+    .pick span { display: none; }
+    .turn { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+    .turn .words { font-size: 17px; }
+    .transcript { padding: 12px 14px 6px; min-height: 320px; max-height: 470px; }
+    .handset { min-height: 0; }
+    .slots { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .controls { padding: 10px 12px; }
+  }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<a class="back" href="../../index.html">← INDEX</a>
+<main>
+  <header>
+    <p class="kicker">Case study · Voice AI · Restaurants</p>
+    <h1>Front <em>Desk</em></h1>
+    <p class="lead">An AI receptionist for a busy restaurant. It answers the phone, works out what the caller wants, checks the real table plan and books them in — so the staff can keep serving.</p>
+    <ul class="facts">
+      <li><b>Books into the real system</b><span>It uses the same table plan and rules as the restaurant's host stand, so it can never promise a table that isn't there.</span></li>
+      <li><b>Runs on this device</b><span>No server and no API key. Nothing you type or say to it leaves your browser.</span></li>
+      <li><b id="factTests">Tested on every phrasing</b><span id="factTestsSub">Measured against a list of real-world things callers say, including ones it was never tuned on.</span></li>
+    </ul>
+  </header>
+
+  <section class="calls" aria-labelledby="callsHead">
+    <h2 id="callsHead">Listen in on a call — or ring it yourself</h2>
+    <div class="picker" id="picker"></div>
+  </section>
+
+  <section class="console" aria-label="The call">
+    <div class="handset">
+      <div class="handset-bar" id="phoneBar">
+        <span class="dot"></span>
+        <span id="callState">READY</span>
+        <span class="who">Bartlett &amp; Vine <i>· a fictional restaurant · Sat 14 Mar</i></span>
+        <span class="clock" id="clock">00:00</span>
+      </div>
+      <ol class="transcript" id="transcript" aria-live="polite"></ol>
+      <div class="controls" id="controls">
+        <button class="btn" id="playBtn" type="button">▶ Play</button>
+        <button class="btn ghost small" id="skipBtn" type="button">Skip to the end</button>
+        <span class="grow"></span>
+        <label class="toggle"><input type="checkbox" id="fast" /> Faster</label>
+        <label class="toggle"><input type="checkbox" id="sound" /> Sound</label>
+      </div>
+      <form class="say" id="sayForm" hidden autocomplete="off">
+        <input id="sayInput" type="text" placeholder="Type what you'd say on the phone…" aria-label="What you say" />
+        <button class="btn mic" id="micBtn" type="button" title="Speak instead of typing">🎙</button>
+        <button class="btn" type="submit">Say it</button>
+      </form>
+      <div class="suggest" id="suggest" hidden></div>
+      <div class="models" id="models" hidden>
+        <div class="row"><span id="asrChip"></span><button class="btn ghost small" id="asrOn" type="button">Turn on voice</button></div>
+        <div class="row"><span id="embedChip"></span><button class="btn ghost small" id="embedOn" type="button">Turn on</button></div>
+      </div>
+    </div>
+
+    <aside class="side">
+      <section class="card understood">
+        <h3>What it understood <small id="taskTag"></small></h3>
+        <dl class="slots" id="slots"></dl>
+      </section>
+      <section class="card">
+        <h3>What it did</h3>
+        <ol class="log" id="log"><li class="none">Nothing yet.</li></ol>
+      </section>
+      <section class="card room">
+        <h3><span id="roomTitle">The room</span> <small id="roomCount"></small></h3>
+        <svg id="room" role="img" aria-label="Floor plan of the restaurant"></svg>
+        <p class="legend"><span><i class="free"></i>free</span><span><i class="taken"></i>taken</span><span><i class="this"></i>this call</span><span><i class="rel"></i>just freed</span></p>
+      </section>
+    </aside>
+  </section>
+
+  <p class="covers-link">
+    <a href="../covers/index.html" target="covers" id="coversLink">Open the table plan ↗</a>
+    <span>That's <b>Covers</b>, the restaurant's host-stand system. Open it in another tab and bookings made here appear there live.</span>
+    <span class="linked" id="linked" hidden><i></i>Covers is open — connected</span>
+  </p>
+
+  <section class="band" aria-labelledby="howHead">
+    <h2 id="howHead">How it works</h2>
+    <ol class="steps">
+      <li><b>Hears</b><p>Speech becomes text with Whisper, a speech-recognition model that runs on your own device. Or just type.</p><span class="tag ai">AI model · on device</span></li>
+      <li><b>Understands</b><p>A reader built for this one job pulls out the party size, day, time, name, number and anything the kitchen needs to know. A small language model catches the phrasings it wasn't written for.</p><span class="tag ai">Parser + AI fallback</span></li>
+      <li><b>Checks the floor</b><p>It asks the restaurant's own booking engine whether a table is free, and if not, finds the nearest times that are.</p><span class="tag code">Rules, fully tested</span></li>
+      <li><b>Replies</b><p>One question at a time, never for something already said. It reads everything back before booking, and hands over to a person when it should.</p><span class="tag code">Conversation logic</span></li>
+      <li><b>Writes it in</b><p>The booking goes into the table plan, the allergy goes to the kitchen, the confirmation text is drafted, and it checks the table is still free at the moment it writes.</p><span class="tag code">Live sync with Covers</span></li>
+    </ol>
+  </section>
+
+  <section class="band" aria-labelledby="scoreHead">
+    <h2 id="scoreHead">How well it understands</h2>
+    <div class="scores">
+      <div class="score"><div class="big" id="sTuning">–</div><p>phrasings in the set it was built against, read with every detail right: party, day, time, name, number and notes.</p></div>
+      <div class="score"><div class="big" id="sHeld">–</div><p id="sHeldText">phrasings written afterwards and never used to tune it — the honest number, taken the first time they were run.</p></div>
+      <div class="score"><div class="big" id="sCalls">–</div><p>random callers booking random nights in a test run before every release, with the book checked for a single double-booking afterwards.</p></div>
+    </div>
+    <details class="cases">
+      <summary>See every phrasing it is tested on</summary>
+      <ul class="case-list" id="caseList"></ul>
+    </details>
+  </section>
+
+  <section class="band" aria-labelledby="shipHead">
+    <h2 id="shipHead">Taking it to a real restaurant</h2>
+    <div class="ship">
+      <div><b>The phone line <span class="state todo">next step</span></b><p>A telephony provider streams the call audio to the same pipeline. The conversation logic doesn't change — it already takes text in and gives text out.</p></div>
+      <div><b>Their booking system <span class="state done">designed for</span></b><p>The receptionist asks one question of the book — is there a table? — so connecting a different booking system is one adapter, not a rewrite.</p></div>
+      <div><b>Knowing when to stop <span class="state done">built</span></b><p>Parties over ten, complaints, a name it can't find, three misunderstandings in a row: each one becomes a callback for the manager instead of a guess.</p></div>
+      <div><b>Getting better every week <span class="state done">built</span></b><p>Every call it gets wrong becomes a new line in the test set. The score above is recomputed every time the page loads, and the tests fail if it ever goes down.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Bartlett &amp; Vine is fictional; the booking engine, the floor plan and the Saturday night are the ones in <a href="../covers/index.html">Covers</a>.</span>
+    <span><a href="README.md">How it's built</a> · <a href="../../index.html">Everything else</a></span>
+  </footer>
+</main>
+
+<script type="module">
+import { understand, shortDate, hm } from './understand.js';
+import { CASES, HELD_OUT, HELD_OUT_FIRST_RUN, score } from './eval.js';
+import { createDiary, TODAY } from './diary.js';
+import { createCall, greet, hear } from './desk.js';
+import { CALLS, RANDOM_CALLERS } from './calls.js';
+import { classify } from './meaning.js';
+import { TABLES, byId, FIXTURES } from '../covers/floor.js';
+import { scaleFor, chairs } from '../covers/plan.js';
+import { holderOf } from '../covers/schedule.js';
+import { freshBook, freshWaitlist } from '../covers/book.js';
+
+const $ = (id) => document.getElementById(id);
+const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+const NS = 'http://www.w3.org/2000/svg';
+const svg = (tag, attrs = {}) => { const n = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v); return n; };
+const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch { /* private mode */ } } };
+
+/* ── the restaurant and the call ─────────────────────────────────────────── */
+
+let diary = createDiary();
+let waitlist = freshWaitlist();
+let call = null;
+let focus = null;             // what the floor plan is showing
+let mode = 'idle';            // idle | sample | live
+let current = null;           // the sample being played
+let dirtyTonight = false;     // changes Covers has not seen yet
+
+/* ── Covers, in another tab ──────────────────────────────────────────────── */
+
+const STATION = 'frontdesk';
+const peers = new Map();
+let bus = null;
+try { bus = new BroadcastChannel('covers.service'); } catch { /* no channel, no sync */ }
+const coversOpen = () => [...peers.values()].some((t) => t > Date.now() - 9000);
+function showLinked() { $('linked').hidden = !coversOpen(); }
+if (bus) {
+  bus.onmessage = (e) => {
+    const msg = e.data;
+    if (!msg || msg.from === STATION) return;
+    peers.set(msg.from, Date.now());
+    showLinked();
+    if (msg.kind === 'hello' && dirtyTonight) postState();
+    if (msg.kind === 'state' && Array.isArray(msg.book)) {
+      /* Covers is the source of truth for tonight. Whatever it says the room
+         looks like, that is what the next caller gets told. */
+      diary.setTonight(msg.book.map((b) => ({ ...b, tableIds: [...b.tableIds] })), msg.now);
+      if (Array.isArray(msg.waitlist)) waitlist = msg.waitlist;
+      dirtyTonight = false;
+      drawRoom();
+    }
+  };
+  bus.postMessage({ kind: 'hello', from: STATION });
+  setInterval(() => { bus.postMessage({ kind: 'ping', from: STATION }); showLinked(); }, 3000);
+}
+function postState() {
+  try { bus?.postMessage({ kind: 'state', from: STATION, book: diary.bookFor(TODAY), waitlist, now: diary.now, seq: 1000 }); } catch { /* unclonable */ }
+}
+function sync(ops, text) {
+  const tonight = ops.filter((o) => o.date === TODAY);
+  if (!tonight.length) return;
+  if (bus && coversOpen()) {
+    try { bus.postMessage({ kind: 'desk', from: STATION, ops: tonight, text: `Front Desk: ${text}` }); } catch { dirtyTonight = true; }
+  } else dirtyTonight = true;
+}
+
+/* ── the picker ──────────────────────────────────────────────────────────── */
+
+function buildPicker() {
+  const host = $('picker');
+  for (const c of CALLS) {
+    const b = el('button', 'pick');
+    b.type = 'button';
+    b.dataset.id = c.id;
+    b.append(el('b', null, c.title), el('span', null, c.blurb));
+    b.addEventListener('click', () => playSample(c));
+    host.append(b);
+  }
+  const you = el('button', 'pick you');
+  you.type = 'button';
+  you.dataset.id = 'you';
+  you.append(el('b', null, 'Call it yourself'), el('span', null, 'Book a table, cancel one, ask about parking — type or talk.'));
+  you.addEventListener('click', startLive);
+  host.append(you);
+}
+function markPicked(id) {
+  for (const b of $('picker').children) b.classList.toggle('on', b.dataset.id === id);
+}
+
+/* ── playback: pacing, pausing, cancelling ───────────────────────────────── */
+
+let run = 0, paused = false, skipping = false;
+class Stop extends Error {}
+const settings = { sound: store.get('frontdesk.sound') === '1', fast: store.get('frontdesk.fast') === '1' };
+$('sound').checked = settings.sound;
+$('fast').checked = settings.fast;
+$('sound').addEventListener('change', (e) => { settings.sound = e.target.checked; store.set('frontdesk.sound', settings.sound ? '1' : '0'); if (!settings.sound) window.speechSynthesis?.cancel(); });
+$('fast').addEventListener('change', (e) => { settings.fast = e.target.checked; store.set('frontdesk.fast', settings.fast ? '1' : '0'); });
+
+async function wait(ms, token) {
+  if (skipping) { if (token !== run) throw new Stop(); return; }
+  let left = ms;
+  while (left > 0) {
+    if (token !== run) throw new Stop();
+    await new Promise((r) => setTimeout(r, Math.min(left, 60)));
+    if (!paused) left -= 60;
+  }
+  if (token !== run) throw new Stop();
+}
+
+/* ── voices ── */
+const synth = 'speechSynthesis' in window ? window.speechSynthesis : null;
+let voices = [];
+const loadVoices = () => { voices = synth?.getVoices() ?? []; };
+synth?.addEventListener?.('voiceschanged', loadVoices);
+loadVoices();
+function voiceFor(role) {
+  const en = voices.filter((v) => /^en[-_]/i.test(v.lang));
+  const gb = en.filter((v) => /GB/i.test(v.lang));
+  const pool = gb.length >= 2 ? gb : en;
+  if (!pool.length) return null;
+  const want = role === 'desk'
+    ? /female|serena|kate|martha|libby|sonia|hazel|susan|fiona|stephanie|tessa|samantha|karen/i
+    : /male|daniel|oliver|arthur|ryan|george|thomas|alex|fred|aaron/i;
+  const found = pool.find((v) => want.test(v.name) && !(role === 'desk' && /\bmale\b/i.test(v.name) && !/female/i.test(v.name)));
+  return found ?? (role === 'desk' ? pool[0] : pool[Math.min(1, pool.length - 1)]);
+}
+function speak(text, role, caller) {
+  if (!synth || !settings.sound || skipping) return null;
+  return new Promise((resolve) => {
+    const u = new SpeechSynthesisUtterance(text.replace(/—/g, ',').replace(/…/g, '.'));
+    const v = voiceFor(role);
+    if (v) u.voice = v;
+    u.lang = v?.lang ?? 'en-GB';
+    u.rate = (role === 'desk' ? 1.02 : caller?.rate ?? 1) * (settings.fast ? 1.25 : 1);
+    u.pitch = role === 'desk' ? 1.05 : caller?.pitch ?? 0.95;
+    let done = false;
+    const finish = () => { if (!done) { done = true; resolve(); } };
+    u.onend = finish;
+    u.onerror = finish;
+    /* Some browsers never fire onend. A generous ceiling keeps the call moving. */
+    setTimeout(finish, 1500 + text.split(/\s+/).length * 520);
+    synth.speak(u);
+  });
+}
+
+/* ── the transcript ──────────────────────────────────────────────────────── */
+
+const clock = { start: 0, carried: 0, timer: null };
+function startClock() {
+  clock.start = performance.now(); clock.carried = 0;
+  clearInterval(clock.timer);
+  clock.timer = setInterval(() => {
+    if (paused) return;
+    const s = Math.floor((performance.now() - clock.start) / 1000);
+    $('clock').textContent = `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+  }, 250);
+}
+function stopClock() { clearInterval(clock.timer); }
+
+function setLive(on, label) {
+  $('phoneBar').classList.toggle('live', on);
+  $('callState').textContent = label;
+}
+
+function addTurn(who, label) {
+  const li = el('li', `turn ${who}`);
+  li.append(el('span', 'who', label), el('span', 'words'));
+  $('transcript').append(li);
+  scrollDown();
+  return li;
+}
+function scrollDown() { const t = $('transcript'); t.scrollTop = t.scrollHeight; }
+
+async function reveal(li, text, role, token, caller) {
+  const words = li.querySelector('.words');
+  words.replaceChildren();
+  const parts = text.split(/(\s+)/);
+  const spans = parts.map((p) => { const s = el('span', /\s/.test(p) ? null : 'w', p); words.append(s); return s; });
+  scrollDown();
+  const speech = speak(text, role, caller);
+  const per = speech ? 300 : (role === 'desk' ? 68 : 58) * (settings.fast ? 0.45 : 1);
+  for (const s of spans) {
+    if (!s.classList.contains('w')) continue;
+    s.classList.add('on');
+    if (!skipping) await wait(per, token);
+  }
+  if (speech) await speech;
+  for (const s of spans) s.classList.add('on');
+  scrollDown();
+  if (token !== run) throw new Stop();
+}
+
+/** Underline what was understood, in the colours of the card it went into. */
+function markSpans(li, text, spans) {
+  const words = li.querySelector('.words');
+  if (!spans?.length) { words.textContent = text; return; }
+  words.replaceChildren();
+  let at = 0;
+  for (const sp of spans.slice().sort((a, b) => a.start - b.start)) {
+    if (sp.start < at) continue;
+    if (sp.start > at) words.append(document.createTextNode(text.slice(at, sp.start)));
+    const m = el('mark', sp.slot, text.slice(sp.start, sp.end));
+    m.title = { party: 'party size', date: 'day', time: 'time', name: 'name', phone: 'phone number', notes: 'note for the team', late: 'how late' }[sp.slot] ?? sp.slot;
+    words.append(m);
+    at = sp.end;
+  }
+  if (at < text.length) words.append(document.createTextNode(text.slice(at)));
+}
+
+/* ── the side panels ─────────────────────────────────────────────────────── */
+
+const SLOT_ORDER = [['party', 'Party'], ['date', 'Day'], ['time', 'Time'], ['name', 'Name'], ['phone', 'Phone'], ['notes', 'Notes']];
+let lastSlots = {};
+function drawSlots(v, { flash = true } = {}) {
+  const host = $('slots');
+  host.replaceChildren();
+  const TASK = { book: 'booking', cancel: 'cancelling', change: 'changing a booking', late: 'running late', check: 'checking a booking', callback: 'callback for the manager', booked: '✓ booked', cancelled: '✓ cancelled', 'noted late': '✓ noted', changed: '✓ changed', checked: '✓ checked' };
+  $('taskTag').replaceChildren(v?.task ? el('span', 'task', TASK[v.task] ?? v.task) : '');
+  for (const [k, label] of SLOT_ORDER) {
+    const d = el('div', `slot ${k}${k === 'notes' ? ' wide' : ''}`);
+    const dt = el('dt');
+    const dot = el('i');
+    dot.style.background = `var(--c-${k})`;
+    dt.append(dot, label);
+    let val = v?.[k];
+    if (k === 'date' && val) val = val === TODAY ? 'Tonight' : shortDate(val);
+    if (k === 'time' && val != null) val = hm(val);
+    if (k === 'party' && val != null) val = `${val} ${val === 1 ? 'person' : 'people'}`;
+    if (k === 'notes') val = val?.length ? val.join(' · ') : null;
+    const dd = el('dd', val == null || val === '' ? 'none' : null, val == null || val === '' ? '—' : String(val));
+    d.append(dt, dd);
+    if (flash && val != null && val !== lastSlots[k]) d.classList.add('flash');
+    lastSlots[k] = val;
+    host.append(d);
+  }
+}
+
+const ICON = { check: '⌕', hold: '◎', offer: '↔', book: '✓', sms: '✉', staff: '!', note: '✎', cancel: '✕', move: '→', handoff: '☎', faq: '?', end: '·' };
+function addEvents(events) {
+  const log = $('log');
+  if (log.querySelector('.none')) log.replaceChildren();
+  for (const e of events) {
+    const li = el('li', e.kind);
+    li.append(el('i', null, ICON[e.kind] ?? '·'), el('span', null, e.text));
+    if (e.kind === 'sms' && e.detail) li.append(el('div', 'sms-text', e.detail));
+    log.append(li);
+  }
+  log.scrollTop = log.scrollHeight;
+}
+function clearPanels() {
+  lastSlots = {};
+  drawSlots({}, { flash: false });
+  $('log').replaceChildren(el('li', 'none', 'Nothing yet.'));
+}
+
+/* ── the floor plan ── */
+function drawRoom() {
+  const host = $('room');
+  const W = 560, H = 330;
+  const sc = scaleFor(W, H, 0.45);
+  host.setAttribute('viewBox', `0 0 ${sc.width.toFixed(0)} ${sc.height.toFixed(0)}`);
+  host.replaceChildren();
+  const f = focus ?? { date: TODAY, at: Math.ceil(diary.now / 15) * 15, tableIds: [], kind: 'now' };
+  const book = diary.bookFor(f.date);
+  const g = svg('g');
+  host.append(g);
+  g.append(svg('rect', { x: sc.x(0), y: sc.y(0), width: sc.len(17.4), height: sc.len(9.9), fill: '#f7f4ec', stroke: '#17140f', 'stroke-width': 1.5 }));
+  for (const fx of FIXTURES) {
+    if (fx.kind === 'wall') g.append(svg('rect', { x: sc.x(fx.x), y: sc.y(fx.y), width: sc.len(fx.w), height: sc.len(fx.h), fill: '#17140f' }));
+    else {
+      g.append(svg('rect', { x: sc.x(fx.x), y: sc.y(fx.y), width: sc.len(fx.w), height: sc.len(fx.h), fill: fx.kind === 'door' ? '#f7f4ec' : 'rgba(23,20,15,.08)', stroke: 'rgba(23,20,15,.35)', 'stroke-dasharray': fx.kind === 'door' ? '3 3' : '' }));
+      if (fx.label && fx.kind !== 'door') {
+        const t = svg('text', { x: sc.x(fx.x + fx.w / 2), y: sc.y(fx.y + fx.h / 2) + 3, 'text-anchor': 'middle', 'font-size': 8, 'font-family': 'JetBrains Mono Var, monospace', fill: 'rgba(23,20,15,.5)', 'letter-spacing': '.08em' });
+        t.textContent = fx.label;
+        g.append(t);
+      }
+    }
+  }
+  let taken = 0, total = 0;
+  for (const t of TABLES) {
+    const bar = t.zone === 'bar';
+    if (!bar) total++;
+    const holder = bar ? null : holderOf(t.id, f.at, book);
+    const mine = f.tableIds.includes(t.id);
+    const released = f.kind === 'released' && mine;
+    const isThis = mine && !released;
+    if (holder && !released) taken++;
+    const fill = isThis ? '#cf2e1b' : holder && !released ? '#4d463b' : '#fbf9f3';
+    const stroke = isThis ? '#cf2e1b' : released ? '#2c7a4b' : holder ? '#4d463b' : '#17140f';
+    for (const c of chairs(t)) {
+      g.append(svg('circle', { cx: sc.x(c.x), cy: sc.y(c.y), r: sc.len(0.14), fill: holder && !released || isThis ? 'rgba(23,20,15,.55)' : 'rgba(23,20,15,.18)' }));
+    }
+    const attrs = { fill, stroke, 'stroke-width': released ? 2 : 1.3, 'stroke-dasharray': released ? '4 3' : '' };
+    const shape = t.shape === 'round' || t.shape === 'stool'
+      ? svg('circle', { cx: sc.x(t.x), cy: sc.y(t.y), r: sc.len(t.w / 2), ...attrs })
+      : svg('rect', { x: sc.x(t.x - t.w / 2), y: sc.y(t.y - t.h / 2), width: sc.len(t.w), height: sc.len(t.h), rx: 2, ...attrs });
+    if (isThis && f.kind === 'hold') shape.classList.add('held');
+    const title = svg('title');
+    title.textContent = bar ? `Bar stool ${t.name} — walk-ins only` : `Table ${t.name} (${t.seats}) — ${isThis ? 'this call' : released ? 'just freed' : holder ? `${holder.name}, ${holder.party}` : 'free'}`;
+    shape.append(title);
+    g.append(shape);
+    if (!bar) {
+      const label = svg('text', { x: sc.x(t.x), y: sc.y(t.y) + 3.5, 'text-anchor': 'middle', 'font-size': 9.5, 'font-weight': 700, 'font-family': 'JetBrains Mono Var, monospace', fill: holder && !released || isThis ? '#fbf9f3' : '#17140f' });
+      label.textContent = t.name;
+      g.append(label);
+    }
+  }
+  const day = f.date === TODAY ? 'tonight' : shortDate(f.date);
+  const what = { hold: 'holding', booked: 'booked', moved: 'moved', released: 'freed', found: 'their booking', now: 'right now' }[f.kind] ?? '';
+  $('roomTitle').textContent = `The room · ${day} at ${hm(f.at)}${f.kind === 'now' ? '' : ` · ${what}`}`;
+  $('roomCount').textContent = `${taken} of ${total} tables taken`;
+}
+
+function focusFrom(r) {
+  const add = r.ops.find((o) => o.op === 'add');
+  const upd = r.ops.find((o) => o.op === 'update');
+  if (add) return { date: add.date, at: add.booking.at, tableIds: add.booking.tableIds, kind: 'booked' };
+  if (upd) {
+    const b = diary.bookFor(upd.date).find((x) => x.id === upd.id);
+    if (upd.changes.status === 'cancelled') return { date: upd.date, at: b.at, tableIds: b.tableIds, kind: 'released' };
+    return { date: upd.date, at: b.at, tableIds: b.tableIds, kind: 'moved' };
+  }
+  if (call.hold) return { date: call.hold.date, at: call.hold.at, tableIds: call.hold.tableIds, kind: 'hold' };
+  if (call.target) return { date: call.target.date, at: call.target.b.at, tableIds: call.target.b.tableIds, kind: 'found' };
+  if (call.offers?.length) return { date: call.offers[0].date, at: call.slots.time ?? call.offers[0].at, tableIds: [], kind: 'now' };
+  return focus;
+}
+
+/* ── one exchange ────────────────────────────────────────────────────────── */
+
+function freshCall() {
+  /* Samples start from the night as it stands. If Covers is not open, that
+     is the untouched Saturday — so playing the cancellation twice does not
+     leave the second play with nothing to cancel. */
+  if (!coversOpen()) {
+    diary = createDiary();
+    waitlist = freshWaitlist();
+    dirtyTonight = false;
+  }
+  call = createCall(diary);
+  focus = null;
+  clearPanels();
+  drawRoom();
+  $('transcript').replaceChildren();
+}
+
+async function respond(li, text, hint) {
+  const r = hear(call, text, { hint });
+  const turn = call.turns.filter((t) => t.who === 'caller').pop();
+  markSpans(li, text, turn?.reading?.spans);
+  if (turn?.reading?.hinted) li.querySelector('.words').append(el('span', 'model', `AI: ${turn.reading.hinted.replace('topic:', '')}`));
+  drawSlots(r.slots);
+  addEvents(r.events);
+  focus = focusFrom(r);
+  drawRoom();
+  if (r.ops.length) sync(r.ops, (r.events.find((e) => ['book', 'cancel', 'move'].includes(e.kind))?.text) ?? 'updated the book');
+  return r;
+}
+
+/* ── a sample call ── */
+
+async function playSample(script) {
+  const token = ++run;
+  paused = false; skipping = false;
+  window.speechSynthesis?.cancel();
+  mode = 'sample'; current = script;
+  markPicked(script.id);
+  showControls('sample');
+  freshCall();
+  setLive(true, 'ON A CALL');
+  startClock();
+  $('playBtn').textContent = '❚❚ Pause';
+  try {
+    const hello = greet(call);
+    drawSlots(hello.slots, { flash: false });
+    await reveal(addTurn('desk', 'Front Desk'), hello.say, 'desk', token);
+    let last = hello.say;
+    for (const line of script.lines) {
+      if (call.done) break;
+      await wait(420, token);
+      const text = typeof line === 'function' ? line(last) : line;
+      const li = addTurn('caller', script.caller.name);
+      await reveal(li, text, 'caller', token, script.caller);
+      const r = await respond(li, text);
+      const reply = addTurn('desk', 'Front Desk');
+      const dots = el('span', 'typing');
+      dots.append(el('i'), el('i'), el('i'));
+      reply.querySelector('.words').append(dots);
+      scrollDown();
+      await wait(650, token);
+      await reveal(reply, r.say, 'desk', token);
+      last = r.say;
+    }
+    finishCall();
+  } catch (e) {
+    if (!(e instanceof Stop)) throw e;
+  }
+}
+
+function finishCall() {
+  setLive(false, 'CALL ENDED');
+  stopClock();
+  skipping = false;
+  $('playBtn').textContent = '↺ Play again';
+  mode = mode === 'sample' ? 'ended' : mode;
+}
+
+$('playBtn').addEventListener('click', () => {
+  if (mode === 'sample' && !paused) { paused = true; window.speechSynthesis?.pause(); $('playBtn').textContent = '▶ Resume'; setLive(true, 'PAUSED'); return; }
+  if (mode === 'sample' && paused) { paused = false; window.speechSynthesis?.resume(); $('playBtn').textContent = '❚❚ Pause'; setLive(true, 'ON A CALL'); return; }
+  playSample(current ?? CALLS[0]);
+});
+$('skipBtn').addEventListener('click', () => {
+  if (mode !== 'sample') { playSample(current ?? CALLS[0]).then(() => {}); }
+  skipping = true; paused = false;
+  window.speechSynthesis?.cancel();
+});
+
+/* ── ringing it yourself ── */
+
+const SUGGEST = [
+  'Table for two tonight at nine?',
+  'Have you got anything for four on Friday at 8?',
+  "It's Lindqvist — we're running about 20 minutes late",
+  'Do you have parking?',
+  'We need to cancel, the booking is under Eriksen',
+  'Can I speak to the manager?',
+];
+
+function showControls(which) {
+  const live = which === 'live';
+  $('controls').hidden = live;
+  $('sayForm').hidden = !live;
+  $('suggest').hidden = !live;
+  $('models').hidden = !live;
+}
+
+async function startLive() {
+  ++run;
+  paused = false; skipping = false;
+  window.speechSynthesis?.cancel();
+  mode = 'live'; current = null;
+  markPicked('you');
+  showControls('live');
+  freshCall();
+  setLive(true, 'ON A CALL');
+  startClock();
+  const hello = greet(call);
+  drawSlots(hello.slots, { flash: false });
+  const token = run;
+  try { await reveal(addTurn('desk', 'Front Desk'), hello.say, 'desk', token); } catch { return; }
+  const sg = $('suggest');
+  sg.replaceChildren();
+  for (const s of SUGGEST) {
+    const b = el('button', null, s);
+    b.type = 'button';
+    b.addEventListener('click', () => { $('sayInput').value = s; $('sayForm').requestSubmit(); });
+    sg.append(b);
+  }
+  $('sayInput').focus({ preventScroll: true });
+}
+
+let busy = false;
+$('sayForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const text = $('sayInput').value.trim();
+  if (!text || busy || mode !== 'live') return;
+  if (call.done) { startLive(); return; }
+  busy = true;
+  $('sayInput').value = '';
+  const token = run;
+  try {
+    const li = addTurn('caller', 'You');
+    li.querySelector('.words').textContent = text;
+    scrollDown();
+    const hint = await secondOpinion(text);
+    const r = await respond(li, text, hint);
+    const reply = addTurn('desk', 'Front Desk');
+    await reveal(reply, r.say, 'desk', token);
+    if (call.done) { finishCall(); $('sayInput').placeholder = 'The call has ended — say anything to ring again'; }
+  } catch (err) {
+    if (!(err instanceof Stop)) throw err;
+  } finally {
+    busy = false;
+    if (mode === 'live') $('sayInput').focus({ preventScroll: true });
+  }
+});
+
+/* ── on-device models, only when asked for ───────────────────────────────── */
+
+let ai = null;
+const aiModule = () => (ai ??= import('../../shared/ai.js'));
+
+/** Ask the small model only when the parser found nothing at all. */
+async function secondOpinion(text) {
+  if (!ai) return null;
+  const m = await ai;
+  if (m.statusOf('embed').state !== 'ready') return null;
+  const quick = understand(text, { expecting: call.expecting, today: diary.today, now: diary.now });
+  const nothing = !quick.intent && !quick.topic && !quick.affirm && !quick.deny && !quick.nothing && !quick.bye && !quick.repeat && !quick.greet && !Object.keys(quick.slots).length;
+  if (!nothing || call.expecting) return null;
+  const r = await classify(text, m.embed);
+  return r?.label ?? null;
+}
+
+async function wireModels() {
+  const m = await aiModule();
+  m.statusLine($('asrChip'), ['asr']);
+  m.statusLine($('embedChip'), ['embed']);
+  const reflect = () => {
+    $('asrOn').hidden = m.statusOf('asr').state !== 'idle' && m.statusOf('asr').state !== 'unavailable';
+    $('embedOn').hidden = m.statusOf('embed').state !== 'idle' && m.statusOf('embed').state !== 'unavailable';
+  };
+  m.onStatus(reflect);
+  reflect();
+}
+$('models').addEventListener('toggle', () => {});
+new IntersectionObserver((entries, obs) => {
+  if (entries.some((e) => e.isIntersecting)) { wireModels(); obs.disconnect(); }
+}).observe($('models'));
+$('embedOn').addEventListener('click', async () => { const m = await aiModule(); m.load('embed'); });
+$('asrOn').addEventListener('click', async () => { const m = await aiModule(); m.load('asr'); });
+
+/* ── talking instead of typing ── */
+let recorder = null, chunks = [];
+$('micBtn').addEventListener('click', async () => {
+  const m = await aiModule();
+  if (recorder) { recorder.stop(); return; }
+  const st = m.statusOf('asr').state;
+  if (st !== 'ready') {
+    if (st === 'idle' || st === 'unavailable') m.load('asr');
+    $('sayInput').placeholder = st === 'loading' ? 'Voice is still downloading — type for now…' : 'Downloading the speech model (41 MB, once) — type for now…';
+    return;
+  }
+  let stream;
+  try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+  catch { $('sayInput').placeholder = 'No microphone permission — type instead…'; return; }
+  chunks = [];
+  recorder = new MediaRecorder(stream);
+  recorder.ondataavailable = (e) => chunks.push(e.data);
+  recorder.onstop = async () => {
+    stream.getTracks().forEach((t) => t.stop());
+    recorder = null;
+    $('micBtn').classList.remove('rec');
+    $('sayInput').placeholder = 'Listening back…';
+    try {
+      const buf = await new Blob(chunks).arrayBuffer();
+      const ctx = new AudioContext({ sampleRate: 16000 });
+      const audio = await ctx.decodeAudioData(buf);
+      const pipe = await m.load('asr');
+      const out = await pipe(audio.getChannelData(0));
+      ctx.close();
+      const text = String(out?.text ?? '').trim();
+      $('sayInput').placeholder = "Type what you'd say on the phone…";
+      if (text) { $('sayInput').value = text; $('sayForm').requestSubmit(); }
+    } catch {
+      $('sayInput').placeholder = "Couldn't make that out — try again, or type";
+    }
+  };
+  recorder.start();
+  $('micBtn').classList.add('rec');
+  $('sayInput').placeholder = 'Listening — tap the mic again when you have finished';
+});
+
+/* ── the scores ──────────────────────────────────────────────────────────── */
+
+function scores() {
+  const tuning = score(understand);
+  const held = score(understand, HELD_OUT);
+  $('sTuning').innerHTML = `${tuning.right}<small> / ${tuning.cases}</small>`;
+  $('sHeld').innerHTML = `${HELD_OUT_FIRST_RUN.right}<small> / ${HELD_OUT_FIRST_RUN.cases}</small>`;
+  $('sHeldText').textContent = `phrasings written afterwards and never used to tune it — the honest number, taken the first time they were run. The misses were fixed; today it reads ${held.right} of ${held.cases}.`;
+  $('sCalls').textContent = String(RANDOM_CALLERS);
+  $('factTests').textContent = `Tested on ${tuning.cases + held.cases} phrasings`;
+  $('factTestsSub').textContent = `Including ${held.cases} it was never tuned on — it got ${HELD_OUT_FIRST_RUN.right} of those right the first time. Every result is on this page.`;
+  const list = $('caseList');
+  const rows = [...tuning.rows.map((r) => ({ ...r, set: 'tuning' })), ...held.rows.map((r) => ({ ...r, set: 'held out' }))];
+  for (const r of rows) {
+    const li = el('li', r.ok ? null : 'bad');
+    li.append(el('i', null, r.ok ? '✓' : '✕'));
+    const body = el('span');
+    body.append(document.createTextNode(`“${r.text}”`));
+    body.append(el('span', 'set', r.set));
+    const want = Object.entries(r.expect).map(([k, v]) => `${k} ${Array.isArray(v) ? v.join(', ') : v}`).join(' · ');
+    body.append(el('span', 'got', r.ok ? want : r.wrong.map((w) => `${w.field}: wanted ${w.expected}, got ${w.got ?? 'nothing'}`).join(' · ')));
+    li.append(body);
+    list.append(li);
+  }
+}
+
+/* ── start ── */
+buildPicker();
+clearPanels();
+drawRoom();
+scores();
+{
+  const li = el('li', 'empty');
+  li.append(el('b', null, 'Pick a call to listen in.'), document.createTextNode('Only the caller’s lines are scripted — every reply is worked out live against the table plan.'));
+  $('transcript').append(li);
+}
+current = CALLS[0];
+
+window.frontdesk = { get call() { return call; }, get diary() { return diary; }, playSample, startLive, CALLS };
+</script>
+<script type="module" src="../../shared/navigator.js"></script>
+</body>
+</html>

@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="../../favicon.svg" />
+<meta name="theme-color" content="#f3efe5" />
+<title>Split — who owes whom, in the fewest payments</title>
+<meta name="description" content="Add who paid for what on a trip, a flat or a dinner, and get the smallest number of bank transfers that settles everyone up — to the penny. Share the group with one link. Nothing is uploaded." />
+<meta property="og:title" content="Split — who owes whom, in the fewest payments" />
+<meta property="og:description" content="Who paid what, and the fewest bank transfers that square everybody up. Uneven splits, exact to the penny, shareable by link, no signup." />
+<style>
+  @font-face { font-family: "Instrument Serif"; src: url("../../assets/fonts/instrument-serif.woff2") format("woff2"); font-display: swap; }
+  @font-face { font-family: "Instrument Serif"; src: url("../../assets/fonts/instrument-serif-italic.woff2") format("woff2"); font-style: italic; font-display: swap; }
+  @font-face { font-family: "Newsreader"; src: url("../../assets/fonts/newsreader.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
+  @font-face { font-family: "JetBrains Mono Var"; src: url("../../assets/fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 100 800; font-display: swap; }
+
+  :root {
+    --paper: #f3efe5; --card: #fbf9f3; --ink: #17140f; --ink-2: #4a4439; --ink-3: #857c6c;
+    --rule: rgba(23,20,15,.14); --rule-2: rgba(23,20,15,.3); --red: #cf2e1b; --green: #2c7a4b;
+    --display: "Instrument Serif", Georgia, serif; --text: "Newsreader", Georgia, serif;
+    --mono: "JetBrains Mono Var", ui-monospace, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--paper); color: var(--ink); }
+  body { font: 400 17px/1.5 var(--text); -webkit-font-smoothing: antialiased; }
+  [hidden] { display: none !important; }
+  button { font: inherit; color: inherit; }
+  .back {
+    position: fixed; top: 14px; left: 14px; z-index: 10; text-decoration: none;
+    font: 600 11px/1 var(--mono); letter-spacing: .1em; color: var(--ink-2);
+    border: 1px solid var(--rule-2); padding: 8px 11px; background: var(--paper);
+  }
+  .back:hover { color: var(--red); border-color: var(--red); }
+  main { max-width: 1160px; margin: 0 auto; padding: 72px 24px 90px; }
+
+  header h1 { margin: 0; font: 400 clamp(46px, 7vw, 84px)/.95 var(--display); letter-spacing: -.02em; }
+  header h1 em { font-style: italic; color: var(--red); }
+  header p { margin: 14px 0 0; max-width: 60ch; color: var(--ink-2); font-size: 18px; }
+
+  .bar {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-top: 34px;
+    padding: 14px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--rule-2);
+  }
+  .bar input.name {
+    flex: 1 1 260px; min-width: 0; font: 400 30px/1.1 var(--display); background: transparent; border: 0;
+    border-bottom: 1px dashed transparent; padding: 2px 0; color: var(--ink); outline: none;
+  }
+  .bar input.name:hover, .bar input.name:focus { border-bottom-color: var(--rule-2); }
+  select, input[type="text"], input[inputmode] {
+    font: 400 17px/1.3 var(--text); color: var(--ink); background: var(--card);
+    border: 1px solid var(--rule-2); border-radius: 0; padding: 10px 12px; outline: none; min-width: 0;
+  }
+  select:focus, input:focus { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(207,46,27,.14); }
+  .btn {
+    font: 700 11.5px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer;
+    padding: 12px 15px; border: 1.5px solid var(--ink); background: var(--ink); color: var(--paper); white-space: nowrap;
+  }
+  .btn.ghost { background: transparent; color: var(--ink); }
+  .btn:hover { background: var(--red); border-color: var(--red); color: #fff; }
+  .btn.small { padding: 8px 10px; font-size: 10.5px; }
+
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 420px); gap: 44px; margin-top: 34px; align-items: start; }
+  h2 { margin: 0 0 14px; font: 600 11px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+
+  /* ── people ─────────────────────────────────────────────── */
+  .people { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .person {
+    display: inline-flex; align-items: center; gap: 6px; padding: 7px 8px 7px 12px;
+    background: var(--card); border: 1px solid var(--rule-2); font-size: 17px;
+  }
+  .person button { border: 0; background: none; cursor: pointer; color: var(--ink-3); padding: 0 4px; font-size: 15px; line-height: 1; }
+  .person button:hover { color: var(--red); }
+  .add-person { display: inline-flex; gap: 0; }
+  .add-person input { width: 150px; }
+  .add-person button { border-left: 0; }
+  .msg { color: var(--red); font-size: 15px; margin: 8px 0 0; min-height: 0; }
+
+  /* ── the form ───────────────────────────────────────────── */
+  .form { margin-top: 36px; background: var(--card); padding: 22px; box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 18px 40px -28px rgba(60,45,20,.5); }
+  .row { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+  label.f { display: grid; gap: 6px; }
+  label.f > span, .lbl { font: 600 10px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+  label.f input, label.f select { width: 100%; }
+  .among { margin-top: 16px; }
+  .among-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+  .among-head button { border: 0; background: none; cursor: pointer; font: 600 10px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); padding: 0; }
+  .among-head button:hover { color: var(--red); }
+  .chips { display: flex; flex-wrap: wrap; gap: 7px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 8px; cursor: pointer; padding: 7px 11px;
+    border: 1px solid var(--rule-2); background: var(--paper); font-size: 16px; color: var(--ink-3);
+  }
+  .chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  .chip input { width: 58px; padding: 4px 6px; font-size: 15px; }
+  .modes { display: inline-flex; border: 1px solid var(--ink); margin-top: 16px; }
+  .modes button { border: 0; background: none; padding: 9px 12px; cursor: pointer; font: 600 10.5px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+  .modes button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+  .preview { margin: 14px 0 0; font-size: 15.5px; color: var(--ink-2); min-height: 1.5em; }
+  .preview.bad { color: var(--red); }
+  .form-actions { display: flex; gap: 10px; margin-top: 16px; }
+
+  /* ── the list ───────────────────────────────────────────── */
+  .list { margin-top: 36px; }
+  .item {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 4px 14px; align-items: baseline;
+    padding: 14px 2px; border-top: 1px solid var(--rule); cursor: pointer;
+  }
+  .item:last-child { border-bottom: 1px solid var(--rule); }
+  .item:hover .what { color: var(--red); }
+  .item .what { font: 400 23px/1.15 var(--display); }
+  .item .meta { grid-column: 1; font-size: 14.5px; color: var(--ink-3); }
+  .item .amt { font: 500 15px/1 var(--mono); grid-row: 1; grid-column: 2; }
+  .item .del { grid-row: 1; grid-column: 3; border: 0; background: none; cursor: pointer; color: var(--ink-3); font-size: 17px; padding: 0 2px; }
+  .item .del:hover { color: var(--red); }
+  .item.payment .what { font-style: italic; color: var(--green); }
+  .item.editing { background: rgba(207,46,27,.06); }
+  .empty { color: var(--ink-3); font-style: italic; padding: 12px 0; }
+
+  /* ── settle up ──────────────────────────────────────────── */
+  .settle { position: sticky; top: 20px; background: var(--card); padding: 24px; box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 24px 48px -26px rgba(60,45,20,.5); }
+  .headline { font: 400 clamp(34px, 4vw, 46px)/1 var(--display); margin: 0; }
+  .headline b { font-weight: 400; color: var(--red); }
+  .versus { margin: 8px 0 0; font-size: 15.5px; color: var(--ink-2); }
+  .transfers { list-style: none; margin: 18px 0 0; padding: 0; }
+  .transfer {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: center;
+    padding: 12px 0; border-top: 1px solid var(--rule);
+  }
+  .transfer .who { font-size: 18px; }
+  .transfer .who .arrow { color: var(--red); margin: 0 6px; }
+  .transfer .amount { font: 600 16px/1 var(--mono); }
+  .transfer .btn { grid-column: 1 / -1; justify-self: start; }
+  .square { margin: 22px 0 4px; display: inline-block; transform: rotate(-4deg); color: var(--green);
+    font: 800 20px/1 var(--mono); letter-spacing: .2em; border: 3px double currentColor; padding: 10px 14px; }
+  .balances { margin-top: 26px; }
+  .bal { display: grid; grid-template-columns: 76px minmax(0, 1fr) 96px; gap: 10px; align-items: center; padding: 5px 0; font-size: 15.5px; }
+  .bal .n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bal .track { position: relative; height: 12px; }
+  .bal .track::before { content: ''; position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: var(--rule-2); }
+  .bal .fill { position: absolute; top: 0; bottom: 0; }
+  .bal .v { font: 500 13px/1 var(--mono); text-align: right; }
+  .totals { margin: 18px 0 0; font: 500 12px/1.6 var(--mono); color: var(--ink-3); }
+  .toast { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%); background: var(--ink); color: var(--paper);
+    font: 600 12px/1 var(--mono); letter-spacing: .08em; padding: 12px 16px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 20; }
+  .toast.on { opacity: 1; }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .settle { position: static; order: -1; }
+  }
+  @media (max-width: 560px) {
+    main { padding: 64px 16px 70px; }
+    .row { grid-template-columns: 1fr 1fr; }
+    .row label:first-child { grid-column: 1 / -1; }
+    .form { padding: 16px; }
+    .add-person input { width: 120px; }
+  }
+</style>
+</head>
+<body>
+<a class="back" href="../../index.html">&larr; INDEX</a>
+<main>
+  <header>
+    <h1>Split, <em>settled in the fewest payments</em></h1>
+    <p>Who paid for what on a trip, in a flat or at dinner &mdash; and the smallest number of bank
+      transfers that squares everybody up, to the penny. It opens on an example weekend; change
+      anything and the plan redoes itself.</p>
+  </header>
+
+  <div class="bar">
+    <input class="name" id="groupName" aria-label="Group name" />
+    <select id="currency" aria-label="Currency"></select>
+    <button class="btn ghost" type="button" id="share">Share link</button>
+    <button class="btn ghost" type="button" id="fresh">New group</button>
+  </div>
+
+  <div class="layout">
+    <section>
+      <h2>People</h2>
+      <div class="people" id="people">
+        <form class="add-person" id="addPerson">
+          <input type="text" id="personName" placeholder="Add a person" autocomplete="off" aria-label="New person's name" />
+          <button class="btn small" type="submit">Add</button>
+        </form>
+      </div>
+      <p class="msg" id="peopleMsg"></p>
+
+      <form class="form" id="form" autocomplete="off">
+        <div class="row">
+          <label class="f"><span>What for</span><input type="text" id="what" placeholder="e.g. Dinner" /></label>
+          <label class="f"><span>How much</span><input id="amount" inputmode="decimal" placeholder="0.00" /></label>
+          <label class="f"><span>Paid by</span><select id="paidBy"></select></label>
+        </div>
+        <div class="among">
+          <div class="among-head">
+            <span class="lbl">Split between</span>
+            <button type="button" id="everyone">everyone</button>
+            <button type="button" id="nobody">nobody</button>
+          </div>
+          <div class="chips" id="among"></div>
+        </div>
+        <div class="modes" id="modes">
+          <button type="button" data-mode="equal" aria-pressed="true">Equally</button>
+          <button type="button" data-mode="shares" aria-pressed="false">By shares</button>
+          <button type="button" data-mode="exact" aria-pressed="false">Exact amounts</button>
+        </div>
+        <p class="preview" id="preview"></p>
+        <div class="form-actions">
+          <button class="btn" type="submit" id="submit">Add expense</button>
+          <button class="btn ghost" type="button" id="cancel" hidden>Cancel</button>
+        </div>
+      </form>
+
+      <div class="list">
+        <h2>Expenses</h2>
+        <div id="list"></div>
+      </div>
+    </section>
+
+    <aside class="settle" id="settle" aria-live="polite"></aside>
+  </div>
+</main>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+/* ───────────────────────────────────────────────────────────────────────────
+   Split — the part you can see.
+
+   The arithmetic is in split.js and it is all whole cents. This page is a
+   form, a list and a plan, and the plan is the point: it is always visible,
+   it redoes itself on every keystroke, and "mark paid" is just another line
+   in the list, so settling up is the same operation as spending and a
+   half-settled group still adds up.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+import {
+  parseAmount, money, owedFor, problemWith, balances, settle, naivePayments,
+  pack, unpack, example,
+} from './split.js';
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const CURRENCIES = ['GBP', 'EUR', 'USD', 'CAD', 'AUD', 'NZD', 'CHF', 'SEK', 'NOK', 'DKK', 'INR', 'ZAR'];
+const KEY = 'split.group';
+
+let state, editing = null, mode = 'equal', among = new Set(), detail = {};
+let uid = Date.now() % 1e6;
+const newId = (p) => `${p}${(uid++).toString(36)}`;
+
+/* ── loading and saving ──────────────────────────────────────────────────── */
+
+function load() {
+  const m = location.hash.match(/^#g=([A-Za-z0-9_-]+)$/);
+  if (m) {
+    try { return unpack(m[1]); } catch { /* a mangled link falls through */ }
+  }
+  try {
+    const saved = localStorage.getItem(KEY);
+    if (saved) return JSON.parse(saved);
+  } catch { /* private windows and full disks */ }
+  return example();
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch {}
+}
+
+const nameOf = (id) => state.people.find((p) => p.id === id)?.name ?? '?';
+const fmt = (c) => money(c, state.currency);
+
+/* ── people ──────────────────────────────────────────────────────────────── */
+
+function renderPeople() {
+  const host = $('people');
+  for (const el of [...host.querySelectorAll('.person')]) el.remove();
+  for (const p of state.people) {
+    const span = document.createElement('span');
+    span.className = 'person';
+    span.innerHTML = `${esc(p.name)}<button type="button" aria-label="Remove ${esc(p.name)}">&times;</button>`;
+    span.querySelector('button').addEventListener('click', () => removePerson(p.id));
+    host.insertBefore(span, $('addPerson'));
+  }
+}
+
+function removePerson(id) {
+  /* Somebody who paid for something or shared in it cannot just vanish —
+     the money they are part of would silently land on everybody else. */
+  const n = state.expenses.filter((e) => e.paidBy === id || e.from === id || e.to === id || owedFor(e).has(id)).length;
+  if (n) {
+    $('peopleMsg').textContent = `${nameOf(id)} is in ${n} expense${n === 1 ? '' : 's'} — take them out of those first.`;
+    return;
+  }
+  state.people = state.people.filter((p) => p.id !== id);
+  among.delete(id);
+  changed();
+}
+
+$('addPerson').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const name = $('personName').value.trim();
+  if (!name) return;
+  if (state.people.some((p) => p.name.toLowerCase() === name.toLowerCase())) {
+    $('peopleMsg').textContent = `There is already a ${name}. Add a surname or an initial.`;
+    return;
+  }
+  const p = { id: newId('p'), name };
+  state.people.push(p);
+  among.add(p.id);
+  $('personName').value = '';
+  changed();
+});
+
+/* ── the form ────────────────────────────────────────────────────────────── */
+
+function renderForm() {
+  const paid = $('paidBy');
+  const keep = paid.value;
+  paid.innerHTML = state.people.map((p) => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');
+  if (state.people.some((p) => p.id === keep)) paid.value = keep;
+
+  const host = $('among');
+  host.innerHTML = '';
+  for (const p of state.people) {
+    const on = among.has(p.id);
+    const chip = document.createElement('span');
+    chip.className = 'chip';
+    chip.setAttribute('role', 'button');
+    chip.tabIndex = 0;
+    chip.setAttribute('aria-pressed', String(on));
+    chip.innerHTML = esc(p.name);
+    if (on && mode !== 'equal') {
+      const input = document.createElement('input');
+      input.inputMode = 'decimal';
+      input.value = detail[p.id] ?? (mode === 'shares' ? '1' : '');
+      input.placeholder = mode === 'shares' ? '1' : '0.00';
+      input.setAttribute('aria-label', `${p.name}'s ${mode === 'shares' ? 'shares' : 'amount'}`);
+      input.addEventListener('click', (e) => e.stopPropagation());
+      input.addEventListener('input', () => { detail[p.id] = input.value; renderPreview(); });
+      chip.append(input);
+    }
+    const toggle = () => { on ? among.delete(p.id) : among.add(p.id); renderForm(); };
+    chip.addEventListener('click', toggle);
+    chip.addEventListener('keydown', (e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggle(); } });
+    host.append(chip);
+  }
+  for (const b of $('modes').children) b.setAttribute('aria-pressed', String(b.dataset.mode === mode));
+  renderPreview();
+}
+
+function draft() {
+  const ids = state.people.map((p) => p.id).filter((id) => among.has(id));
+  const e = { what: $('what').value.trim() || 'Something', amount: parseAmount($('amount').value), paidBy: $('paidBy').value, split: mode };
+  if (mode === 'equal') e.among = ids;
+  if (mode === 'shares') e.shares = Object.fromEntries(ids.map((id) => [id, Number(detail[id] ?? 1) || 0]));
+  if (mode === 'exact') e.amounts = Object.fromEntries(ids.map((id) => [id, parseAmount(detail[id] ?? '') || 0]));
+  return e;
+}
+
+function renderPreview() {
+  const e = draft();
+  const out = $('preview');
+  out.classList.remove('bad');
+  if (!$('amount').value.trim()) { out.textContent = state.people.length ? 'Type an amount to see who owes what.' : 'Add the people first.'; return; }
+  const problem = problemWith(e);
+  if (problem) { out.textContent = `Not yet: ${problem}.`; out.classList.add('bad'); return; }
+  const owed = [...owedFor(e)];
+  const same = owed.every(([, c]) => c === owed[0][1]) || owed.every(([, c]) => Math.abs(c - owed[0][1]) <= 1);
+  out.textContent = same && mode === 'equal'
+    ? `${fmt(owed[0][1])} each, ${owed.length} way${owed.length === 1 ? '' : 's'}.`
+    : owed.map(([id, c]) => `${nameOf(id)} ${fmt(c)}`).join(' · ');
+}
+
+for (const b of $('modes').children) {
+  b.addEventListener('click', () => { mode = b.dataset.mode; detail = {}; renderForm(); });
+}
+$('everyone').addEventListener('click', () => { among = new Set(state.people.map((p) => p.id)); renderForm(); });
+$('nobody').addEventListener('click', () => { among = new Set(); renderForm(); });
+for (const id of ['what', 'amount', 'paidBy']) $(id).addEventListener('input', renderPreview);
+
+function resetForm() {
+  editing = null;
+  mode = 'equal';
+  detail = {};
+  among = new Set(state.people.map((p) => p.id));
+  $('what').value = '';
+  $('amount').value = '';
+  $('submit').textContent = 'Add expense';
+  $('cancel').hidden = true;
+  renderForm();
+}
+
+$('form').addEventListener('submit', (ev) => {
+  ev.preventDefault();
+  const e = draft();
+  const problem = problemWith(e);
+  if (problem) { renderPreview(); $('amount').focus(); return; }
+  if (editing) {
+    const i = state.expenses.findIndex((x) => x.id === editing);
+    state.expenses[i] = { ...e, id: editing };
+  } else {
+    state.expenses.unshift({ ...e, id: newId('e') });
+  }
+  resetForm();
+  changed();
+  $('what').focus();
+});
+$('cancel').addEventListener('click', () => { resetForm(); renderList(); });
+
+function edit(e) {
+  if (e.kind === 'payment') return;
+  editing = e.id;
+  mode = e.split;
+  $('what').value = e.what;
+  $('amount').value = (e.amount / 100).toFixed(2);
+  $('paidBy').value = e.paidBy;
+  const owed = owedFor(e);
+  among = new Set(owed.keys());
+  detail = {};
+  if (mode === 'shares') for (const [id, n] of Object.entries(e.shares)) detail[id] = String(n);
+  if (mode === 'exact') for (const [id, c] of Object.entries(e.amounts)) detail[id] = (c / 100).toFixed(2);
+  $('submit').textContent = 'Save changes';
+  $('cancel').hidden = false;
+  renderForm();
+  renderList();
+  $('form').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+/* ── the list ────────────────────────────────────────────────────────────── */
+
+function renderList() {
+  const host = $('list');
+  host.innerHTML = '';
+  if (!state.expenses.length) {
+    host.innerHTML = '<p class="empty">Nothing yet. Add the first thing somebody paid for.</p>';
+    return;
+  }
+  for (const e of state.expenses) {
+    const row = document.createElement('div');
+    row.className = `item${e.kind === 'payment' ? ' payment' : ''}${editing === e.id ? ' editing' : ''}`;
+    if (e.kind === 'payment') {
+      row.innerHTML = `<span class="what">${esc(nameOf(e.from))} paid ${esc(nameOf(e.to))} back</span>
+        <span class="amt">${fmt(e.amount)}</span><button class="del" type="button" aria-label="Undo payment">&times;</button>
+        <span class="meta">settling up</span>`;
+    } else {
+      const n = owedFor(e).size;
+      const how = e.split === 'equal' ? (n === state.people.length ? 'split between everyone' : `split ${n} way${n === 1 ? '' : 's'}`)
+        : e.split === 'shares' ? 'split by shares' : 'split by exact amounts';
+      row.innerHTML = `<span class="what">${esc(e.what)}</span><span class="amt">${fmt(e.amount)}</span>
+        <button class="del" type="button" aria-label="Delete ${esc(e.what)}">&times;</button>
+        <span class="meta">paid by ${esc(nameOf(e.paidBy))} · ${how}</span>`;
+      row.addEventListener('click', () => edit(e));
+      row.title = 'Click to edit';
+    }
+    row.querySelector('.del').addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      state.expenses = state.expenses.filter((x) => x !== e);
+      if (editing === e.id) resetForm();
+      changed();
+    });
+    host.append(row);
+  }
+}
+
+/* ── the plan ────────────────────────────────────────────────────────────── */
+
+function renderSettle() {
+  const bal = balances(state.people, state.expenses);
+  const plan = settle(bal);
+  const naive = naivePayments(state.people, state.expenses);
+  const host = $('settle');
+  const spent = state.expenses.filter((e) => e.kind !== 'payment' && !problemWith(e)).reduce((a, e) => a + e.amount, 0);
+
+  let html = '<h2>Settle up</h2>';
+  if (!plan.length) {
+    html += `<p class="headline">${spent ? 'Everyone is square.' : 'Nothing to settle yet.'}</p>`;
+    if (spent) html += '<span class="square">SETTLED</span>';
+  } else {
+    html += `<p class="headline"><b>${plan.length}</b> payment${plan.length === 1 ? '' : 's'} settle${plan.length === 1 ? 's' : ''} everything</p>`;
+    if (naive > plan.length) {
+      html += `<p class="versus">Paying everybody back one by one would take ${naive}.</p>`;
+    }
+    html += '<ul class="transfers">';
+    plan.forEach((t, i) => {
+      html += `<li class="transfer"><span class="who">${esc(nameOf(t.from))}<span class="arrow">&rarr;</span>${esc(nameOf(t.to))}</span>
+        <span class="amount">${fmt(t.amount)}</span>
+        <button class="btn small ghost" type="button" data-pay="${i}">Mark paid</button></li>`;
+    });
+    html += '</ul>';
+  }
+
+  /* Who is up and who is down, as bars either side of zero — the thing a
+     list of numbers makes you work out for yourself. */
+  const vals = state.people.map((p) => [p, bal.get(p.id) ?? 0]);
+  const max = Math.max(1, ...vals.map(([, v]) => Math.abs(v)));
+  if (state.people.length) {
+    html += '<div class="balances"><h2>Up and down</h2>';
+    for (const [p, v] of vals) {
+      const w = (Math.abs(v) / max) * 50;
+      const style = v >= 0 ? `left:50%;width:${w}%;background:var(--green)` : `right:50%;width:${w}%;background:var(--red)`;
+      html += `<div class="bal"><span class="n">${esc(p.name)}</span><span class="track"><span class="fill" style="${style}"></span></span>
+        <span class="v">${v > 0 ? '+' : v < 0 ? '−' : ''}${fmt(Math.abs(v))}</span></div>`;
+    }
+    html += '</div>';
+  }
+  if (spent) {
+    html += `<p class="totals">${fmt(spent)} spent · ${fmt(Math.round(spent / Math.max(1, state.people.length)))} a head on average</p>`;
+  }
+  host.innerHTML = html;
+  for (const b of host.querySelectorAll('[data-pay]')) {
+    b.addEventListener('click', () => {
+      const t = plan[Number(b.dataset.pay)];
+      state.expenses.unshift({ id: newId('e'), kind: 'payment', from: t.from, to: t.to, amount: t.amount });
+      changed();
+      toast(`${nameOf(t.from)} paid ${nameOf(t.to)} ${fmt(t.amount)}`);
+    });
+  }
+}
+
+/* ── the group ───────────────────────────────────────────────────────────── */
+
+$('currency').innerHTML = CURRENCIES.map((c) => `<option>${c}</option>`).join('');
+$('currency').addEventListener('change', () => { state.currency = $('currency').value; changed(); });
+$('groupName').addEventListener('input', () => { state.name = $('groupName').value; save(); });
+
+$('share').addEventListener('click', async () => {
+  const url = `${location.origin}${location.pathname}#g=${pack(state)}`;
+  history.replaceState(null, '', url);
+  try { await navigator.clipboard.writeText(url); toast('Link copied — anyone who opens it sees this group'); }
+  catch { toast('Copy the address bar — it now holds the whole group'); }
+});
+
+$('fresh').addEventListener('click', () => {
+  if (state.expenses.length && !confirm('Start a new group? This one is only kept if you have shared its link.')) return;
+  state = { name: 'New group', currency: state.currency, people: [], expenses: [] };
+  history.replaceState(null, '', location.pathname);
+  resetForm();
+  changed();
+  $('personName').focus();
+});
+
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => t.classList.remove('on'), 2200);
+}
+
+function changed() {
+  $('peopleMsg').textContent = '';
+  save();
+  renderPeople();
+  renderForm();
+  renderList();
+  renderSettle();
+}
+
+state = load();
+$('groupName').value = state.name ?? 'Our group';
+$('currency').value = CURRENCIES.includes(state.currency) ? state.currency : 'GBP';
+state.currency = $('currency').value;
+among = new Set(state.people.map((p) => p.id));
+changed();
+window.splitState = () => state;   // the seam a headless browser checks through
+</script>
+<script type="module" src="../../shared/navigator.js"></script>
+</body>
+</html>

@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="../../favicon.svg" />
+<meta name="theme-color" content="#f3efe5" />
+<title>Sudoku — one answer, reached by reasoning, with hints that say why</title>
+<meta name="description" content="Sudoku with a daily puzzle at three levels. Every puzzle has exactly one solution and can be finished by reasoning without a guess, and the hint names the technique and shows you where it applies." />
+<meta property="og:title" content="Sudoku — with reasons" />
+<meta property="og:description" content="A daily Sudoku at three levels, each checked for one solution and graded by the techniques it needs. Hints that teach the move instead of filling in the square." />
+<style>
+  @font-face { font-family: "Instrument Serif"; src: url("../../assets/fonts/instrument-serif.woff2") format("woff2"); font-display: swap; }
+  @font-face { font-family: "Instrument Serif"; src: url("../../assets/fonts/instrument-serif-italic.woff2") format("woff2"); font-style: italic; font-display: swap; }
+  @font-face { font-family: "Newsreader"; src: url("../../assets/fonts/newsreader.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
+  @font-face { font-family: "JetBrains Mono Var"; src: url("../../assets/fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 100 800; font-display: swap; }
+
+  :root {
+    --paper: #f3efe5; --card: #fbf9f3; --ink: #17140f; --ink-2: #4a4439; --ink-3: #857c6c;
+    --rule-2: rgba(23,20,15,.3); --red: #cf2e1b; --pen: #1f4fbf; --green: #2c7a4b;
+    --display: "Instrument Serif", Georgia, serif; --text: "Newsreader", Georgia, serif;
+    --mono: "JetBrains Mono Var", ui-monospace, Menlo, monospace;
+    --size: min(92vw, 540px);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--paper); color: var(--ink); }
+  body { font: 400 17px/1.5 var(--text); -webkit-font-smoothing: antialiased; }
+  [hidden] { display: none !important; }
+  button { font: inherit; color: inherit; }
+  .back {
+    position: fixed; top: 14px; left: 14px; z-index: 10; text-decoration: none;
+    font: 600 11px/1 var(--mono); letter-spacing: .1em; color: var(--ink-2);
+    border: 1px solid var(--rule-2); padding: 8px 11px; background: var(--paper);
+  }
+  .back:hover { color: var(--red); border-color: var(--red); }
+  main { max-width: 1080px; margin: 0 auto; padding: 72px 20px 80px; }
+  header h1 { margin: 0; font: 400 clamp(46px, 7vw, 84px)/.95 var(--display); letter-spacing: -.02em; }
+  header h1 em { font-style: italic; color: var(--red); }
+  header p { margin: 14px 0 0; max-width: 62ch; color: var(--ink-2); font-size: 18px; }
+
+  .layout { display: grid; grid-template-columns: var(--size) minmax(0, 1fr); gap: 40px; margin-top: 34px; align-items: start; }
+  .levels { display: flex; border-bottom: 1px solid var(--ink); margin-bottom: 16px; }
+  .levels button { background: none; border: 0; border-bottom: 3px solid transparent; margin-bottom: -1px; cursor: pointer; padding: 10px 12px 9px;
+    font: 600 11.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+  .levels button[aria-pressed="true"] { color: var(--ink); border-bottom-color: var(--red); }
+  .levels .clock { margin-left: auto; align-self: center; font: 600 14px/1 var(--mono); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+
+  .grid {
+    display: grid; grid-template-columns: repeat(9, 1fr); width: var(--size); aspect-ratio: 1;
+    border: 3px solid var(--ink); background: var(--card); user-select: none; -webkit-user-select: none; touch-action: manipulation;
+  }
+  .sq {
+    position: relative; border: 0; padding: 0; background: transparent; cursor: pointer;
+    border-right: 1px solid rgba(23,20,15,.28); border-bottom: 1px solid rgba(23,20,15,.28);
+    font: 400 calc(var(--size) / 15) var(--text); display: grid; place-items: center; color: var(--pen);
+  }
+  .sq:nth-child(9n) { border-right: 0; }
+  .sq:nth-child(9n + 3), .sq:nth-child(9n + 6) { border-right: 2.5px solid var(--ink); }
+  .sq:nth-child(n + 19):nth-child(-n + 27), .sq:nth-child(n + 46):nth-child(-n + 54) { border-bottom: 2.5px solid var(--ink); }
+  .sq:nth-child(n + 73) { border-bottom: 0; }
+  .sq.given { color: var(--ink); font-weight: 650; cursor: default; }
+  .sq.peer { background: rgba(23,20,15,.045); }
+  .sq.same { background: rgba(31,79,191,.13); }
+  .sq.sel { background: #fff0b8; }
+  .sq.bad { color: var(--red); }
+  .sq.unit { background: rgba(207,46,27,.08); }
+  .sq.ring::after { content: ''; position: absolute; inset: 8%; border: 2.5px solid var(--red); border-radius: 50%; transform: rotate(-10deg); }
+  .sq:focus-visible { outline: 2px solid var(--red); outline-offset: -3px; }
+  .notes { position: absolute; inset: 6%; display: grid; grid-template-columns: repeat(3, 1fr); pointer-events: none; }
+  .notes span { font: 500 calc(var(--size) / 44) var(--mono); color: var(--ink-3); display: grid; place-items: center; }
+
+  .pad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 16px; width: var(--size); }
+  .pad button {
+    padding: 10px 0 8px; border: 1px solid var(--rule-2); background: var(--card); cursor: pointer;
+    font: 400 26px/1 var(--display); display: grid; gap: 3px; justify-items: center;
+  }
+  .pad button small { font: 600 9.5px/1 var(--mono); color: var(--ink-3); }
+  .pad button:hover { border-color: var(--ink); }
+  .pad button.done { opacity: .35; }
+  .pad button.tool { font: 700 10.5px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+  .pad button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+
+  aside h2 { margin: 0 0 10px; font: 600 11px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+  .btns { display: flex; flex-wrap: wrap; gap: 10px; }
+  .btn {
+    font: 700 11.5px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer;
+    padding: 12px 14px; border: 1.5px solid var(--ink); background: var(--ink); color: var(--paper);
+  }
+  .btn:hover { background: var(--red); border-color: var(--red); color: #fff; }
+  .btn.ghost { background: transparent; color: var(--ink); }
+  .btn.ghost:hover { color: #fff; }
+  .reason { margin: 20px 0 0; padding: 16px 18px; background: var(--card); border-left: 3px solid var(--red); font-size: 17px; color: var(--ink-2); }
+  .reason b { color: var(--ink); }
+  .reason .tech { display: block; font: 600 10.5px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--red); margin-bottom: 8px; }
+  .facts { margin: 22px 0 0; font: 500 12.5px/1.8 var(--mono); color: var(--ink-3); }
+  .facts b { color: var(--ink); }
+  .solved { margin-top: 20px; }
+  .stamp { display: inline-block; transform: rotate(-5deg); color: var(--green); font: 800 22px/1 var(--mono); letter-spacing: .22em; border: 3px double currentColor; padding: 10px 16px; }
+  .solved p { margin: 12px 0; color: var(--ink-2); }
+  .keys { margin: 22px 0 0; font-size: 14.5px; color: var(--ink-3); }
+  .keys kbd { font: 600 11px/1 var(--mono); border: 1px solid var(--rule-2); padding: 2px 5px; background: var(--card); }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; justify-items: center; }
+    aside { width: var(--size); }
+  }
+  @media (max-width: 480px) { main { padding: 64px 12px 60px; } .pad button { font-size: 22px; } }
+</style>
+</head>
+<body>
+<a class="back" href="../../index.html">&larr; INDEX</a>
+<main>
+  <header>
+    <h1>Sudoku, <em>with reasons</em></h1>
+    <p>One answer, and a way to it that needs no guessing &mdash; every puzzle is checked for both
+      before you see it. Stuck? The hint names the technique and shows you where it applies.</p>
+  </header>
+
+  <div class="layout">
+    <section>
+      <div class="levels" id="levels"><span class="clock" id="clock">0:00</span></div>
+      <div class="grid" id="grid" role="grid" aria-label="Sudoku grid"></div>
+      <div class="pad" id="pad"></div>
+    </section>
+
+    <aside>
+      <h2 id="which">Today&rsquo;s puzzle</h2>
+      <div class="btns">
+        <button class="btn" type="button" id="hint">Hint</button>
+        <button class="btn ghost" type="button" id="fresh">A different one</button>
+        <button class="btn ghost" type="button" id="today">Today&rsquo;s</button>
+      </div>
+      <div class="reason" id="reason" hidden></div>
+      <div class="solved" id="solved" hidden></div>
+      <p class="facts" id="facts"></p>
+      <p class="keys">Type <kbd>1</kbd>–<kbd>9</kbd> to fill, <kbd>N</kbd> for notes, <kbd>&larr;</kbd><kbd>&rarr;</kbd><kbd>&uarr;</kbd><kbd>&darr;</kbd> to move,
+        <kbd>Backspace</kbd> to clear, <kbd>Z</kbd> to undo, <kbd>H</kbd> for a hint.</p>
+    </aside>
+  </div>
+</main>
+
+<script type="module">
+/* ───────────────────────────────────────────────────────────────────────────
+   Sudoku — the part you can see.
+
+   The puzzles and the reasoning are in engine.js. Here: a grid set like the
+   one in a newspaper, a pen colour for your digits that is not the ink of the
+   givens, pencil notes, undo, and a hint that rings a square and shades the
+   row, column or box its reason lives in — so the reason can be read off the
+   board rather than taken on trust.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+import { generate, daily, dayNumber, hint, conflicts, LEVELS, TECHNIQUES, PEERS, rowOf, colOf, boxOf } from './engine.js';
+
+const $ = (id) => document.getElementById(id);
+let level = 'medium', game = null, sel = -1, notesMode = false, shown = null, clockStart = 0, timer = null;
+
+/* ── the pieces ──────────────────────────────────────────────────────────── */
+
+for (const [id, L] of Object.entries(LEVELS)) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.dataset.id = id;
+  b.textContent = L.label;
+  b.addEventListener('click', () => { level = id; load(true); });
+  $('levels').insertBefore(b, $('clock'));
+}
+for (let i = 0; i < 81; i++) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'sq';
+  b.dataset.i = i;
+  b.setAttribute('role', 'gridcell');
+  b.addEventListener('click', () => { sel = i; shown = null; render(); });
+  $('grid').append(b);
+}
+for (let d = 1; d <= 9; d++) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.dataset.d = d;
+  b.innerHTML = `${d}<small></small>`;
+  b.addEventListener('click', () => enter(d));
+  $('pad').append(b);
+}
+for (const [label, fn, id] of [['Notes', () => { notesMode = !notesMode; render(); }, 'notesBtn'], ['Erase', () => enter(0)], ['Undo', undo]]) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'tool';
+  b.textContent = label;
+  if (id) b.id = id;
+  b.addEventListener('click', fn);
+  $('pad').append(b);
+}
+
+/* ── state ───────────────────────────────────────────────────────────────── */
+
+const key = () => `sudoku.${game.daily ? `d${dayNumber()}` : 'free'}.${level}`;
+
+function start(made, isDaily) {
+  game = { puzzle: made.puzzle, solution: made.solution, grade: made.grade, clues: made.clues, daily: isDaily,
+    grid: made.puzzle.slice(), notes: new Array(81).fill(0), history: [], hints: 0, elapsed: 0, done: false };
+  sel = game.puzzle.findIndex((d) => !d);
+}
+
+function load(isDaily) {
+  shown = null;
+  $('reason').hidden = true;
+  const made = isDaily ? daily(level) : generate({ level, seed: (Math.random() * 2 ** 31) | 0 });
+  start(made, isDaily);
+  try {
+    const saved = JSON.parse(localStorage.getItem(key()) || 'null');
+    if (saved && saved.puzzle === made.puzzle.join('')) Object.assign(game, saved, { puzzle: made.puzzle, solution: made.solution });
+  } catch {}
+  clockStart = performance.now() - game.elapsed * 1000;
+  clearInterval(timer);
+  timer = setInterval(tickClock, 500);
+  render();
+}
+
+function save() {
+  game.elapsed = Math.round((performance.now() - clockStart) / 1000);
+  try {
+    localStorage.setItem(key(), JSON.stringify({ puzzle: game.puzzle.join(''), grid: game.grid, notes: game.notes, hints: game.hints, elapsed: game.elapsed, done: game.done }));
+  } catch {}
+}
+
+function tickClock() {
+  if (game.done) return;
+  const s = Math.floor((performance.now() - clockStart) / 1000);
+  $('clock').textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+}
+
+/* ── moves ───────────────────────────────────────────────────────────────── */
+
+function enter(d) {
+  if (sel < 0 || game.puzzle[sel] || game.done) return;
+  game.history.push([sel, game.grid[sel], game.notes[sel]]);
+  if (notesMode && d) {
+    game.notes[sel] ^= 1 << d;
+  } else {
+    game.grid[sel] = game.grid[sel] === d ? 0 : d;
+    game.notes[sel] = 0;
+    /* A placed digit rubs itself out of the pencil notes around it — the
+       bookkeeping everybody does by hand and nobody enjoys. */
+    if (d) for (const j of PEERS[sel]) game.notes[j] &= ~(1 << d);
+  }
+  shown = null;
+  $('reason').hidden = true;
+  if (game.grid.every((v, i) => v === game.solution[i])) finish();
+  save();
+  render();
+}
+
+function undo() {
+  const last = game.history.pop();
+  if (!last || game.done) return;
+  [sel, game.grid[last[0]], game.notes[last[0]]] = [last[0], last[1], last[2]];
+  save();
+  render();
+}
+
+$('hint').addEventListener('click', () => {
+  if (game.done) return;
+  const h = hint(game.grid, game.solution);
+  if (!h) return;
+  game.hints++;
+  shown = h;
+  sel = h.cell;
+  const r = $('reason');
+  r.hidden = false;
+  r.innerHTML = h.kind === 'wrong'
+    ? `<span class="tech">A mistake</span>${h.text}`
+    : `<span class="tech">${h.technique}${h.text.includes('Then:') ? ' — after a crossing-out' : ''}</span>${h.text} <b>The ringed square is a ${h.digit}.</b>`;
+  save();
+  render();
+});
+$('fresh').addEventListener('click', () => load(false));
+$('today').addEventListener('click', () => load(true));
+
+document.addEventListener('keydown', (e) => {
+  if (e.metaKey || e.ctrlKey ? e.key.toLowerCase() === 'z' : false) { e.preventDefault(); undo(); return; }
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const move = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -9, ArrowDown: 9 }[e.key];
+  if (move) {
+    e.preventDefault();
+    const r = rowOf(sel), c = colOf(sel);
+    const nr = Math.max(0, Math.min(8, r + (move === -9 ? -1 : move === 9 ? 1 : 0)));
+    const nc = Math.max(0, Math.min(8, c + (move === -1 ? -1 : move === 1 ? 1 : 0)));
+    sel = nr * 9 + nc;
+    render();
+    $('grid').children[sel].focus();
+  } else if (/^[1-9]$/.test(e.key)) { enter(Number(e.key)); }
+  else if (e.key === 'Backspace' || e.key === 'Delete' || e.key === '0') { enter(0); }
+  else if (e.key === 'n' || e.key === 'N') { notesMode = !notesMode; render(); }
+  else if (e.key === 'z' || e.key === 'Z') { undo(); }
+  else if (e.key === 'h' || e.key === 'H') { $('hint').click(); }
+});
+
+/* ── the end ─────────────────────────────────────────────────────────────── */
+
+function finish() {
+  game.done = true;
+  game.elapsed = Math.round((performance.now() - clockStart) / 1000);
+  clearInterval(timer);
+}
+
+function renderSolved() {
+  const el = $('solved');
+  el.hidden = !game.done;
+  if (!game.done) return;
+  const m = Math.floor(game.elapsed / 60), s = String(game.elapsed % 60).padStart(2, '0');
+  const line = `Sudoku · ${LEVELS[level].label}${game.daily ? ` · day ${dayNumber()}` : ''} · ${m}:${s} · ${game.hints ? `${game.hints} hint${game.hints === 1 ? '' : 's'}` : 'no hints'}`;
+  el.innerHTML = `<span class="stamp">SOLVED</span><p>${m}:${s}${game.hints ? `, with ${game.hints} hint${game.hints === 1 ? '' : 's'}` : ', without a single hint'}.</p>
+    <div class="btns"><button class="btn" type="button" id="copyResult">Copy result</button><button class="btn ghost" type="button" id="again">Another</button></div>`;
+  $('copyResult').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(line); $('copyResult').textContent = 'Copied'; } catch {}
+  });
+  $('again').addEventListener('click', () => load(false));
+}
+
+/* ── drawing ─────────────────────────────────────────────────────────────── */
+
+function render() {
+  const bad = conflicts(game.grid);
+  const d = sel >= 0 ? game.grid[sel] : 0;
+  const unit = shown?.kind === 'place' ? new Set(shown.cells) : new Set();
+  const cells = $('grid').children;
+  for (let i = 0; i < 81; i++) {
+    const b = cells[i];
+    const v = game.grid[i];
+    let cls = 'sq';
+    if (game.puzzle[i]) cls += ' given';
+    if (sel >= 0 && i !== sel && (rowOf(i) === rowOf(sel) || colOf(i) === colOf(sel) || boxOf(i) === boxOf(sel))) cls += ' peer';
+    if (d && v === d && i !== sel) cls += ' same';
+    if (unit.has(i) && i !== shown.cell) cls += ' unit';
+    if (i === sel) cls += ' sel';
+    if (bad.has(i) && !game.puzzle[i]) cls += ' bad';
+    if (shown && i === shown.cell) cls += ' ring';
+    b.className = cls;
+    if (v) {
+      if (b.textContent !== String(v) || b.querySelector('.notes')) b.textContent = String(v);
+    } else if (game.notes[i]) {
+      let html = '<span class="notes">';
+      for (let k = 1; k <= 9; k++) html += `<span>${game.notes[i] & (1 << k) ? k : ''}</span>`;
+      b.innerHTML = html + '</span>';
+    } else if (b.textContent || b.children.length) {
+      b.textContent = '';
+    }
+    b.setAttribute('aria-label', `row ${rowOf(i) + 1} column ${colOf(i) + 1}, ${v || 'empty'}`);
+  }
+  const placed = new Array(10).fill(0);
+  for (const v of game.grid) placed[v]++;
+  for (const b of $('pad').querySelectorAll('[data-d]')) {
+    const left = 9 - placed[Number(b.dataset.d)];
+    b.querySelector('small').textContent = left > 0 ? `${left} left` : 'done';
+    b.classList.toggle('done', left <= 0);
+  }
+  $('notesBtn').setAttribute('aria-pressed', String(notesMode));
+  for (const b of $('levels').querySelectorAll('button')) b.setAttribute('aria-pressed', String(b.dataset.id === level));
+  $('which').textContent = game.daily ? `Today’s ${LEVELS[level].label.toLowerCase()} · day ${dayNumber()}` : `A ${LEVELS[level].label.toLowerCase()} one of your own`;
+  $('facts').innerHTML = `${game.clues} clues · one solution · needs <b>${TECHNIQUES[Math.max(0, game.grade)]}</b> at the hardest`;
+  renderSolved();
+}
+
+load(true);
+window.sudoku = () => game;   // the seam a headless browser plays through
+</script>
+<script type="module" src="../../shared/navigator.js"></script>
+</body>
+</html>

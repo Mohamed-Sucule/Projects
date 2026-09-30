@@ -1,24 +1,60 @@
 # Playground
 
-Thirty things I built. All of them run in a browser — no install, no signup,
-no API key, no video of someone else using it.
+Four AI products a business could ask me to build, and thirty more things I built
+for fun and to learn. All of them run in a browser — no install, no signup, no
+API key, no video of someone else using it.
 
 **→ [Open the playground](https://mohamed-sucule.github.io/Projects/)**
 
 | | | |
 |---|---|---:|
+| **★** | [**Four AI products**](#-four-ai-products) — a receptionist, a knowledge assistant, a sales coach, a claims desk | 4 |
 | **0** | [**Inside the models**](#0--inside-the-models) — how language models actually work | 4 |
 | **I** | [Fiction](#i--fiction) — things to read, and the two the site opens on | 3 |
-| **II** | [Physics you can touch](#ii--physics-you-can-touch) | 4 |
-| **III** | [Games](#iii--games) | 6 |
-| **IV** | [Instruments](#iv--instruments) | 6 |
+| **II** | [Physics you can touch](#ii--physics-you-can-touch) | 2 |
+| **III** | [Games](#iii--games) — including a Minesweeper that never makes you guess | 8 |
+| **IV** | [Things you would actually use](#iv--things-you-would-actually-use) — QR codes, splitting a bill, a tuner | 6 |
 | **V** | [The serious ones](#v--the-serious-ones) — Covers, and six tools for engineers | 7 |
 
 Plain HTML, CSS and JavaScript. No framework, no build step, no dependencies.
-Over 800 tests run in CI before anything here is published — including twenty
+Over 850 tests run in CI before anything here is published — including twenty
 gradient checks against finite differences, a check that a 95% confidence
 interval really does contain the truth about 95% of the time, and one that no
 tool result ever answers a call that was not made.
+
+---
+
+## ★ Four AI products
+
+I'm a forward deployed engineer: I sit with a client, find the work that is costing
+them, and ship the software that does it. These four start from a sentence a client
+might say and end as working software. Each one is measured, with the results (the
+bad ones included) on its page. Each runs entirely in the browser, and nothing
+typed into it is sent anywhere. The businesses are invented; the software is not.
+
+| | The brief | What it is | Measured |
+|---|---|---|---|
+| **[Front Desk](apps/frontdesk/)** | "We miss calls during service." | An AI phone receptionist that books straight into the [Covers](apps/covers/) table plan, offers the nearest free times, tells the kitchen about allergies, and hands over to a person when it should. | 75 of 82 new phrasings understood first time; 400 random callers, no double-bookings |
+| **[Ask the Handbook](apps/handbook/)** | "Staff ask HR the same questions all day." | Answers from the company's own documents, quoting the sentence and its source, and says "the handbook doesn't say" instead of guessing. Paste in your own documents. | 4 answers made up in 164 test questions, 31 of them unanswerable on purpose |
+| **[Call Coach](apps/callcoach/)** | "Our reps lose deals on the same objections." | A live assistant for sales calls: the battlecard on screen the moment a prospect objects, then MEDDICC notes, a CRM record and the follow-up email, all from what was said. | 27 of 28 new lines tagged exactly right, first time; every quote in its notes checked against the call |
+| **[Claims Desk](apps/claims/)** | "Our handlers spend their day retyping claims." | Reads an insurance claim (email, scanned form, invoice) with OCR in the browser, checks it against the policy and itself, and recommends approve, decline or refer, with evidence for every line. | 11 of 11 fields read from each scan; on 180 smudged scans a misread only ever sends a claim to a person |
+
+How they're built, and what each one gets wrong, is in its own README. Across all
+four, the same few rules apply:
+
+- **The right tool for the job, not the biggest model.** Where a purpose-built parser,
+  a search index or a rule is faster, cheaper, testable and can't make things up, it
+  does the work. The on-device models (speech recognition, sentence embeddings, OCR)
+  handle what those can't: listening, understanding meaning, reading a scan.
+- **Measured on questions it never saw.** Each has a held-out test set, written
+  after it was built and run once. The first-run score is recorded in the code and
+  never edited, even when it's bad. Ask the Handbook's two rounds scored 25/41 and
+  21/43, and its README explains what that taught me.
+- **Safe when unsure.** The receptionist hands over to a person, the handbook says it
+  doesn't know, and the claims desk refers anything it can't read.
+
+The small models load from jsDelivr and the Hugging Face hub the first time a page
+asks for them. The OCR engine is served from this repository.
 
 ---
 
@@ -248,38 +284,6 @@ Nothing here is a recording. Every pixel is worked out from scratch while you wa
 which is why you can put your finger in it and it responds properly instead of playing
 you a canned animation.
 
-### [Topple](apps/topple/) — a web page with weight
-
-A perfectly ordinary web page — until you swipe across it, and everything your
-finger passes through comes loose and falls. Cut the support out from under a
-paragraph and what was standing on it collapses on top. Then hit rebuild and
-watch the page assemble itself, one row at a time.
-
-Every element becomes a physics body the moment the page loads, but held in
-place: it collides and it holds things up until something releases it. That is
-what makes a swipe a cut rather than a button.
-
-**They stay real elements the whole time.** Nothing is drawn on a canvas and
-nothing is a picture — each element is moved with a transform, which changes
-where the browser paints it without changing where it thinks it is. The text is
-still text, still crisp, still selectable, lying in a heap on the floor. Putting
-it back is removing one style, and the headline returns to the exact pixel it
-started on.
-
-Underneath is a 2D rigid body engine written from scratch: separating-axis
-collision, contact points by face clipping, and sequential impulses. Four things
-separate a pile that stands from a pile that sags, and each was found by
-watching a stack fall over — contacts that remember their impulse between
-passes, overlap correction that never becomes real velocity, contacts recognised
-between frames (which took stable stacks from four boxes to eight), and sleeping
-bodies that look exactly like walls to the solver.
-
-Sleeping has to be done in groups. Stop one body on its own and the one resting
-against it gets a different answer, twitches, and wakes it straight back up —
-a pile of six oscillates between the two states for ever.
-
-[Full write-up](apps/topple/README.md), including where it gives up.
-
 ### [Mercury](apps/mercury/) — liquid metal you can put your finger in
 
 A sheet of liquid metal under a sunset sky. Drag it and it ripples; drag the sky
@@ -314,8 +318,8 @@ wrong and why.
 
 ## III · Games
 
-One long one, then five short ones. The short ones have no instructions, no tutorial and
-no menu: one control, and the first ten seconds teach you the rest.
+One long one, then the short ones. The short ones have no instructions, no tutorial and
+no menu: the first ten seconds teach you the rest.
 
 ### [Ember](play/ember/) — an action game in the dark, three acts long
 
@@ -369,20 +373,47 @@ stop narrowing.
 
 [Full write-up](play/ace/README.md).
 
+### [Minesweeper](play/sweeper/) — without the guessing
+
+**[Play it](play/sweeper/)** · Classic Minesweeper with the one flaw every version ships taken
+out: the moment, twenty minutes in, where two squares cannot be told apart and a coin decides
+the game. Every board is played by a solver from your first click, using only what a player can
+see — a number that already has its mines, two numbers that share squares, the count at the
+end — and thrown away unless it can be finished without a guess. Hard takes about nine attempts
+and fourteen milliseconds.
+
+Because every board is solvable, a loss can be explained: open a mine and the page rings the
+square you could have proved safe instead, and says why. The solver's reasoning is checked
+against brute force — every arrangement of mines consistent with what a player can see is
+enumerated, and anything it calls safe has to be safe in all of them.
+
+[Full write-up](play/sweeper/README.md).
+
+### [Sudoku](play/sudoku/) — with reasons
+
+**[Play it](play/sudoku/)** · A daily puzzle at three levels. Every one has exactly one answer
+(a fast bitmask solver counts, after every clue removed) and can be finished by reasoning without
+trial and error (a second solver, which only uses named human techniques — singles, pointing
+pairs, naked and hidden pairs, the X-Wing — grades it). The hint does not fill a square in; it
+names the technique and shades where it applies. Every step that second solver takes is checked
+against the known answer, so no technique can be quietly unsound.
+
+[Full write-up](play/sudoku/README.md).
+
 ### The rest of this chapter
 
 | | |
 |---|---|
-| **[Comet](play/orbit/)** | Move the mouse. Collect the gold. Don't touch the red. Fill the bar to clear a level, then again with mines and a spinning bar in the way. The levels never run out — the curve is authored by hand for the first eight and extrapolated after that, approaching a ceiling rather than climbing for ever. |
 | **[Stack](play/stack/)** | A block slides past. Tap. Whatever hangs over the edge of the block below is sliced off and falls away, so every sloppy drop makes the next one harder — the width of the top block *is* your remaining margin for error, drawn in the middle of the screen at all times. Land one dead centre and you lose nothing. |
 | **[Tether](play/tether/)** | You swing round a planet on a tether. Tap and you let go, flying off in a straight line — exactly the way you were already pointing, which is drawn on screen the whole time. If that line passes close enough to another planet it catches you; if it doesn't, you are in deep space. One button, one decision: when. |
 | **[Sumo](play/sumo/)** | Two players, one keyboard, one key each — or two thumbs on one phone. Hold your key and your arrow stops turning and you charge that way, so you are choosing a moment rather than steering. Knock the other one out of the ring before it closes under you. The physics was tuned by having two bots play a few thousand rounds and measuring how often a round was decided by a shove rather than by the ring; the first draft scored 9%. |
 | **[Tangle](play/tangle/)** | A daily connection puzzle. Turn the tiles until no connector is left dangling. The board is grown as a spanning tree and then scrambled, so it is provably solvable *before* you see it — the alternative is shipping an impossible board on day 46. Same board for everyone, every day, and a spoiler-free line to paste into a group chat at the end. |
 
-## IV · Instruments
+## IV · Things you would actually use
 
-Things that make something and hand it back to you: a picture, a drum pattern, an
-island, an answer about your own data. You bring the input and they do the work.
+Small, finished tools for ordinary jobs — a QR code for the Wi-Fi, who owes whom after a
+weekend away, whether the guitar is in tune, what is in a spreadsheet — each still built from
+the algorithm up, and none of them sending anything anywhere.
 
 ### [Sift](apps/sift/) — drop a CSV in and see what is actually in it
 
@@ -410,76 +441,42 @@ bottom.**
 
 [Full write-up](apps/sift/README.md).
 
-### [Morph](play/morph/) — seven layouts, no transitions anywhere
+### [QR codes](apps/qr/) — from the bits up
 
-One gallery, seven completely different layouts. Switch and every tile flies to
-its new place; switch again before they land and they bend into the new
-arrangement carrying the speed they already had. Drag to reorder and the rest
-flow around your finger. Click a tile and it grows into the detail view.
+**[Open it](apps/qr/)** · Type a link, some text, a Wi-Fi network or an email and it is a QR code
+before you finish typing. The encoder is written from the standard: mode selection, Reed–Solomon
+error correction in GF(256), interleaving, placement and all eight masks scored by the penalty
+rules. Tick *show how it is built* and every module is coloured by what it is for.
 
-**A CSS transition is a promise about the future** — get from here to there over
-300ms along this curve. Interrupt it and the browser throws that promise away
-and starts a new one from wherever the element is, at zero velocity. Things stop
-dead and set off again, and it is the most common single reason an interface
-feels cheap.
+A wrong QR code looks exactly like a right one, so the tests never ask the encoder whether it is
+right: capacities against the published table, every error-correction block against the algebra,
+the textbook "HELLO WORLD" byte for byte — and during development every version, level and mask
+was read back by an independent decoder, zxing-cpp: 56 codes, all exact.
 
-A spring knows only its position, its velocity, and where it is being pulled.
-Change the target and nothing is discarded. That is why every gesture here can
-interrupt every other one.
+[Full write-up](apps/qr/README.md).
 
-The part that surprised me: **there is no expand animation in the codebase.**
-Opening a tile writes one large target rectangle; closing writes the old one
-back. The shared-element transition falls out for free once every position is
-already a spring. Same for reordering.
+### [Split](apps/split/) — who owes whom, in the fewest payments
 
-[Full write-up, including the stacking-context bug that took the longest to
-find](play/morph/README.md).
+**[Open it](apps/split/)** · Who paid for what, uneven splits and all, and the smallest number of
+bank transfers that settles everybody up. Money is whole cents from the moment it is typed, so
+every split sums to its total and every group to exactly zero. The fewest payments is *people
+minus the most zero-sum groups they can be divided into*, found by a search over subsets — which
+beats the usual biggest-debtor-first method, and is checked against a brute-force search over
+every way of dividing hundreds of random groups. The whole group travels in one link; there is
+no server.
 
-### [Portrait](play/portrait/) — drop in a photo, watch it get rebuilt
+[Full write-up](apps/split/README.md).
 
-Four ways: thousands of dots, a mesh of triangles, tiles in colours the photo
-chose for itself, or one bit per pixel. Each one throws the photograph away and
-redraws it from a few thousand primitives, which is why they hold up close and
-a filter does not. Your photo never leaves your device.
+### [Tuner](apps/tuner/) — to the cent
 
-The dots are the point. Each one owns the patch of picture nearest to it and
-moves, every pass, to the darkness-weighted centre of that patch — so they
-drift towards dark areas and crowd where the picture needs more ink. They start
-at **random**, because starting them roughly where they belong converges in
-three passes and looks finished before you can see it happen.
+**[Open it](apps/tuner/)** · Play a note and see how sharp or flat it is. A real string's
+fundamental is often quieter than its harmonics, so a tuner that picks the loudest frequency
+calls a low E an octave too high; this one finds the *period* instead, with YIN — difference
+function, cumulative-mean normalisation, the first dip under a threshold, parabolic refinement.
+Tested on synthesised notes with known answers, including one with its fundamental removed
+altogether. No microphone? There is an out-of-tune string on the page, and a peg to turn.
 
-Doing that honestly means asking, for every pixel, which dot is nearest: at
-200,000 pixels and 4,000 dots, 800 million comparisons per pass. A uniform grid
-of cells about one dot apart brings that to roughly ten comparisons per pixel,
-which is the difference between an animation and a progress bar. There is a
-test that picks 250 random points and asserts the grid agrees with brute force
-exactly, because a fast answer that is occasionally wrong would corrupt the
-whole relaxation silently.
-
-[Full write-up, including the two bugs and what it deliberately does not
-do](play/portrait/README.md).
-
-### [Loom](play/loom/) — build a picture by wiring boxes together
-
-Every box produces an image. One makes a cloud of random fog, one bends
-whatever it is given, one swaps grey for colour. Connect them up and the last
-box is the picture. Six worked examples come in the box; anything you make
-saves as a PNG or copies as a link that carries the whole recipe inside it.
-
-The one decision everything else follows from: **every box produces the same
-thing — an RGB image.** Never a number, never a colour, never a handle. Because
-they all speak one language, any output plugs into any input and the result is
-always defined. No type system, no compatibility matrix, no "you cannot connect
-those".
-
-Each result is cached against a fingerprint of everything that could change it
-— its settings, its size, and recursively its inputs' fingerprints — so
-dragging a slider recomputes only what follows it. Measured on the Marble
-example: 5 boxes of 7 redrawn in 30ms, against 165ms for the whole graph cold.
-
-[Full write-up, including what it deliberately does not do](play/loom/README.md).
-
----
+[Full write-up](apps/tuner/README.md).
 
 ### The rest of this chapter
 
@@ -574,10 +571,10 @@ and — deliberately — what it does **not** do.
 **No frameworks. No build step. No dependencies.** Every page here is plain
 HTML, CSS and JavaScript — including the transformer, which is trained by an
 automatic differentiation engine written from nothing rather than by a library.
-The five toys are each a single self-contained file you can open by
+The smallest toys are each a single self-contained file you can open by
 double-clicking. Clone this in five years and it still runs.
 
-The front page, Ace, Morph, Portrait, Loom and the six serious tools load ES
+Everything else loads ES
 modules, which browsers refuse to serve from a `file://` address — run
 `npx http-server` for those. The
 front page says so itself if you open it the wrong way, rather than rendering
@@ -618,19 +615,26 @@ play/<name>/index.html  a toy — one file, no imports
 play/ace/
   engine.js             the rules: gravity, rocks, collision, scoring — DOM-free
   index.html            canvas, parallax, particles, synthesised sound
-play/orbit/
-  levels.js             the difficulty curve, on its own and tested
-  index.html            the game
-play/morph/
-  engine.js             seven layout algorithms + a spring integrator, DOM-free
-  index.html            the interface
-play/portrait/
-  engine.js             stippling, triangulation, dithering, palettes — DOM-free
-  index.html            the interface
-play/loom/
-  engine.js             node types and the evaluator, pure and DOM-free
-  presets.js            the six examples, and the auto-layout that places them
-  index.html            the editor
+play/ember/
+  engine.js             map, fighting, enemies, bosses, autopilot — DOM-free
+  render.js             tiles, fire, the dark and the shadows every wall casts
+  audio.js              the score and every noise, synthesised live
+  index.html            input, HUD, the screens in between
+play/sweeper/
+  engine.js             the generator, the logic solver and the game — DOM-free
+  index.html            the board, hints and the loss that explains itself
+play/sudoku/
+  engine.js             the counting solver, the human solver, the grader, the hints
+  index.html            the grid, notes and undo
+apps/qr/
+  qr.js                 modes, Reed–Solomon, placement, masking — the whole encoder
+  index.html            the form, the square, and how it is built
+apps/split/
+  split.js              cents, balances, the fewest payments, the share link
+  index.html            the group, the expenses and the plan
+apps/tuner/
+  pitch.js              YIN, note names, tunings — samples in, a number out
+  index.html            the dial, the microphone and the synthesised string
 apps/covers/
   floor.js              the room — tables, where they are, what can join what
   optimise.js           turning a no into a yes, and re-planning the night
@@ -676,15 +680,10 @@ change, which is how these got caught:
   frequency was so low the entire map sat inside a single noise cell
 - the six "serious" links rendered in shouty uppercase, because a heading and a list both
   claimed the same HTML `id`
-- Loom's knob labelled "Contrast" was applying a gamma curve, so turning it up brightened
-  the image (mean 0.501 → 0.587) instead of spreading it — doing exactly the opposite of
-  what its own label promised
-- Portrait drew all six thousand of its dots at under one pixel across, because the radius
-  was divided by the canvas scale that had already been applied. The data was right the
-  whole time; it just could not be seen
-- Morph's expanded tile rendered *behind* its own backdrop, because the container carries
-  `perspective` for the 3D layouts — and `perspective` creates a stacking context, so no
-  `z-index` on a child can ever lift it above an element outside that context
+- the Tokens page was 516 pixels wide on a 390-pixel phone, because a `1fr` grid column's
+  smallest size is its longest unbreakable line — `minmax(0, 1fr)` and it behaves
+- the front page's crop marks, a rubber stamp waiting to land and three little pen arrows each
+  made a phone lay the whole page out wider than the screen, while looking fine on a desk
 
 Every one of those was *technically working code*, and no test would have flagged a single
 one of them.

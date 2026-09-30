@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="../../favicon.svg" />
+<meta name="theme-color" content="#f3efe5" />
+<title>Minesweeper — every board can be finished without a guess</title>
+<meta name="description" content="Minesweeper where every board is checked by a solver before you see it, so it can always be finished by reasoning and never comes down to a coin flip. Hints explain themselves, and a loss shows the move you could have made." />
+<meta property="og:title" content="Minesweeper — without the guessing" />
+<meta property="og:description" content="Every board is proven solvable by logic before you see it. Hints that explain themselves, and a loss that shows you the move you missed." />
+<style>
+  @font-face { font-family: "Instrument Serif"; src: url("../../assets/fonts/instrument-serif.woff2") format("woff2"); font-display: swap; }
+  @font-face { font-family: "Instrument Serif"; src: url("../../assets/fonts/instrument-serif-italic.woff2") format("woff2"); font-style: italic; font-display: swap; }
+  @font-face { font-family: "Newsreader"; src: url("../../assets/fonts/newsreader.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
+  @font-face { font-family: "JetBrains Mono Var"; src: url("../../assets/fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 100 800; font-display: swap; }
+
+  :root {
+    --paper: #f3efe5; --tile: #e4ddcc; --tile-hi: #efe9da; --tile-lo: #c9bfa9; --card: #fbf9f3;
+    --ink: #17140f; --ink-2: #4a4439; --ink-3: #857c6c; --rule-2: rgba(23,20,15,.3); --red: #cf2e1b; --green: #2c7a4b;
+    --display: "Instrument Serif", Georgia, serif; --text: "Newsreader", Georgia, serif;
+    --mono: "JetBrains Mono Var", ui-monospace, Menlo, monospace;
+    --cell: 34px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--paper); color: var(--ink); }
+  body { font: 400 17px/1.5 var(--text); -webkit-font-smoothing: antialiased; }
+  [hidden] { display: none !important; }
+  button { font: inherit; color: inherit; }
+  .back {
+    position: fixed; top: 14px; left: 14px; z-index: 10; text-decoration: none;
+    font: 600 11px/1 var(--mono); letter-spacing: .1em; color: var(--ink-2);
+    border: 1px solid var(--rule-2); padding: 8px 11px; background: var(--paper);
+  }
+  .back:hover { color: var(--red); border-color: var(--red); }
+  main { max-width: 1140px; margin: 0 auto; padding: 72px 20px 80px; }
+  header h1 { margin: 0; font: 400 clamp(44px, 7vw, 80px)/.95 var(--display); letter-spacing: -.02em; }
+  header h1 em { font-style: italic; color: var(--red); }
+  header p { margin: 14px 0 0; max-width: 64ch; color: var(--ink-2); font-size: 18px; }
+
+  .bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; margin: 30px 0 18px; }
+  .levels { display: inline-flex; border: 1px solid var(--ink); }
+  .levels button { border: 0; background: none; padding: 10px 13px; cursor: pointer; font: 600 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); }
+  .levels button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+  .readout { display: flex; gap: 16px; font: 600 13px/1 var(--mono); color: var(--ink-2); }
+  .readout b { color: var(--ink); font-variant-numeric: tabular-nums; font-size: 16px; }
+  .spacer { flex: 1; }
+  .btn {
+    font: 700 11.5px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer;
+    padding: 12px 14px; border: 1.5px solid var(--ink); background: var(--ink); color: var(--paper);
+  }
+  .btn:hover { background: var(--red); border-color: var(--red); color: #fff; }
+  .btn.ghost { background: transparent; color: var(--ink); }
+  .btn.ghost:hover { color: #fff; }
+  .btn[aria-pressed="true"] { background: var(--red); border-color: var(--red); color: #fff; }
+
+  /* If a board is ever wider than the screen it scrolls inside its own frame
+     rather than dragging the page sideways with it. */
+  .stage { display: flex; justify-content: safe center; overflow-x: auto; }
+  .board-wrap { position: relative; padding: 10px; background: var(--tile-lo); box-shadow: 0 1px 0 rgba(0,0,0,.05), 0 26px 48px -26px rgba(60,45,20,.55); }
+  .board { display: grid; gap: 2px; touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+  .cell {
+    width: var(--cell); height: var(--cell); border: 0; padding: 0; cursor: pointer; position: relative;
+    background: var(--tile); box-shadow: inset 2px 2px 0 var(--tile-hi), inset -2px -2px 0 rgba(0,0,0,.12);
+    font: 700 calc(var(--cell) * .52)/1 var(--mono); display: grid; place-items: center;
+  }
+  .cell:hover { background: #ebe4d3; }
+  .cell:focus-visible { outline: 2px solid var(--red); outline-offset: -2px; z-index: 2; }
+  .cell.open { background: var(--card); box-shadow: none; cursor: default; }
+  .cell.n1 { color: #1f5fbf; } .cell.n2 { color: #2c7a4b; } .cell.n3 { color: #cf2e1b; } .cell.n4 { color: #23306e; }
+  .cell.n5 { color: #7a1f1f; } .cell.n6 { color: #1f7a7a; } .cell.n7 { color: #17140f; } .cell.n8 { color: #857c6c; }
+  /* A flag is drawn, not an emoji: emoji flags are a different colour and
+     size on every phone, and on some they are a country. */
+  .cell.flag::before {
+    content: ''; position: absolute; left: 34%; top: 20%; width: 2px; height: 58%; background: var(--ink);
+  }
+  .cell.flag::after {
+    content: ''; position: absolute; left: calc(34% + 2px); top: 20%; width: 0; height: 0;
+    border-top: calc(var(--cell) * .14) solid transparent; border-bottom: calc(var(--cell) * .14) solid transparent;
+    border-left: calc(var(--cell) * .3) solid var(--red);
+  }
+  .cell.mine::after {
+    content: ''; width: 46%; height: 46%; border-radius: 50%; background: var(--ink);
+    box-shadow: 0 0 0 calc(var(--cell) * .06) var(--card), 0 0 0 calc(var(--cell) * .09) var(--ink);
+  }
+  .cell.boom { background: var(--red); }
+  .cell.boom::after { box-shadow: 0 0 0 calc(var(--cell) * .06) var(--red), 0 0 0 calc(var(--cell) * .09) var(--ink); }
+  .cell.wrong::before { content: '✕'; position: absolute; inset: 0; display: grid; place-items: center; color: var(--red); font-size: calc(var(--cell) * .7); z-index: 1; }
+  /* The hint: the safe square ringed in red pen, and the numbers that
+     prove it lit, so the reason can be followed on the board itself. */
+  .cell.ring { z-index: 3; }
+  .cell.ring > i {
+    position: absolute; inset: -6px; border: 2.5px solid var(--red); border-radius: 50%;
+    transform: rotate(-8deg); animation: draw .45s cubic-bezier(.5,0,.3,1) both; pointer-events: none;
+  }
+  @keyframes draw { from { clip-path: polygon(50% 50%, 50% 0, 50% 0); opacity: .2; } to { clip-path: polygon(50% 50%, 50% 0, 100% 0, 100% 100%, 0 100%, 0 0, 50% 0); opacity: 1; } }
+  .cell.why { background: #fff3c4; }
+  .cell.proven { background: rgba(207,46,27,.14); }
+
+  .note {
+    max-width: 640px; margin: 20px auto 0; padding: 14px 16px; border-left: 3px solid var(--red); background: var(--card);
+    font-size: 16.5px; color: var(--ink-2); min-height: 0;
+  }
+  .note b { color: var(--ink); }
+  .end { text-align: center; margin: 22px auto 0; }
+  .end h2 { margin: 0; font: 400 44px/1 var(--display); }
+  .end h2 em { color: var(--red); }
+  .end p { margin: 8px 0 14px; color: var(--ink-2); }
+  .stamp { display: inline-block; transform: rotate(-5deg); color: var(--green); font: 800 22px/1 var(--mono); letter-spacing: .22em; border: 3px double currentColor; padding: 10px 16px; margin-bottom: 10px; }
+  .row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .help { text-align: center; margin: 18px 0 0; font-size: 14.5px; color: var(--ink-3); }
+  .flagmode { display: none; }
+  @media (hover: none) { .flagmode { display: inline-block; } }
+  @media (max-width: 560px) { main { padding: 64px 12px 64px; } .board-wrap { padding: 6px; } .board { gap: 1px; } }
+</style>
+</head>
+<body>
+<a class="back" href="../../index.html">&larr; INDEX</a>
+<main>
+  <header>
+    <h1>Minesweeper, <em>without the guessing</em></h1>
+    <p>Every board is played by a solver before you see it, and thrown away unless it can be finished
+      by reasoning alone. You will never reach the two squares nothing can tell apart.</p>
+  </header>
+
+  <div class="bar">
+    <div class="levels" id="levels"></div>
+    <div class="readout"><span>MINES <b id="left">0</b></span><span>TIME <b id="time">0</b></span></div>
+    <span class="spacer"></span>
+    <button class="btn ghost flagmode" type="button" id="flagMode" aria-pressed="false">Flag mode</button>
+    <button class="btn ghost" type="button" id="hint">Hint</button>
+    <button class="btn" type="button" id="new">New game</button>
+  </div>
+
+  <div class="stage"><div class="board-wrap"><div class="board" id="board" role="grid" aria-label="Minefield"></div></div></div>
+  <p class="note" id="note" hidden></p>
+  <div class="end" id="end" hidden></div>
+  <p class="help" id="help">Click to open · right-click or long-press to flag · click a number whose mines are flagged to open around it</p>
+</main>
+
+<script type="module">
+/* ───────────────────────────────────────────────────────────────────────────
+   Minesweeper — the part you can see.
+
+   The rules and the reasoning are in engine.js. Here: a grid of real buttons,
+   so a keyboard and a screen reader can play it too; a long press that flags
+   on a phone; and the two pieces that only make sense because every board is
+   solvable — a hint that shows its working on the board, and a loss that
+   rings the square you could have proved safe instead.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+import { Game, LEVELS } from './engine.js';
+
+const $ = (id) => document.getElementById(id);
+const board = $('board');
+let level = 'medium', game, started = 0, timer = null, shown = null, flagMode = false, best = {};
+try { best = JSON.parse(localStorage.getItem('sweeper.best') || '{}'); } catch {}
+
+for (const [id, L] of Object.entries(LEVELS)) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.dataset.id = id;
+  b.textContent = L.label;
+  b.addEventListener('click', () => { level = id; newGame(); });
+  $('levels').append(b);
+}
+
+function newGame(seed) {
+  const L = LEVELS[level];
+  /* Hard is thirty wide. On a phone held upright it is thirty tall instead. */
+  const narrow = innerWidth < 700 && L.w > L.h;
+  game = new Game({ w: narrow ? L.h : L.w, h: narrow ? L.w : L.h, mines: L.mines, seed });
+  started = 0;
+  clearInterval(timer);
+  shown = null;
+  $('note').hidden = true;
+  $('end').hidden = true;
+  $('help').hidden = false;
+  for (const b of $('levels').children) b.setAttribute('aria-pressed', String(b.dataset.id === level));
+  build();
+  render();
+}
+
+function build() {
+  board.innerHTML = '';
+  board.style.gridTemplateColumns = `repeat(${game.w}, var(--cell))`;
+  /* Sized to fit, from the page's own paddings and gaps, so thirty columns
+     fit a laptop and sixteen fit a phone without either scrolling sideways. */
+  const narrow = innerWidth <= 560;
+  const room = Math.min(innerWidth, 1140) - (narrow ? 24 : 40) - (narrow ? 12 : 20) - (game.w - 1) * (narrow ? 1 : 2);
+  const cell = Math.max(16, Math.min(38, Math.floor(room / game.w)));
+  document.documentElement.style.setProperty('--cell', `${cell}px`);
+  for (let i = 0; i < game.n; i++) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'cell';
+    b.dataset.i = i;
+    b.setAttribute('role', 'gridcell');
+    board.append(b);
+  }
+}
+
+function render() {
+  const lost = game.status === 'lost';
+  for (const b of board.children) {
+    const i = Number(b.dataset.i);
+    const open = game.open[i] === 1, flag = game.flags[i] === 1;
+    let cls = 'cell';
+    let text = '';
+    if (open) {
+      cls += ' open';
+      if (game.counts[i]) { cls += ` n${game.counts[i]}`; text = String(game.counts[i]); }
+    } else if (lost && game.mines[i] && !flag) {
+      cls += ' open mine' + (i === game.lostAt ? ' boom' : '');
+    } else if (flag) {
+      cls += ' flag' + (lost && !game.mines[i] ? ' wrong' : '');
+    }
+    if (shown) {
+      if (shown.safe.includes(i) && !open) cls += ' ring';
+      if (shown.from.includes(i)) cls += ' why';
+      if (shown.mines?.includes(i) && !flag) cls += ' proven';
+    }
+    if (b.className !== cls) b.className = cls;
+    const ring = cls.includes(' ring') && i === shown.cell;
+    if (b.textContent !== text || (ring && !b.querySelector('i'))) {
+      b.textContent = text;
+      if (ring) b.append(document.createElement('i'));
+    }
+    if (!ring && b.querySelector('i')) b.querySelector('i').remove();
+    b.setAttribute('aria-label', open ? (game.counts[i] ? `${game.counts[i]}` : 'empty') : flag ? 'flagged' : 'hidden');
+  }
+  $('left').textContent = game.minesLeft;
+  $('hint').disabled = game.status !== 'playing';
+}
+
+/* ── moves ───────────────────────────────────────────────────────────────── */
+
+function act(i, wantFlag) {
+  if (game.status === 'won' || game.status === 'lost') return;
+  shown = null;
+  $('note').hidden = true;
+  if (wantFlag) {
+    game.flag(i);
+  } else if (game.open[i]) {
+    game.chord(i);
+  } else {
+    game.reveal(i);
+  }
+  if (game.status === 'playing' && !started) {
+    started = performance.now();
+    timer = setInterval(() => { $('time').textContent = Math.floor((performance.now() - started) / 1000); }, 250);
+  }
+  if (game.status === 'won' || game.status === 'lost') finish();
+  render();
+}
+
+board.addEventListener('click', (e) => {
+  const cell = e.target.closest('.cell');
+  if (!cell || pressed) return;
+  act(Number(cell.dataset.i), flagMode);
+});
+board.addEventListener('contextmenu', (e) => {
+  const cell = e.target.closest('.cell');
+  if (!cell) return;
+  e.preventDefault();
+  act(Number(cell.dataset.i), true);
+});
+
+/* A long press flags, on a phone. The click that follows the press is
+   swallowed, or every flag would also try to open the square under it. */
+let pressTimer = null, pressed = false;
+board.addEventListener('pointerdown', (e) => {
+  const cell = e.target.closest('.cell');
+  if (!cell || e.pointerType === 'mouse') return;
+  pressed = false;
+  pressTimer = setTimeout(() => {
+    pressed = true;
+    navigator.vibrate?.(15);
+    act(Number(cell.dataset.i), !flagMode);
+  }, 380);
+});
+for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) {
+  board.addEventListener(ev, () => { clearTimeout(pressTimer); setTimeout(() => { pressed = false; }, 50); });
+}
+
+/* Arrow keys move, Enter or Space opens, F flags. */
+board.addEventListener('keydown', (e) => {
+  const cell = e.target.closest('.cell');
+  if (!cell) return;
+  const i = Number(cell.dataset.i), x = i % game.w, y = Math.floor(i / game.w);
+  const move = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+  if (move) {
+    e.preventDefault();
+    const nx = Math.max(0, Math.min(game.w - 1, x + move[0])), ny = Math.max(0, Math.min(game.h - 1, y + move[1]));
+    board.children[ny * game.w + nx].focus();
+  } else if (e.key === 'f' || e.key === 'F') { e.preventDefault(); act(i, true); }
+});
+
+$('flagMode').addEventListener('click', () => {
+  flagMode = !flagMode;
+  $('flagMode').setAttribute('aria-pressed', String(flagMode));
+});
+$('new').addEventListener('click', () => newGame());
+
+$('hint').addEventListener('click', () => {
+  if (game.status === 'ready') {
+    $('note').hidden = false;
+    $('note').innerHTML = '<b>Start anywhere.</b> The first square you open is always safe, and always opens a space.';
+    return;
+  }
+  shown = game.hint();
+  $('note').hidden = false;
+  $('note').innerHTML = shown
+    ? `<b>The ringed square is safe.</b> ${shown.why}${shown.mines.length ? ` (The shaded square${shown.mines.length > 1 ? 's are' : ' is a'} mine${shown.mines.length > 1 ? 's' : ''} it had to prove first.)` : ''}`
+    : 'Nothing more can be proved — which on these boards means everything is already open.';
+  render();
+  board.querySelector('.ring')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+});
+
+/* ── the end ─────────────────────────────────────────────────────────────── */
+
+function finish() {
+  clearInterval(timer);
+  const secs = Math.max(1, Math.round((performance.now() - started) / 1000));
+  const end = $('end');
+  end.hidden = false;
+  $('help').hidden = true;
+  if (game.status === 'won') {
+    const record = !best[level] || secs < best[level];
+    if (record && !game.hints) { best[level] = secs; try { localStorage.setItem('sweeper.best', JSON.stringify(best)); } catch {} }
+    end.innerHTML = `<span class="stamp">CLEARED</span><h2>${secs} seconds</h2>
+      <p>${game.hints ? `With ${game.hints} hint${game.hints === 1 ? '' : 's'}.` : record ? 'Without a hint — a new best on this level.' : `Without a hint. Your best is ${best[level]} seconds.`}</p>
+      <div class="row"><button class="btn" type="button" data-new>Another</button></div>`;
+  } else {
+    /* The whole point of a solvable board: the loss can be explained. */
+    shown = game.missed;
+    end.innerHTML = `<h2>That one was a <em>mine.</em></h2>
+      <p>${shown ? `It did not have to come to that. The ringed square could have been proved safe: ${shown.why}` : 'Every mine is shown.'}</p>
+      <div class="row"><button class="btn" type="button" data-new>New game</button>
+      <button class="btn ghost" type="button" data-retry>Try this board again</button></div>`;
+  }
+  end.querySelector('[data-new]').addEventListener('click', () => newGame());
+  end.querySelector('[data-retry]')?.addEventListener('click', () => newGame(game.seed));
+}
+
+newGame();
+window.sweeper = () => game;   // the seam a headless browser plays through
+</script>
+<script type="module" src="../../shared/navigator.js"></script>
+</body>
+</html>

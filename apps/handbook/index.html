@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="../../favicon.svg" />
+<meta name="theme-color" content="#f3efe5" />
+<title>Ask the Handbook — answers from company documents, with sources</title>
+<meta name="description" content="A knowledge assistant that answers staff questions from a company's own policies. Every answer quotes the passage it came from, it says so when the documents don't answer the question, and it is measured on questions it never saw." />
+<meta property="og:title" content="Ask the Handbook — answers from company documents, with sources" />
+<meta property="og:description" content="Ask about holidays, expenses or a stolen laptop. Every answer shows its source; when the handbook doesn't say, neither does it. Add your own documents and it answers from those too." />
+<style>
+  @font-face { font-family: "Instrument Serif"; src: url("../../assets/fonts/instrument-serif.woff2") format("woff2"); font-display: swap; }
+  @font-face { font-family: "Instrument Serif"; src: url("../../assets/fonts/instrument-serif-italic.woff2") format("woff2"); font-style: italic; font-display: swap; }
+  @font-face { font-family: "Newsreader"; src: url("../../assets/fonts/newsreader.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
+  @font-face { font-family: "JetBrains Mono Var"; src: url("../../assets/fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 100 800; font-display: swap; }
+
+  :root {
+    --paper: #f3efe5; --card: #fbf9f3; --ink: #17140f; --ink-2: #4a4439; --ink-3: #857c6c;
+    --rule: rgba(23,20,15,.14); --rule-2: rgba(23,20,15,.3); --red: #cf2e1b; --green: #2c7a4b; --amber: #b06a10;
+    --display: "Instrument Serif", Georgia, serif; --text: "Newsreader", Georgia, serif;
+    --mono: "JetBrains Mono Var", ui-monospace, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--paper); color: var(--ink); }
+  body { font: 400 17px/1.5 var(--text); -webkit-font-smoothing: antialiased; }
+  [hidden] { display: none !important; }
+  button, input, textarea { font: inherit; color: inherit; }
+  .back {
+    position: fixed; top: 14px; left: 14px; z-index: 10; text-decoration: none;
+    font: 600 11px/1 var(--mono); letter-spacing: .1em; color: var(--ink-2);
+    border: 1px solid var(--rule-2); padding: 8px 11px; background: var(--paper);
+  }
+  .back:hover { color: var(--red); border-color: var(--red); }
+  main { max-width: 1200px; margin: 0 auto; padding: 76px 24px 100px; }
+
+  .kicker { margin: 0 0 14px; font: 600 11px/1.4 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--red); }
+  h1 { margin: 0; font: 400 clamp(52px, 8vw, 96px)/.92 var(--display); letter-spacing: -.02em; }
+  h1 em { color: var(--red); }
+  .lead { margin: 18px 0 0; max-width: 34em; font-size: clamp(19px, 2.2vw, 23px); line-height: 1.42; }
+  .facts { list-style: none; padding: 0; margin: 30px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--ink); }
+  .facts li { padding: 14px 18px 4px 0; border-right: 1px solid var(--rule); margin-right: 18px; }
+  .facts li:last-child { border-right: 0; margin-right: 0; }
+  .facts b { display: block; font: 400 24px/1.1 var(--display); }
+  .facts span { display: block; margin-top: 6px; color: var(--ink-2); font-size: 15.5px; line-height: 1.45; }
+
+  h2 { margin: 0 0 16px; font: 600 11px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); display: flex; align-items: center; gap: 12px; }
+  h2::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
+  section.band { margin-top: 84px; }
+
+  /* ── the desk ───────────────────────────────────────────────────────── */
+  .desk { margin-top: 54px; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+  .panel { background: var(--card); border: 1px solid var(--rule-2); box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 24px 50px -34px rgba(60,45,20,.55); }
+  .bar { display: flex; align-items: center; gap: 10px; padding: 11px 16px; background: var(--ink); color: var(--paper); font: 600 11px/1.3 var(--mono); letter-spacing: .06em; }
+  .bar b { letter-spacing: .1em; white-space: nowrap; }
+  .bar span { color: rgba(243,239,229,.6); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bar .grow { flex: 1; }
+  .ask { display: flex; gap: 8px; padding: 14px 16px 8px; }
+  .ask input { flex: 1; min-width: 0; font: 400 19px/1.3 var(--text); background: #fff; border: 1px solid var(--rule-2); padding: 12px 13px; outline: none; }
+  .ask input:focus { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(207,46,27,.14); }
+  .btn {
+    font: 700 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer;
+    padding: 12px 15px; border: 1.5px solid var(--ink); background: var(--ink); color: var(--paper); white-space: nowrap;
+  }
+  .btn.ghost { background: transparent; color: var(--ink); }
+  .btn:hover:not(:disabled) { background: var(--red); border-color: var(--red); color: #fff; }
+  .btn:disabled { opacity: .45; cursor: default; }
+  .btn.small { padding: 8px 10px; font-size: 10px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 2px 16px 14px; border-bottom: 1px solid var(--rule); }
+  .chips button { cursor: pointer; border: 1px solid var(--rule-2); background: transparent; padding: 6px 9px; font-size: 14.5px; color: var(--ink-2); }
+  .chips button:hover { border-color: var(--ink); color: var(--ink); }
+  .chips button.hard { border-style: dashed; }
+
+  .thread { list-style: none; margin: 0; padding: 6px 16px 16px; max-height: 620px; min-height: 360px; overflow-y: auto; }
+  .qa { padding: 14px 0; border-bottom: 1px dashed var(--rule); animation: rise .3s ease-out; }
+  .qa:last-child { border-bottom: 0; }
+  @keyframes rise { from { opacity: 0; transform: translateY(5px); } }
+  .qa .q { margin: 0 0 8px; font: 600 10.5px/1.5 var(--mono); letter-spacing: .06em; color: var(--ink-3); text-transform: uppercase; }
+  .qa .q::before { content: 'Q · '; color: var(--red); }
+  .short { margin: 0 0 6px; font: 400 30px/1.1 var(--display); }
+  .qa blockquote { margin: 0; padding: 2px 0 2px 14px; border-left: 3px solid var(--red); font-size: 18px; line-height: 1.5; }
+  .qa blockquote b { background: rgba(207,46,27,.1); font-weight: 600; }
+  .src { margin-top: 9px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; background: none; border: 0; padding: 0; font: 600 11px/1.4 var(--mono); letter-spacing: .04em; color: var(--ink-2); text-align: left; }
+  .src::before { content: '§'; color: var(--red); font-size: 13px; }
+  .src:hover { color: var(--red); text-decoration: underline; }
+  .src.on { color: var(--red); }
+  .old { margin: 9px 0 0; font-size: 15px; color: var(--amber); }
+  .old::before { content: '↺ '; }
+  .no .short { color: var(--ink-2); }
+  .no p { margin: 4px 0 0; color: var(--ink-2); font-size: 16px; }
+  .no .who { font: 600 11px/1.5 var(--mono); color: var(--ink-3); }
+  .model-note { margin-top: 6px; font: 600 9.5px/1.3 var(--mono); letter-spacing: .08em; color: var(--ink-3); }
+  .empty { color: var(--ink-3); font-style: italic; text-align: center; padding: 50px 10px; }
+  .empty b { display: block; font: 400 30px/1.1 var(--display); color: var(--ink); font-style: normal; margin-bottom: 8px; }
+
+  /* the source */
+  .source { position: sticky; top: 16px; }
+  .source .head { padding: 14px 18px 10px; border-bottom: 1px solid var(--rule); }
+  .source .head h3 { margin: 0; font: 400 28px/1.1 var(--display); }
+  .source .head p { margin: 4px 0 0; font: 600 10.5px/1.4 var(--mono); letter-spacing: .06em; color: var(--ink-3); text-transform: uppercase; }
+  .source .head .gone { color: var(--amber); }
+  .doc { max-height: 560px; overflow-y: auto; padding: 4px 18px 18px; }
+  .doc section { padding: 12px 0; border-bottom: 1px solid var(--rule); }
+  .doc section:last-child { border-bottom: 0; }
+  .doc h4 { margin: 0 0 5px; font: 700 11px/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); }
+  .doc section.cited h4 { color: var(--red); }
+  .doc p { margin: 0; font-size: 16px; line-height: 1.58; color: var(--ink-2); }
+  .doc section.cited p { color: var(--ink); }
+  .doc mark { background: rgba(207,46,27,.13); color: var(--ink); border-bottom: 2px solid var(--red); padding: 1px 0; }
+  .lib { display: flex; flex-wrap: wrap; gap: 5px; padding: 12px 18px 14px; border-top: 1px solid var(--rule); }
+  .lib button { cursor: pointer; background: none; border: 1px solid var(--rule); padding: 4px 7px; font: 500 12.5px/1.2 var(--text); color: var(--ink-2); }
+  .lib button:hover, .lib button.on { border-color: var(--ink); color: var(--ink); }
+  .lib button.yours { border-color: var(--green); color: var(--green); }
+  .lib button.old { text-decoration: line-through; color: var(--ink-3); }
+
+  /* your own */
+  .yours { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 24px; margin-top: 18px; }
+  .yours textarea { width: 100%; min-height: 160px; resize: vertical; font: 400 15.5px/1.5 var(--text); padding: 12px; border: 1px solid var(--rule-2); background: #fff; outline: none; }
+  .yours textarea:focus { border-color: var(--ink); }
+  .yours .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
+  .yours p { margin: 0 0 8px; color: var(--ink-2); font-size: 16px; }
+  .file { position: relative; overflow: hidden; }
+  .file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .mine { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; font-size: 15px; }
+  .mine li { display: flex; justify-content: space-between; gap: 10px; border-bottom: 1px dashed var(--rule); padding: 4px 0; }
+  .mine button { background: none; border: 0; cursor: pointer; color: var(--ink-3); font: 600 10px/1 var(--mono); }
+  .gaps { list-style: none; margin: 8px 0 0; padding: 0; font-size: 15px; color: var(--ink-2); }
+  .gaps li { padding: 4px 0; border-bottom: 1px dashed var(--rule); }
+  .gaps .none { font-style: italic; color: var(--ink-3); }
+
+  /* how */
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); counter-reset: s; border-top: 1px solid var(--ink); }
+  .steps li { padding: 16px 16px 4px 0; margin-right: 16px; border-right: 1px solid var(--rule); counter-increment: s; }
+  .steps li:last-child { border-right: 0; margin-right: 0; }
+  .steps li::before { content: counter(s, decimal-leading-zero); display: block; font: 600 11px/1 var(--mono); color: var(--red); letter-spacing: .1em; margin-bottom: 10px; }
+  .steps b { display: block; font: 400 24px/1.1 var(--display); margin-bottom: 6px; }
+  .steps p { margin: 0; font-size: 15.5px; line-height: 1.5; color: var(--ink-2); }
+
+  /* report */
+  .scores { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+  .score { border-top: 2px solid var(--ink); padding-top: 12px; }
+  .score .big { font: 400 clamp(42px, 5vw, 62px)/1 var(--display); letter-spacing: -.02em; }
+  .score .big small { font-size: .45em; color: var(--ink-3); }
+  .score .with { margin-top: 4px; font: 600 11px/1.3 var(--mono); color: var(--green); min-height: 14px; }
+  .score p { margin: 8px 0 0; font-size: 15px; color: var(--ink-2); line-height: 1.5; }
+  .score.safe .big { color: var(--green); }
+  .model-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 22px; padding: 14px 16px; background: var(--card); border: 1px solid var(--rule-2); }
+  .model-row p { margin: 0; flex: 1; min-width: 240px; font-size: 15.5px; color: var(--ink-2); }
+  .ai-chip { font: 600 10px/1.3 var(--mono); letter-spacing: .04em; color: var(--ink-3); }
+  .ai-chip.ai-ready { color: var(--green); } .ai-chip.ai-loading { color: var(--amber); } .ai-chip.ai-unavailable { color: var(--red); }
+  details.cases { margin-top: 22px; border-top: 1px solid var(--rule-2); }
+  details.cases summary { cursor: pointer; padding: 12px 0; font: 600 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); }
+  .case-list { list-style: none; margin: 0; padding: 0; columns: 2; column-gap: 34px; font-size: 14.5px; }
+  .case-list li { break-inside: avoid; padding: 5px 0; border-bottom: 1px dashed var(--rule); display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 8px; }
+  .case-list li i { font-style: normal; font: 700 11px/1.6 var(--mono); color: var(--green); }
+  .case-list li.bad i { color: var(--red); }
+  .case-list .got { display: block; font: 500 11px/1.4 var(--mono); color: var(--ink-3); }
+  .case-list .set { font: 600 9px/1 var(--mono); color: var(--ink-3); letter-spacing: .08em; text-transform: uppercase; margin-left: 6px; }
+
+  .ship { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 40px; }
+  .ship div { border-top: 1px solid var(--rule-2); padding-top: 12px; }
+  .ship b { display: block; font: 400 22px/1.15 var(--display); margin-bottom: 6px; }
+  .ship p { margin: 0; color: var(--ink-2); font-size: 16px; line-height: 1.55; }
+  .ship .state { font: 600 9.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; margin-left: 8px; vertical-align: 3px; }
+  .state.done { color: var(--green); } .state.todo { color: var(--ink-3); }
+
+  footer { margin-top: 80px; padding-top: 18px; border-top: 1px solid var(--ink); display: flex; flex-wrap: wrap; gap: 10px 24px; justify-content: space-between; font-size: 15px; color: var(--ink-2); }
+  footer a { color: var(--ink); }
+
+  @media (max-width: 980px) {
+    .desk, .yours { grid-template-columns: minmax(0, 1fr); }
+    .source { position: static; }
+    .steps { grid-template-columns: minmax(0, 1fr); }
+    .steps li { border-right: 0; margin-right: 0; border-bottom: 1px solid var(--rule); padding-bottom: 14px; }
+    .scores { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .ship { grid-template-columns: minmax(0, 1fr); }
+    .case-list { columns: 1; }
+  }
+  @media (max-width: 640px) {
+    main { padding: 70px 16px 80px; }
+    .facts { grid-template-columns: minmax(0, 1fr); }
+    .facts li { border-right: 0; margin-right: 0; border-bottom: 1px solid var(--rule); padding-bottom: 12px; }
+    .ask { flex-wrap: wrap; }
+    .ask input { flex-basis: 100%; }
+    .thread { max-height: none; min-height: 200px; }
+    .doc { max-height: 440px; }
+    .short { font-size: 26px; }
+    .chips button:nth-child(n+6) { display: none; }
+    .bar span:not(#libCount) { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<a class="back" href="../../index.html">← INDEX</a>
+<main>
+  <header>
+    <p class="kicker">Case study · Knowledge assistant · Internal tools</p>
+    <h1>Ask the <em>Handbook</em></h1>
+    <p class="lead">An assistant that answers staff questions from the company's own documents. Every answer quotes the passage it came from — and when the documents don't say, neither does it.</p>
+    <ul class="facts">
+      <li><b>Every answer has a source</b><span>Click any answer to see the exact sentence, highlighted, in the policy it came from.</span></li>
+      <li><b id="factNo">It says “I don't know”</b><span id="factNoSub">Questions the handbook can't answer get turned down, not guessed at.</span></li>
+      <li><b id="factTest">Measured on new questions</b><span id="factTestSub">Scored on questions it never saw while it was being built. Every result is below.</span></li>
+    </ul>
+  </header>
+
+  <section class="desk" aria-label="Ask a question">
+    <div class="panel">
+      <div class="bar"><b>HALDEN &amp; PIKE</b><span>a fictional 140-person engineering firm</span><span class="grow"></span><span id="libCount"></span></div>
+      <form class="ask" id="askForm" autocomplete="off">
+        <input id="q" type="text" placeholder="Ask anything about working here…" aria-label="Your question" />
+        <button class="btn" type="submit">Ask</button>
+      </form>
+      <div class="chips" id="chips"></div>
+      <ol class="thread" id="thread" aria-live="polite">
+        <li class="empty"><b>Ask it something.</b>Try the suggestions — the dashed ones are questions the handbook doesn't answer.</li>
+      </ol>
+    </div>
+
+    <aside class="panel source" aria-label="The source">
+      <div class="head"><h3 id="docTitle">The handbook</h3><p id="docMeta">Pick an answer to see where it came from</p></div>
+      <div class="doc" id="doc"></div>
+      <div class="lib" id="lib"></div>
+    </aside>
+  </section>
+
+  <section class="band" aria-labelledby="yoursHead">
+    <h2 id="yoursHead">Try it on your own documents</h2>
+    <div class="yours">
+      <div>
+        <p>Paste a policy, a README or any document, or pick a text or Markdown file. Headings become sections. It stays in this browser tab.</p>
+        <textarea id="paste" placeholder="# Our office guide&#10;&#10;Parking&#10;There are twelve spaces behind the building, booked through reception…"></textarea>
+        <div class="row">
+          <button class="btn" type="button" id="addPaste">Add to the library</button>
+          <span class="btn ghost file">Choose a file<input type="file" id="file" accept=".txt,.md,.markdown,text/plain,text/markdown" /></span>
+          <span id="addMsg" class="ai-chip"></span>
+        </div>
+        <ul class="mine" id="mine"></ul>
+      </div>
+      <div>
+        <p><b>Gaps in the handbook</b> — questions asked here it couldn't answer. For the team that writes the policies, this list is the useful part.</p>
+        <ul class="gaps" id="gaps"><li class="none">None yet.</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="howHead">
+    <h2 id="howHead">How it decides</h2>
+    <ol class="steps">
+      <li><b>Reads the question</b><p>Words are reduced to their roots, and different words for the same thing meet: holiday, vacation, PTO and annual leave are one idea.</p></li>
+      <li><b>Searches every sentence</b><p>Each sentence is ranked with BM25 — the scoring behind most search engines — with credit for its section and heading, and for being the kind of answer asked for.</p></li>
+      <li><b>Checks it's really about that</b><p>If the question's key word never appears in the handbook, or its key words never appear together, the answer is “the handbook doesn't say”.</p></li>
+      <li><b>Quotes, never paraphrases</b><p>The answer is the handbook's own sentence, with its source. Nothing is written that the documents don't say.</p></li>
+      <li><b>Flags old policies</b><p>A replaced policy is never the answer. If the old one said something different, it says so — people remember the old number.</p></li>
+    </ol>
+  </section>
+
+  <section class="band" aria-labelledby="reportHead">
+    <h2 id="reportHead">The report</h2>
+    <div class="scores">
+      <div class="score safe"><div class="big" id="sMade">–</div><div class="with" id="wMade"></div><p id="sMadeText">answers made up, across every question it is tested on — the number that decides whether anyone can trust it.</p></div>
+      <div class="score"><div class="big" id="sTune">–</div><div class="with" id="wTune"></div><p>right on the questions it was built against.</p></div>
+      <div class="score"><div class="big" id="sOne">–</div><div class="with" id="wOne"></div><p id="sOneText">first run on new questions, round one.</p></div>
+      <div class="score"><div class="big" id="sTwo">–</div><div class="with" id="wTwo"></div><p id="sTwoText">first run on new questions, round two.</p></div>
+    </div>
+    <div class="model-row">
+      <p>Word matching stalls at around three quarters of questions phrased in words the handbook doesn't use — “daily” for “a day”, “wine” for “alcohol”. A small language model that understands meaning closes some of that gap. Run the whole report again with it switched on, here, on your own device.</p>
+      <span id="embedChip"></span>
+      <button class="btn" type="button" id="withModel">Run with the model (23 MB)</button>
+    </div>
+    <details class="cases">
+      <summary>See every question and what it answered</summary>
+      <ul class="case-list" id="caseList"></ul>
+    </details>
+  </section>
+
+  <section class="band" aria-labelledby="shipHead">
+    <h2 id="shipHead">Taking it to a real company</h2>
+    <div class="ship">
+      <div><b>Where the documents live <span class="state todo">next step</span></b><p>SharePoint, Confluence or Google Drive feed the same index. Nothing about the search changes — it already takes documents in as headings and text.</p></div>
+      <div><b>Who can see what <span class="state todo">next step</span></b><p>Each document keeps its permissions, and the search only looks at what the person asking could open themselves.</p></div>
+      <div><b>Knowing what it doesn't know <span class="state done">built</span></b><p>Refusals come with the reason and the nearest thing it does cover, and every refused question lands in the gaps list for the people who write the policies.</p></div>
+      <div><b>Proving it, every week <span class="state done">built</span></b><p>Three sets of questions, two of them written after the fact. The tests fail if any score drops, and the report recomputes every time this page loads.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Halden &amp; Pike and its handbook are fictional. Email addresses are on the reserved .example domain.</span>
+    <span><a href="README.md">How it's built</a> · <a href="../../index.html">Everything else</a></span>
+  </footer>
+</main>
+
+<script type="module">
+import { DOCS, COMPANY } from './corpus.js';
+import { buildIndex, ask, stem, parseDocument, locate } from './search.js';
+import { TUNING, HELD_OUT, ROUND_TWO, HELD_OUT_FIRST_RUN, ROUND_TWO_FIRST_RUN, report } from './questions.js';
+
+const $ = (id) => document.getElementById(id);
+const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+const fmtDate = (iso) => iso ? new Date(`${iso}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }) : '';
+
+let yours = [];
+let index = buildIndex(DOCS);
+let semantic = null;           // (unit) => cosine, once the model has embedded everything
+let vectors = null;            // unit → vector
+const gaps = [];
+
+function rebuild() {
+  index = buildIndex([...DOCS, ...yours]);
+  vectors = null;
+  semantic = null;
+  if (embedReady) embedAll();
+  $('libCount').textContent = `${DOCS.length + yours.length} documents · ${index.sections.length} sections`;
+  drawLibrary();
+}
+
+/* ── suggestions ── */
+const SUGGEST = [
+  ['How many days holiday do I get?'], ['Can I claim for alcohol?'], ['What do I do if my laptop is stolen?'],
+  ['What is the hotel limit in London?'], ['Can I bring my dog to the office?', 'hard'], ['How much paternity leave do I get?'],
+  ['Do we get a Christmas bonus?', 'hard'], ['Can I work from abroad?'], ['What is the wifi password?', 'hard'],
+];
+for (const [q, hard] of SUGGEST) {
+  const b = el('button', hard ?? null, q);
+  b.type = 'button';
+  b.addEventListener('click', () => { $('q').value = q; $('askForm').requestSubmit(); });
+  $('chips').append(b);
+}
+
+/* ── asking ── */
+$('askForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const q = $('q').value.trim();
+  if (!q) return;
+  $('q').value = '';
+  let sem = null;
+  if (semantic) sem = await semanticFor(q);
+  const a = ask(index, q, sem ? { semantic: sem } : {});
+  show(a, !!sem);
+});
+
+function wordsFor(stems, question) {
+  const out = [];
+  for (const w of question.match(/[A-Za-z][A-Za-z'-]*/g) ?? []) {
+    const s = stem(w.toLowerCase().replace(/'s$/, ''));
+    if (stems.includes(s) && !out.includes(w)) out.push(w);
+  }
+  return out;
+}
+
+function show(a, withModel) {
+  const thread = $('thread');
+  thread.querySelector('.empty')?.remove();
+  const li = el('li', 'qa');
+  li.append(el('p', 'q', a.question));
+  const box = el('div', a.refused ? 'a no' : 'a');
+  if (a.refused) {
+    box.append(el('p', 'short', "The handbook doesn't say."));
+    const missing = wordsFor(a.unknown, a.question);
+    box.append(el('p', null, a.why === 'unknown-words' && missing.length
+      ? `It never mentions ${missing.map((w) => `“${w}”`).join(' or ')}.`
+      : a.why === 'not-together' ? 'Nothing in it answers that directly.' : 'Nothing in it is close enough to answer that.'));
+    if (a.nearest) {
+      const p = el('p', null, 'The closest it gets: ');
+      p.append(sourceButton(a.nearest, null));
+      box.append(p);
+    }
+    box.append(el('p', 'who', `Ask the People team: ${COMPANY.people}`));
+    gaps.unshift(a.question);
+    drawGaps();
+  } else {
+    if (a.short) box.append(el('p', 'short', a.short));
+    const quote = el('blockquote');
+    const text = a.text;
+    const key = a.short && !/^(?:Yes|No)/.test(a.short) ? a.short : null;
+    const at = key ? text.toLowerCase().indexOf(key.toLowerCase()) : -1;
+    if (at >= 0) { quote.append(text.slice(0, at), el('b', null, text.slice(at, at + key.length)), text.slice(at + key.length)); }
+    else quote.textContent = text;
+    box.append(quote);
+    const btn = sourceButton(a.section, a.sentence);
+    box.append(btn);
+    if (a.superseded) {
+      const old = a.superseded;
+      box.append(el('p', 'old', `The ${old.doc.title.replace(' — replaced', '')} said: “${old.section.text.split(/(?<=\.)\s/)[0]}” It was replaced on ${fmtDate(DOCS.find((d) => d.id === old.doc.supersededBy)?.updated)}.`));
+    }
+    openSource(a.section, a.sentence, btn);
+  }
+  if (withModel) box.append(el('p', 'model-note', 'Ranked with the language model on'));
+  li.append(box);
+  thread.append(li);
+  thread.scrollTop = thread.scrollHeight;
+}
+
+function sourceButton(section, sentence) {
+  const b = el('button', 'src', `${section.doc.title} › ${section.heading}${section.doc.updated ? ` · updated ${fmtDate(section.doc.updated)}` : ''}`);
+  b.type = 'button';
+  b.addEventListener('click', () => openSource(section, sentence, b));
+  return b;
+}
+
+/* ── the source panel ── */
+let openDoc = null;
+function openSource(section, sentence, btn) {
+  for (const b of document.querySelectorAll('.src.on')) b.classList.remove('on');
+  btn?.classList.add('on');
+  drawDoc(section.doc, section, sentence);
+}
+function drawDoc(docu, cited = null, sentence = null) {
+  openDoc = docu;
+  $('docTitle').textContent = docu.title;
+  const meta = [docu.owner, docu.updated ? `updated ${fmtDate(docu.updated)}` : null, docu.yours ? 'your document' : null].filter(Boolean).join(' · ');
+  $('docMeta').replaceChildren(meta);
+  if (docu.supersededBy) $('docMeta').append(el('span', 'gone', ` · replaced by the ${DOCS.find((d) => d.id === docu.supersededBy)?.title}`));
+  const host = $('doc');
+  host.replaceChildren();
+  let target = null;
+  for (const s of docu.sections) {
+    const sec = el('section', cited && s.id === cited.id ? 'cited' : null);
+    sec.append(el('h4', null, s.heading));
+    const p = el('p');
+    const where = cited && s.id === cited.id && sentence ? locate(s, sentence.text) : null;
+    if (where) {
+      const m = el('mark', null, s.text.slice(where.start, where.end));
+      p.append(s.text.slice(0, where.start), m, s.text.slice(where.end));
+      target = sec;
+    } else p.textContent = s.text;
+    sec.append(p);
+    host.append(sec);
+  }
+  if (target) host.scrollTop = target.offsetTop - host.offsetTop - 8;
+  else host.scrollTop = 0;
+  drawLibrary();
+}
+function drawLibrary() {
+  const lib = $('lib');
+  lib.replaceChildren();
+  for (const d of [...DOCS, ...yours]) {
+    const b = el('button', [d.yours ? 'yours' : null, d.supersededBy ? 'old' : null, openDoc === d ? 'on' : null].filter(Boolean).join(' ') || null, d.title.replace(' — replaced', ''));
+    b.type = 'button';
+    b.title = d.supersededBy ? 'Replaced — kept for reference, never used as an answer' : d.title;
+    b.addEventListener('click', () => drawDoc(d));
+    lib.append(b);
+  }
+}
+
+/* ── your own documents ── */
+function addDocument(text, name) {
+  const clean = String(text ?? '').trim();
+  if (clean.length < 40) { $('addMsg').textContent = 'That is a bit short to search — paste a paragraph or more.'; return; }
+  const id = `yours${yours.length + 1}`;
+  const d = parseDocument(clean.slice(0, 200000), name || 'Your document', id);
+  if (!d.sections.length) { $('addMsg').textContent = 'Could not find any text in that.'; return; }
+  yours.push(d);
+  rebuild();
+  $('addMsg').textContent = `Added “${d.title}” — ${d.sections.length} section${d.sections.length === 1 ? '' : 's'}. Ask it something.`;
+  drawMine();
+  drawDoc(d);
+}
+function drawMine() {
+  const host = $('mine');
+  host.replaceChildren();
+  for (const d of yours) {
+    const li = el('li');
+    li.append(el('span', null, `${d.title} · ${d.sections.length} sections`));
+    const x = el('button', null, 'REMOVE');
+    x.type = 'button';
+    x.addEventListener('click', () => { yours = yours.filter((y) => y !== d); rebuild(); drawMine(); drawDoc(DOCS[0]); });
+    li.append(x);
+    host.append(li);
+  }
+}
+$('addPaste').addEventListener('click', () => { addDocument($('paste').value, null); $('paste').value = ''; });
+$('file').addEventListener('change', async (e) => {
+  const f = e.target.files?.[0];
+  if (!f) return;
+  if (f.size > 2e6) { $('addMsg').textContent = 'That file is over 2 MB — try a smaller one.'; return; }
+  addDocument(await f.text(), f.name.replace(/\.(txt|md|markdown)$/i, ''));
+  e.target.value = '';
+});
+
+function drawGaps() {
+  const host = $('gaps');
+  host.replaceChildren();
+  if (!gaps.length) { host.append(el('li', 'none', 'None yet.')); return; }
+  for (const g of gaps.slice(0, 12)) host.append(el('li', null, g));
+}
+
+/* ── the report ── */
+const SETS = [['tuning', TUNING], ['round one', HELD_OUT], ['round two', ROUND_TWO]];
+const base = (() => {
+  const idx = buildIndex(DOCS);
+  return SETS.map(([name, set]) => ({ name, r: report((q) => ask(idx, q), set) }));
+})();
+function drawReport(res, withRes = null) {
+  const [t, one, two] = res;
+  const made = res.reduce((n, x) => n + x.r.madeUp, 0);
+  const total = res.reduce((n, x) => n + x.r.total, 0);
+  const unans = res.reduce((n, x) => n + x.r.unanswerable, 0);
+  $('sMade').innerHTML = `${made}<small> / ${total}</small>`;
+  $('sMadeText').textContent = `answers made up, across all ${total} test questions — ${unans} of them unanswerable on purpose. The number that decides whether anyone can trust it.`;
+  $('sTune').innerHTML = `${t.r.right}<small> / ${t.r.total}</small>`;
+  $('sOne').innerHTML = `${HELD_OUT_FIRST_RUN.right}<small> / ${HELD_OUT_FIRST_RUN.total}</small>`;
+  $('sOneText').textContent = `first run on new questions, round one. It had overfitted — too quick to say “I don't know”. After fixing that: ${one.r.right} of ${one.r.total}.`;
+  $('sTwo').innerHTML = `${ROUND_TWO_FIRST_RUN.right}<small> / ${ROUND_TWO_FIRST_RUN.total}</small>`;
+  $('sTwoText').textContent = `first run on round two, written to check those fixes. They mostly didn't generalise — the case for the model below. Today: ${two.r.right} of ${two.r.total}.`;
+  $('factNo').textContent = `Made up ${made} answer${made === 1 ? '' : 's'} in ${total}`;
+  $('factNoSub').textContent = `${unans} of its test questions are ones the handbook can't answer. It turned down ${res.reduce((n, x) => n + x.r.refusedRight, 0)} of them rather than guess.`;
+  $('factTest').textContent = `${ROUND_TWO_FIRST_RUN.right + HELD_OUT_FIRST_RUN.right} of ${ROUND_TWO_FIRST_RUN.total + HELD_OUT_FIRST_RUN.total} first time`;
+  $('factTestSub').textContent = `On questions written after it was built, the first time they were asked. Every result, good and bad, is below.`;
+  if (withRes) {
+    const madeW = withRes.reduce((n, x) => n + x.r.madeUp, 0);
+    $('wMade').textContent = `with the model: ${madeW}`;
+    $('wTune').textContent = `with the model: ${withRes[0].r.right} / ${withRes[0].r.total}`;
+    $('wOne').textContent = `with the model: ${withRes[1].r.right} / ${withRes[1].r.total}`;
+    $('wTwo').textContent = `with the model: ${withRes[2].r.right} / ${withRes[2].r.total}`;
+  }
+  const list = $('caseList');
+  list.replaceChildren();
+  for (const { name, r } of res) {
+    for (const row of r.rows) {
+      const li = el('li', row.verdict.ok ? null : 'bad');
+      li.append(el('i', null, row.verdict.ok ? '✓' : '✕'));
+      const body = el('span');
+      body.append(`“${row.q}”`, el('span', 'set', name));
+      const said = row.answer.refused ? 'said the handbook doesn’t say' : `${row.answer.section.id}: ${row.answer.short ?? row.answer.text.slice(0, 70) + (row.answer.text.length > 70 ? '…' : '')}`;
+      body.append(el('span', 'got', row.verdict.ok ? said : `${row.verdict.kind.replace(/-/g, ' ')} — ${said}`));
+      li.append(body);
+      list.append(li);
+    }
+  }
+}
+
+/* ── the model, only when asked ── */
+let ai = null, embedReady = false;
+const aiModule = () => (ai ??= import('../../shared/ai.js'));
+async function embedAll() {
+  const m = await aiModule();
+  const units = index.units;
+  const out = [];
+  for (let i = 0; i < units.length; i += 32) {
+    const v = await m.embed(units.slice(i, i + 32).map((u) => u.text));
+    if (!v) return false;
+    out.push(...v);
+  }
+  vectors = new Map(units.map((u, i) => [u, out[i]]));
+  semantic = true;
+  return true;
+}
+async function semanticFor(q) {
+  const m = await aiModule();
+  const v = (await m.embed([q]))?.[0];
+  if (!v || !vectors) return null;
+  return (u) => { const w = vectors.get(u); return w ? m.cosine(v, w) : 0; };
+}
+$('withModel').addEventListener('click', async () => {
+  const btn = $('withModel');
+  btn.disabled = true;
+  btn.textContent = 'Loading the model…';
+  const m = await aiModule();
+  m.statusLine($('embedChip'), ['embed']);
+  const pipe = await m.load('embed');
+  if (!pipe) { btn.textContent = 'The model could not load here'; return; }
+  embedReady = true;
+  btn.textContent = 'Embedding the handbook…';
+  /* The report is run against the handbook alone, so its numbers stay
+     comparable whatever has been added to the library. */
+  const baseIndex = buildIndex(DOCS);
+  const all = [];
+  for (let i = 0; i < baseIndex.units.length; i += 32) all.push(...(await m.embed(baseIndex.units.slice(i, i + 32).map((u) => u.text))));
+  const vec = new Map(baseIndex.units.map((u, i) => [u, all[i]]));
+  btn.textContent = 'Asking every question again…';
+  const withRes = [];
+  for (const [name, set] of SETS) {
+    const qs = await m.embed(set.map((x) => x[0]));
+    let k = 0;
+    const r = report((q) => {
+      const qv = qs[k++];
+      return ask(baseIndex, q, { semantic: (u) => { const w = vec.get(u); return w ? m.cosine(qv, w) : 0; } });
+    }, set);
+    withRes.push({ name, r });
+  }
+  drawReport(base, withRes);
+  await embedAll();
+  btn.textContent = 'Model on — questions above use it too';
+});
+
+/* ── start ── */
+rebuild();
+drawDoc(DOCS[0]);
+drawReport(base);
+window.handbook = { ask: (q) => ask(index, q), index: () => index };
+</script>
+<script type="module" src="../../shared/navigator.js"></script>
+</body>
+</html>
