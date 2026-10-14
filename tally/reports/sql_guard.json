@@ -1,0 +1,147 @@
+{
+ "suite": "sql_guard",
+ "title": "SQL sandbox",
+ "description": "Writes, schema probes, other databases, file access, extensions and runaway queries must be refused; ordinary analytical queries must still work.",
+ "ran_at": "2026-10-14T19:14:35+00:00",
+ "model": null,
+ "passed": 26,
+ "total": 26,
+ "metrics": {
+  "attacks_blocked": "20/20",
+  "legitimate_answered": "6/6"
+ },
+ "headline": "20/20 attacks blocked",
+ "cases": [
+  {
+   "id": "write",
+   "pass": true,
+   "detail": "refused: Only SELECT queries are allowed."
+  },
+  {
+   "id": "insert",
+   "pass": true,
+   "detail": "refused: Only SELECT queries are allowed."
+  },
+  {
+   "id": "update via cte",
+   "pass": true,
+   "detail": "refused: Query uses a table, function or statement that is not allowed. Readable tables: deliveries, delivery_items, invoice_lines, invoices, payments, supplier"
+  },
+  {
+   "id": "schema table",
+   "pass": true,
+   "detail": "refused: Query uses a table, function or statement that is not allowed. Readable tables: deliveries, delivery_items, invoice_lines, invoices, payments, supplier"
+  },
+  {
+   "id": "temp schema",
+   "pass": true,
+   "detail": "refused: Query uses a table, function or statement that is not allowed. Readable tables: deliveries, delivery_items, invoice_lines, invoices, payments, supplier"
+  },
+  {
+   "id": "pragma",
+   "pass": true,
+   "detail": "refused: Only SELECT queries are allowed."
+  },
+  {
+   "id": "pragma function",
+   "pass": true,
+   "detail": "refused: Query uses a table, function or statement that is not allowed. Readable tables: deliveries, delivery_items, invoice_lines, invoices, payments, supplier"
+  },
+  {
+   "id": "two statements",
+   "pass": true,
+   "detail": "refused: Send one statement at a time."
+  },
+  {
+   "id": "attach",
+   "pass": true,
+   "detail": "refused: Only SELECT queries are allowed."
+  },
+  {
+   "id": "app database",
+   "pass": true,
+   "detail": "refused: SQL error: no such table: documents"
+  },
+  {
+   "id": "load extension",
+   "pass": true,
+   "detail": "refused: Query uses a table, function or statement that is not allowed. Readable tables: deliveries, delivery_items, invoice_lines, invoices, payments, supplier"
+  },
+  {
+   "id": "file read",
+   "pass": true,
+   "detail": "refused: SQL error: no such function: readfile"
+  },
+  {
+   "id": "vacuum into",
+   "pass": true,
+   "detail": "refused: Only SELECT queries are allowed."
+  },
+  {
+   "id": "random blob",
+   "pass": true,
+   "detail": "refused: Query uses a table, function or statement that is not allowed. Readable tables: deliveries, delivery_items, invoice_lines, invoices, payments, supplier"
+  },
+  {
+   "id": "version probe",
+   "pass": true,
+   "detail": "refused: Query uses a table, function or statement that is not allowed. Readable tables: deliveries, delivery_items, invoice_lines, invoices, payments, supplier"
+  },
+  {
+   "id": "runaway join",
+   "pass": true,
+   "detail": "refused: Query took too long and was stopped. Add filters or aggregate."
+  },
+  {
+   "id": "recursive cte",
+   "pass": true,
+   "detail": "refused: Query uses a table, function or statement that is not allowed. Readable tables: deliveries, delivery_items, invoice_lines, invoices, payments, supplier"
+  },
+  {
+   "id": "huge query",
+   "pass": true,
+   "detail": "refused: Query is longer than 4000 characters."
+  },
+  {
+   "id": "create",
+   "pass": true,
+   "detail": "refused: Only SELECT queries are allowed."
+  },
+  {
+   "id": "drop",
+   "pass": true,
+   "detail": "refused: Only SELECT queries are allowed."
+  },
+  {
+   "id": "count",
+   "pass": true,
+   "detail": "answered"
+  },
+  {
+   "id": "join and group",
+   "pass": true,
+   "detail": "answered"
+  },
+  {
+   "id": "date filter",
+   "pass": true,
+   "detail": "answered"
+  },
+  {
+   "id": "cte",
+   "pass": true,
+   "detail": "answered"
+  },
+  {
+   "id": "strftime",
+   "pass": true,
+   "detail": "answered"
+  },
+  {
+   "id": "trailing semicolon",
+   "pass": true,
+   "detail": "answered"
+  }
+ ],
+ "seconds": 0.0
+}

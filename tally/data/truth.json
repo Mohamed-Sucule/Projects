@@ -1,0 +1,673 @@
+{
+ "as_of": "2026-10-01",
+ "documents": [
+  {
+   "doc_id": "greenleaf-contract",
+   "file": "greenleaf-supply-agreement.pdf",
+   "title": "Supply Agreement - Greenleaf Produce Ltd and Halden Kitchens Ltd",
+   "kind": "contract",
+   "supplier_id": "greenleaf"
+  },
+  {
+   "doc_id": "greenleaf-amendment-1",
+   "file": "greenleaf-amendment-1.pdf",
+   "title": "Amendment No. 1 to the Supply Agreement - Greenleaf Produce Ltd",
+   "kind": "amendment",
+   "supplier_id": "greenleaf"
+  },
+  {
+   "doc_id": "northsea-contract",
+   "file": "northsea-fish-terms.docx",
+   "title": "Northsea Fish Co. - Terms of Supply to Halden Kitchens Ltd",
+   "kind": "contract",
+   "supplier_id": "northsea"
+  },
+  {
+   "doc_id": "crisp-linen-contract",
+   "file": "crisp-linen-hire-agreement.pdf",
+   "title": "Linen Hire Agreement - Crisp Linen Services",
+   "kind": "contract",
+   "supplier_id": "crisplinen"
+  },
+  {
+   "doc_id": "brightwater-terms",
+   "file": "brightwater-terms-of-service.md",
+   "title": "Brightwater Plumbing & Heating - Commercial Terms of Service",
+   "kind": "contract",
+   "supplier_id": "brightwater"
+  },
+  {
+   "doc_id": "oakbarrel-contract",
+   "file": "oakbarrel-trade-agreement.pdf",
+   "title": "Trade Supply Agreement - Oakbarrel Wine Merchants",
+   "kind": "contract",
+   "supplier_id": "oakbarrel"
+  },
+  {
+   "doc_id": "sparkle-contract",
+   "file": "sparkle-cleaning-contract.docx",
+   "title": "Commercial Cleaning Contract - Sparkle Commercial Cleaning",
+   "kind": "contract",
+   "supplier_id": "sparkle"
+  },
+  {
+   "doc_id": "sparkle-amendment-1",
+   "file": "sparkle-fee-variation.pdf",
+   "title": "Variation to the Commercial Cleaning Contract - Sparkle Commercial Cleaning",
+   "kind": "amendment",
+   "supplier_id": "sparkle"
+  },
+  {
+   "doc_id": "kettle-grind-contract",
+   "file": "kettle-and-grind-agreement.pdf",
+   "title": "Coffee Supply and Equipment Agreement - Kettle & Grind Roasters",
+   "kind": "contract",
+   "supplier_id": "kettlegrind"
+  },
+  {
+   "doc_id": "pestaway-terms",
+   "file": "pestaway-service-terms.html",
+   "title": "Pestaway Environmental - Commercial Service Terms",
+   "kind": "contract",
+   "supplier_id": "pestaway"
+  },
+  {
+   "doc_id": "ap-policy",
+   "file": "accounts-payable-policy.pdf",
+   "title": "Halden Kitchens Ltd - Accounts Payable Policy",
+   "kind": "policy",
+   "supplier_id": null
+  }
+ ],
+ "terms": {
+  "greenleaf": {
+   "supplier": "Greenleaf Produce Ltd",
+   "contract_start": "2025-12-01",
+   "contract_end": "2026-11-30",
+   "auto_renews": true,
+   "notice_days": 30,
+   "payment_days": 30,
+   "prices": [
+    {
+     "item": "Vine tomatoes",
+     "unit": "kg",
+     "price": 3.4,
+     "effective_from": null,
+     "effective_to": "2026-05-31",
+     "evidence": "Vine tomatoes"
+    },
+    {
+     "item": "Vine tomatoes",
+     "unit": "kg",
+     "price": 3.55,
+     "effective_from": "2026-06-01",
+     "effective_to": null,
+     "evidence": "With effect from 1 June 2026, the prices in Schedule 1 for the following items are replaced as shown. All other prices and terms are unchanged."
+    },
+    {
+     "item": "Baby spinach",
+     "unit": "kg",
+     "price": 6.8,
+     "effective_from": null,
+     "effective_to": "2026-05-31",
+     "evidence": "Baby spinach"
+    },
+    {
+     "item": "Baby spinach",
+     "unit": "kg",
+     "price": 7.1,
+     "effective_from": "2026-06-01",
+     "effective_to": null,
+     "evidence": "With effect from 1 June 2026, the prices in Schedule 1 for the following items are replaced as shown. All other prices and terms are unchanged."
+    },
+    {
+     "item": "Maris Piper potatoes",
+     "unit": "kg",
+     "price": 0.95,
+     "effective_from": null,
+     "effective_to": null,
+     "evidence": "Maris Piper potatoes"
+    },
+    {
+     "item": "Lemons",
+     "unit": "each",
+     "price": 0.32,
+     "effective_from": null,
+     "effective_to": null,
+     "evidence": "Lemons"
+    },
+    {
+     "item": "Shallots",
+     "unit": "kg",
+     "price": 2.6,
+     "effective_from": null,
+     "effective_to": null,
+     "evidence": "Shallots"
+    },
+    {
+     "item": "Flat-leaf parsley",
+     "unit": "bunch",
+     "price": 1.1,
+     "effective_from": null,
+     "effective_to": null,
+     "evidence": "Flat-leaf parsley"
+    }
+   ],
+   "fixed_fees": [],
+   "delivery_fee": {
+    "amount": 15.0,
+    "free_over_net": 250.0,
+    "evidence": "A delivery charge of £15.00 applies to each delivery. Deliveries with a net goods value over £250.00 are delivered free of charge."
+   },
+   "volume_discount": null,
+   "out_of_hours": null,
+   "minimum_charge": null,
+   "allowances": []
+  },
+  "northsea": {
+   "supplier": "Northsea Fish Co.",
+   "contract_start": "2026-01-01",
+   "contract_end": "2026-12-31",
+   "auto_renews": false,
+   "notice_days": 60,
+   "payment_days": 14,
+   "prices": [
+    {
+     "item": "Salmon fillet",
+     "unit": "kg",
+     "price": 14.2,
+     "effective_from": null,
+     "effective_to": null,
+     "evidence": "Salmon fillet"
+    },
+    {
+     "item": "Cod loin",
+     "unit": "kg",
+     "price": 16.5,
+     "effective_from": null,
+     "effective_to": null,
+     "evidence": "Cod loin"
+    },
+    {
+     "item": "Hake fillet",
+     "unit": "kg",
+     "price": 12.8,
+     "effective_from": null,
+     "effective_to": null,
+     "evidence": "Hake fillet"
+    },
+    {
+     "item": "Mussels",
+     "unit": "kg",
+     "price": 4.9,
+     "effective_from": null,
+     "effective_to": null,
+     "evidence": "Mussels"
+    },
+    {
+     "item": "King prawns",
+     "unit": "kg",
+     "price": 21.0,
+     "effective_from": null,
+     "effective_to": null,
+     "evidence": "King prawns"
+    }
+   ],
+   "fixed_fees": [],
+   "delivery_fee": null,
+   "volume_discount": {
+    "percent": 5.0,
+    "min_quantity": 20.0,
+    "unit": "kg",
+    "applies_per": "line",
+    "evidence": "A volume discount of 5% applies to any single invoice line of 20 kg or more."
+   },
+   "out_of_hours": null,
+   "minimum_charge": null,
+   "allowances": []
+  },
+  "crisplinen": {
+   "supplier": "Crisp Linen Services",
+   "contract_start": "2025-03-01",
+   "contract_end": null,
+   "auto_renews": null,
+   "notice_days": 90,
+   "payment_days": 30,
+   "prices": [
+    {
+     "item": "Tablecloth",
+     "unit": "each per week",
+     "price": 1.8,
+     "effective_from": null,
+     "effective_to": "2026-02-28",
+     "evidence": "Rates until 28 February 2026"
+    },
+    {
+     "item": "Napkin",
+     "unit": "each per week",
+     "price": 0.27,
+     "effective_from": null,
+     "effective_to": "2026-02-28",
+     "evidence": "Rates until 28 February 2026"
+    },
+    {
+     "item": "Chef jacket",
+     "unit": "each per week",
+     "price": 1.36,
+     "effective_from": null,
+     "effective_to": "2026-02-28",
+     "evidence": "Rates until 28 February 2026"
+    },
+    {
+     "item": "Apron",
+     "unit": "each per week",
+     "price": 0.63,
+     "effective_from": null,
+     "effective_to": "2026-02-28",
+     "evidence": "Rates until 28 February 2026"
+    },
+    {
+     "item": "Tablecloth",
+     "unit": "each per week",
+     "price": 1.85,
+     "effective_from": "2026-03-01",
+     "effective_to": null,
+     "evidence": "Rates from 1 March 2026"
+    },
+    {
+     "item": "Napkin",
+     "unit": "each per week",
+     "price": 0.28,
+     "effective_from": "2026-03-01",
+     "effective_to": null,
+     "evidence": "Rates from 1 March 2026"
+    },
+    {
+     "item": "Chef jacket",
+     "unit": "each per week",
+     "price": 1.4,
+     "effective_from": "2026-03-01",
+     "effective_to": null,
+     "evidence": "Rates from 1 March 2026"
+    },
+    {
+     "item": "Apron",
+     "unit": "each per week",
+     "price": 0.65,
+     "effective_from": "2026-03-01",
+     "effective_to": null,
+     "evidence": "Rates from 1 March 2026"
+    }
+   ],
+   "fixed_fees": [],
+   "delivery_fee": null,
+   "volume_discount": null,
+   "out_of_hours": null,
+   "minimum_charge": {
+    "amount": 120.0,
+    "period": "weekly",
+    "evidence": "A minimum charge of £120.00 per week applies. Where the items supplied in a week come to less than £120.00, a top-up to the minimum is added to that week's invoice."
+   },
+   "allowances": []
+  },
+  "brightwater": {
+   "supplier": "Brightwater Plumbing & Heating",
+   "contract_start": null,
+   "contract_end": null,
+   "auto_renews": null,
+   "notice_days": null,
+   "payment_days": 30,
+   "prices": [
+    {
+     "item": "Call-out",
+     "unit": "visit",
+     "price": 85.0,
+     "effective_from": null,
+     "effective_to": null,
+     "evidence": "Every visit carries a call-out charge of £85.00, which includes the first 30 minutes on site. Labour after the first 30 minutes is charged at £60.00 per hour, in quarter-hour steps."
+    },
+    {
+     "item": "Labour",
+     "unit": "hour",
+     "price": 60.0,
+     "effective_from": null,
+     "effective_to": null,
+     "evidence": "Every visit carries a call-out charge of £85.00, which includes the first 30 minutes on site. Labour after the first 30 minutes is charged at £60.00 per hour, in quarter-hour steps."
+    }
+   ],
+   "fixed_fees": [],
+   "delivery_fee": null,
+   "volume_discount": null,
+   "out_of_hours": {
+    "multiplier": 1.5,
+    "weekday_start": "08:00",
+    "weekday_end": "18:00",
+    "weekends_out_of_hours": true,
+    "evidence": "Work done out of hours is charged at 1.5 times the normal call-out charge and labour rate. Out of hours means before 08:00 or after 18:00 on weekdays, and any time at weekends or on bank holidays."
+   },
+   "minimum_charge": null,
+   "allowances": []
+  },
+  "oakbarrel": {
+   "supplier": "Oakbarrel Wine Merchants",
+   "contract_start": "2026-01-01",
+   "contract_end": "2026-12-31",
+   "auto_renews": false,
+   "notice_days": null,
+   "payment_days": 30,
+   "prices": [
+    {
+     "item": "House red",
+     "unit": "case of 6",
+     "price": 54.0,
+     "effective_from": null,
+     "effective_to": null,
+     "evidence": "House red"
+    },
+    {
+     "item": "House white",
+     "unit": "case of 6",
+     "price": 51.0,
+     "effective_from": null,
+     "effective_to": null,
+     "evidence": "House white"
+    },
+    {
+     "item": "Prosecco",
+     "unit": "case of 6",
+     "price": 66.0,
+     "effective_from": null,
+     "effective_to": null,
+     "evidence": "Prosecco"
+    },
+    {
+     "item": "Rioja Reserva",
+     "unit": "case of 6",
+     "price": 96.0,
+     "effective_from": null,
+     "effective_to": null,
+     "evidence": "Rioja Reserva"
+    }
+   ],
+   "fixed_fees": [],
+   "delivery_fee": null,
+   "volume_discount": {
+    "percent": 7.5,
+    "min_quantity": 20.0,
+    "unit": "case",
+    "applies_per": "invoice",
+    "evidence": "Where a single order (one invoice) is for 20 cases or more in total, a discount of 7.5% applies to every line on that invoice."
+   },
+   "out_of_hours": null,
+   "minimum_charge": null,
+   "allowances": []
+  },
+  "sparkle": {
+   "supplier": "Sparkle Commercial Cleaning",
+   "contract_start": "2025-04-01",
+   "contract_end": "2026-03-31",
+   "auto_renews": true,
+   "notice_days": 60,
+   "payment_days": 30,
+   "prices": [],
+   "fixed_fees": [
+    {
+     "name": "Monthly cleaning fee",
+     "amount": 1850.0,
+     "period": "monthly",
+     "max_per_period": 1,
+     "effective_from": null,
+     "effective_to": "2026-03-31",
+     "evidence": "The monthly fee is £1,850.00 plus VAT, invoiced on the first day of each month."
+    },
+    {
+     "name": "Monthly cleaning fee",
+     "amount": 1920.0,
+     "period": "monthly",
+     "max_per_period": 1,
+     "effective_from": "2026-04-01",
+     "effective_to": null,
+     "evidence": "From the renewal date of 1 April 2026, the monthly fee in clause 3 is £1,920.00 plus VAT. Everything else in the contract stays the same."
+    },
+    {
+     "name": "Quarterly deep clean",
+     "amount": 600.0,
+     "period": "quarterly",
+     "max_per_period": 1,
+     "effective_from": null,
+     "effective_to": null,
+     "evidence": "The quarterly deep clean is charged at £600.00 plus VAT and is carried out once in each calendar quarter."
+    }
+   ],
+   "delivery_fee": null,
+   "volume_discount": null,
+   "out_of_hours": null,
+   "minimum_charge": null,
+   "allowances": []
+  },
+  "kettlegrind": {
+   "supplier": "Kettle & Grind Roasters",
+   "contract_start": "2025-02-01",
+   "contract_end": null,
+   "auto_renews": null,
+   "notice_days": null,
+   "payment_days": 21,
+   "prices": [
+    {
+     "item": "House espresso beans",
+     "unit": "kg",
+     "price": 18.5,
+     "effective_from": null,
+     "effective_to": null,
+     "evidence": "House espresso beans"
+    },
+    {
+     "item": "Decaf beans",
+     "unit": "kg",
+     "price": 21.0,
+     "effective_from": null,
+     "effective_to": null,
+     "evidence": "Decaf beans"
+    }
+   ],
+   "fixed_fees": [
+    {
+     "name": "Espresso machine lease",
+     "amount": 120.0,
+     "period": "monthly",
+     "max_per_period": 1,
+     "effective_from": null,
+     "effective_to": null,
+     "evidence": "The espresso machine is leased to the Customer for £120.00 per month plus VAT."
+    }
+   ],
+   "delivery_fee": null,
+   "volume_discount": null,
+   "out_of_hours": null,
+   "minimum_charge": null,
+   "allowances": [
+    {
+     "item": "Service visit",
+     "free_quantity": 2,
+     "period": "contract_year",
+     "price_after": 75.0,
+     "evidence": "Two service visits are included free in each contract year (each year starting 1 February). Further service visits cost £75.00 each."
+    }
+   ]
+  },
+  "pestaway": {
+   "supplier": "Pestaway Environmental",
+   "contract_start": null,
+   "contract_end": null,
+   "auto_renews": null,
+   "notice_days": null,
+   "payment_days": 30,
+   "prices": [
+    {
+     "item": "Reactive call-out",
+     "unit": "visit",
+     "price": 95.0,
+     "effective_from": null,
+     "effective_to": null,
+     "evidence": "If you need us between routine visits, a reactive call-out is charged at £95.00 plus VAT."
+    }
+   ],
+   "fixed_fees": [
+    {
+     "name": "Routine visit",
+     "amount": 240.0,
+     "period": "quarterly",
+     "max_per_period": 1,
+     "effective_from": null,
+     "effective_to": null,
+     "evidence": "Your plan includes four routine inspection visits a year, one in each quarter, charged at £240.00 per visit plus VAT."
+    }
+   ],
+   "delivery_fee": null,
+   "volume_discount": null,
+   "out_of_hours": null,
+   "minimum_charge": null,
+   "allowances": []
+  }
+ },
+ "findings": [
+  {
+   "invoice_no": "GL-1054",
+   "rule": "price",
+   "amount": 1.05,
+   "detail": "Vine tomatoes billed at £3.55/kg before the amended price took effect on 1 June 2026 (contract price £3.40/kg)."
+  },
+  {
+   "invoice_no": "GL-1059",
+   "rule": "price",
+   "amount": 4.65,
+   "detail": "Vine tomatoes billed at £3.55/kg before the amended price took effect on 1 June 2026 (contract price £3.40/kg)."
+  },
+  {
+   "invoice_no": "GL-1081",
+   "rule": "price",
+   "amount": 2.4,
+   "detail": "Baby spinach billed at £7.40/kg; the amended contract price is £7.10/kg."
+  },
+  {
+   "invoice_no": "GL-1044",
+   "rule": "delivery_fee",
+   "amount": 15.0,
+   "detail": "£15 delivery charge on a delivery worth more than £250, which the contract says is delivered free."
+  },
+  {
+   "invoice_no": "GL-1102",
+   "rule": "delivery_fee",
+   "amount": 15.0,
+   "detail": "£15 delivery charge on a delivery worth more than £250, which the contract says is delivered free."
+  },
+  {
+   "invoice_no": "GL-1030",
+   "rule": "quantity",
+   "amount": 14.25,
+   "detail": "Billed for 95 kg of Maris Piper potatoes but the signed delivery note shows 80 kg."
+  },
+  {
+   "invoice_no": "NF-2026",
+   "rule": "price",
+   "amount": 11.7,
+   "detail": "Salmon fillet billed at £15.10/kg; the 2026 contract price is £14.20/kg."
+  },
+  {
+   "invoice_no": "NF-2064",
+   "rule": "price",
+   "amount": 9.0,
+   "detail": "Salmon fillet billed at £15.10/kg; the 2026 contract price is £14.20/kg."
+  },
+  {
+   "invoice_no": "NF-2015",
+   "rule": "volume_discount",
+   "amount": 6.86,
+   "detail": "No 5% volume discount on 28 kg of mussels; lines of 20 kg or more qualify."
+  },
+  {
+   "invoice_no": "NF-2038",
+   "rule": "volume_discount",
+   "amount": 16.5,
+   "detail": "No 5% volume discount on 20 kg of cod loin; lines of 20 kg or more qualify."
+  },
+  {
+   "invoice_no": "NF-2079",
+   "rule": "duplicate",
+   "amount": 751.7,
+   "detail": "Duplicate of NF-2041: same delivery, same lines, invoiced again."
+  },
+  {
+   "invoice_no": "CL-3006",
+   "rule": "price",
+   "amount": 6.93,
+   "detail": "Billed at the rates that start on 1 March 2026 for a week in February."
+  },
+  {
+   "invoice_no": "CL-3007",
+   "rule": "price",
+   "amount": 7.92,
+   "detail": "Billed at the rates that start on 1 March 2026 for a week in February."
+  },
+  {
+   "invoice_no": "CL-3021",
+   "rule": "minimum_charge",
+   "amount": 18.4,
+   "detail": "A minimum-charge top-up was added although the items that week already came to more than £120."
+  },
+  {
+   "invoice_no": "BW-4007",
+   "rule": "out_of_hours",
+   "amount": 72.5,
+   "detail": "Out-of-hours rates charged for a visit at 11:00 on a Wednesday, which is within normal hours."
+  },
+  {
+   "invoice_no": "BW-4010",
+   "rule": "price",
+   "amount": 12.5,
+   "detail": "Labour charged at £65.00 an hour; the agreed rate is £60.00."
+  },
+  {
+   "invoice_no": "OB-5005",
+   "rule": "volume_discount",
+   "amount": 113.4,
+   "detail": "An order of 22 cases with no 7.5% discount; orders of 20 cases or more qualify."
+  },
+  {
+   "invoice_no": "OB-5009",
+   "rule": "arithmetic",
+   "amount": 54.0,
+   "detail": "The invoice net total is £1,215.00 but its lines add up to £1,161.00."
+  },
+  {
+   "invoice_no": "SC-6007",
+   "rule": "fixed_fee",
+   "amount": 60.0,
+   "detail": "Monthly fee billed at £1,980.00; the varied fee from 1 April 2026 is £1,920.00."
+  },
+  {
+   "invoice_no": "SC-6008",
+   "rule": "frequency",
+   "amount": 600.0,
+   "detail": "A second quarterly deep clean in Q3 2026; the contract allows one per quarter (the first was billed in July)."
+  },
+  {
+   "invoice_no": "KG-7006",
+   "rule": "allowance",
+   "amount": 75.0,
+   "detail": "Charged £75 for a service visit that was only the second of the contract year starting 1 February 2026; two are free."
+  },
+  {
+   "invoice_no": "KG-7008",
+   "rule": "fixed_fee",
+   "amount": 15.0,
+   "detail": "Machine lease billed at £135.00; the agreed lease is £120.00 a month."
+  },
+  {
+   "invoice_no": "PW-8005",
+   "rule": "fixed_fee",
+   "amount": 25.0,
+   "detail": "Routine visit billed at £265.00; the published charge is £240.00 per visit."
+  }
+ ]
+}

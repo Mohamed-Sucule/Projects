@@ -1,0 +1,17 @@
+[project]
+name = "tally"
+version = "1.0.0"
+description = "An AI accounts-payable analyst: contracts and accounts in, cited answers, invoice audits and approved dispute emails out."
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 140
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B"]
+ignore = ["E501", "B008", "B905"]

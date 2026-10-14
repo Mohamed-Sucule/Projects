@@ -1,0 +1,136 @@
+{
+ "suite": "audit_reference",
+ "title": "Audit engine vs planted errors",
+ "description": "The deterministic checks, given the reference contract terms, must find each of the errors planted in the demo books to the penny and flag nothing else.",
+ "ran_at": "2026-10-14T19:14:35+00:00",
+ "model": null,
+ "passed": 23,
+ "total": 23,
+ "metrics": {
+  "recall": 1.0,
+  "precision": 1.0,
+  "rule_agreement": 1.0,
+  "false_positives": 0,
+  "disputed_total": 1908.76,
+  "planted_total": 1908.76
+ },
+ "headline": "100% recall, 100% precision",
+ "cases": [
+  {
+   "id": "GL-1054 price",
+   "pass": true,
+   "detail": "planted \u00a31.05; found price \u00a31.05"
+  },
+  {
+   "id": "GL-1059 price",
+   "pass": true,
+   "detail": "planted \u00a34.65; found price \u00a34.65"
+  },
+  {
+   "id": "GL-1081 price",
+   "pass": true,
+   "detail": "planted \u00a32.40; found price \u00a32.40"
+  },
+  {
+   "id": "GL-1044 delivery_fee",
+   "pass": true,
+   "detail": "planted \u00a315.00; found delivery_fee \u00a315.00"
+  },
+  {
+   "id": "GL-1102 delivery_fee",
+   "pass": true,
+   "detail": "planted \u00a315.00; found delivery_fee \u00a315.00"
+  },
+  {
+   "id": "GL-1030 quantity",
+   "pass": true,
+   "detail": "planted \u00a314.25; found quantity \u00a314.25"
+  },
+  {
+   "id": "NF-2026 price",
+   "pass": true,
+   "detail": "planted \u00a311.70; found price \u00a311.70"
+  },
+  {
+   "id": "NF-2064 price",
+   "pass": true,
+   "detail": "planted \u00a39.00; found price \u00a39.00"
+  },
+  {
+   "id": "NF-2015 volume_discount",
+   "pass": true,
+   "detail": "planted \u00a36.86; found volume_discount \u00a36.86"
+  },
+  {
+   "id": "NF-2038 volume_discount",
+   "pass": true,
+   "detail": "planted \u00a316.50; found volume_discount \u00a316.50"
+  },
+  {
+   "id": "NF-2079 duplicate",
+   "pass": true,
+   "detail": "planted \u00a3751.70; found duplicate \u00a3751.70"
+  },
+  {
+   "id": "CL-3006 price",
+   "pass": true,
+   "detail": "planted \u00a36.93; found price \u00a36.93"
+  },
+  {
+   "id": "CL-3007 price",
+   "pass": true,
+   "detail": "planted \u00a37.92; found price \u00a37.92"
+  },
+  {
+   "id": "CL-3021 minimum_charge",
+   "pass": true,
+   "detail": "planted \u00a318.40; found minimum_charge \u00a318.40"
+  },
+  {
+   "id": "BW-4007 out_of_hours",
+   "pass": true,
+   "detail": "planted \u00a372.50; found out_of_hours \u00a372.50"
+  },
+  {
+   "id": "BW-4010 price",
+   "pass": true,
+   "detail": "planted \u00a312.50; found price \u00a312.50"
+  },
+  {
+   "id": "OB-5005 volume_discount",
+   "pass": true,
+   "detail": "planted \u00a3113.40; found volume_discount \u00a3113.40"
+  },
+  {
+   "id": "OB-5009 arithmetic",
+   "pass": true,
+   "detail": "planted \u00a354.00; found arithmetic \u00a354.00"
+  },
+  {
+   "id": "SC-6007 fixed_fee",
+   "pass": true,
+   "detail": "planted \u00a360.00; found fixed_fee \u00a360.00"
+  },
+  {
+   "id": "SC-6008 frequency",
+   "pass": true,
+   "detail": "planted \u00a3600.00; found frequency \u00a3600.00"
+  },
+  {
+   "id": "KG-7006 allowance",
+   "pass": true,
+   "detail": "planted \u00a375.00; found allowance \u00a375.00"
+  },
+  {
+   "id": "KG-7008 fixed_fee",
+   "pass": true,
+   "detail": "planted \u00a315.00; found fixed_fee \u00a315.00"
+  },
+  {
+   "id": "PW-8005 fixed_fee",
+   "pass": true,
+   "detail": "planted \u00a325.00; found fixed_fee \u00a325.00"
+  }
+ ],
+ "seconds": 0.0
+}

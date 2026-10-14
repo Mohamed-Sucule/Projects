@@ -1,0 +1,9 @@
+# Runtime dependencies (the Docker image installs only these).
+anthropic==1.14.0
+fastapi==0.143.1
+starlette==1.8.0
+uvicorn==0.54.0
+pydantic==2.14.1
+python-multipart==0.0.32
+pypdf==6.20.1
+python-docx==1.2.0

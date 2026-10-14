@@ -1,0 +1,112 @@
+{
+ "suite": "ingestion",
+ "title": "Ingestion and injection flags",
+ "description": "Every demo document parses with the right flags (only the Pestaway page hides instructions to AI); malformed and hostile files are refused with a clear reason.",
+ "ran_at": "2026-10-14T19:14:36+00:00",
+ "model": null,
+ "passed": 19,
+ "total": 19,
+ "metrics": {
+  "documents_parsed_and_classified": "11/11",
+  "hostile_files_refused": "7/7"
+ },
+ "headline": "19/19",
+ "cases": [
+  {
+   "id": "greenleaf-contract",
+   "pass": true,
+   "detail": "pdf, 18 blocks, 1649 chars, flags none"
+  },
+  {
+   "id": "greenleaf-amendment-1",
+   "pass": true,
+   "detail": "pdf, 6 blocks, 443 chars, flags none"
+  },
+  {
+   "id": "northsea-contract",
+   "pass": true,
+   "detail": "docx, 18 blocks, 1383 chars, flags none"
+  },
+  {
+   "id": "crisp-linen-contract",
+   "pass": true,
+   "detail": "pdf, 17 blocks, 1348 chars, flags none"
+  },
+  {
+   "id": "brightwater-terms",
+   "pass": true,
+   "detail": "md, 13 blocks, 1095 chars, flags none"
+  },
+  {
+   "id": "oakbarrel-contract",
+   "pass": true,
+   "detail": "pdf, 13 blocks, 882 chars, flags none"
+  },
+  {
+   "id": "sparkle-contract",
+   "pass": true,
+   "detail": "docx, 14 blocks, 1046 chars, flags none"
+  },
+  {
+   "id": "sparkle-amendment-1",
+   "pass": true,
+   "detail": "pdf, 4 blocks, 196 chars, flags none"
+  },
+  {
+   "id": "kettle-grind-contract",
+   "pass": true,
+   "detail": "pdf, 13 blocks, 800 chars, flags none"
+  },
+  {
+   "id": "pestaway-terms",
+   "pass": true,
+   "detail": "html, 8 blocks, 660 chars, flags ['addressed_to_ai', 'claims_approval', 'hidden_text', 'suppress_checks']"
+  },
+  {
+   "id": "ap-policy",
+   "pass": true,
+   "detail": "pdf, 9 blocks, 748 chars, flags none"
+  },
+  {
+   "id": "executable named .pdf",
+   "pass": true,
+   "detail": "refused: This is a binary file type Tally does not read. Upload a PDF, Word (.docx), HTML, Markdown, text or CSV file."
+  },
+  {
+   "id": "binary with null bytes",
+   "pass": true,
+   "detail": "refused: This is a binary file type Tally does not read. Upload a PDF, Word (.docx), HTML, Markdown, text or CSV file."
+  },
+  {
+   "id": "csv as a document",
+   "pass": true,
+   "detail": "refused: CSV files are accounts data: import them as a table rather than as a document."
+  },
+  {
+   "id": "docx zip bomb",
+   "pass": true,
+   "detail": "refused: This Word file expands to an unreasonable size when opened, so it was not processed."
+  },
+  {
+   "id": "truncated pdf",
+   "pass": true,
+   "detail": "refused: This PDF could not be read. It may be damaged."
+  },
+  {
+   "id": "not utf-8 text",
+   "pass": true,
+   "detail": "refused: This is a binary file type Tally does not read. Upload a PDF, Word (.docx), HTML, Markdown, text or CSV file."
+  },
+  {
+   "id": "empty file",
+   "pass": true,
+   "detail": "refused: The file is empty."
+  },
+  {
+   "id": "invoice notes injection",
+   "pass": true,
+   "detail": "1 of 13 invoice notes flagged"
+  }
+ ],
+ "seconds": 0.7
+}
