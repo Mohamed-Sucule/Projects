@@ -74,19 +74,34 @@ const windows = (x, y, cols, rows, gapX, gapY, size, lit = LIT, cls = '') => {
 
 /* ── the island every scene stands on ───────────────────────────────────── */
 
-function base(id, [land, rock, glow]) {
-  const rand = rng(id);
+/* Six silhouettes, so no two neighbouring worlds share an outline: a cone of rock,
+   a needle, a flat shelf with a waterfall, a pair joined by a bridge, a faceted
+   crystal, and a cap held up by a ring of orbiting stones. */
+function body(form, rand) {
   const pts = [];
-  const steps = 9;
-  for (let i = 0; i <= steps; i++) {
-    const t = i / steps;
-    const x = 40 + t * 160;
-    const depth = Math.sin(Math.PI * t);
-    const y = 120 + depth * (62 + rand() * 18) + (rand() - 0.5) * 8;
-    pts.push([x + (rand() - 0.5) * 8, y]);
+  if (form === 'spire') {
+    pts.push([46, 118], [64, 140], [84, 150], [100, 182], [112, 226], [124, 190], [140, 160], [160, 146], [182, 132], [194, 118]);
+  } else if (form === 'shelf') {
+    for (let i = 0; i <= 8; i++) { const x = 40 + i * 20; pts.push([x + (rand() - 0.5) * 6, 150 + (i % 2) * 8 + rand() * 10 - (i === 0 || i === 8 ? 26 : 0)]); }
+  } else if (form === 'twin') {
+    pts.push([40, 118], [56, 156], [78, 190], [96, 162], [112, 150], [128, 166], [146, 200], [168, 172], [188, 140], [200, 118]);
+  } else if (form === 'crystal') {
+    pts.push([40, 118], [58, 150], [72, 142], [86, 176], [104, 166], [118, 214], [134, 170], [150, 182], [166, 146], [184, 152], [200, 118]);
+  } else {
+    const steps = 9;
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      pts.push([40 + t * 160 + (rand() - 0.5) * 8, 120 + Math.sin(Math.PI * t) * (form === 'ring' ? 22 + rand() * 6 : 62 + rand() * 18) + (rand() - 0.5) * 8]);
+    }
   }
+  return pts;
+}
+
+function base(id, [land, rock, glow], form = 'cone') {
+  const rand = rng(id);
+  const pts = body(form, rand);
   const tip = pts.reduce((a, b) => (b[1] > a[1] ? b : a));
-  const body = `M38,118 ${pts.map(([x, y]) => `L${x.toFixed(1)},${y.toFixed(1)}`).join(' ')} L202,118 Z`;
+  const path = `M38,118 ${pts.map(([x, y]) => `L${x.toFixed(1)},${y.toFixed(1)}`).join(' ')} L202,118 Z`;
   const strata = [0.35, 0.6].map((k) => {
     const y = 122 + k * (tip[1] - 122);
     const half = 80 * (1 - k * 0.8);
@@ -98,6 +113,27 @@ function base(id, [land, rock, glow]) {
     const len = 14 + rand() * 26;
     roots += `<path d="M${x},${126 + rand() * 6} q${(rand() - 0.5) * 10},${len / 2} ${(rand() - 0.5) * 6},${len}" stroke="${shade(land, -0.2)}" stroke-width="1.2" fill="none" opacity=".7"/>`;
     roots += c(x + (rand() - 0.5) * 6, 126 + len + 4, 1.4, glow, 'opacity=".7"');
+  }
+  let extra = '';
+  if (form === 'shelf') {
+    /* water pouring off the edge of the shelf and never landing */
+    extra += `<defs><linearGradient id="${id}-fall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfe6ff" stop-opacity=".7"/><stop offset="1" stop-color="#cfe6ff" stop-opacity="0"/></linearGradient></defs>`
+      + r(186, 120, 5, 90, `url(#${id}-fall)`) + r(188, 124, 1.4, 70, '#ffffff', `opacity=".5" class="a-pulse" ${d(0.4)}`);
+  } else if (form === 'twin') {
+    /* the smaller half, with a bridge back to the main island */
+    extra += `<g class="frag frag-r">${e(214, 92, 18, 5, shade(land, -0.1))}${p('M196,92 L214,128 L232,92 Z', `url(#${id}-rock)`)}</g>`
+      + `<path d="M190,104 Q203,98 200,93" stroke="${STAR}" stroke-width="1.4" fill="none" opacity=".6"/>`;
+  } else if (form === 'crystal') {
+    /* shards hanging under the rock, lit from inside */
+    for (const [x, y, h] of [[80, 170, 22], [118, 210, 30], [150, 184, 18]]) {
+      extra += poly(`${x - 4},${y} ${x + 4},${y} ${x},${y + h}`, glow, `opacity=".55" class="a-pulse" ${d(x / 50)}`);
+    }
+    extra += `<path d="M72,142 L104,166 L118,214" stroke="${glow}" stroke-width=".8" fill="none" opacity=".45"/>`;
+  } else if (form === 'ring') {
+    /* stones orbiting under a thin cap, holding it up by no visible means */
+    const stones = [0, 1, 2, 3, 4, 5].map((i) => poly(`${-5},0 0,${-4} 6,${-1} 2,5`, `url(#${id}-rock)`, `transform="rotate(${i * 60}) translate(46 0)"`)).join('');
+    extra += `<g transform="translate(120 160) scale(1 .3)"><g>${spin(0, 0, 18)}${stones}</g></g>`
+      + e(120, 160, 46, 14, 'none', `stroke="${glow}" stroke-width=".8" stroke-dasharray="2 5" opacity=".5"`);
   }
   return `
   <defs>
@@ -111,14 +147,14 @@ function base(id, [land, rock, glow]) {
       <stop offset="0" stop-color="${glow}" stop-opacity=".55"/><stop offset="1" stop-color="${glow}" stop-opacity="0"/>
     </radialGradient>
   </defs>
-  ${e(120, tip[1] + 10, 74, 22, `url(#${id}-glow)`, 'class="a-pulse slow"')}
-  ${p(body, `url(#${id}-rock)`)}
-  ${strata}${roots}
+  <g class="glow-under">${e(120, tip[1] + 10, 74, 22, `url(#${id}-glow)`, 'class="a-pulse slow"')}</g>
+  ${p(path, `url(#${id}-rock)`)}
+  ${strata}${roots}${extra}
   ${e(120, 118, 84, 21, shade(land, -0.35))}
   ${e(120, 115, 82, 19, `url(#${id}-land)`)}
   <path d="M42,112 Q120,90 198,112" stroke="${STAR}" stroke-width="1.2" fill="none" opacity=".35"/>
-  <g class="a-bob" ${d(rand() * 3)}>${poly(`${14},${96} ${24},${92} ${28},${100} ${20},${108}`, `url(#${id}-rock)`)}</g>
-  <g class="a-bob" ${d(1.5 + rand() * 3)}>${poly(`${210},${128} ${222},${124} ${226},${134} ${214},${140}`, `url(#${id}-rock)`)}</g>`;
+  <g class="frag frag-l"><g class="a-bob" ${d(rand() * 3)}>${poly(`${14},${96} ${24},${92} ${28},${100} ${20},${108}`, `url(#${id}-rock)`)}</g></g>
+  <g class="frag frag-r"><g class="a-bob" ${d(1.5 + rand() * 3)}>${poly(`${210},${128} ${222},${124} ${226},${134} ${214},${140}`, `url(#${id}-rock)`)}</g></g>`;
 }
 
 /* ── the scenes ─────────────────────────────────────────────────────────── */
@@ -239,13 +275,20 @@ const SCENES = {
   },
 
   tokens([, , glow]) {
-    const tiles = [['str', 70, 70, 0], ['aw', 108, 58, 0.6], ['berry', 136, 76, 1.2]];
-    return `
-      ${tiles.map(([t, x, y, del]) => `<g class="a-bob" ${d(del)}>${r(x, y, t.length * 9 + 10, 20, shade('#5a4a78', 0.15), 'rx="4"')}${r(x, y, t.length * 9 + 10, 4, shade('#5a4a78', 0.45), 'rx="2"')}
-        <text x="${x + 5}" y="${y + 15}" font-family="JetBrains Mono, ui-monospace, monospace" font-size="12" fill="${glow}">${t}</text></g>`).join('')}
+    /* strawberry, split exactly as the page's trained tokeniser splits it */
+    const parts = ['st', 'ra', 'w', 'ber', 'r', 'y'];
+    let x = 62;
+    let out = '';
+    parts.forEach((t, i) => {
+      const w = t.length * 8 + 9;
+      const y = 74 - (i % 2) * 12;
+      out += `<g class="a-bob" ${d(i * 0.35)}>${r(x, y, w, 18, shade('#5a4a78', 0.15), 'rx="4"')}${r(x, y, w, 3.5, shade('#5a4a78', 0.45), 'rx="2"')}
+        <text x="${x + 4.5}" y="${y + 13.5}" font-family="JetBrains Mono, ui-monospace, monospace" font-size="11" fill="${glow}">${t}</text></g>`;
+      x += w + 3;
+    });
+    return `${out}
       ${poly('92,118 98,96 104,118', shade(glow, -0.2), 'opacity=".75"')}${poly('128,120 136,100 142,120', glow, 'opacity=".6"')}
-      ${poly('150,116 154,104 158,116', STAR, 'opacity=".6"')}
-      ${line(104, 70, 108, 78, glow, 1, 'opacity=".5"')}${line(132, 70, 136, 82, glow, 1, 'opacity=".5"')}`;
+      ${poly('150,116 154,104 158,116', STAR, 'opacity=".6"')}`;
   },
 
   evals([land, , glow]) {
@@ -578,7 +621,7 @@ export function islandSVG(island, { label = '', uid = '' } = {}) {
   const scene = SCENES[island.id];
   if (!scene) throw new Error(`no scene for ${island.id}`);
   const a11y = label ? `role="img" aria-label="${label.replace(/"/g, '&quot;')}"` : 'aria-hidden="true"';
-  let svg = `<svg viewBox="0 0 240 230" xmlns="http://www.w3.org/2000/svg" ${a11y}>${base(island.id, island.palette)}<g class="scene">${scene(island.palette)}</g></svg>`;
+  let svg = `<svg viewBox="0 0 240 230" xmlns="http://www.w3.org/2000/svg" ${a11y}>${base(island.id, island.palette, island.base)}<g class="scene">${scene(island.palette)}</g></svg>`;
   if (uid) svg = svg.replace(/id="([^"]+)"/g, `id="$1-${uid}"`).replace(/url\(#([^)]+)\)/g, `url(#$1-${uid})`);
   return svg;
 }

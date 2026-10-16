@@ -115,7 +115,7 @@ function buildFar(w, h, dpr) {
 /* The floating city: a mountain of rock with towers on top, a second city hanging
    upside down beneath it, a stair that climbs into nothing, and a waterfall that
    pours off the edge and never lands. Lit from the right, where the portal is. */
-function buildCity(size, dpr) {
+export function buildCity(size, dpr) {
   const W = size;
   const H = size * 1.25;
   const [c, x] = offscreen(W, H, dpr);

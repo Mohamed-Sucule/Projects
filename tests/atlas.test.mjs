@@ -10,10 +10,13 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execFileSync } from 'node:child_process';
 import { test, assert } from './harness.mjs';
 import { ATLAS } from '../shared/atlas.js';
-import { WORLDS, ISLANDS, REGIONS, REPO, FEATURED, islandById, SEARCHABLE } from '../atlas/worlds.js';
+import { WORLDS, ISLANDS, REGIONS, REPO, FEATURED, DETAILS, islandById, SEARCHABLE } from '../atlas/worlds.js';
 import { islandSVG, SCENE_IDS } from '../atlas/islands.js';
+import { FX_TYPES } from '../atlas/fx.js';
+import { sceneLayout, moonPhase, phaseName } from '../atlas/sky.js';
 import { buildIndex, search } from '../shared/search.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -30,7 +33,7 @@ test('the page counts its islands correctly', () => {
   const html = readFileSync(join(root, 'atlas/index.html'), 'utf8');
   const n = ISLANDS.length;
   assert.equal(n, 35, `the page says thirty-five; there are ${n}`);
-  assert.ok(html.includes('Thirty-five islands') && html.includes('<b>35</b>'), 'the counts on the page have drifted');
+  assert.ok(html.includes('thirty-five projects') && html.includes('<b>35</b>'), 'the counts on the page have drifted');
 });
 
 test('every island floats in a known region, and every region has islands', () => {
@@ -111,4 +114,86 @@ test('the guide can find Tally, which the site-wide navigator does not know abou
 
 test('every result the guide can give is an island', () => {
   for (const e of SEARCHABLE) assert.ok(islandById.has(e.id), `the guide could suggest ${e.id}, which has no island`);
+});
+
+test('every island has what its panel promises: features, a decision, a world effect', () => {
+  const forms = ['cone', 'spire', 'shelf', 'twin', 'crystal', 'ring'];
+  for (const i of ISLANDS) {
+    assert.ok(DETAILS[i.id], `${i.id} has no details`);
+    assert.equal(i.features?.length, 3, `${i.id} should list three things it does`);
+    for (const f of i.features) assert.ok(f.length > 8 && f.length < 120, `${i.id}: "${f}" is not a feature line`);
+    assert.ok(Array.isArray(i.decision) && i.decision[0]?.length > 5 && i.decision[1]?.length > 40, `${i.id} has no interesting decision`);
+    assert.ok(FX_TYPES.includes(i.fx?.type), `${i.id} has a world effect "${i.fx?.type}" that is not drawn`);
+    assert.ok(forms.includes(i.base), `${i.id} has an unknown silhouette "${i.base}"`);
+  }
+  for (const id of Object.keys(DETAILS)) assert.ok(islandById.has(id), `details for "${id}", which has no island`);
+});
+
+test('the islands do not all share one silhouette', () => {
+  const counts = {};
+  for (const i of ISLANDS) counts[i.base] = (counts[i.base] ?? 0) + 1;
+  assert.ok(Object.keys(counts).length >= 5, `only ${Object.keys(counts).length} silhouettes`);
+  for (const [form, n] of Object.entries(counts)) assert.ok(n <= ISLANDS.length / 3, `${n} islands are ${form}`);
+});
+
+test('every island has its own page, and the generated pages are up to date', () => {
+  for (const i of ISLANDS) assert.ok(existsSync(join(root, 'atlas/projects', i.id, 'index.html')), `no page for ${i.id}`);
+  /* build.mjs --check exits 1 if any page, or the list in the atlas, differs from worlds.js */
+  execFileSync(process.execPath, [join(root, 'atlas/build.mjs'), '--check'], { stdio: 'pipe' });
+});
+
+test('the plain list on the page links every project, without needing script', () => {
+  const html = readFileSync(join(root, 'atlas/index.html'), 'utf8');
+  const list = html.match(/<!-- projects:start -->([\s\S]*?)<!-- projects:end -->/)?.[1] ?? '';
+  for (const i of ISLANDS) {
+    assert.ok(list.includes(`href="projects/${i.id}/"`), `the list has no page link for ${i.id}`);
+    if (i.id !== 'tally') assert.ok(list.includes(`href="../${i.href}"`), `the list cannot launch ${i.id}`);
+  }
+});
+
+test('the threshold says what the brief asked it to say', () => {
+  const html = readFileSync(join(root, 'atlas/index.html'), 'utf8');
+  const text = html.replace(/<[^>]+>/g, ' ').replace(/&rsquo;/g, '\u2019').replace(/\s+/g, ' ');
+  assert.ok(/Ideas that escape the ordinary\./i.test(text), 'the headline has changed');
+  assert.ok(text.includes('I build AI-powered products, immersive tools, and unconventional solutions to real problems.'), 'the line under the headline has changed');
+  assert.ok(/Explore my worlds/i.test(text), 'no way into the worlds');
+  const nav = html.match(/<nav aria-label="Main">([\s\S]*?)<\/nav>/)?.[1] ?? '';
+  for (const [href, name] of [['#worlds', 'Worlds'], ['#projects', 'Projects'], ['#about', 'About'], ['#contact', 'Contact']]) {
+    assert.ok(nav.includes(`href="${href}">${name}<`), `the nav has no ${name}`);
+    assert.ok(html.includes(`id="${href.slice(1)}"`), `${name} points at nothing`);
+  }
+});
+
+test('the guide opens with the question and the four starting points', () => {
+  const html = readFileSync(join(root, 'atlas/index.html'), 'utf8');
+  assert.ok(html.includes('Every world here solves a different problem.') && html.includes('What are you trying to build?'));
+  for (const q of ['I want to automate a repetitive workflow.', 'I need an AI-powered product prototype.', 'I have a data problem.', 'Show me your most technically interesting project.']) {
+    assert.ok(html.includes(q), `the guide is missing "${q}"`);
+    const index = buildIndex(SEARCHABLE);
+    const hits = search(q, index, { limit: 3 });
+    assert.ok(hits.length > 0, `the guide has nothing to say to "${q}"`);
+  }
+});
+
+test('the portal, the moon and the lighthouse are on screen at every common size', () => {
+  for (const [W, H] of [[1440, 900], [1920, 1080], [1280, 800], [1024, 768], [390, 844], [360, 740], [768, 1024], [2560, 1080]]) {
+    const L = sceneLayout(W, H);
+    const half = L.a / 2;
+    const [cx, cy, R] = L.portal;
+    const outer = R * 1.3;
+    assert.ok(cx - outer > -half && cx + outer < half, `${W}x${H}: the portal runs off the side`);
+    assert.ok(cy + outer < 0.5, `${W}x${H}: the portal runs off the top`);
+    assert.ok(Math.abs(L.light[0]) < half - 0.01, `${W}x${H}: the lighthouse is off screen`);
+    assert.ok(Math.abs(L.moon[0]) < half - L.moon[2], `${W}x${H}: the moon is off screen`);
+  }
+});
+
+test('the moon in the sky is the moon outside', () => {
+  /* two eclipses: the total solar eclipse at new moon, and a lunar one at full */
+  const nw = moonPhase(new Date(Date.UTC(2024, 3, 8, 18, 21)));
+  const full = moonPhase(new Date(Date.UTC(2025, 2, 14, 6, 55)));
+  assert.ok(Math.min(nw, 1 - nw) < 0.02, `new moon came out as phase ${nw.toFixed(3)}`);
+  assert.ok(Math.abs(full - 0.5) < 0.02, `full moon came out as phase ${full.toFixed(3)}`);
+  assert.equal(phaseName(full), 'full moon');
+  assert.equal(phaseName(nw), 'new moon');
 });

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="../../../favicon.svg" />
+<meta name="theme-color" content="#080B14" />
+<title>Regex Lab — engineering tool by Mohamed Sucule</title>
+<meta name="description" content="A search pattern compiled into a machine you can watch run, one character at a time — including the kind that quietly takes a website down." />
+<meta property="og:title" content="Regex Lab — Portal Atlas" />
+<meta property="og:description" content="Regular expressions fail invisibly, and sometimes they take a website down." />
+<meta property="og:type" content="article" />
+<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/atlas/shots/regex-lab.jpg" />
+<link rel="canonical" href="https://mohamed-sucule.github.io/Projects/atlas/projects/regex-lab/" />
+<link rel="stylesheet" href="../project.css" />
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../../">&larr; Portal Atlas</a>
+  <a class="list" href="../../#projects">Every project</a>
+</header>
+<main class="project" style="--glow:#c8a8ff">
+  <div class="intro">
+    <div class="art" aria-hidden="true"><svg viewBox="0 0 240 230" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <defs>
+    <linearGradient id="regex-lab-rock" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4b4c67"/><stop offset=".55" stop-color="#232546"/><stop offset="1" stop-color="#10111f"/>
+    </linearGradient>
+    <linearGradient id="regex-lab-land" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#72688c"/><stop offset="1" stop-color="#382e50"/>
+    </linearGradient>
+    <radialGradient id="regex-lab-glow">
+      <stop offset="0" stop-color="#c8a8ff" stop-opacity=".55"/><stop offset="1" stop-color="#c8a8ff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <g class="glow-under"><ellipse cx="120" cy="210" rx="74" ry="22" fill="url(#regex-lab-glow)" class="a-pulse slow"/></g>
+  <path d="M38,118 L40.0,118.0 L56.0,156.0 L78.0,190.0 L96.0,162.0 L112.0,150.0 L128.0,166.0 L146.0,200.0 L168.0,172.0 L188.0,140.0 L200.0,118.0 L202,118 Z" fill="url(#regex-lab-rock)" />
+  <path d="M62.400000000000006,149.3 Q120,155.3 177.6,147.3" stroke="#17182e" stroke-width="1.4" fill="none" opacity=".6"/><path d="M78.4,168.8 Q120,174.8 161.6,166.8" stroke="#17182e" stroke-width="1.4" fill="none" opacity=".6"/><path d="M63.40510729048401,129.8052163165994 q-1.7943032458424568,10.507403573254123 -0.171828031539917,21.014807146508247" stroke="#3b3156" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="61.903998324181885" cy="151.01480714650825" r="1.4" fill="#c8a8ff" opacity=".7"/><path d="M87.4895038548857,126.7446440141648 q-3.674874254502356,19.26379027427174 1.0480526410974562,38.52758054854348" stroke="#3b3156" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="87.58386970264837" cy="168.52758054854348" r="1.4" fill="#c8a8ff" opacity=".7"/><path d="M120.2990092607215,130.50821132445708 q-3.3514838968403637,11.55946384021081 1.4475144473835826,23.11892768042162" stroke="#3b3156" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="119.80597420921549" cy="153.11892768042162" r="1.4" fill="#c8a8ff" opacity=".7"/><path d="M148.47957259230316,128.91176069201902 q4.060623857658356,9.928372450871393 2.013439944013953,19.856744901742786" stroke="#3b3156" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="146.77966371411458" cy="149.8567449017428" r="1.4" fill="#c8a8ff" opacity=".7"/><path d="M185.2749735424295,130.47507134405896 q-1.0696486965753138,16.726635423023254 1.8097677421756089,33.45327084604651" stroke="#3b3156" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="188.13930883537978" cy="163.4532708460465" r="1.4" fill="#c8a8ff" opacity=".7"/><g class="frag frag-r"><ellipse cx="214" cy="92" rx="18" ry="5" fill="#433760" /><path d="M196,92 L214,128 L232,92 Z" fill="url(#regex-lab-rock)" /></g><path d="M190,104 Q203,98 200,93" stroke="#E8C7AA" stroke-width="1.4" fill="none" opacity=".6"/>
+  <ellipse cx="120" cy="118" rx="84" ry="21" fill="#302846" />
+  <ellipse cx="120" cy="115" rx="82" ry="19" fill="url(#regex-lab-land)" />
+  <path d="M42,112 Q120,90 198,112" stroke="#E8C7AA" stroke-width="1.2" fill="none" opacity=".35"/>
+  <g class="frag frag-l"><g class="a-bob" style="--d:0.3640233075711876s"><polygon points="14,96 24,92 28,100 20,108" fill="url(#regex-lab-rock)" /></g></g>
+  <g class="frag frag-r"><g class="a-bob" style="--d:1.9791908897459507s"><polygon points="210,128 222,124 226,134 214,140" fill="url(#regex-lab-rock)" /></g></g><g class="scene">
+      <defs><marker id="regex-arrow" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#E8C7AA"/></marker></defs>
+      <path d="M74,100 Q83,74 92,88" stroke="#E8C7AA" stroke-width="1.2" fill="none" marker-end="url(#regex-arrow)" opacity=".8"/><path d="M108,88 Q118,74 128,94" stroke="#E8C7AA" stroke-width="1.2" fill="none" marker-end="url(#regex-arrow)" opacity=".8"/><path d="M144,94 Q154,70 164,84" stroke="#E8C7AA" stroke-width="1.2" fill="none" marker-end="url(#regex-arrow)" opacity=".8"/>
+      <path d="M128,102 C120,124 152,124 144,102" stroke="#E8C7AA" stroke-width="1.1" fill="none" marker-end="url(#regex-arrow)" opacity=".6"/>
+      <ellipse cx="66" cy="108" rx="12" ry="4" fill="#2a2a4a" /><circle cx="66" cy="104" r="9" fill="#776e90" /><ellipse cx="100" cy="96" rx="12" ry="4" fill="#2a2a4a" /><circle cx="100" cy="92" r="9" fill="#776e90" /><ellipse cx="136" cy="102" rx="12" ry="4" fill="#2a2a4a" /><circle cx="136" cy="98" r="9" fill="#776e90" /><ellipse cx="172" cy="92" rx="12" ry="4" fill="#2a2a4a" /><circle cx="172" cy="88" r="9" fill="#776e90" /><circle cx="172" cy="88" r="6" fill="none" stroke="#c8a8ff" stroke-width="1.6"/>
+      <g><animateMotion path="M66,104 Q83,84 100,92 Q118,80 136,98 Q154,78 172,88" dur="4s" begin="0s" repeatCount="indefinite" rotate="0"/><circle cx="0" cy="-10" r="3" fill="#c8a8ff" /></g></g></svg></div>
+    <div>
+      <p class="kicker">engineering tool · about 6 min &middot; The Engine Rooms</p>
+      <h1>Regex Lab</h1>
+      <p class="blurb">A search pattern compiled into a machine you can watch run, one character at a time — including the kind that quietly takes a website down.</p>
+      <div class="actions">
+        <a class="btn primary" href="../../../projects/regex-lab/index.html">Launch Regex Lab &rarr;</a>
+        <a class="btn" href="https://github.com/Mohamed-Sucule/Projects/blob/main/projects/regex-lab/README.md">Engineering case study</a>
+        <a class="btn" href="https://github.com/Mohamed-Sucule/Projects/tree/main/projects/regex-lab">Source</a>
+        <a class="btn" href="../../#world/regex-lab">See its world in the atlas</a>
+      </div>
+    </div>
+  </div>
+  <figure class="shot"><img src="../../shots/regex-lab.jpg" alt="Regex Lab as it first opens" width="960" height="600" loading="lazy" /><figcaption>Regex Lab, as it opens.</figcaption></figure>
+  <section><h2>The problem</h2><p>Regular expressions fail invisibly, and sometimes they take a website down.</p></section>
+  <section><h2>What it does</h2><ul><li>A pattern compiled into a machine you can watch run</li><li>Catastrophic backtracking made visible</li><li>Errors that point at the offending character</li></ul></section>
+  <section><h2>The most interesting decision</h2><div><p class="dtitle">Every piece keeps its place in the pattern</p><p>Each node of the parsed pattern records its source offsets, so the trace can point back at a substring and an error can put a caret under the right character.</p></div></section>
+  <section><h2>Built with</h2><ul class="chips"><li>Parser</li><li>NFA compiler</li><li>Two matchers</li><li>Determiniser</li></ul></section>
+  <section><h2>Evidence</h2><p>Catastrophic backtracking, visible. <a href="https://github.com/Mohamed-Sucule/Projects/blob/main/tests/regex.test.mjs">Read its tests</a></p></section>
+  <section><h2>Its world</h2><p>Stepping stones of a state machine, with a single character hopping between them.</p></section>
+  <nav class="pn" aria-label="Other projects">
+    <a href="../sift/">&larr; Sift</a>
+    <a href="../query-planner/">Query Planner &rarr;</a>
+  </nav>
+</main>
+<script type="module" src="../../../shared/navigator.js"></script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="../../../favicon.svg" />
+<meta name="theme-color" content="#080B14" />
+<title>Attention — machine learning by Mohamed Sucule</title>
+<meta name="description" content="A transformer trained from scratch with hand-written backpropagation, and the exact step it learned to copy." />
+<meta property="og:title" content="Attention — Portal Atlas" />
+<meta property="og:description" content="Everyone talks about attention heads; almost nobody has watched one form." />
+<meta property="og:type" content="article" />
+<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/atlas/shots/attention.jpg" />
+<link rel="canonical" href="https://mohamed-sucule.github.io/Projects/atlas/projects/attention/" />
+<link rel="stylesheet" href="../project.css" />
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../../">&larr; Portal Atlas</a>
+  <a class="list" href="../../#projects">Every project</a>
+</header>
+<main class="project" style="--glow:#b7c8ff">
+  <div class="intro">
+    <div class="art" aria-hidden="true"><svg viewBox="0 0 240 230" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <defs>
+    <linearGradient id="attention-rock" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#484f6b"/><stop offset=".55" stop-color="#20284a"/><stop offset="1" stop-color="#0e1221"/>
+    </linearGradient>
+    <linearGradient id="attention-land" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#666d8f"/><stop offset="1" stop-color="#2c3354"/>
+    </linearGradient>
+    <radialGradient id="attention-glow">
+      <stop offset="0" stop-color="#b7c8ff" stop-opacity=".55"/><stop offset="1" stop-color="#b7c8ff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <g class="glow-under"><ellipse cx="120" cy="224" rx="74" ry="22" fill="url(#attention-glow)" class="a-pulse slow"/></g>
+  <path d="M38,118 L40.0,118.0 L58.0,150.0 L72.0,142.0 L86.0,176.0 L104.0,166.0 L118.0,214.0 L134.0,170.0 L150.0,182.0 L166.0,146.0 L184.0,152.0 L200.0,118.0 L202,118 Z" fill="url(#attention-rock)" />
+  <path d="M62.400000000000006,154.2 Q120,160.2 177.6,152.2" stroke="#151a30" stroke-width="1.4" fill="none" opacity=".6"/><path d="M78.4,177.2 Q120,183.2 161.6,175.2" stroke="#151a30" stroke-width="1.4" fill="none" opacity=".6"/><path d="M65.12091766577214,128.30075884144753 q-4.224836667999625,19.981866502435878 0.7784588607028127,39.963733004871756" stroke="#2f365a" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="64.77142681600526" cy="169.96373300487176" r="1.4" fill="#b7c8ff" opacity=".7"/><path d="M93.07411152496934,131.2540853060782 q-4.449186788406223,7.2781228858511895 -2.9698866731487215,14.556245771702379" stroke="#2f365a" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="90.86376628652215" cy="144.55624577170238" r="1.4" fill="#b7c8ff" opacity=".7"/><path d="M124.02442556619644,127.38522002846003 q-4.825781309045851,12.343216974055395 -2.8042180915363133,24.68643394811079" stroke="#2f365a" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="124.32958094961941" cy="154.6864339481108" r="1.4" fill="#b7c8ff" opacity=".7"/><path d="M146.85214142594486,127.92628761241212 q4.010891092475504,19.693107274593785 0.7217966224998236,39.38621454918757" stroke="#2f365a" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="146.85612037265673" cy="169.38621454918757" r="1.4" fill="#b7c8ff" opacity=".7"/><path d="M174.4901425195858,128.68522004038095 q-2.6515989587642252,18.402396278455853 -0.47681373450905085,36.80479255691171" stroke="#2f365a" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="174.52638257062063" cy="166.8047925569117" r="1.4" fill="#b7c8ff" opacity=".7"/><polygon points="76,170 84,170 80,192" fill="#b7c8ff" opacity=".55" class="a-pulse" style="--d:1.6s"/><polygon points="114,210 122,210 118,240" fill="#b7c8ff" opacity=".55" class="a-pulse" style="--d:2.36s"/><polygon points="146,184 154,184 150,202" fill="#b7c8ff" opacity=".55" class="a-pulse" style="--d:3s"/><path d="M72,142 L104,166 L118,214" stroke="#b7c8ff" stroke-width=".8" fill="none" opacity=".45"/>
+  <ellipse cx="120" cy="118" rx="84" ry="21" fill="#262c49" />
+  <ellipse cx="120" cy="115" rx="82" ry="19" fill="url(#attention-land)" />
+  <path d="M42,112 Q120,90 198,112" stroke="#E8C7AA" stroke-width="1.2" fill="none" opacity=".35"/>
+  <g class="frag frag-l"><g class="a-bob" style="--d:0.2909875293262303s"><polygon points="14,96 24,92 28,100 20,108" fill="url(#attention-rock)" /></g></g>
+  <g class="frag frag-r"><g class="a-bob" style="--d:1.6629775136243552s"><polygon points="210,128 222,124 226,134 214,140" fill="url(#attention-rock)" /></g></g><g class="scene">
+      <path d="M48,46 Q73,2 98,28" stroke="#b7c8ff" stroke-width="1" fill="none" opacity="0.35" /><path d="M72,34 Q111,4 150,30" stroke="#b7c8ff" stroke-width="1" fill="none" opacity="0.35" /><path d="M98,28 Q137,2 176,38" stroke="#b7c8ff" stroke-width="2.4" fill="none" opacity="0.9" class="a-pulse"/><path d="M124,26 Q161,0 198,50" stroke="#b7c8ff" stroke-width="1" fill="none" opacity="0.35" />
+      <circle cx="48" cy="46" r="2.4" fill="#E8C7AA" class="a-twinkle" style="--d:0s"/><circle cx="72" cy="34" r="2.4" fill="#E8C7AA" class="a-twinkle" style="--d:0.4s"/><circle cx="98" cy="28" r="2.4" fill="#E8C7AA" class="a-twinkle" style="--d:0.8s"/><circle cx="124" cy="26" r="2.4" fill="#E8C7AA" class="a-twinkle" style="--d:1.2000000000000002s"/><circle cx="150" cy="30" r="2.4" fill="#E8C7AA" class="a-twinkle" style="--d:1.6s"/><circle cx="176" cy="38" r="3.4" fill="#b7c8ff" class="a-twinkle" style="--d:2s"/><circle cx="198" cy="50" r="2.4" fill="#E8C7AA" class="a-twinkle" style="--d:2.4000000000000004s"/>
+      <g ><polygon points="96,98 110,91 154,91 140,98" fill="#727898" /><polygon points="140,120 140,98 154,91 154,113" fill="#282e4c" /><rect x="96" y="98" width="44" height="22" fill="#3b4470" /></g>
+      <path d="M96,98 A22,22 0 0 1 140,98 Z" fill="#767c9b" />
+      <rect x="116" y="78" width="4" height="20" fill="#141b2e" />
+      <g transform="rotate(-34 124 86)"><rect x="118" y="70" width="30" height="7" fill="#8a96c8" rx="2"/><rect x="146" y="69" width="4" height="9" fill="#E8C7AA" /></g></g></svg></div>
+    <div>
+      <p class="kicker">machine learning · about 6 min &middot; The Observatory Reach</p>
+      <h1>Attention</h1>
+      <p class="blurb">A transformer trained from scratch with hand-written backpropagation, and the exact step it learned to copy.</p>
+      <div class="actions">
+        <a class="btn primary" href="../../../apps/attention/index.html">Launch Attention &rarr;</a>
+        <a class="btn" href="https://github.com/Mohamed-Sucule/Projects/blob/main/apps/attention/README.md">Engineering case study</a>
+        <a class="btn" href="https://github.com/Mohamed-Sucule/Projects/tree/main/apps/attention">Source</a>
+        <a class="btn" href="../../#world/attention">See its world in the atlas</a>
+      </div>
+    </div>
+  </div>
+  <figure class="shot"><img src="../../shots/attention.jpg" alt="Attention as it first opens" width="960" height="600" loading="lazy" /><figcaption>Attention, as it opens.</figcaption></figure>
+  <section><h2>The problem</h2><p>Everyone talks about attention heads; almost nobody has watched one form.</p></section>
+  <section><h2>What it does</h2><ul><li>A transformer trained from scratch, in the page</li><li>Every backward pass hand-written and checked against finite differences</li><li>Drag through training and watch an induction head form</li></ul></section>
+  <section><h2>The most interesting decision</h2><div><p class="dtitle">The gradient checks came first</p><p>A wrong backward pass does not throw; the model just trains slightly worse and there is no symptom to chase. So every backward pass was checked against central finite differences before anything was built on top of it.</p></div></section>
+  <section><h2>Built with</h2><ul class="chips"><li>Reverse-mode autograd, hand-written</li><li>Attention-only transformer</li><li>Adam + cosine schedule</li><li>Canvas 2D</li></ul></section>
+  <section><h2>Evidence</h2><p>Drag through training and the induction head appears at the step the loss falls off a cliff. <a href="https://github.com/Mohamed-Sucule/Projects/blob/main/tests/attention.test.mjs">Read its tests</a></p></section>
+  <section><h2>Its world</h2><p>An observatory under a sky of tokens, joined by the arcs one attention head learns to draw.</p></section>
+  <nav class="pn" aria-label="Other projects">
+    <a href="../covers/">&larr; Covers</a>
+    <a href="../tokens/">Tokens &rarr;</a>
+  </nav>
+</main>
+<script type="module" src="../../../shared/navigator.js"></script>
+</body>
+</html>

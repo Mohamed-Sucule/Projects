@@ -273,12 +273,216 @@ export const WORLDS = [
     study: doc('projects/oklch-studio/README.md'), tests: doc('tests/color.test.mjs') },
 ];
 
+/* What each project's panel says beyond its pitch: three things it does, the one
+   engineering decision most worth reading about (each taken from the project's own
+   README or source), how its world reacts when it is chosen (fx), the silhouette of
+   its island (base), and extra words people use when asking the guide for it. */
+export const DETAILS = {
+  tally: {
+    features: ['Answers questions from contracts and accounts, with every quote checked against its source',
+      'Audits every invoice line against the contract terms in force on its date',
+      'Drafts dispute emails that a person approves before anything is sent'],
+    decision: ['The model reads; plain code decides what is owed',
+      'Claude extracts contract terms and answers questions, but whether a supplier overcharged is worked out by deterministic Python, tested to the penny against 23 planted errors. No note written on an invoice can talk it out of a finding.'],
+    fx: { type: 'ledger' }, base: 'shelf',
+    guide: ['automate', 'workflow', 'repetitive', 'back office', 'operations', 'finance', 'data', 'documents', 'prototype', 'ai product', 'llm', 'technically interesting'] },
+  frontdesk: {
+    features: ['Understands booking requests, typed or spoken, and asks for one thing at a time',
+      'Checks the real table plan and offers the nearest free times when the one asked for has gone',
+      'Writes allergies where the kitchen will see them, and hands over to a person when it should'],
+    decision: ['A purpose-built parser, not a large language model',
+      'For one narrow job a parser is fast, costs nothing to run, cannot make up a booking, and every phrasing can be tested. A small on-device model is asked only when the parser finds nothing at all, and even then it only suggests the intent.'],
+    fx: { type: 'voice', variant: 'call' }, base: 'cone',
+    guide: ['automate', 'customer service', 'phone', 'voice', 'prototype', 'ai product', 'restaurant', 'hospitality', 'booking', 'receptionist'] },
+  handbook: {
+    features: ['Every answer is a sentence from the documents, shown with its source',
+      'Says “the handbook doesn’t say” and points to the nearest thing it does cover',
+      'Paste in your own documents; unanswered questions become a gaps list for whoever writes the policies'],
+    decision: ['An answer is a sentence from the documents',
+      'Nothing writes new prose about a policy, so nothing can state a policy that does not exist. What is left to go wrong is picking the wrong sentence, and that can be measured: 4 made-up answers in 164 test questions.'],
+    fx: { type: 'neural', variant: 'threads' }, base: 'spire',
+    guide: ['knowledge base', 'internal tools', 'hr', 'search', 'documents', 'rag', 'prototype', 'ai product', 'support'] },
+  callcoach: {
+    features: ['Puts the right battlecard on screen the moment a prospect objects',
+      'Writes MEDDICC notes, a CRM record and the follow-up email when the call ends',
+      'Nudges the rep when they pitch before finding a problem or do most of the talking'],
+    decision: ['Every quote in the notes was actually said',
+      'The notes and the follow-up quote the prospect’s own words, and a test checks every quoted line against the call, so the summary cannot put words in anyone’s mouth.'],
+    fx: { type: 'voice', variant: 'conversation' }, base: 'shelf',
+    guide: ['sales', 'crm', 'automate', 'workflow', 'prototype', 'ai product', 'meetings', 'calls', 'notes'] },
+  claims: {
+    features: ['Reads scanned forms and invoices with OCR, in the browser',
+      'Runs up to thirteen checks, each linked to the field or clause it rests on',
+      'Recommends approve, decline or refer, and records who approved or overrode it'],
+    decision: ['A misread can only ever send a claim to a person',
+      'Across 180 deliberately smudged scans the tests enforce a rule stricter than any accuracy figure: a misread may refer a claim, but must never pay one that should not be paid or decline one that should not be declined.'],
+    fx: { type: 'scan' }, base: 'spire',
+    guide: ['automate', 'workflow', 'repetitive', 'documents', 'ocr', 'insurance', 'operations', 'data entry', 'ai product', 'paperwork'] },
+  covers: {
+    features: ['Drop a party on a table and it says whether they fit, and why not',
+      'Handles turn times, turnaround and joined tables',
+      'When the answer is no, it says what would work instead'],
+    decision: ['The refusal is the product',
+      'The rules live in a module with no interface code in it, every question goes through them, and the screen never has an opinion of its own about the room. When the answer is no, it says why and what to do instead.'],
+    fx: { type: 'grid', variant: 'plan' }, base: 'shelf',
+    guide: ['saas', 'scheduling', 'booking', 'restaurant', 'product', 'constraints', 'operations', 'workflow'] },
+  attention: {
+    features: ['A transformer trained from scratch, in the page',
+      'Every backward pass hand-written and checked against finite differences',
+      'Drag through training and watch an induction head form'],
+    decision: ['The gradient checks came first',
+      'A wrong backward pass does not throw; the model just trains slightly worse and there is no symptom to chase. So every backward pass was checked against central finite differences before anything was built on top of it.'],
+    fx: { type: 'neural', variant: 'attention' }, base: 'crystal',
+    guide: ['machine learning', 'transformer', 'research', 'technically interesting', 'hardest', 'llm', 'neural network'] },
+  tokens: {
+    features: ['Trains a byte-pair tokeniser in front of you',
+      'Shows why a model cannot count the letters in a word',
+      'Shows why the same sentence costs three times as much in Japanese'],
+    decision: ['Build the tokeniser rather than call one',
+      'The interesting part is the order of the merges, not the finished vocabulary, and a tokeniser you trained is one you can interrogate.'],
+    fx: { type: 'shards' }, base: 'crystal',
+    guide: ['llm', 'tokens', 'cost', 'research', 'learn', 'machine learning'] },
+  evals: {
+    features: ['Two real parsers graded live on 800 real inputs',
+      'Bootstrap and Wilson intervals, McNemar’s test and power analysis',
+      'Drag the sample size and watch a difference stop being real'],
+    decision: ['Real systems, not a random number generator',
+      'Most eval write-ups fake the model, which skips the hard half. Here both systems are real programs, and a test checks that the 95% interval really contains the truth about 95% of the time.'],
+    fx: { type: 'bars', variant: 'bell' }, base: 'cone',
+    guide: ['data', 'statistics', 'evaluation', 'measure', 'ab test', 'data problem', 'quality', 'machine learning'] },
+  agents: {
+    features: ['A real tool-use loop you can step through turn by turn',
+      'Five tools over 300 expense lines, with token counts from a real tokeniser',
+      'Every guard can be switched off to see what it was holding back'],
+    decision: ['Honest about what is real',
+      'The loop, guards, tools, data, message shapes and token accounting are real; the model is a scripted policy that emits the same blocks one would. There is no API key on the page, and it says so.'],
+    fx: { type: 'graph', variant: 'loop' }, base: 'ring',
+    guide: ['agents', 'automation', 'automate', 'tool use', 'workflow', 'production', 'reliability', 'ai product', 'llm'] },
+  lamplighter: {
+    features: ['A five-minute illustrated story told by scrolling',
+      'Sky, sea, rock and light drawn from scratch, with no image files',
+      'Sound that follows the weather'],
+    decision: ['Two clocks',
+      'The reader’s clock is the scroll bar; the lighthouse’s is wall time. The beam turns every 11.2 seconds whether or not anyone is reading, so the place goes on existing when you stop.'],
+    fx: { type: 'beam' }, base: 'spire',
+    guide: ['story', 'creative', 'beautiful', 'storytelling', 'art', 'interactive'] },
+  room: {
+    features: ['Nineteen things to look at and four people to question',
+      'A notebook that finds contradictions by itself',
+      'No multiple-choice question anywhere'],
+    decision: ['Statements are evidence',
+      'Testimony is a fact about a claim, exactly like a ring in the dust, so the same three lines that find any other clash find one between what a witness said and what the room shows.'],
+    fx: { type: 'strings' }, base: 'cone',
+    guide: ['game', 'mystery', 'story', 'creative', 'logic', 'interactive'] },
+  nightshift: {
+    features: ['A watch log from one night in 1987, read in order',
+      'Twelve timed beats that make up the whole haunting',
+      'Sound, and an ending that waits for the last word'],
+    decision: ['The haunting is a list',
+      'Twelve beats, each a trigger and the name of an effect, so the timing of the whole story can be read, tested and changed in one place.'],
+    fx: { type: 'fog' }, base: 'cone',
+    guide: ['story', 'horror', 'creative', 'writing', 'interactive'] },
+  ember: {
+    features: ['Three acts, three bosses and nine ash-stones',
+      'Lighting, shadows and score all generated in the browser',
+      'Keyboard, touch or gamepad'],
+    decision: ['Fair by construction',
+      'Every attack is shown before it can land. The tests play the whole game on three seeds and assert that every hit was visible at least 0.3 seconds beforehand.'],
+    fx: { type: 'rise' }, base: 'spire',
+    guide: ['game', 'action', 'creative', 'technically interesting', 'games', 'fun'] },
+  ace: {
+    features: ['One button, no menu, no tutorial', 'A fixed timestep, so speed does not depend on the screen', 'A backgrounded tab does not kill your run'],
+    decision: ['Deterministic', 'The same seed and the same taps give exactly the same run every time, because the rocks come from a seeded generator rather than Math.random.'],
+    fx: { type: 'orbit', variant: 'flight' }, base: 'twin', guide: ['game', 'quick', 'arcade', 'fun'] },
+  stack: {
+    features: ['One rule: whatever overhangs is sliced off', 'A near-perfect drop gives a little width back', 'A run takes about two minutes'],
+    decision: ['The rule that makes it a game', 'A drop within five units of perfect slices nothing and hands width back. Without it the tower could only shrink, and a game you can only lose slowly is a chore.'],
+    fx: { type: 'fall', variant: 'slices' }, base: 'cone', guide: ['game', 'quick', 'arcade', 'fun'] },
+  tether: {
+    features: ['Swing round a planet and tap to let go along the tangent', 'Every part of the decision is drawn on screen', 'Points for people who want more than survival'],
+    decision: ['Every part of the decision is drawn', 'The tangent, a short aim line and each planet’s capture radius are all visible, so no death is arguable.'],
+    fx: { type: 'orbit', variant: 'tether' }, base: 'ring', guide: ['game', 'physics', 'space', 'quick'] },
+  sumo: {
+    features: ['Two players, one keyboard, one key each', 'A ring that closes while you fight', 'A bot when you are on your own'],
+    decision: ['Tuned by measurement, not feel', 'Every rule was chosen by having bots play thousands of rounds. The first draft let the closing ring decide 91% of rounds; the tuned rules make the shoves decide them.'],
+    fx: { type: 'orbit', variant: 'ring' }, base: 'shelf', guide: ['game', 'two player', 'multiplayer', 'party'] },
+  tangle: {
+    features: ['A daily board everyone shares', 'Solved means no loose ends, not matching a stored answer', 'A result you can paste into a group chat'],
+    decision: ['The board is built backwards', 'It grows a spanning tree over the grid and reads the tiles off it, so the board is provably solvable before it is scrambled; turning tiles can never make it unsolvable.'],
+    fx: { type: 'grid', variant: 'pipes' }, base: 'crystal', guide: ['game', 'puzzle', 'daily', 'calm', 'algorithm'] },
+  sweeper: {
+    features: ['The three classic sizes', 'Every board solvable by reasoning alone', 'Lose, and it shows the square you could have proved safe'],
+    decision: ['The fix is in the generator', 'After laying the mines it plays the board from your first click with only what a player can see. If it cannot finish without a guess, the board is thrown away and another is laid.'],
+    fx: { type: 'grid', variant: 'mines' }, base: 'shelf', guide: ['game', 'puzzle', 'logic', 'classic', 'algorithm'] },
+  sudoku: {
+    features: ['A daily puzzle at three levels', 'Every puzzle has one answer and a path that needs no guessing', 'Hints that name the technique and show where it applies'],
+    decision: ['A hint that teaches the move', 'Instead of filling a square, the hint says why, and any crossings-out it needs come first, because they are the part worth learning.'],
+    fx: { type: 'grid', variant: 'sudoku' }, base: 'cone', guide: ['game', 'puzzle', 'daily', 'logic'] },
+  sandbox: {
+    features: ['Ten materials, including sand, water, fire and smoke', 'Prepared scenes, or draw your own', 'Fire that spreads through a tree’s canopy'],
+    decision: ['Bottom-up, alternating', 'Cells update from the bottom up so nothing falls twice in one frame, and the scan direction flips every frame so nothing drifts consistently one way.'],
+    fx: { type: 'fall', variant: 'sand' }, base: 'cone', guide: ['physics', 'simulation', 'creative', 'toy', 'fun'] },
+  mercury: {
+    features: ['Drag the metal to draw waves; drag the sky to look around', 'Reflections bend as the ripples spread', 'Measures its own frame rate and adapts'],
+    decision: ['It watches its own frame rate', 'Every pixel is traced, twice where there is a reflection, so it measures frame time and asks for more or fewer pixels, with tests that stop it oscillating.'],
+    fx: { type: 'ripple' }, base: 'shelf', guide: ['shader', 'webgl', 'graphics', 'beautiful', 'creative', 'technically interesting'] },
+  beats: {
+    features: ['A step sequencer with no sound files', 'Every drum synthesised from oscillators and noise', 'Random patterns that still sound like music'],
+    decision: ['Synthesis, not samples', 'Kicks, snares and hats are built from oscillators and filtered noise, with a gentle limiter and a reverb made by filling a buffer with decaying noise.'],
+    fx: { type: 'voice', variant: 'rhythm' }, base: 'crystal', guide: ['music', 'audio', 'creative', 'sound', 'fun'] },
+  island: {
+    features: ['A new island, its rivers and its name from one seed', 'Gradient-noise terrain with ridged mountains', 'Rivers that walk downhill to the sea'],
+    decision: ['Water walks downhill', 'Rivers are made by dropping water on the highest points and letting it walk downhill to the sea, so they always make geographic sense.'],
+    fx: { type: 'contours' }, base: 'shelf', guide: ['generative', 'procedural', 'creative', 'art', 'maps'] },
+  qr: {
+    features: ['A link, text, Wi-Fi details or an email becomes a QR code as you type', 'Encoder and error correction written from scratch', 'Warnings before you print a code phones will struggle with'],
+    decision: ['Free robustness', 'If the text fits at a stronger error-correction level without making the code any bigger, it takes the stronger level and says so.'],
+    fx: { type: 'grid', variant: 'qr' }, base: 'crystal', guide: ['utility', 'useful', 'tool', 'printing'] },
+  split: {
+    features: ['Who paid for what, and who owes whom', 'The fewest bank transfers that settle everyone', 'Share the group by link; nothing is uploaded'],
+    decision: ['Money is whole cents', 'Every amount is an integer from the moment it is typed, so every split sums to its total and every group balances to exactly zero, checked on thousands of random groups.'],
+    fx: { type: 'graph', variant: 'transfers' }, base: 'twin', guide: ['finance', 'money', 'utility', 'useful', 'algorithm'] },
+  tuner: {
+    features: ['Guitar, bass, ukulele, violin or cello', 'Reads pitch to the cent from your microphone', 'An out-of-tune string on the page if you have no microphone'],
+    decision: ['Look for the period, not the loudest frequency', 'A real string’s fundamental is often its quietest part, so picking the loudest frequency reads an octave high. YIN finds the shift at which the waveform lines up with itself.'],
+    fx: { type: 'voice', variant: 'sine' }, base: 'spire', guide: ['audio', 'music', 'signal processing', 'utility'] },
+  sift: {
+    features: ['Drop a CSV in and see what each column holds', 'Gaps, types and distributions at a glance', 'A hundred thousand rows without stuttering'],
+    decision: ['The parser is the point', 'Splitting on commas silently breaks any row with a comma inside quotes, so the parser is a character loop that handles quoting properly.'],
+    fx: { type: 'bars', variant: 'columns' }, base: 'cone', guide: ['data', 'csv', 'spreadsheet', 'data problem', 'analysis', 'privacy'] },
+  'regex-lab': {
+    features: ['A pattern compiled into a machine you can watch run', 'Catastrophic backtracking made visible', 'Errors that point at the offending character'],
+    decision: ['Every piece keeps its place in the pattern', 'Each node of the parsed pattern records its source offsets, so the trace can point back at a substring and an error can put a caret under the right character.'],
+    fx: { type: 'graph', variant: 'chain' }, base: 'twin', guide: ['compiler', 'regex', 'computer science', 'technically interesting', 'security'] },
+  'query-planner': {
+    features: ['A query plan with its reasoning attached', 'Drag a table’s size and watch the plan change', 'Shows where an index stops being worth it'],
+    decision: ['The bug that justifies showing the workings', 'An early version ignored every filter by looking up aliases in a catalogue filed by table name. The plans still looked plausible; only a test asserting an exact estimate caught it.'],
+    fx: { type: 'graph', variant: 'tree' }, base: 'spire', guide: ['database', 'sql', 'backend', 'performance', 'data'] },
+  'raft-lab': {
+    features: ['Five servers running real leader election and log replication', 'Cut the network in half or crash the leader', 'An invariant checker that keeps score'],
+    decision: ['Virtual time and a seeded clock', 'A run is reproducible: the same seed and interventions give the same history, which is what makes the invariant checker meaningful rather than decorative.'],
+    fx: { type: 'graph', variant: 'ring' }, base: 'ring', guide: ['distributed systems', 'backend', 'infrastructure', 'technically interesting', 'hardest'] },
+  'trace-explorer': {
+    features: ['260 traces across ten services', 'A span waterfall with the critical path marked', 'Findings written in sentences'],
+    decision: ['The analyser never sees the answer', 'The generator injects problems at random, but the analyser only ever sees spans, exactly as it would with real telemetry.'],
+    fx: { type: 'bars', variant: 'waterfall' }, base: 'shelf', guide: ['observability', 'performance', 'backend', 'data', 'debugging'] },
+  'diff-forge': {
+    features: ['Myers and patience diff side by side', 'A three-way merge built around the moment you decide', 'Both algorithms rerun on every keystroke'],
+    decision: ['Two readings of the same change', 'Myers finds the shortest edit script and can shred a diff; patience anchors on lines that appear once on each side, giving fewer hunks that match what a person actually did.'],
+    fx: { type: 'merge' }, base: 'cone', guide: ['git', 'developer tools', 'algorithm', 'engineering'] },
+  'oklch-studio': {
+    features: ['Palettes generated in a perceptual colour space', 'Honest mapping into sRGB', 'Every pair audited with two contrast models'],
+    decision: ['HSL lies about lightness', 'Yellow and navy can share an HSL lightness, so a ramp built that way fails contrast differently in every hue. Generating in OKLCH keeps each step the same brightness.'],
+    fx: { type: 'spectrum' }, base: 'crystal', guide: ['design', 'design system', 'accessibility', 'colour', 'frontend'] },
+};
+
 /* The project the portal opens onto. */
 export const FEATURED = 'frontdesk';
 
-/* Every world joined to its catalogue entry, so the page needs only one list. */
-export const ISLANDS = WORLDS.map((w) => ({ ...(w.id === 'tally' ? TALLY : byId.get(w.id)), ...w }));
+/* Every world joined to its catalogue entry and its details, so the page needs only one list. */
+export const ISLANDS = WORLDS.map((w) => ({ ...(w.id === 'tally' ? TALLY : byId.get(w.id)), ...w, ...DETAILS[w.id] }));
 export const islandById = new Map(ISLANDS.map((i) => [i.id, i]));
 
-/* The entries the guide searches: the catalogue plus Tally. */
-export const SEARCHABLE = [TALLY, ...ATLAS];
+/* The entries the guide searches: the catalogue plus Tally, each with the extra words
+   people use when they describe a problem rather than name a project. */
+export const SEARCHABLE = [TALLY, ...ATLAS].map((e) => ({ ...e, tags: [...(e.tags ?? []), ...(DETAILS[e.id]?.guide ?? [])] }));
