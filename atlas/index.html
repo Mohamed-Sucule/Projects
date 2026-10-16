@@ -88,6 +88,15 @@
             <section><h3>The problem</h3><p class="rv-problem"></p></section>
             <section><h3>What it does</h3><ul class="rv-features"></ul></section>
             <section class="rv-decision"><h3>The most interesting decision</h3><p class="rv-dtitle"></p><p class="rv-dtext"></p></section>
+            <section class="rv-ai" hidden>
+              <h3>Where the AI is, and where it isn&rsquo;t</h3>
+              <div class="rv-split">
+                <div><h4>The model</h4><ul class="rv-model"></ul></div>
+                <div><h4>Ordinary code</h4><ul class="rv-code"></ul></div>
+              </div>
+              <h4>What keeps it honest</h4><ul class="rv-guards"></ul>
+              <h4>Not built yet</h4><ul class="rv-limits"></ul>
+            </section>
             <section><h3>Built with</h3><ul class="chips rv-tech"></ul></section>
             <section><h3>Evidence</h3><p class="rv-evidence"></p></section>
             <nav class="rv-nav" aria-label="Other worlds"><button type="button" data-go="prev"></button><button type="button" data-go="next"></button></nav>
@@ -460,6 +469,17 @@
   <p>The sky, the sea, the portal and the city beyond it are one fragment shader; every island is a small SVG drawing. There are no image files in the world.
     Press <kbd>`</kbd> for the renderer&rsquo;s own numbers. Prefer something plainer? <a href="../index.html">The classic front page</a>.</p>
 </footer>
+
+<div id="theatre" class="theatre" hidden role="dialog" aria-modal="true" aria-labelledby="th-title">
+  <div class="th-panel">
+    <div class="th-bar">
+      <button type="button" class="th-back">&larr; Back to its world</button>
+      <p class="th-title" id="th-title"></p>
+      <a class="th-open" href="#" target="_blank" rel="noopener">Open in its own tab <span aria-hidden="true">&#8599;</span></a>
+    </div>
+    <div class="th-frame"></div>
+  </div>
+</div>
 
 <canvas id="veil" class="veil" aria-hidden="true"></canvas>
 

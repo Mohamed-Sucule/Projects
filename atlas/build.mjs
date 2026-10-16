@@ -79,7 +79,11 @@ function projectPage(i, prev, next) {
   <section><h2>The problem</h2><p>${esc(i.problem)}</p></section>
   <section><h2>What it does</h2><ul>${i.features.map((f) => `<li>${esc(f)}</li>`).join('')}</ul></section>
   <section><h2>The most interesting decision</h2><div><p class="dtitle">${esc(i.decision[0])}</p><p>${esc(i.decision[1])}</p></div></section>
-  <section><h2>Built with</h2><ul class="chips">${i.tech.map((t) => `<li>${esc(t)}</li>`).join('')}</ul></section>
+${i.ai ? `  <section class="ai"><h2>Where the AI is, and where it isn&rsquo;t</h2><div>
+    <div class="split"><div><h3>The model</h3><ul>${i.ai.model.map((t) => `<li>${esc(t)}</li>`).join('')}</ul></div><div><h3>Ordinary code</h3><ul>${i.ai.code.map((t) => `<li>${esc(t)}</li>`).join('')}</ul></div></div>
+    <h3>What keeps it honest</h3><ul>${i.ai.guards.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>
+    <h3>Not built yet</h3><ul>${i.ai.limits.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>
+  </div></section>\n` : ''}  <section><h2>Built with</h2><ul class="chips">${i.tech.map((t) => `<li>${esc(t)}</li>`).join('')}</ul></section>
   <section><h2>Evidence</h2><p>${esc(i.evidence)}${i.tests ? ` <a href="${esc(i.tests)}">Read its tests</a>` : ''}</p></section>
   <section><h2>Its world</h2><p>${esc(i.world)}</p></section>
   <nav class="pn" aria-label="Other projects">

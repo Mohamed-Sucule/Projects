@@ -97,7 +97,7 @@ function body(form, rand) {
   return pts;
 }
 
-function base(id, [land, rock, glow], form = 'cone') {
+function base(id, [land, rock, glow], form = 'cone', region = '') {
   const rand = rng(id);
   const pts = body(form, rand);
   const tip = pts.reduce((a, b) => (b[1] > a[1] ? b : a));
@@ -135,8 +135,10 @@ function base(id, [land, rock, glow], form = 'cone') {
     extra += `<g transform="translate(120 160) scale(1 .3)"><g>${spin(0, 0, 18)}${stones}</g></g>`
       + e(120, 160, 46, 14, 'none', `stroke="${glow}" stroke-width=".8" stroke-dasharray="2 5" opacity=".5"`);
   }
+  const g = grammar(region, id, pts, tip, [land, rock, glow], rand);
   return `
   <defs>
+    <clipPath id="${id}-clip"><path d="${path}"/></clipPath>
     <linearGradient id="${id}-rock" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="${shade(rock, 0.18)}"/><stop offset=".55" stop-color="${rock}"/><stop offset="1" stop-color="${shade(rock, -0.55)}"/>
     </linearGradient>
@@ -148,13 +150,81 @@ function base(id, [land, rock, glow], form = 'cone') {
     </radialGradient>
   </defs>
   <g class="glow-under">${e(120, tip[1] + 10, 74, 22, `url(#${id}-glow)`, 'class="a-pulse slow"')}</g>
+  ${g.back}
   ${p(path, `url(#${id}-rock)`)}
   ${strata}${roots}${extra}
+  <g clip-path="url(#${id}-clip)">${g.on}</g>
   ${e(120, 118, 84, 21, shade(land, -0.35))}
   ${e(120, 115, 82, 19, `url(#${id}-land)`)}
+  ${g.front}
   <path d="M42,112 Q120,90 198,112" stroke="${STAR}" stroke-width="1.2" fill="none" opacity=".35"/>
   <g class="frag frag-l"><g class="a-bob" ${d(rand() * 3)}>${poly(`${14},${96} ${24},${92} ${28},${100} ${20},${108}`, `url(#${id}-rock)`)}</g></g>
   <g class="frag frag-r"><g class="a-bob" ${d(1.5 + rand() * 3)}>${poly(`${210},${128} ${222},${124} ${226},${134} ${214},${140}`, `url(#${id}-rock)`)}</g></g>`;
+}
+
+/* ── the regions: one material language each ───────────────────────────── */
+
+/* Every island has its own silhouette and scene, and every region has a grammar
+   its islands share, so a group is recognisable at a glance: the archipelago is
+   masonry and lit windows, the observatory crystal with light running in its
+   veins and a ring in orbit, the night isles dark rock in a pool of black water
+   with one lamp, the reef bright and bubbled, the shallows brass and liquid, and
+   the engine rooms drawn as their own blueprint. Each returns what goes behind
+   the rock, on it (clipped to its outline) and in front of the cap. */
+function grammar(region, id, pts, tip, [land, rock, glow], rand) {
+  const out = { back: '', on: '', front: '' };
+  const lit = (x, y, w = 3, h = 4, dd = 0) => r(x, y, w, h, LIT, `class="a-flicker" ${d(dd)} opacity=".9"`);
+  if (region === 'products') {
+    let m = '';
+    for (const [y, off] of [[127, 0], [135, 9], [143, 4], [151, 12]]) {
+      m += line(40, y, 200, y, shade(rock, -0.45), 0.9, 'opacity=".55"');
+      for (let x = 46 + off; x < 196; x += 18) m += line(x, y, x, y + 8, shade(rock, -0.45), 0.8, 'opacity=".45"');
+    }
+    out.on = m + [[70, 129], [94, 137], [138, 129], [160, 137], [116, 145]].map(([x, y], i) => lit(x, y, 3, 4, i * 0.6)).join('');
+    out.back = e(120, 127, 76, 12, shade(rock, 0.12), 'opacity=".9"');
+    out.front = r(197, 92, 2, 22, shade(rock, 0.3)) + c(198, 91, 2.4, LIT, 'class="a-pulse"') + c(198, 91, 6, LIT, 'opacity=".18"');
+  } else if (region === 'models') {
+    const nodes = [[70, 128], [96, 140], [118, 158], [142, 138], [166, 128], [124, 186], [104, 170]].filter(([, y]) => y < tip[1] - 6);
+    let v = '';
+    for (let i = 1; i < nodes.length; i++) v += line(...nodes[i - 1], ...nodes[i], glow, 1, 'opacity=".55"');
+    v += nodes.map(([x, y], i) => c(x, y, 1.8, glow, `class="a-pulse" ${d(i * 0.4)}`)).join('');
+    out.on = r(30, 110, 180, 130, '#1b2350', 'opacity=".35"') + v;
+    const orbit = 'M14,124 A106,26 0 1 0 226,124 A106,26 0 1 0 14,124';
+    out.back = `<path d="M14,124 A106,26 0 0 1 226,124" fill="none" stroke="${glow}" stroke-width=".9" opacity=".35"/>`;
+    out.front = `<path d="M226,124 A106,26 0 0 1 14,124" fill="none" stroke="${glow}" stroke-width="1" opacity=".55"/>`
+      + `<circle r="2.6" fill="${STAR}">${along(orbit, 9 + rand() * 4)}</circle>`;
+  } else if (region === 'stories') {
+    out.back = e(120, 121, 104, 25, '#070b18', 'opacity=".92"') + e(120, 121, 104, 25, 'none', `stroke="${glow}" stroke-width=".6" opacity=".25"`);
+    out.on = r(30, 110, 180, 130, '#05070f', 'opacity=".45"');
+    out.front = `<g class="a-drift">${e(96, 128, 60, 4, '#cfd8ee', 'opacity=".14"')}</g>`
+      + r(44, 96, 1.6, 18, shade(rock, 0.25)) + c(44.8, 95, 2.4, LIT, 'class="a-flicker"') + c(44.8, 95, 8, LIT, 'opacity=".16"')
+      + `<path d="M44.8,124 L44.8,138" stroke="${LIT}" stroke-width="1.6" opacity=".35" class="a-pulse"/>`;
+  } else if (region === 'games') {
+    const blobs = pts.filter((_, i) => i % 2 === 1).map(([x, y], i) => {
+      const rr = 3 + rand() * 4;
+      const col = i % 2 ? glow : shade(glow, 0.35);
+      return `<g class="a-bob" ${d(i * 0.5)}>${c(x + (rand() - 0.5) * 6, y + rr * 0.6, rr, col, 'opacity=".9"')}${c(x - rr * 0.3, y + rr * 0.2, rr * 0.35, '#ffffff', 'opacity=".5"')}</g>`;
+    }).join('');
+    out.front = blobs + `<path d="M48,108 Q120,86 192,108" stroke="${shade(glow, 0.4)}" stroke-width="2" fill="none" opacity=".55" stroke-linecap="round"/>`;
+  } else if (region === 'workshop') {
+    const gear = (cx, cy, rad, dur, dir) => {
+      let teeth = '';
+      for (let i = 0; i < 8; i++) teeth += `<rect x="${cx - 1.6}" y="${cy - rad - 2.6}" width="3.2" height="4" fill="#b08a4a" transform="rotate(${i * 45} ${cx} ${cy})"/>`;
+      return `<g>${spin(cx, cy, dur, dir)}${teeth}${c(cx, cy, rad, '#b08a4a')}${c(cx, cy, rad * 0.4, '#5a4424')}</g>`;
+    };
+    out.on = `<path d="M44,132 Q90,140 120,134 T196,132" stroke="#c08a52" stroke-width="2.2" fill="none" opacity=".75"/>` + gear(72, 146, 8, 9, 1) + gear(86, 158, 5, 6, -1);
+    out.front = e(154, 113, 22, 5, '#a8d4ee', 'opacity=".55"') + `<g class="a-pulse">${line(140, 112, 166, 112, '#ffffff', 1, 'opacity=".7"')}</g>`;
+  } else if (region === 'engines') {
+    let g = '';
+    for (let x = 40; x <= 200; x += 10) g += line(x, 112, x, 230, '#9AE6D0', 0.5, 'opacity=".22"');
+    for (let y = 118; y <= 230; y += 10) g += line(30, y, 210, y, '#9AE6D0', 0.5, 'opacity=".22"');
+    out.on = r(30, 110, 180, 130, '#0c2533', 'opacity=".55"') + g;
+    const outline = `M38,118 ${pts.map(([x, y]) => `L${x.toFixed(1)},${y.toFixed(1)}`).join(' ')} L202,118`;
+    out.front = `<path d="${outline}" fill="none" stroke="#9AE6D0" stroke-width="1.1" opacity=".75"/>`
+      + pts.filter((_, i) => i % 3 === 0).map(([x, y]) => r(x - 1.8, y - 1.8, 3.6, 3.6, 'none', 'stroke="#9AE6D0" stroke-width=".9" opacity=".8"')).join('')
+      + `<g opacity=".6">${line(40, tip[1] + 14, 200, tip[1] + 14, '#9AE6D0', 0.8)}${line(40, tip[1] + 10, 40, tip[1] + 18, '#9AE6D0', 0.8)}${line(200, tip[1] + 10, 200, tip[1] + 18, '#9AE6D0', 0.8)}</g>`;
+  }
+  return out;
 }
 
 /* ── the scenes ─────────────────────────────────────────────────────────── */
@@ -621,7 +691,7 @@ export function islandSVG(island, { label = '', uid = '' } = {}) {
   const scene = SCENES[island.id];
   if (!scene) throw new Error(`no scene for ${island.id}`);
   const a11y = label ? `role="img" aria-label="${label.replace(/"/g, '&quot;')}"` : 'aria-hidden="true"';
-  let svg = `<svg viewBox="0 0 240 230" xmlns="http://www.w3.org/2000/svg" ${a11y}>${base(island.id, island.palette, island.base)}<g class="scene">${scene(island.palette)}</g></svg>`;
+  let svg = `<svg viewBox="0 0 240 230" xmlns="http://www.w3.org/2000/svg" ${a11y}>${base(island.id, island.palette, island.base, island.region)}<g class="scene">${scene(island.palette)}</g></svg>`;
   if (uid) svg = svg.replace(/id="([^"]+)"/g, `id="$1-${uid}"`).replace(/url\(#([^)]+)\)/g, `url(#$1-${uid})`);
   return svg;
 }

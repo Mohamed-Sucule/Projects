@@ -18,9 +18,18 @@ import { KINDS } from '../shared/atlas.js';
 import { ISLANDS, REGIONS, islandById, TALLY_URL } from './worlds.js';
 import { islandSVG } from './islands.js';
 
-const TINTS = {
-  products: [1, 1, 1], models: [0.78, 0.9, 1.18], stories: [0.6, 0.62, 0.9],
-  games: [1.12, 0.78, 0.98], workshop: [1.15, 1.0, 0.78], engines: [0.78, 1.06, 1.04],
+/* Each region has its own weather in the world beyond: the archipelago at dawn,
+   the observatory under stars and an aurora, the night isles dark with lamps on
+   the cloud, the reef at sunset, the shallows gone still as a mirror, and the
+   engine rooms with a drafting grid laid across the cloud.
+   env: stars, grid, water, aurora, night, warmth, lamps, (spare) */
+const ENVS = {
+  products: { tint: [1, 1, 1], env: [0, 0, 0, 0, 0, 0.15, 0, 0] },
+  models: { tint: [0.8, 0.9, 1.15], env: [0.9, 0, 0, 0.85, 0.62, 0, 0, 0] },
+  stories: { tint: [0.62, 0.64, 0.92], env: [1, 0, 0, 0.12, 1, 0, 1, 0] },
+  games: { tint: [1.1, 0.82, 0.98], env: [0, 0, 0, 0, 0, 1, 0, 0] },
+  workshop: { tint: [1.08, 1.0, 0.88], env: [0, 0, 1, 0, 0.05, 0.3, 0, 0] },
+  engines: { tint: [0.8, 1.04, 1.06], env: [0.25, 1, 0, 0, 0.38, 0, 0, 0] },
 };
 const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI'];
 const LANES = [-0.34, 0.3, -0.1, 0.36, -0.26, 0.14, -0.4, 0.22];
@@ -52,6 +61,7 @@ export function createStage({ sky, fx, reduced, coarse, onFocusChange = () => {}
     btn.type = 'button';
     btn.className = `isle ${isle.size}`;
     btn.dataset.id = isle.id;
+    btn.dataset.region = isle.region;
     btn.style.setProperty('--glow', isle.palette[2]);
     btn.setAttribute('aria-label', `${isle.title}. ${isle.blurb} Opens its world.`);
     btn.innerHTML = `<span class="isle-body"><span class="isle-art">${islandSVG(isle)}</span></span><span class="isle-name">${isle.title}</span>`;
@@ -80,6 +90,34 @@ export function createStage({ sky, fx, reduced, coarse, onFocusChange = () => {}
   let selected = null;
   let raf = 0;
   let regionShown = -1;
+
+  /* What the stage is doing. A click that arrives in the middle of a transition is
+     dropped rather than stacked, so a world cannot be opened twice while it is
+     still arriving, and a second Back cannot fire while the first is leaving.
+       field → entering → world ⇄ live → leaving → field */
+  let state = 'field';
+  let stateTimer = 0;
+  function to(next, after, ms) {
+    clearTimeout(stateTimer);
+    state = next;
+    if (after) stateTimer = setTimeout(() => { state = after; }, reduced ? 0 : ms);
+  }
+
+  /* The worlds visited in this sitting light their block on the ring's dial. Kept
+     for this tab only, in session storage, and only as a convenience. */
+  const seen = new Set();
+  try { for (const id of JSON.parse(sessionStorage.getItem('atlas-seen') || '[]')) seen.add(id); } catch { /* private mode */ }
+  function seenMask() {
+    let lo = 0, hi = 0;
+    order.forEach((isle, i) => { if (seen.has(isle.id)) { if (i < 18) lo += 2 ** i; else hi += 2 ** (i - 18); } });
+    return [lo, hi];
+  }
+  function markSeen(id) {
+    seen.add(id);
+    try { sessionStorage.setItem('atlas-seen', JSON.stringify([...seen])); } catch { /* fine without */ }
+    sky?.set({ seen: seenMask() });
+  }
+  sky?.set({ seen: seenMask() });
 
   function fieldBox() {
     const top = field.getBoundingClientRect().top + scrollY;
@@ -174,7 +212,24 @@ export function createStage({ sky, fx, reduced, coarse, onFocusChange = () => {}
       it.cur = { x, y, s, w, a, r: pr.r };
       if (pr.r > 0.8 && pr.a > 0.6 && (!nearest || pr.r < nearest.r)) nearest = { ...pr, it };
     }
-    if (selected) fx.moveFocal({ x: F.x, y: F.y, r: F.w * 0.5 });
+    /* the threads between neighbours in the same region, from cap to cap */
+    const cap = (c) => ({ x: c.x, y: c.y - 0.067 * c.w + 7 + (0.096 * c.w - 7) * c.s });
+    const threads = [];
+    const shown = parseFloat(stage.style.opacity || '1');
+    if (focusAmt < 0.99 && shown > 0.02) {
+      for (let i = 1; i < items.length; i++) {
+        const A = items[i - 1], B = items[i];
+        if (A.ri !== B.ri || !A.cur || !B.cur || A.cur.r < 0.5 || B.cur.r < 0.5) continue;
+        const al = Math.min(A.cur.a, B.cur.a) * (1 - focusAmt) * shown;
+        if (al > 0.03) threads.push({ a: cap(A.cur), b: cap(B.cur), style: REGIONS[A.ri].id, alpha: al });
+      }
+    }
+    fx.links(threads);
+    if (selected) {
+      fx.moveFocal({ x: F.x, y: F.y, r: F.w * 0.5 });
+      /* a shaft of the island's own light falls on it from the world above */
+      sky?.set({ focus: [(F.x - W / 2) / H, (H / 2 - (F.y - F.w * 0.12)) / H, 1] });
+    }
     /* which region we are in, and its colour in the sky */
     const ri = nearest ? nearest.it.ri : items[items.length - 1].ri;
     if (ri !== regionShown) showRegion(ri);
@@ -187,7 +242,7 @@ export function createStage({ sky, fx, reduced, coarse, onFocusChange = () => {}
   function showRegion(ri) {
     regionShown = ri;
     const r = REGIONS[ri];
-    sky?.set({ tint: TINTS[r.id] });
+    sky?.set({ tint: ENVS[r.id].tint, env: ENVS[r.id].env });
     [...regionsNav.children].forEach((b, i) => b.setAttribute('aria-current', String(i === ri)));
     const apply = () => {
       regionTitle.querySelector('.n').textContent = ROMAN[ri];
@@ -263,7 +318,8 @@ export function createStage({ sky, fx, reduced, coarse, onFocusChange = () => {}
 
   function select(id, { from = 'other', push = true } = {}) {
     const it = byId.get(id);
-    if (!it) return;
+    if (!it || state === 'entering' || state === 'leaving') return;
+    if (state === 'live') closeTheatre({ quiet: true });
     const switching = !!selected;
     if (!switching) {
       lastFocus = it.btn;
@@ -290,16 +346,20 @@ export function createStage({ sky, fx, reduced, coarse, onFocusChange = () => {}
     /* One history entry per visit, so Back closes the world. Arriving by a link
        that already names it (a deep link, or Forward) adds none: Back from there
        would land on the same world and open it again. */
-    if (push && location.hash !== `#world/${id}`) {
+    if (push && location.hash !== `#world/${id}` && location.hash !== `#world/${id}/live`) {
       if (!pushed && !switching) { history.pushState({ world: id }, '', `#world/${id}`); pushed = true; }
       else history.replaceState({ world: id }, '', `#world/${id}`);
     }
+    markSeen(id);
+    to('entering', 'world', 720);
     onFocusChange(it.isle);
     kick();
   }
 
   function close({ fromHistory = false } = {}) {
-    if (!selected) return;
+    if (!selected || state === 'leaving') return;
+    if (state === 'live') closeTheatre({ quiet: true });
+    to('leaving', 'field', 420);
     const done = () => {
       reveal.hidden = true;
       reveal.classList.remove('fold', 'enter');
@@ -310,7 +370,7 @@ export function createStage({ sky, fx, reduced, coarse, onFocusChange = () => {}
     for (const o of items) o.btn.classList.remove('selected');
     setFocus(false);
     fx.unfocus();
-    sky?.set({ accentAmt: 0 });
+    sky?.set({ accentAmt: 0, focus: [0, 0, 0] });
     document.body.classList.remove('locked');
     scrollTo({ top: savedScroll, behavior: 'auto' });
     if (reduced) done();
@@ -380,6 +440,11 @@ export function createStage({ sky, fx, reduced, coarse, onFocusChange = () => {}
     q('.rv-dtitle').textContent = isle.decision[0];
     q('.rv-dtext').textContent = isle.decision[1];
     q('.rv-tech').replaceChildren(...isle.tech.map((t) => el('li', {}, t)));
+    const ai = q('.rv-ai');
+    ai.hidden = !isle.ai;
+    if (isle.ai) {
+      for (const key of ['model', 'code', 'guards', 'limits']) q(`.rv-${key}`).replaceChildren(...isle.ai[key].map((t) => el('li', {}, t)));
+    }
     const ev = q('.rv-evidence');
     ev.textContent = `${isle.evidence} `;
     if (isle.tests) ev.append(el('a', { href: isle.tests, rel: 'noopener' }, 'Read its tests'));
@@ -396,30 +461,78 @@ export function createStage({ sky, fx, reduced, coarse, onFocusChange = () => {}
     q('.rv-scroll').scrollTop = 0;
   }
 
-  /* "Try it here": the screenshot dissolves and the real app is underneath */
+  /* ── the world becomes software ─────────────────────────────────────
+     "Try it here" lifts the screenshot out of the panel and opens it into the
+     whole screen, and the real app is running in it: the scenery dims to a
+     backdrop and gets out of the way. It has its own address (#world/<id>/live),
+     so Back and Esc both return to the world. */
+  const theatre = document.getElementById('theatre');
+  const thPanel = theatre.querySelector('.th-panel');
   let live = null;
+  let livePushed = false;
   function unloadLive() {
     live?.remove();
     live = null;
-    const img = reveal.querySelector('.rv-frame img');
-    img.style.visibility = '';
-    reveal.querySelector('.try').textContent = 'Try it here ↗';
   }
-  reveal.querySelector('.try').addEventListener('click', async () => {
+  function shotRect() {
+    return reveal.querySelector('.rv-frame img').getBoundingClientRect();
+  }
+  function flipFrom(rect) {
+    const to = thPanel.getBoundingClientRect();
+    const sx = rect.width / to.width, sy = rect.height / to.height;
+    thPanel.style.transform = `translate(${rect.left - to.left}px, ${rect.top - to.top}px) scale(${sx}, ${sy})`;
+  }
+  function openTheatre({ push = true } = {}) {
     const isle = islandById.get(selected);
-    if (!isle) return;
-    if (live) { unloadLive(); return; }
-    const frame = reveal.querySelector('.rv-frame');
-    const img = frame.querySelector('img');
-    /* the apps are this site's own pages, so the panel gives them what a direct visit would:
+    if (!isle || state === 'live' || state === 'leaving') return;
+    const href = launchHref(isle);
+    if (!href) return;
+    to('live');
+    theatre.querySelector('.th-title').textContent = `${isle.title}, running live`;
+    theatre.querySelector('.th-open').href = href;
+    theatre.style.setProperty('--glow', isle.palette[2]);
+    /* the apps are this site's own pages, so the frame gives them what a direct visit would:
        Tuner and Front Desk can still ask for the microphone, through the browser's own prompt */
-    live = el('iframe', { src: launchHref(isle), title: `${isle.title}, running live`, loading: 'eager' });
-    frame.prepend(live);
-    const rect = img.getBoundingClientRect();
-    img.style.visibility = 'hidden';
-    reveal.querySelector('.try').textContent = 'Back to the screenshot';
-    await fx.dissolve(rect, isle.palette);
-  });
+    live = el('iframe', { src: href, title: `${isle.title}, running live`, loading: 'eager' });
+    theatre.querySelector('.th-frame').replaceChildren(live);
+    const from = shotRect();
+    theatre.hidden = false;
+    document.body.classList.add('in-live');
+    if (!reduced) {
+      theatre.classList.remove('open');
+      thPanel.style.transition = 'none';
+      flipFrom(from);
+      void thPanel.offsetWidth;
+      thPanel.style.transition = '';
+      fx.dissolve(from, isle.palette, 520);
+    }
+    requestAnimationFrame(() => { theatre.classList.add('open'); thPanel.style.transform = ''; });
+    theatre.querySelector('.th-back').focus({ preventScroll: true });
+    if (push && !location.hash.endsWith('/live')) {
+      history.pushState({ world: isle.id, live: true }, '', `#world/${isle.id}/live`);
+      livePushed = true;
+    }
+  }
+  function closeTheatre({ fromHistory = false, quiet = false } = {}) {
+    if (state !== 'live') return;
+    to('world');
+    document.body.classList.remove('in-live');
+    const done = () => { theatre.hidden = true; theatre.classList.remove('open'); thPanel.style.transform = ''; unloadLive(); };
+    if (reduced || quiet) done();
+    else {
+      theatre.classList.remove('open');
+      flipFrom(shotRect());
+      setTimeout(done, 460);
+    }
+    if (!fromHistory && !quiet) {
+      if (livePushed) { livePushed = false; history.back(); }
+      else if (location.hash.endsWith('/live')) history.replaceState({ world: selected }, '', `#world/${selected}`);
+    } else if (fromHistory) livePushed = false;
+    else if (quiet && location.hash.endsWith('/live')) { livePushed = false; history.replaceState({ world: selected }, '', `#world/${selected}`); }
+    if (!quiet) reveal.querySelector('.try').focus({ preventScroll: true });
+  }
+  reveal.querySelector('.try').addEventListener('click', () => openTheatre());
+  theatre.querySelector('.th-back').addEventListener('click', () => closeTheatre());
 
   reveal.querySelector('.back').addEventListener('click', () => close());
   reveal.querySelectorAll('.rv-nav button').forEach((b) => b.addEventListener('click', () => {
@@ -430,16 +543,23 @@ export function createStage({ sky, fx, reduced, coarse, onFocusChange = () => {}
   }));
   document.addEventListener('keydown', (e) => {
     if (!selected || document.querySelector('.index-drawer:not([hidden])')) return;
+    if (e.key === 'Escape' && state === 'live') { e.preventDefault(); closeTheatre(); return; }
     if (e.key === 'Escape') { e.preventDefault(); close(); }
+    if (state === 'live') return;
     if (e.target.closest?.('input, textarea, iframe')) return;
     if (e.key === 'ArrowRight') reveal.querySelectorAll('.rv-nav button')[1].click();
     if (e.key === 'ArrowLeft') reveal.querySelectorAll('.rv-nav button')[0].click();
   });
 
   function route() {
-    const m = location.hash.match(/^#world\/([a-z0-9-]+)$/);
+    const m = location.hash.match(/^#world\/([a-z0-9-]+)(\/live)?$/);
     if (m && byId.has(m[1])) {
-      if (selected !== m[1]) travelTo(m[1], { open: true });
+      if (selected !== m[1]) {
+        if (state === 'live') closeTheatre({ fromHistory: true, quiet: true });
+        travelTo(m[1], { open: true });
+        if (m[2]) { clearTimeout(stateTimer); state = 'world'; openTheatre({ push: false }); }
+      } else if (m[2] && state !== 'live') openTheatre({ push: false });
+      else if (!m[2] && state === 'live') closeTheatre({ fromHistory: true });
     } else if (selected) close({ fromHistory: true });
   }
   addEventListener('popstate', route);
@@ -453,6 +573,10 @@ export function createStage({ sky, fx, reduced, coarse, onFocusChange = () => {}
     travelTo,
     select: (id) => travelTo(id, { open: true }),
     selected: () => selected,
+    state: () => state,
+    seenCount: () => seen.size,
+    /* the worlds in the order the dial shows them, clockwise from the top */
+    order: () => order.map((i) => i.id),
     light(ids) {
       for (const it of items) it.btn.classList.toggle('chosen', ids.includes(it.isle.id));
     },
