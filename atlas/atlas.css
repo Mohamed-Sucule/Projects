@@ -110,6 +110,7 @@ body.resolve .hero > *:not(h1) { transition: opacity .9s ease .5s; }
   position: absolute; z-index: 3; margin: 0; transform: translate(-50%, 0); pointer-events: none; opacity: 0; transition: opacity .4s;
   font-size: 11px; letter-spacing: .3em; text-transform: uppercase; color: var(--starlight); white-space: nowrap;
 }
+.portal-hint.rest { opacity: .62; }
 .portal-hint.on { opacity: .95; }
 .portal-hint span::after { content: " \2193"; }
 .portal-hint.dial span::after { content: none; }
@@ -153,6 +154,8 @@ body.resolve .hero > *:not(h1) { transition: opacity .9s ease .5s; }
 @keyframes reef { from { transform: translateY(-4px) rotate(-1.2deg); } to { transform: translateY(5px) rotate(1.4deg); } }
 .isle-name { display: block; margin-top: -10px; font-family: var(--serif); font-size: 26px; line-height: 1.05; text-shadow: 0 2px 16px rgba(8, 11, 20, .7); opacity: 0; transition: opacity .4s; }
 .isle.named .isle-name { opacity: .92; }
+.isle.far .isle-name { width: max-content; margin: calc(-10px * var(--k, 1)) 0 0 50%; transform: translateX(-50%); font-size: calc(26px * var(--k, 1)); }
+.isle.far.named .isle-name { opacity: .62; }
 .isle:hover .isle-body, .isle:focus-visible .isle-body, .isle.hot .isle-body { transform: translateY(-16px) scale(1.04); }
 .isle:hover .isle-art, .isle:focus-visible .isle-art, .isle.hot .isle-art, .isle.chosen .isle-art {
   filter: drop-shadow(0 0 22px var(--glow)) drop-shadow(0 0 60px color-mix(in srgb, var(--glow) 45%, transparent)) brightness(1.12);

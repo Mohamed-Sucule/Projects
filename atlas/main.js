@@ -117,6 +117,7 @@ function onScroll() {
   }
   hero.style.opacity = String(Math.max(0, 1 - scrollY / (H * 0.42)));
   $('.hotspots').style.visibility = scrollY > H * 0.2 ? 'hidden' : '';
+  restHint();
   /* the islands rise out of the cloud as the passage ends, rather than sliding up with the page */
   const fr = field.getBoundingClientRect();
   const clamp01 = (v) => Math.max(0, Math.min(1, v));
@@ -167,6 +168,20 @@ nav.querySelector('a[href="#worlds"]').addEventListener('click', (e) => { e.prev
 
 const hint = $('.portal-hint');
 let hovering = false;
+/* at rest the ring says what it is; on touch this is the only time it can */
+const REST = '35 worlds beyond · step through';
+function restHint() {
+  const P = portalPx();
+  const show = !!P && introDone && scrollY < innerHeight * 0.08 && !hovering && dialHot < 0;
+  hint.classList.toggle('rest', show);
+  if (!show) return;
+  /* just below the dial's rim, which on a phone is just above the headline */
+  const [dx, dy, dr] = dialRing(sky.layout());
+  const [x, y] = toScreen([dx, dy - dr], innerWidth, innerHeight);
+  hint.querySelector('span').textContent = REST;
+  hint.style.left = `${x}px`;
+  hint.style.top = `${y + 8}px`;
+}
 function onPointer(ev) {
   /* inside a world, a few of them answer the pointer the way their app would */
   fx.pointer(ev.clientX, ev.clientY, !!stage.selected() && stage.state() !== 'live' && !ev.target.closest?.('.reveal, .theatre, .nav'));
@@ -189,7 +204,7 @@ function onPointer(ev) {
     dialHot = block;
     sky?.set({ dialHot: block });
     const isle = block >= 0 ? islandById.get(stage.order()[block]) : null;
-    hint.querySelector('span').textContent = isle ? `${isle.title}: enter its world` : 'Step through';
+    hint.querySelector('span').textContent = isle ? `${isle.title}: enter its world` : REST;
   }
   const on = inside || dialHot >= 0;
   if (on !== hovering || dialHot >= 0) {
@@ -199,6 +214,7 @@ function onPointer(ev) {
     hint.classList.toggle('dial', dialHot >= 0);
     hint.style.left = `${dialHot >= 0 ? ev.clientX : P.x}px`;
     hint.style.top = `${dialHot >= 0 ? ev.clientY + 24 : P.y + P.r * 1.3 + 10}px`;
+    restHint();
   }
   const L = sky?.layout();
   if (L?.light) {
@@ -272,6 +288,7 @@ dial.addEventListener('blur', () => {
   hovering = false;
   sky?.set({ dialHot: -1 });
   hint.classList.remove('on', 'dial');
+  restHint();
 });
 dial.addEventListener('keydown', (e) => {
   const n = stage.order().length;
@@ -303,6 +320,7 @@ function placeSpots() {
     if (p) { b.style.left = `${p[0]}px`; b.style.top = `${p[1]}px`; }
   }
   placeDial();
+  requestAnimationFrame(restHint);
 }
 function showNote(text, at) {
   note.querySelector('p').textContent = text;

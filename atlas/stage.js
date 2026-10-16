@@ -23,13 +23,16 @@ import { islandSVG } from './islands.js';
    the cloud, the reef at sunset, the shallows gone still as a mirror, and the
    engine rooms with a drafting grid laid across the cloud.
    env: stars, grid, water, aurora, night, warmth, lamps, (spare) */
+/* the last number is how far the journey has come from the city in the first
+   region: it stands smaller and hazier in each region after, so each one is
+   somewhere else rather than the same place in a different light */
 const ENVS = {
   products: { tint: [1, 1, 1], env: [0, 0, 0, 0, 0, 0.15, 0, 0] },
-  models: { tint: [0.8, 0.9, 1.15], env: [0.9, 0, 0, 0.85, 0.62, 0, 0, 0] },
-  stories: { tint: [0.62, 0.64, 0.92], env: [1, 0, 0, 0.12, 1, 0, 1, 0] },
-  games: { tint: [1.1, 0.82, 0.98], env: [0, 0, 0, 0, 0, 1, 0, 0] },
-  workshop: { tint: [1.08, 1.0, 0.88], env: [0, 0, 1, 0, 0.05, 0.3, 0, 0] },
-  engines: { tint: [0.8, 1.04, 1.06], env: [0.25, 1, 0, 0, 0.38, 0, 0, 0] },
+  models: { tint: [0.8, 0.9, 1.15], env: [0.9, 0, 0, 0.85, 0.62, 0, 0, 0.45] },
+  stories: { tint: [0.62, 0.64, 0.92], env: [1, 0, 0, 0.12, 1, 0, 1, 0.65] },
+  games: { tint: [1.1, 0.82, 0.98], env: [0, 0, 0, 0, 0, 1, 0, 0.8] },
+  workshop: { tint: [1.08, 1.0, 0.88], env: [0, 0, 1, 0, 0.05, 0.3, 0, 0.9] },
+  engines: { tint: [0.8, 1.04, 1.06], env: [0.25, 1, 0, 0, 0.38, 0, 0, 1] },
 };
 const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI'];
 const LANES = [-0.34, 0.3, -0.1, 0.36, -0.26, 0.14, -0.4, 0.22];
@@ -208,7 +211,12 @@ export function createStage({ sky, fx, reduced, coarse, onFocusChange = () => {}
       it.btn.style.transform = `translate3d(${(x - w / 2).toFixed(1)}px, ${(y - w * 0.45).toFixed(1)}px, 0) scale(${s.toFixed(3)})`;
       it.btn.style.opacity = a.toFixed(3);
       it.btn.style.zIndex = String(it.sel > 0 ? 990 : Math.round(900 - pr.r * 100));
-      it.btn.classList.toggle('named', s > 0.5 && a > 0.4);
+      /* every world in clear view says its name, so nothing has to be guessed at;
+         the far ones smaller and quieter, at a size that stays legible */
+      const far = s <= 0.5 && s > 0.2 && a > 0.6 && focusAmt < 0.01;
+      it.btn.classList.toggle('named', a > 0.4 && (s > 0.5 || far));
+      it.btn.classList.toggle('far', far);
+      if (far) it.btn.style.setProperty('--k', (0.5 / s).toFixed(2));
       it.cur = { x, y, s, w, a, r: pr.r };
       if (pr.r > 0.8 && pr.a > 0.6 && (!nearest || pr.r < nearest.r)) nearest = { ...pr, it };
     }

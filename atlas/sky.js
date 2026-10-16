@@ -211,9 +211,13 @@ vec3 beyond(vec2 q, float full) {
       }
     }
   }
-  vec2 cat = mix(vec2(0.02, hb + 0.19), vec2(0.30 * A() - 0.05, hb + 0.13 + uAlt * 0.05), full);
-  float ch = mix(0.6, 0.3, full);
+  /* the further the journey from the first region, the smaller and hazier the
+     city stands, its foot kept on the same horizon */
+  float away = uEnvB.w * full;
+  vec2 cat = mix(vec2(0.02, hb + 0.19), vec2(0.30 * A() - 0.05, hb + 0.13 + uAlt * 0.05), full) + vec2(0.1 * A(), -0.105) * away;
+  float ch = mix(0.6, 0.3, full) * (1.0 - 0.7 * away);
   vec4 cty = city(q - vec2(0.0, sin(uTime * 0.4) * 0.006), cat, ch);
+  cty.a *= 1.0 - 0.45 * away;
   vec3 cityCol = cty.rgb * mix(vec3(0.85, 0.82, 1.0), tint, 0.4) + vec3(0.06, 0.05, 0.04);
   cityCol = mix(cityCol, cityCol * vec3(0.45, 0.5, 0.7) + vec3(0.02, 0.025, 0.05), night * 0.6);
   col = mix(col, cityCol, cty.a * 0.96);
