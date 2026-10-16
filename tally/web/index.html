@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tally · AI accounts-payable analyst</title>
+  <meta name="description" content="Tally reads supplier contracts and the accounts, answers questions with citations, and audits every invoice against the contract.">
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap top-row">
+      <a class="brand" href="/" aria-label="Tally home">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="3" width="26" height="26" rx="7"/><path d="M10 11h12M16 11v12M11 18l3 3 7-8"/></svg>
+        <span>Tally</span>
+      </a>
+      <p class="org" id="org">&nbsp;</p>
+      <span class="pill" id="model-pill">connecting…</span>
+    </div>
+    <nav class="wrap tabs" role="tablist" aria-label="Sections">
+      <button role="tab" data-tab="ask" aria-selected="true">Ask</button>
+      <button role="tab" data-tab="audit" aria-selected="false">Audit</button>
+      <button role="tab" data-tab="docs" aria-selected="false">Documents</button>
+      <button role="tab" data-tab="evals" aria-selected="false">Evals</button>
+      <button role="tab" data-tab="how" aria-selected="false">How it works</button>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section id="tab-ask" role="tabpanel">
+      <div class="intro">
+        <h1>Ask about suppliers, contracts and invoices</h1>
+        <p>Tally searches the contracts, queries the accounts with read-only SQL and does the arithmetic with a calculator tool. Every quote it cites is checked against the source before you see it.</p>
+      </div>
+      <form id="ask-form" class="ask" autocomplete="off">
+        <label for="q" class="sr">Question</label>
+        <textarea id="q" name="q" rows="2" maxlength="500" placeholder="e.g. Did Greenleaf charge the right price for tomatoes on invoice GL-1054?"></textarea>
+        <button type="submit" id="ask-btn">Ask</button>
+      </form>
+      <div class="samples" id="samples" aria-label="Example questions"></div>
+      <div id="ask-out" aria-live="polite"></div>
+    </section>
+
+    <section id="tab-audit" role="tabpanel" hidden>
+      <div class="intro row-between">
+        <div>
+          <h1>Invoice audit</h1>
+          <p>Deterministic checks of every invoice line against the contract terms: prices in force on the date, discounts, delivery charges, allowances, fees, duplicates and arithmetic. Claude drafts the dispute emails; a person approves each one.</p>
+        </div>
+        <div class="actions" id="audit-actions"></div>
+      </div>
+      <div id="audit-out"></div>
+    </section>
+
+    <section id="tab-docs" role="tabpanel" hidden>
+      <div class="intro">
+        <h1>Documents and accounts</h1>
+        <p>PDF, Word, HTML and Markdown documents are parsed, split by heading and indexed for search. Text that tries to instruct an AI is flagged at ingestion.</p>
+      </div>
+      <div id="docs-out"></div>
+    </section>
+
+    <section id="tab-evals" role="tabpanel" hidden>
+      <div class="intro">
+        <h1>Evals</h1>
+        <p>Answers are graded against facts computed from the data, not by another model: the right number within a tolerance, the right status, a citation to the right document, no instruction followed from a document.</p>
+      </div>
+      <div id="evals-out"></div>
+    </section>
+
+    <section id="tab-how" role="tabpanel" hidden>
+      <div class="intro"><h1>How Tally works</h1></div>
+      <div class="how">
+        <ol class="flow">
+          <li><b>Ingest.</b> Contracts arrive as PDF, DOCX, HTML or Markdown. Each is sniffed by content (not extension), parsed with size, page and zip-bomb limits, chunked by heading and indexed with SQLite FTS5. The accounts export (CSV) loads into a separate database.</li>
+          <li><b>Ask.</b> Claude answers with five tools: document search, document reading, a SQL tool that can only <i>read</i> six named tables (enforced by a SQLite authorizer, a read-only connection and a step budget), a list of documents and an exact calculator. The answer comes back as structured JSON.</li>
+          <li><b>Verify.</b> Each citation must quote, word for word, a passage the model was actually shown; anything else is removed and the reader is told. Text from documents and the database is wrapped as untrusted data, and money decisions are never made by the model.</li>
+          <li><b>Extract.</b> Claude turns each supplier's contract and amendments into typed terms (prices with effective dates, fees, discounts, allowances), each with a quote that must appear in the source.</li>
+          <li><b>Audit.</b> Plain code checks every invoice line against those terms and produces findings with amounts. It is tested against 23 errors planted in the demo books.</li>
+          <li><b>Act.</b> Claude drafts one dispute email per supplier. Guardrails check that every invoice is mentioned and every £ figure is one the audit produced. A person edits, approves or rejects; approved emails go to an outbox.</li>
+        </ol>
+        <div class="card">
+          <h2>Production details</h2>
+          <ul class="ticks">
+            <li>Refusal fallbacks enabled server-side; typed handling of rate limits, overload, timeouts and auth errors.</li>
+            <li>Prompt caching on system prompts; per-call token and cost accounting with a daily budget cap.</li>
+            <li>Per-client rate limits, request size limits, admin token for uploads, strict CSP and security headers.</li>
+            <li>Offline test suite with a scripted model; CI runs it on every push, and the model evals run when an API key is available.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside id="drawer" class="drawer" hidden aria-label="Source passage">
+    <div class="drawer-head"><strong id="drawer-title">Source</strong><button id="drawer-close" aria-label="Close">×</button></div>
+    <div id="drawer-body"></div>
+  </aside>
+
+  <footer class="wrap foot">Demo data: a fictional restaurant group and eight fictional suppliers. Nothing here is a real company.</footer>
+</body>
+</html>

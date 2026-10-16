@@ -1,0 +1,41 @@
+{
+ "suites": [
+  {
+   "suite": "audit_reference",
+   "title": "Audit engine vs planted errors",
+   "headline": "100% recall, 100% precision",
+   "passed": 23,
+   "total": 23,
+   "model": null,
+   "ran_at": "2026-10-14T19:14:35+00:00"
+  },
+  {
+   "suite": "retrieval",
+   "title": "Retrieval (BM25 over FTS5)",
+   "headline": "recall@6 100%",
+   "passed": 27,
+   "total": 27,
+   "model": null,
+   "ran_at": "2026-10-14T19:14:35+00:00"
+  },
+  {
+   "suite": "sql_guard",
+   "title": "SQL sandbox",
+   "headline": "20/20 attacks blocked",
+   "passed": 26,
+   "total": 26,
+   "model": null,
+   "ran_at": "2026-10-14T19:14:35+00:00"
+  },
+  {
+   "suite": "ingestion",
+   "title": "Ingestion and injection flags",
+   "headline": "19/19",
+   "passed": 19,
+   "total": 19,
+   "model": null,
+   "ran_at": "2026-10-14T19:14:36+00:00"
+  }
+ ],
+ "note": "Offline suites run in CI on every push. Model suites (qa, extraction, audit_extracted, drafts) have not been run for this build: they need an ANTHROPIC_API_KEY."
+}

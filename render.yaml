@@ -1,0 +1,24 @@
+# Render Blueprint for Tally (tally/). "New → Blueprint" on render.com, or the Deploy to Render button in tally/README.md.
+# Render asks for ANTHROPIC_API_KEY when the blueprint is created and generates the admin token.
+services:
+  - type: web
+    name: tally
+    runtime: docker
+    plan: free
+    rootDir: tally
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /healthz
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: TALLY_ADMIN_TOKEN
+        generateValue: true
+      - key: TALLY_TRUST_PROXY
+        value: "1"
+      - key: TALLY_DAILY_BUDGET_USD
+        value: "5"
+      - key: TALLY_ASK_PER_MINUTE
+        value: "6"
+      - key: TALLY_ASK_PER_DAY
+        value: "40"

@@ -45,6 +45,7 @@ if (!filter) {
     ['the front page specification', read('index.html').match(/Tests, run before publishing<\/dt><dd>([\d,]+)\+<\/dd>/)?.[1]],
     ['the front page colophon', read('index.html').match(/over ([\d,]+) tests, run in CI/)?.[1]],
     ['the README', read('README.md').match(/Over ([\d,]+) tests run in CI/)?.[1]],
+    ['the Portal Atlas', read('atlas/index.html').match(/<b data-claim="tests">([\d,]+)\+<\/b>/)?.[1]],
   ];
   process.stdout.write('\n' + c('1;36', 'claims') + '\n');
   const ran = tally.passed + tally.failed;

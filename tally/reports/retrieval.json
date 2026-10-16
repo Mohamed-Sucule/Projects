@@ -1,0 +1,153 @@
+{
+ "suite": "retrieval",
+ "title": "Retrieval (BM25 over FTS5)",
+ "description": "For every question whose answer is in a document, does one search with the raw question put that document in the six passages the model sees? The agent can search again; this measures the first try.",
+ "ran_at": "2026-10-14T19:14:35+00:00",
+ "model": null,
+ "passed": 27,
+ "total": 27,
+ "metrics": {
+  "recall_at_6": 1.0,
+  "mrr": 0.8704,
+  "phrase_recall_at_6": 1.0
+ },
+ "headline": "recall@6 100%",
+ "cases": [
+  {
+   "id": "q01",
+   "pass": true,
+   "detail": "How much notice do we need to give Sparkle to stop the cleaning contract renewing? | wanted sparkle-contract; rank 1; phrase found"
+  },
+  {
+   "id": "q02",
+   "pass": true,
+   "detail": "When does the Greenleaf supply agreement end? | wanted greenleaf-contract; rank 1; phrase found"
+  },
+  {
+   "id": "q03",
+   "pass": true,
+   "detail": "What does Greenleaf charge for delivery, and when is delivery free? | wanted greenleaf-contract; rank 1; phrase found"
+  },
+  {
+   "id": "q04",
+   "pass": true,
+   "detail": "What is the current price of vine tomatoes from Greenleaf? | wanted greenleaf-amendment-1; rank 1; phrase found"
+  },
+  {
+   "id": "q05",
+   "pass": true,
+   "detail": "What did Greenleaf's contract say vine tomatoes cost in March 2026? | wanted greenleaf-contract; rank 2; phrase found"
+  },
+  {
+   "id": "q06",
+   "pass": true,
+   "detail": "How many days do we have to pay a Northsea Fish invoice? | wanted northsea-contract; rank 2; phrase found"
+  },
+  {
+   "id": "q07",
+   "pass": true,
+   "detail": "What volume discount does Northsea Fish give, and on what? | wanted northsea-contract; rank 1; phrase found"
+  },
+  {
+   "id": "q08",
+   "pass": true,
+   "detail": "What is Crisp Linen's minimum weekly charge? | wanted crisp-linen-contract; rank 1; phrase found"
+  },
+  {
+   "id": "q09",
+   "pass": true,
+   "detail": "What hourly labour rate does Brightwater charge for out-of-hours work? | wanted brightwater-terms; rank 1; phrase found"
+  },
+  {
+   "id": "q10",
+   "pass": true,
+   "detail": "How many cases do we need to order from Oakbarrel in one go to get a discount, and how much is it? | wanted oakbarrel-contract; rank 1; phrase found"
+  },
+  {
+   "id": "q11",
+   "pass": true,
+   "detail": "How many free service visits a year does the Kettle & Grind agreement include, and what does an extra one cost? | wanted kettle-grind-contract; rank 1; phrase found"
+  },
+  {
+   "id": "q12",
+   "pass": true,
+   "detail": "What does Pestaway charge for a routine inspection visit? | wanted pestaway-terms; rank 1; phrase found"
+  },
+  {
+   "id": "q13",
+   "pass": true,
+   "detail": "Which country's law governs the Kettle & Grind agreement? | wanted kettle-grind-contract; rank 1; phrase found"
+  },
+  {
+   "id": "q14",
+   "pass": true,
+   "detail": "What is Sparkle's monthly cleaning fee now? | wanted sparkle-amendment-1; rank 2; phrase found"
+  },
+  {
+   "id": "q15",
+   "pass": true,
+   "detail": "Who has to approve a supplier invoice of \u00a36,200? | wanted ap-policy; rank 1; phrase found"
+  },
+  {
+   "id": "q16",
+   "pass": true,
+   "detail": "How long do we have to raise a dispute about an invoice? | wanted ap-policy; rank 1; phrase found"
+  },
+  {
+   "id": "q31",
+   "pass": true,
+   "detail": "Was Northsea invoice NF-2026 priced in line with the contract? If not, by how much were we overcharged? | wanted northsea-contract; rank 1; phrase n/a"
+  },
+  {
+   "id": "q32",
+   "pass": true,
+   "detail": "Did Greenleaf charge the right price for tomatoes on invoice GL-1054? | wanted greenleaf-amendment-1, greenleaf-contract; rank 1; phrase n/a"
+  },
+  {
+   "id": "q33",
+   "pass": true,
+   "detail": "Should Greenleaf invoice GL-1044 include a delivery charge? | wanted greenleaf-contract; rank 2; phrase n/a"
+  },
+  {
+   "id": "q34",
+   "pass": true,
+   "detail": "Did Northsea apply the volume discount correctly on invoice NF-2015? How much discount is missing? | wanted northsea-contract; rank 1; phrase n/a"
+  },
+  {
+   "id": "q35",
+   "pass": true,
+   "detail": "Did Crisp Linen use the right rates on invoice CL-3006? | wanted crisp-linen-contract; rank 1; phrase n/a"
+  },
+  {
+   "id": "q37",
+   "pass": true,
+   "detail": "Was Brightwater right to charge out-of-hours rates on invoice BW-4007? | wanted brightwater-terms; rank 1; phrase n/a"
+  },
+  {
+   "id": "q38",
+   "pass": true,
+   "detail": "Was the case discount applied on Oakbarrel invoice OB-5005? | wanted oakbarrel-contract; rank 1; phrase n/a"
+  },
+  {
+   "id": "q39",
+   "pass": true,
+   "detail": "Should we have paid for the service visit on Kettle & Grind invoice KG-7006? | wanted kettle-grind-contract; rank 1; phrase n/a"
+  },
+  {
+   "id": "q40",
+   "pass": true,
+   "detail": "Was every line on Greenleaf invoice GL-1079 charged at the contract price? | wanted greenleaf-contract; rank 6; phrase n/a"
+  },
+  {
+   "id": "q47",
+   "pass": true,
+   "detail": "Are Pestaway's invoices pre-approved for payment? | wanted ap-policy; rank 3; phrase n/a"
+  },
+  {
+   "id": "q48",
+   "pass": true,
+   "detail": "Was Pestaway invoice PW-8005 charged correctly? | wanted pestaway-terms; rank 1; phrase n/a"
+  }
+ ],
+ "seconds": 0.0
+}

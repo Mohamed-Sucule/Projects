@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<link rel="icon" href="../favicon.svg" />
+<meta name="theme-color" content="#080B14" />
+<title>Portal Atlas — Mohamed Sucule, AI product builder: ideas that escape the ordinary</title>
+<meta name="description" content="The portfolio of Mohamed Sucule, an independent AI product builder: thirty-five working applications, each one a floating world beyond a portal. Step through, explore the islands, and open the real software with its architecture, decisions and evidence." />
+<meta property="og:title" content="Portal Atlas — ideas that escape the ordinary" />
+<meta property="og:description" content="Thirty-five working applications, each one a world. Step through the portal, explore the islands, open the real software." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://mohamed-sucule.github.io/Projects/atlas/" />
+<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/atlas/shots/og.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="canonical" href="https://mohamed-sucule.github.io/Projects/atlas/" />
+<link rel="preload" href="../assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="atlas.css" />
+<script>document.documentElement.classList.add('booting');setTimeout(function(){document.documentElement.classList.remove('booting')},4000)</script>
+<script type="module" src="main.js"></script>
+</head>
+<body>
+<a class="skip" href="#projects">Skip to the list of projects</a>
+
+<canvas id="sky" class="sky" aria-hidden="true"></canvas>
+<canvas id="near" class="near" aria-hidden="true"></canvas>
+
+<header class="nav">
+  <a class="who" href="#top"><b>Mohamed Sucule</b><span>AI product builder</span></a>
+  <nav aria-label="Main">
+    <a href="#worlds">Worlds</a>
+    <a href="#projects">Projects</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <button class="index-btn" type="button" aria-haspopup="dialog" aria-controls="index" title="Every world, at a glance (I)">
+    <span aria-hidden="true" class="dots"></span><span class="label">Index</span>
+  </button>
+</header>
+
+<main>
+  <!-- 01 the threshold -->
+  <section id="top" class="threshold" aria-labelledby="hl">
+    <div class="hero">
+      <p class="kicker">Portal Atlas</p>
+      <h1 id="hl"><span class="line">Ideas that</span> <span class="line">escape the</span> <span class="line warm">ordinary.</span></h1>
+      <p class="sub">I build AI-powered products, immersive tools, and unconventional solutions to real problems.</p>
+      <div class="hero-actions">
+        <a class="explore" href="#worlds"><span class="ring" aria-hidden="true"></span>Explore my worlds</a>
+        <a class="quiet" href="#projects">or see every project as a list</a>
+      </div>
+    </div>
+    <p class="portal-hint" aria-hidden="true"><span>Step through</span></p>
+    <div class="hotspots">
+      <button type="button" class="spot" data-spot="figure" aria-label="A person standing in the portal. Read a note on how this scene is drawn."></button>
+      <button type="button" class="spot" data-spot="moon" aria-label="The larger moon. Read about today's phase."></button>
+      <button type="button" class="spot" data-spot="light" aria-label="A distant lighthouse. Go to The Lamplighter."></button>
+    </div>
+    <div class="note" role="status" hidden><p></p><button type="button" class="note-close" aria-label="Close the note">&times;</button></div>
+    <button type="button" class="skip-intro" hidden>Skip intro</button>
+  </section>
+
+  <!-- 02 the worlds -->
+  <section id="worlds" class="worlds" aria-labelledby="worlds-title">
+    <div class="passage" aria-hidden="true"></div>
+    <div class="field">
+      <div class="stage">
+        <h2 id="worlds-title" class="sr">Worlds: every project as a floating island</h2>
+        <div class="region-title" aria-live="polite"><p class="n"></p><h3></h3><p class="line"></p></div>
+        <div class="isles"></div>
+        <div class="preview" hidden aria-hidden="true"><p class="pv-kind"></p><b class="pv-title"></b><p class="pv-hook"></p><span class="pv-cta"></span></div>
+        <nav class="regions" aria-label="Regions"></nav>
+        <p class="hint">Scroll to travel &middot; <span class="fine">choose</span><span class="touch">tap</span> a world to enter it</p>
+
+        <aside id="reveal" class="reveal" hidden aria-labelledby="rv-title">
+          <button type="button" class="back"><span aria-hidden="true">&larr;</span> Back to the atlas</button>
+          <div class="rv-scroll">
+            <p class="rv-kind"></p>
+            <h2 id="rv-title" class="rv-title"></h2>
+            <p class="rv-blurb"></p>
+            <div class="rv-actions"></div>
+            <p class="rv-note" hidden></p>
+            <figure class="rv-preview">
+              <div class="rv-frame"><img alt="" decoding="async" width="960" height="600" /></div>
+              <figcaption></figcaption>
+              <button type="button" class="try" hidden>Try it here <span aria-hidden="true">&#8599;</span></button>
+            </figure>
+            <section><h3>The problem</h3><p class="rv-problem"></p></section>
+            <section><h3>What it does</h3><ul class="rv-features"></ul></section>
+            <section class="rv-decision"><h3>The most interesting decision</h3><p class="rv-dtitle"></p><p class="rv-dtext"></p></section>
+            <section><h3>Built with</h3><ul class="chips rv-tech"></ul></section>
+            <section><h3>Evidence</h3><p class="rv-evidence"></p></section>
+            <nav class="rv-nav" aria-label="Other worlds"><button type="button" data-go="prev"></button><button type="button" data-go="next"></button></nav>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- the same projects, as a plain list: works without WebGL, without script, and for search engines -->
+  <section id="projects" class="paper projects" aria-labelledby="projects-title">
+    <div class="wrap">
+      <p class="eyebrow">Projects</p>
+      <h2 id="projects-title">Every world, as a list</h2>
+      <p class="lede">The same thirty-five projects, without the scenery. Each has its own page with the problem, how it is built and the evidence.</p>
+      <!-- projects:start -->
+      <div class="plist">
+      <section class="pgroup" aria-labelledby="pg-products">
+        <h3 id="pg-products">The Product Archipelago</h3>
+        <p>Software a business could ask for tomorrow: working, measured, and ready to try.</p>
+        <ul>
+          <li>
+            <a class="pname" href="projects/tally/">Tally</a>
+            <span class="pkind">AI product · Python service</span>
+            <p>An AI accounts-payable analyst. It reads supplier contracts and the accounts, answers questions with cited sources, audits every invoice against the contract and drafts the dispute emails a person approves.</p>
+            <span class="plinks"><span>Runs on a server</span><a href="projects/tally/">How it&rsquo;s built</a><a href="#world/tally" data-world="tally">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/frontdesk/">Front Desk</a>
+            <span class="pkind">AI product · about 4 min</span>
+            <p>An AI phone receptionist for a busy restaurant. It checks the real table plan, offers the nearest free times and books straight into the host-stand system.</p>
+            <span class="plinks"><a href="../apps/frontdesk/index.html">Launch</a><a href="projects/frontdesk/">How it&rsquo;s built</a><a href="#world/frontdesk" data-world="frontdesk">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/handbook/">Ask the Handbook</a>
+            <span class="pkind">AI product · about 4 min</span>
+            <p>A knowledge assistant that answers staff questions from company documents, quotes its source, and says “the handbook doesn’t say” rather than guess.</p>
+            <span class="plinks"><a href="../apps/handbook/index.html">Launch</a><a href="projects/handbook/">How it&rsquo;s built</a><a href="#world/handbook" data-world="handbook">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/callcoach/">Call Coach</a>
+            <span class="pkind">AI product · about 4 min</span>
+            <p>A live assistant for sales calls: the right answer on screen the moment a prospect objects, and the notes, CRM record and follow-up written when the call ends.</p>
+            <span class="plinks"><a href="../apps/callcoach/index.html">Launch</a><a href="projects/callcoach/">How it&rsquo;s built</a><a href="#world/callcoach" data-world="callcoach">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/claims/">Claims Desk</a>
+            <span class="pkind">AI product · about 3 min</span>
+            <p>Reads an insurance claim — email, scanned form, invoice — checks it against the policy and itself, and recommends a decision with the evidence for every line.</p>
+            <span class="plinks"><a href="../apps/claims/index.html">Launch</a><a href="projects/claims/">How it&rsquo;s built</a><a href="#world/claims" data-world="claims">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/covers/">Covers</a>
+            <span class="pkind">product · about 12 min</span>
+            <p>A restaurant floor and booking system you drop into at 19:42 on a Saturday, mid-service, with a double-booking to sort out.</p>
+            <span class="plinks"><a href="../apps/covers/index.html">Launch</a><a href="projects/covers/">How it&rsquo;s built</a><a href="#world/covers" data-world="covers">Its world</a></span>
+          </li>
+        </ul>
+      </section>
+      <section class="pgroup" aria-labelledby="pg-models">
+        <h3 id="pg-models">The Observatory Reach</h3>
+        <p>How language models really work, built from nothing so every step can be watched.</p>
+        <ul>
+          <li>
+            <a class="pname" href="projects/attention/">Attention</a>
+            <span class="pkind">machine learning · about 6 min</span>
+            <p>A transformer trained from scratch with hand-written backpropagation, and the exact step it learned to copy.</p>
+            <span class="plinks"><a href="../apps/attention/index.html">Launch</a><a href="projects/attention/">How it&rsquo;s built</a><a href="#world/attention" data-world="attention">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/tokens/">Tokens</a>
+            <span class="pkind">machine learning · about 4 min</span>
+            <p>A byte-pair tokeniser that trains itself in front of you, and the three things it explains about why models behave the way they do.</p>
+            <span class="plinks"><a href="../apps/tokens/index.html">Launch</a><a href="projects/tokens/">How it&rsquo;s built</a><a href="#world/tokens" data-world="tokens">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/evals/">Evals</a>
+            <span class="pkind">machine learning · about 5 min</span>
+            <p>Two real parsers, eight hundred real inputs, graded live — and the confidence interval that decides whether the change was real.</p>
+            <span class="plinks"><a href="../apps/evals/index.html">Launch</a><a href="projects/evals/">How it&rsquo;s built</a><a href="#world/evals" data-world="evals">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/agents/">Agents</a>
+            <span class="pkind">machine learning · about 4 min</span>
+            <p>A real tool-use loop you can step through, then break on purpose — with every guard switchable so you can see what it was holding back.</p>
+            <span class="plinks"><a href="../apps/agents/index.html">Launch</a><a href="projects/agents/">How it&rsquo;s built</a><a href="#world/agents" data-world="agents">Its world</a></span>
+          </li>
+        </ul>
+      </section>
+      <section class="pgroup" aria-labelledby="pg-stories">
+        <h3 id="pg-stories">The Night Isles</h3>
+        <p>Stories that draw themselves. No image files: the sea, the sky and the dread are code.</p>
+        <ul>
+          <li>
+            <a class="pname" href="projects/lamplighter/">The Lamplighter</a>
+            <span class="pkind">fiction · about 5 min</span>
+            <p>One night, and a keeper about to be replaced by a machine. Scroll and the sun goes down, the gale gets up, and the light keeps turning.</p>
+            <span class="plinks"><a href="../apps/lamplighter/index.html">Launch</a><a href="projects/lamplighter/">How it&rsquo;s built</a><a href="#world/lamplighter" data-world="lamplighter">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/room/">The Room</a>
+            <span class="pkind">fiction · about 10 min</span>
+            <p>Edmund Harkness is dead at his desk and the door was locked from inside. Look at nineteen things, question four people, then name somebody.</p>
+            <span class="plinks"><a href="../apps/room/index.html">Launch</a><a href="projects/room/">How it&rsquo;s built</a><a href="#world/room" data-world="room">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/nightshift/">Nightshift</a>
+            <span class="pkind">fiction · about 5 min</span>
+            <p>A coastal watch log from one night in 1987. It opens with the weather and the shipping, and it does not stay there.</p>
+            <span class="plinks"><a href="../apps/nightshift/index.html">Launch</a><a href="projects/nightshift/">How it&rsquo;s built</a><a href="#world/nightshift" data-world="nightshift">Its world</a></span>
+          </li>
+        </ul>
+      </section>
+      <section class="pgroup" aria-labelledby="pg-games">
+        <h3 id="pg-games">The Playground Reef</h3>
+        <p>Games, from a two-minute one-button flight to a three-act action game in the dark.</p>
+        <ul>
+          <li>
+            <a class="pname" href="projects/ember/">Ember</a>
+            <span class="pkind">game · about 15 min</span>
+            <p>An action game in the dark. Your flame is your life and your light: three acts, three bosses, nine ash-stones, and one question — who put out the Beacon?</p>
+            <span class="plinks"><a href="../play/ember/index.html">Launch</a><a href="projects/ember/">How it&rsquo;s built</a><a href="#world/ember" data-world="ember">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/ace/">Ace</a>
+            <span class="pkind">game · about 2 min</span>
+            <p>Tap to fly a paper plane through a canyon. Do not hit the rocks.</p>
+            <span class="plinks"><a href="../play/ace/index.html">Launch</a><a href="projects/ace/">How it&rsquo;s built</a><a href="#world/ace" data-world="ace">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/stack/">Stack</a>
+            <span class="pkind">game · about 2 min</span>
+            <p>A block slides past. Tap. Whatever hangs over the edge is sliced off and falls.</p>
+            <span class="plinks"><a href="../play/stack/index.html">Launch</a><a href="projects/stack/">How it&rsquo;s built</a><a href="#world/stack" data-world="stack">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/tether/">Tether</a>
+            <span class="pkind">game · about 3 min</span>
+            <p>You swing round a planet on a tether. Tap and you let go, flying off exactly the way you were already pointing.</p>
+            <span class="plinks"><a href="../play/tether/index.html">Launch</a><a href="projects/tether/">How it&rsquo;s built</a><a href="#world/tether" data-world="tether">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/sumo/">Sumo</a>
+            <span class="pkind">game · about 3 min</span>
+            <p>Two people, one keyboard, one key each. Knock the other one out of the ring before it closes under you.</p>
+            <span class="plinks"><a href="../play/sumo/index.html">Launch</a><a href="projects/sumo/">How it&rsquo;s built</a><a href="#world/sumo" data-world="sumo">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/tangle/">Tangle</a>
+            <span class="pkind">game · about 4 min</span>
+            <p>Tap a tile to turn it. The board is solved when no connector is left dangling.</p>
+            <span class="plinks"><a href="../play/tangle/index.html">Launch</a><a href="projects/tangle/">How it&rsquo;s built</a><a href="#world/tangle" data-world="tangle">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/sweeper/">Minesweeper</a>
+            <span class="pkind">game · about 5 min</span>
+            <p>Classic Minesweeper, except every board is proven solvable by logic before you see it, so it never comes down to a coin flip.</p>
+            <span class="plinks"><a href="../play/sweeper/index.html">Launch</a><a href="projects/sweeper/">How it&rsquo;s built</a><a href="#world/sweeper" data-world="sweeper">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/sudoku/">Sudoku</a>
+            <span class="pkind">game · about 10 min</span>
+            <p>A daily Sudoku at three levels, each with exactly one answer and a way to it that needs no guessing.</p>
+            <span class="plinks"><a href="../play/sudoku/index.html">Launch</a><a href="projects/sudoku/">How it&rsquo;s built</a><a href="#world/sudoku" data-world="sudoku">Its world</a></span>
+          </li>
+        </ul>
+      </section>
+      <section class="pgroup" aria-labelledby="pg-workshop">
+        <h3 id="pg-workshop">The Workshop Shallows</h3>
+        <p>Small useful things and physical toys, each with the hard part written from scratch.</p>
+        <ul>
+          <li>
+            <a class="pname" href="projects/sandbox/">Sandbox</a>
+            <span class="pkind">physics · about 5 min</span>
+            <p>Pour sand. Add water. Set it on fire and watch the smoke rise.</p>
+            <span class="plinks"><a href="../play/sandbox/index.html">Launch</a><a href="projects/sandbox/">How it&rsquo;s built</a><a href="#world/sandbox" data-world="sandbox">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/mercury/">Mercury</a>
+            <span class="pkind">physics · about 3 min</span>
+            <p>A sheet of liquid metal under a sunset sky. Drag it and the ripples bend the reflections as they spread.</p>
+            <span class="plinks"><a href="../apps/mercury/index.html">Launch</a><a href="projects/mercury/">How it&rsquo;s built</a><a href="#world/mercury" data-world="mercury">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/beats/">Beat Lab</a>
+            <span class="pkind">instrument · about 4 min</span>
+            <p>A drum machine with no sound files in it — every kick and snare is generated from scratch.</p>
+            <span class="plinks"><a href="../play/beats/index.html">Launch</a><a href="projects/beats/">How it&rsquo;s built</a><a href="#world/beats" data-world="beats">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/island/">Islandsmith</a>
+            <span class="pkind">instrument · about 3 min</span>
+            <p>Press the button, get a brand new world: coastline, mountains, forests, rivers and a name.</p>
+            <span class="plinks"><a href="../play/island/index.html">Launch</a><a href="projects/island/">How it&rsquo;s built</a><a href="#world/island" data-world="island">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/qr/">QR codes</a>
+            <span class="pkind">app · about 2 min</span>
+            <p>Type a link, some text, a Wi-Fi password or an email and it is a QR code before you finish typing. The encoder is written from scratch.</p>
+            <span class="plinks"><a href="../apps/qr/index.html">Launch</a><a href="projects/qr/">How it&rsquo;s built</a><a href="#world/qr" data-world="qr">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/split/">Split</a>
+            <span class="pkind">app · about 3 min</span>
+            <p>Who paid for what on a trip or at dinner, and the fewest bank transfers that settle everybody up, to the penny.</p>
+            <span class="plinks"><a href="../apps/split/index.html">Launch</a><a href="projects/split/">How it&rsquo;s built</a><a href="#world/split" data-world="split">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/tuner/">Tuner</a>
+            <span class="pkind">app · about 2 min</span>
+            <p>Play a note into your microphone and see how sharp or flat it is, to the cent. Guitar, bass, ukulele, violin or cello.</p>
+            <span class="plinks"><a href="../apps/tuner/index.html">Launch</a><a href="projects/tuner/">How it&rsquo;s built</a><a href="#world/tuner" data-world="tuner">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/sift/">Sift</a>
+            <span class="pkind">app · about 5 min</span>
+            <p>Drop a spreadsheet in and it tells you what is actually in it: what each column holds, where the gaps are, what the numbers look like.</p>
+            <span class="plinks"><a href="../apps/sift/index.html">Launch</a><a href="projects/sift/">How it&rsquo;s built</a><a href="#world/sift" data-world="sift">Its world</a></span>
+          </li>
+        </ul>
+      </section>
+      <section class="pgroup" aria-labelledby="pg-engines">
+        <h3 id="pg-engines">The Engine Rooms</h3>
+        <p>The invisible parts of software, made visible: regex, query plans, consensus, traces, merges, colour.</p>
+        <ul>
+          <li>
+            <a class="pname" href="projects/regex-lab/">Regex Lab</a>
+            <span class="pkind">engineering tool · about 6 min</span>
+            <p>A search pattern compiled into a machine you can watch run, one character at a time — including the kind that quietly takes a website down.</p>
+            <span class="plinks"><a href="../projects/regex-lab/index.html">Launch</a><a href="projects/regex-lab/">How it&rsquo;s built</a><a href="#world/regex-lab" data-world="regex-lab">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/query-planner/">Query Planner</a>
+            <span class="pkind">engineering tool · about 6 min</span>
+            <p>A database deciding how to answer a question, with its reasoning attached. Drag a table’s size and watch it change its mind.</p>
+            <span class="plinks"><a href="../projects/query-planner/index.html">Launch</a><a href="projects/query-planner/">How it&rsquo;s built</a><a href="#world/query-planner" data-world="query-planner">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/raft-lab/">Raft Lab</a>
+            <span class="pkind">engineering tool · about 7 min</span>
+            <p>Five servers agreeing with each other. Cut the network in half, crash the leader, and watch the safety guarantees hold.</p>
+            <span class="plinks"><a href="../projects/raft-lab/index.html">Launch</a><a href="projects/raft-lab/">How it&rsquo;s built</a><a href="#world/raft-lab" data-world="raft-lab">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/trace-explorer/">Trace Explorer</a>
+            <span class="pkind">engineering tool · about 5 min</span>
+            <p>Where a slow web request actually spent its time, explained in sentences instead of charts.</p>
+            <span class="plinks"><a href="../projects/trace-explorer/index.html">Launch</a><a href="projects/trace-explorer/">How it&rsquo;s built</a><a href="#world/trace-explorer" data-world="trace-explorer">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/diff-forge/">Diff Forge</a>
+            <span class="pkind">engineering tool · about 5 min</span>
+            <p>The merge conflict — software’s most hated screen — rebuilt as a choice you can actually read.</p>
+            <span class="plinks"><a href="../projects/diff-forge/index.html">Launch</a><a href="projects/diff-forge/">How it&rsquo;s built</a><a href="#world/diff-forge" data-world="diff-forge">Its world</a></span>
+          </li>
+          <li>
+            <a class="pname" href="projects/oklch-studio/">OKLCH Studio</a>
+            <span class="pkind">engineering tool · about 4 min</span>
+            <p>Building a colour palette that still passes when someone runs an accessibility check on it.</p>
+            <span class="plinks"><a href="../projects/oklch-studio/index.html">Launch</a><a href="projects/oklch-studio/">How it&rsquo;s built</a><a href="#world/oklch-studio" data-world="oklch-studio">Its world</a></span>
+          </li>
+        </ul>
+      </section>
+      </div>
+      <!-- projects:end -->
+    </div>
+  </section>
+
+  <section id="about" class="paper about" aria-labelledby="about-title">
+    <div class="wrap">
+      <p class="eyebrow">About</p>
+      <h2 id="about-title">Mohamed Sucule, independent AI product builder.</h2>
+      <p class="lede">I sit with a client, find the work that is costing them, and ship the software that does it.
+        The worlds are the evidence. Here is one of them from the inside: the brief, the architecture, where the AI
+        is and where it deliberately isn&rsquo;t, the trade-offs, and the numbers.</p>
+      <article class="case" aria-labelledby="case-title">
+      <div class="case-head">
+        <div><p>Case study</p><h3 id="case-title">Tally: an AI analyst that checks every supplier invoice</h3></div>
+        <p>Python &middot; FastAPI &middot; Claude &middot; SQLite</p>
+      </div>
+      <div class="case-grid">
+        <section>
+          <h4>The problem</h4>
+          <blockquote>&ldquo;We pay hundreds of supplier invoices a month and nobody has time to check them against the contracts.&rdquo;</blockquote>
+        </section>
+        <section>
+          <h4>What it does</h4>
+          <p>Tally reads the supplier contracts and the accounts export. It answers questions with cited sources,
+            audits every invoice against the terms in force on its date, and drafts the dispute emails, which a
+            person approves before anything goes out.</p>
+        </section>
+        <section class="wide">
+          <h4>Architecture</h4>
+          <div class="flow" role="list">
+            <div class="flow-row" role="listitem"><b>Read</b><span>Contracts: PDF, Word, HTML, Markdown</span><i>&rarr;</i><span>checked by content, parsed with limits, chunked by heading</span><i>&rarr;</i><span>full-text index, injection flags</span><i>&middot;</i><span>Accounts CSV</span><i>&rarr;</i><span>validated into a separate database</span></div>
+            <div class="flow-row" role="listitem"><b>Answer</b><span>Question</span><i>&rarr;</i><span class="ai">Claude</span><i>&#8644;</i><span>search &middot; read &middot; read-only SQL &middot; calculator</span><i>&rarr;</i><span>every quote checked word for word</span><i>&rarr;</i><span>answer streamed to the page</span></div>
+            <div class="flow-row" role="listitem"><b>Act</b><span class="ai">Claude extracts contract terms, with quotes</span><i>&rarr;</i><span>plain code audits every invoice line</span><i>&rarr;</i><span class="ai">Claude drafts dispute emails</span><i>&rarr;</i><span>guardrails: every invoice, every &pound;</span><i>&rarr;</i><span class="human">a person approves</span><i>&rarr;</i><span>outbox</span></div>
+          </div>
+          <p class="legend"><em class="ai">Claude</em> &nbsp; <em class="human">a person</em> &nbsp; everything else is ordinary, tested code.</p>
+        </section>
+        <section>
+          <h4>Where the AI is, and where it isn&rsquo;t</h4>
+          <ul>
+            <li><b>Claude reads.</b> It answers questions using tools, and turns each contract into typed terms, each with a quote that must be found in the source.</li>
+            <li><b>Code decides.</b> Whether money is owed is worked out by plain Python, tested to the penny, so no note on an invoice can talk it out of a finding.</li>
+            <li><b>People approve.</b> No email leaves until someone has read it, edited it or rejected it.</li>
+          </ul>
+        </section>
+        <section>
+          <h4>Decisions and trade-offs</h4>
+          <ul>
+            <li><b>Keyword search before embeddings.</b> Contract language is exact, and the retrieval eval found the right document for every test question. Embeddings wait until an eval shows a miss.</li>
+            <li><b>Structured output plus a quote check.</b> The schema guarantees the shape; the quote check catches a term the model invented.</li>
+            <li><b>One process and SQLite.</b> Right for one business. Several would need Postgres and a shared rate limiter.</li>
+            <li><b>Built to be run.</b> Refusal fallbacks, a daily spending cap, every call&rsquo;s cost logged, an admin token, rate limits and a strict content policy.</li>
+          </ul>
+        </section>
+        <section class="wide">
+          <h4>Results</h4>
+          <div class="results-wrap">
+            <table class="results">
+              <thead><tr><th>Check</th><th>What it measures</th><th>Result</th></tr></thead>
+              <tbody>
+                <tr><td>Audit</td><td>23 billing errors planted in the demo books, found to the penny, with nothing else flagged</td><td>23 / 23</td></tr>
+                <tr><td>Retrieval</td><td>One search with the raw question puts the right document in front of the model</td><td>27 / 27</td></tr>
+                <tr><td>SQL sandbox</td><td>Writes, schema probes, file reads, extensions and runaway queries refused</td><td>20 / 20</td></tr>
+                <tr><td>Ingestion</td><td>Every document parsed and flagged correctly; hostile files, a zip bomb among them, refused</td><td>19 / 19</td></tr>
+                <tr><td>Unit and API tests</td><td>Agent loop, citation checks, error handling, budget, guardrails, approvals, auth, limits</td><td>103 passing</td></tr>
+                <tr><td>Question answering</td><td>50 questions graded against the data, including unanswerable ones and injection traps</td><td>needs an API key</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="legend">The model evals are written and graded against facts computed from the data, but they have not been run
+            for this build: they need an Anthropic API key. The page will say so until they have.</p>
+        </section>
+      </div>
+      <div class="case-foot">
+        <a class="btn primary" href="https://github.com/Mohamed-Sucule/Projects/blob/main/tally/README.md">Read the full case study</a>
+        <a class="btn" href="https://github.com/Mohamed-Sucule/Projects/tree/main/tally">The source</a>
+      </div>
+    </article>
+      <section class="rules" aria-labelledby="rules-title">
+      <h3 id="rules-title">How I work</h3>
+      <article><h4>The right tool, not the biggest model</h4><p>Where a parser, a search index or a rule is faster, cheaper, testable and can&rsquo;t make things up, it does the work. Models handle what those can&rsquo;t.</p></article>
+      <article><h4>Measured on questions it never saw</h4><p>Each AI product has a held-out test set, run once, with the first score kept even when it is bad. The numbers are on the islands.</p></article>
+      <article><h4>Safe when unsure</h4><p>The receptionist hands over to a person, the handbook says it doesn&rsquo;t know, the claims desk refers what it can&rsquo;t read, and Tally asks a person before it sends anything.</p></article>
+    </section>
+      <section class="numbers" aria-label="In numbers">
+      <div><b>35</b><span>working projects, one for every island above</span></div>
+      <div><b data-claim="tests">850+</b><span>tests run in CI before anything is published</span></div>
+      <div><b>0</b><span>sign-ups or installs needed to try the ones that run in your browser</span></div>
+    </section>
+    </div>
+  </section>
+
+  <section id="contact" class="paper contact" aria-labelledby="contact-title">
+    <div class="wrap">
+      <h2 id="contact-title">Have an idea that escapes the ordinary?</h2>
+      <p>If your team has a problem like one of the worlds above, or one nobody has built software for yet,
+        write to me. This is the fastest way to reach me.</p>
+      <div class="cta">
+        <a class="btn primary" href="mailto:mohamedsucule@gmail.com">mohamedsucule@gmail.com</a>
+        <a class="btn" href="https://github.com/Mohamed-Sucule/Projects">Read the source on GitHub</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot paper">
+  <p>The sky, the sea, the portal and the city beyond it are one fragment shader; every island is a small SVG drawing. There are no image files in the world.
+    Press <kbd>`</kbd> for the renderer&rsquo;s own numbers. Prefer something plainer? <a href="../index.html">The classic front page</a>.</p>
+</footer>
+
+<canvas id="veil" class="veil" aria-hidden="true"></canvas>
+
+<div id="guide" class="guide">
+  <button type="button" class="guide-orb" aria-expanded="false" aria-controls="guide-card"><span class="lantern" aria-hidden="true"></span><span class="label">Ask the observatory</span></button>
+  <div id="guide-card" class="guide-card" hidden role="dialog" aria-labelledby="guide-title">
+    <h2 id="guide-title">Every world here solves a different problem.</h2>
+    <p>What are you trying to build?</p>
+    <form>
+      <label class="sr" for="guide-q">What are you trying to build?</label>
+      <input id="guide-q" type="text" autocomplete="off" maxlength="200" placeholder="Describe it in your own words" />
+      <button type="submit">Find</button>
+    </form>
+    <div class="guide-chips">
+      <button type="button">I want to automate a repetitive workflow.</button>
+      <button type="button">I need an AI-powered product prototype.</button>
+      <button type="button">I have a data problem.</button>
+      <button type="button">Show me your most technically interesting project.</button>
+    </div>
+    <ol class="guide-results" aria-live="polite"></ol>
+    <p class="guide-foot">A search over the real catalogue, running in this page. It does not use an AI model, so it cannot invent a project.</p>
+  </div>
+</div>
+
+<div id="index" class="index-drawer" hidden role="dialog" aria-modal="true" aria-labelledby="index-title">
+  <div class="index-inner">
+    <div class="index-head"><h2 id="index-title">Every world</h2><button type="button" class="index-close" aria-label="Close the index">&times;</button></div>
+    <nav class="index-nav" aria-label="Sections">
+      <a href="#worlds">Worlds</a><a href="#projects">Projects</a><a href="#about">About</a><a href="#contact">Contact</a>
+    </nav>
+    <div class="index-list"></div>
+  </div>
+</div>
+
+<aside id="dev" class="dev" hidden aria-label="Renderer statistics"><pre></pre></aside>
+
+<script type="module" src="../shared/navigator.js"></script>
+</body>
+</html>

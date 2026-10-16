@@ -6,6 +6,21 @@ API key, no video of someone else using it.
 
 **→ [Open the playground](https://mohamed-sucule.github.io/Projects/)**
 
+**→ [Or step through the Portal Atlas](https://mohamed-sucule.github.io/Projects/atlas/)**: the same work as a
+world. A ring stands in a night sea; scroll and you pass through it into a sea of cloud, flying past floating
+islands, one per project, each drawn as what it does. Step onto one and the world around it changes to match
+(a floor plan for the restaurant system, attention arcs for the transformer, a sweeping beam for the lighthouse
+story), with a panel holding the problem, the most interesting decision, the evidence, and the real app running
+inside it. The sky, sea and portal are one WebGL fragment shader; every project also has a plain page of its
+own ([`atlas/projects/`](atlas/projects/)), generated from the same data by `node atlas/build.mjs`, so none of it
+needs WebGL or script to read. [Tests](tests/atlas.test.mjs) check that every island leads somewhere real.
+([`atlas/`](atlas/))
+
+One project here is different: **[Tally](tally/)** is a full AI application with a Python backend. It ingests
+supplier contracts and an accounts export, answers questions with Claude using tools and checked citations, and
+audits every invoice against the contract. Claude drafts the dispute emails, and a person approves each one. Its
+evals grade answers against facts computed from the data. [More below](#-tally--an-ai-application-end-to-end).
+
 | | | |
 |---|---|---:|
 | **★** | [**Four AI products**](#-four-ai-products) — a receptionist, a knowledge assistant, a sales coach, a claims desk | 4 |
@@ -21,6 +36,23 @@ Over 850 tests run in CI before anything here is published — including twenty
 gradient checks against finite differences, a check that a 95% confidence
 interval really does contain the truth about 95% of the time, and one that no
 tool result ever answers a call that was not made.
+
+---
+
+## ◆ Tally — an AI application, end to end
+
+The browser projects below show what can be done with no server. [Tally](tally/) is the other kind: a
+deployable product with a backend, a database, a model API and the engineering around them.
+
+| | |
+|---|---|
+| **Ingestion** | PDF, Word, HTML and Markdown contracts are sniffed by content, parsed with size, page and zip-bomb limits, chunked by heading and indexed (SQLite FTS5). The accounts arrive as validated CSV in a separate database. |
+| **LLM + tools** | Claude answers with document search, document reading, read-only SQL and an exact calculator. The answer comes back as structured JSON, and every quote it cites is checked word for word against what it was shown. |
+| **Workflow** | Claude extracts each contract's terms with evidence quotes. Deterministic code audits every invoice line against them. Claude drafts dispute emails, guardrails check every invoice and £ figure, and a person approves each email. |
+| **Evals** | 23 planted billing errors found to the penny with no false positives; retrieval 27/27; 20/20 SQL attacks blocked; hostile files refused. A 50-question QA set (including unanswerable questions and prompt-injection traps) is graded on figures, verdicts and verified citations. |
+| **Production** | Refusal fallbacks, typed error handling, cost logging with a daily budget, rate limits, an admin token, a strict CSP, a non-root Docker image, a Render blueprint and CI. |
+
+Its [README](tally/README.md) covers how it works, the eval results and how to deploy it.
 
 ---
 

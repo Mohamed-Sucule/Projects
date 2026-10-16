@@ -1,0 +1,9 @@
+supplier_id,name,category,email
+greenleaf,Greenleaf Produce Ltd,produce,accounts@greenleafproduce.example
+northsea,Northsea Fish Co.,fish,orders@northseafish.example
+crisplinen,Crisp Linen Services,linen,billing@crisplinen.example
+brightwater,Brightwater Plumbing & Heating,maintenance,office@brightwater.example
+oakbarrel,Oakbarrel Wine Merchants,wine,trade@oakbarrel.example
+sparkle,Sparkle Commercial Cleaning,cleaning,accounts@sparkleclean.example
+kettlegrind,Kettle & Grind Roasters,coffee,hello@kettleandgrind.example
+pestaway,Pestaway Environmental,pest control,service@pestaway.example

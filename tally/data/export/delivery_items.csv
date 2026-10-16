@@ -1,0 +1,828 @@
+delivery_id,item,quantity,unit
+D-GL-0101,Maris Piper potatoes,119,kg
+D-GL-0101,Shallots,14,kg
+D-GL-0101,Vine tomatoes,27,kg
+D-GL-0101,Lemons,200,each
+D-GL-0103,Lemons,21,each
+D-GL-0103,Shallots,3,kg
+D-GL-0103,Flat-leaf parsley,3,bunch
+D-GL-0103,Vine tomatoes,8,kg
+D-GL-0103,Maris Piper potatoes,25,kg
+D-GL-0103,Baby spinach,3,kg
+D-GL-0106,Baby spinach,13,kg
+D-GL-0106,Lemons,79,each
+D-GL-0106,Maris Piper potatoes,132,kg
+D-GL-0106,Flat-leaf parsley,25,bunch
+D-GL-0106,Shallots,7,kg
+D-GL-0108,Shallots,4,kg
+D-GL-0108,Maris Piper potatoes,21,kg
+D-GL-0108,Flat-leaf parsley,6,bunch
+D-GL-0108,Baby spinach,3,kg
+D-GL-0108,Vine tomatoes,6,kg
+D-GL-0108,Lemons,20,each
+D-GL-0110,Shallots,18,kg
+D-GL-0110,Flat-leaf parsley,42,bunch
+D-GL-0110,Lemons,185,each
+D-GL-0110,Vine tomatoes,26,kg
+D-GL-0110,Baby spinach,13,kg
+D-GL-0113,Lemons,93,each
+D-GL-0113,Shallots,19,kg
+D-GL-0113,Flat-leaf parsley,16,bunch
+D-GL-0113,Maris Piper potatoes,130,kg
+D-GL-0113,Vine tomatoes,30,kg
+D-GL-0115,Vine tomatoes,17,kg
+D-GL-0115,Shallots,16,kg
+D-GL-0115,Lemons,176,each
+D-GL-0115,Baby spinach,15,kg
+D-GL-0115,Flat-leaf parsley,30,bunch
+D-GL-0115,Maris Piper potatoes,131,kg
+D-GL-0117,Maris Piper potatoes,91,kg
+D-GL-0117,Shallots,12,kg
+D-GL-0117,Lemons,111,each
+D-GL-0117,Flat-leaf parsley,24,bunch
+D-GL-0117,Baby spinach,9,kg
+D-GL-0117,Vine tomatoes,14,kg
+D-GL-0120,Baby spinach,10,kg
+D-GL-0120,Shallots,20,kg
+D-GL-0120,Lemons,111,each
+D-GL-0120,Maris Piper potatoes,73,kg
+D-GL-0122,Lemons,85,each
+D-GL-0122,Flat-leaf parsley,29,bunch
+D-GL-0122,Shallots,17,kg
+D-GL-0122,Baby spinach,13,kg
+D-GL-0122,Vine tomatoes,22,kg
+D-GL-0122,Maris Piper potatoes,97,kg
+D-GL-0124,Lemons,187,each
+D-GL-0124,Flat-leaf parsley,26,bunch
+D-GL-0124,Vine tomatoes,17,kg
+D-GL-0124,Maris Piper potatoes,64,kg
+D-GL-0127,Lemons,199,each
+D-GL-0127,Baby spinach,6,kg
+D-GL-0127,Flat-leaf parsley,34,bunch
+D-GL-0127,Vine tomatoes,20,kg
+D-GL-0127,Maris Piper potatoes,71,kg
+D-GL-0127,Shallots,7,kg
+D-GL-0129,Vine tomatoes,8,kg
+D-GL-0129,Shallots,3,kg
+D-GL-0129,Maris Piper potatoes,28,kg
+D-GL-0129,Lemons,46,each
+D-GL-0129,Baby spinach,1,kg
+D-GL-0129,Flat-leaf parsley,8,bunch
+D-GL-0131,Lemons,189,each
+D-GL-0131,Shallots,10,kg
+D-GL-0131,Baby spinach,6,kg
+D-GL-0131,Maris Piper potatoes,93,kg
+D-GL-0203,Baby spinach,13,kg
+D-GL-0203,Flat-leaf parsley,40,bunch
+D-GL-0203,Maris Piper potatoes,65,kg
+D-GL-0203,Lemons,156,each
+D-GL-0203,Shallots,6,kg
+D-GL-0203,Vine tomatoes,17,kg
+D-GL-0205,Vine tomatoes,14,kg
+D-GL-0205,Flat-leaf parsley,15,bunch
+D-GL-0205,Maris Piper potatoes,105,kg
+D-GL-0205,Lemons,181,each
+D-GL-0205,Baby spinach,10,kg
+D-GL-0207,Maris Piper potatoes,61,kg
+D-GL-0207,Lemons,99,each
+D-GL-0207,Flat-leaf parsley,33,bunch
+D-GL-0207,Vine tomatoes,30,kg
+D-GL-0207,Baby spinach,8,kg
+D-GL-0207,Shallots,12,kg
+D-GL-0210,Maris Piper potatoes,30,kg
+D-GL-0210,Lemons,26,each
+D-GL-0210,Baby spinach,1,kg
+D-GL-0210,Flat-leaf parsley,8,bunch
+D-GL-0210,Vine tomatoes,7,kg
+D-GL-0210,Shallots,5,kg
+D-GL-0212,Lemons,65,each
+D-GL-0212,Baby spinach,7,kg
+D-GL-0212,Flat-leaf parsley,35,bunch
+D-GL-0212,Maris Piper potatoes,107,kg
+D-GL-0214,Shallots,12,kg
+D-GL-0214,Baby spinach,9,kg
+D-GL-0214,Flat-leaf parsley,28,bunch
+D-GL-0214,Maris Piper potatoes,108,kg
+D-GL-0217,Vine tomatoes,7,kg
+D-GL-0217,Lemons,46,each
+D-GL-0217,Maris Piper potatoes,34,kg
+D-GL-0217,Flat-leaf parsley,10,bunch
+D-GL-0217,Baby spinach,2,kg
+D-GL-0219,Lemons,194,each
+D-GL-0219,Baby spinach,13,kg
+D-GL-0219,Maris Piper potatoes,75,kg
+D-GL-0219,Flat-leaf parsley,41,bunch
+D-GL-0219,Shallots,7,kg
+D-GL-0221,Baby spinach,11,kg
+D-GL-0221,Vine tomatoes,31,kg
+D-GL-0221,Shallots,18,kg
+D-GL-0221,Flat-leaf parsley,41,bunch
+D-GL-0224,Baby spinach,2,kg
+D-GL-0224,Vine tomatoes,7,kg
+D-GL-0224,Maris Piper potatoes,34,kg
+D-GL-0224,Shallots,3,kg
+D-GL-0224,Flat-leaf parsley,9,bunch
+D-GL-0224,Lemons,28,each
+D-GL-0226,Maris Piper potatoes,52,kg
+D-GL-0226,Shallots,12,kg
+D-GL-0226,Flat-leaf parsley,20,bunch
+D-GL-0226,Lemons,87,each
+D-GL-0226,Vine tomatoes,35,kg
+D-GL-0226,Baby spinach,5,kg
+D-GL-0228,Flat-leaf parsley,41,bunch
+D-GL-0228,Baby spinach,6,kg
+D-GL-0228,Vine tomatoes,23,kg
+D-GL-0228,Maris Piper potatoes,80,kg
+D-GL-0228,Shallots,8,kg
+D-GL-0303,Maris Piper potatoes,41,kg
+D-GL-0303,Vine tomatoes,15,kg
+D-GL-0303,Shallots,7,kg
+D-GL-0303,Baby spinach,8,kg
+D-GL-0303,Flat-leaf parsley,15,bunch
+D-GL-0305,Vine tomatoes,34,kg
+D-GL-0305,Flat-leaf parsley,37,bunch
+D-GL-0305,Maris Piper potatoes,118,kg
+D-GL-0305,Baby spinach,5,kg
+D-GL-0305,Lemons,163,each
+D-GL-0307,Shallots,19,kg
+D-GL-0307,Baby spinach,13,kg
+D-GL-0307,Lemons,124,each
+D-GL-0307,Flat-leaf parsley,27,bunch
+D-GL-0307,Vine tomatoes,23,kg
+D-GL-0310,Vine tomatoes,17,kg
+D-GL-0310,Lemons,136,each
+D-GL-0310,Flat-leaf parsley,39,bunch
+D-GL-0310,Baby spinach,11,kg
+D-GL-0310,Maris Piper potatoes,80,kg
+D-GL-0312,Vine tomatoes,4,kg
+D-GL-0312,Shallots,1,kg
+D-GL-0312,Maris Piper potatoes,11,kg
+D-GL-0312,Flat-leaf parsley,4,bunch
+D-GL-0312,Lemons,48,each
+D-GL-0312,Baby spinach,2,kg
+D-GL-0314,Flat-leaf parsley,27,bunch
+D-GL-0314,Maris Piper potatoes,70,kg
+D-GL-0314,Vine tomatoes,27,kg
+D-GL-0314,Baby spinach,15,kg
+D-GL-0314,Lemons,116,each
+D-GL-0314,Shallots,18,kg
+D-GL-0317,Baby spinach,13,kg
+D-GL-0317,Shallots,16,kg
+D-GL-0317,Vine tomatoes,31,kg
+D-GL-0317,Maris Piper potatoes,90,kg
+D-GL-0319,Baby spinach,11,kg
+D-GL-0319,Flat-leaf parsley,23,bunch
+D-GL-0319,Vine tomatoes,24,kg
+D-GL-0319,Lemons,95,each
+D-GL-0319,Shallots,16,kg
+D-GL-0321,Vine tomatoes,24,kg
+D-GL-0321,Baby spinach,5,kg
+D-GL-0321,Flat-leaf parsley,36,bunch
+D-GL-0321,Maris Piper potatoes,41,kg
+D-GL-0321,Shallots,16,kg
+D-GL-0321,Lemons,122,each
+D-GL-0324,Vine tomatoes,25,kg
+D-GL-0324,Baby spinach,8,kg
+D-GL-0324,Shallots,14,kg
+D-GL-0324,Maris Piper potatoes,75,kg
+D-GL-0324,Lemons,147,each
+D-GL-0326,Maris Piper potatoes,100,kg
+D-GL-0326,Flat-leaf parsley,43,bunch
+D-GL-0326,Lemons,139,each
+D-GL-0326,Shallots,9,kg
+D-GL-0328,Flat-leaf parsley,45,bunch
+D-GL-0328,Lemons,150,each
+D-GL-0328,Baby spinach,13,kg
+D-GL-0328,Shallots,17,kg
+D-GL-0331,Vine tomatoes,22,kg
+D-GL-0331,Baby spinach,7,kg
+D-GL-0331,Flat-leaf parsley,37,bunch
+D-GL-0331,Shallots,17,kg
+D-GL-0331,Maris Piper potatoes,52,kg
+D-GL-0402,Shallots,3,kg
+D-GL-0402,Baby spinach,2,kg
+D-GL-0402,Maris Piper potatoes,27,kg
+D-GL-0402,Lemons,48,each
+D-GL-0404,Flat-leaf parsley,23,bunch
+D-GL-0404,Baby spinach,9,kg
+D-GL-0404,Vine tomatoes,15,kg
+D-GL-0404,Lemons,108,each
+D-GL-0404,Maris Piper potatoes,60,kg
+D-GL-0404,Shallots,20,kg
+D-GL-0407,Maris Piper potatoes,64,kg
+D-GL-0407,Shallots,17,kg
+D-GL-0407,Flat-leaf parsley,35,bunch
+D-GL-0407,Baby spinach,5,kg
+D-GL-0407,Vine tomatoes,33,kg
+D-GL-0409,Lemons,49,each
+D-GL-0409,Flat-leaf parsley,4,bunch
+D-GL-0409,Maris Piper potatoes,15,kg
+D-GL-0409,Shallots,1,kg
+D-GL-0409,Vine tomatoes,4,kg
+D-GL-0409,Baby spinach,3,kg
+D-GL-0411,Flat-leaf parsley,19,bunch
+D-GL-0411,Vine tomatoes,33,kg
+D-GL-0411,Maris Piper potatoes,118,kg
+D-GL-0411,Shallots,9,kg
+D-GL-0411,Baby spinach,7,kg
+D-GL-0411,Lemons,87,each
+D-GL-0414,Lemons,90,each
+D-GL-0414,Vine tomatoes,25,kg
+D-GL-0414,Shallots,13,kg
+D-GL-0414,Baby spinach,12,kg
+D-GL-0414,Maris Piper potatoes,55,kg
+D-GL-0416,Shallots,4,kg
+D-GL-0416,Baby spinach,1,kg
+D-GL-0416,Maris Piper potatoes,25,kg
+D-GL-0416,Lemons,34,each
+D-GL-0416,Flat-leaf parsley,5,bunch
+D-GL-0416,Vine tomatoes,8,kg
+D-GL-0418,Baby spinach,10,kg
+D-GL-0418,Maris Piper potatoes,132,kg
+D-GL-0418,Lemons,186,each
+D-GL-0418,Shallots,12,kg
+D-GL-0421,Baby spinach,10,kg
+D-GL-0421,Flat-leaf parsley,28,bunch
+D-GL-0421,Lemons,157,each
+D-GL-0421,Vine tomatoes,20,kg
+D-GL-0421,Shallots,8,kg
+D-GL-0423,Flat-leaf parsley,18,bunch
+D-GL-0423,Shallots,11,kg
+D-GL-0423,Baby spinach,9,kg
+D-GL-0423,Lemons,173,each
+D-GL-0423,Maris Piper potatoes,73,kg
+D-GL-0425,Shallots,14,kg
+D-GL-0425,Maris Piper potatoes,138,kg
+D-GL-0425,Baby spinach,6,kg
+D-GL-0425,Lemons,128,each
+D-GL-0428,Shallots,11,kg
+D-GL-0428,Lemons,164,each
+D-GL-0428,Flat-leaf parsley,25,bunch
+D-GL-0428,Baby spinach,6,kg
+D-GL-0428,Vine tomatoes,35,kg
+D-GL-0430,Flat-leaf parsley,16,bunch
+D-GL-0430,Shallots,20,kg
+D-GL-0430,Baby spinach,11,kg
+D-GL-0430,Lemons,104,each
+D-GL-0430,Maris Piper potatoes,41,kg
+D-GL-0502,Shallots,18,kg
+D-GL-0502,Maris Piper potatoes,100,kg
+D-GL-0502,Baby spinach,12,kg
+D-GL-0502,Lemons,146,each
+D-GL-0502,Flat-leaf parsley,15,bunch
+D-GL-0505,Baby spinach,2,kg
+D-GL-0505,Vine tomatoes,7,kg
+D-GL-0505,Maris Piper potatoes,26,kg
+D-GL-0505,Flat-leaf parsley,5,bunch
+D-GL-0507,Flat-leaf parsley,19,bunch
+D-GL-0507,Maris Piper potatoes,82,kg
+D-GL-0507,Vine tomatoes,21,kg
+D-GL-0507,Shallots,13,kg
+D-GL-0507,Lemons,112,each
+D-GL-0507,Baby spinach,14,kg
+D-GL-0509,Baby spinach,2,kg
+D-GL-0509,Maris Piper potatoes,23,kg
+D-GL-0509,Vine tomatoes,3,kg
+D-GL-0509,Shallots,2,kg
+D-GL-0509,Flat-leaf parsley,8,bunch
+D-GL-0509,Lemons,47,each
+D-GL-0512,Lemons,182,each
+D-GL-0512,Maris Piper potatoes,72,kg
+D-GL-0512,Shallots,13,kg
+D-GL-0512,Baby spinach,10,kg
+D-GL-0514,Vine tomatoes,22,kg
+D-GL-0514,Lemons,179,each
+D-GL-0514,Baby spinach,8,kg
+D-GL-0514,Flat-leaf parsley,26,bunch
+D-GL-0514,Shallots,10,kg
+D-GL-0516,Flat-leaf parsley,38,bunch
+D-GL-0516,Lemons,190,each
+D-GL-0516,Maris Piper potatoes,127,kg
+D-GL-0516,Vine tomatoes,31,kg
+D-GL-0516,Shallots,18,kg
+D-GL-0516,Baby spinach,9,kg
+D-GL-0519,Shallots,11,kg
+D-GL-0519,Vine tomatoes,19,kg
+D-GL-0519,Maris Piper potatoes,49,kg
+D-GL-0519,Baby spinach,13,kg
+D-GL-0519,Lemons,104,each
+D-GL-0521,Shallots,9,kg
+D-GL-0521,Flat-leaf parsley,15,bunch
+D-GL-0521,Lemons,178,each
+D-GL-0521,Maris Piper potatoes,70,kg
+D-GL-0521,Vine tomatoes,20,kg
+D-GL-0523,Shallots,10,kg
+D-GL-0523,Flat-leaf parsley,39,bunch
+D-GL-0523,Baby spinach,12,kg
+D-GL-0523,Maris Piper potatoes,57,kg
+D-GL-0523,Vine tomatoes,31,kg
+D-GL-0526,Maris Piper potatoes,130,kg
+D-GL-0526,Flat-leaf parsley,19,bunch
+D-GL-0526,Lemons,96,each
+D-GL-0526,Shallots,8,kg
+D-GL-0526,Vine tomatoes,35,kg
+D-GL-0526,Baby spinach,14,kg
+D-GL-0528,Flat-leaf parsley,20,bunch
+D-GL-0528,Vine tomatoes,18,kg
+D-GL-0528,Maris Piper potatoes,74,kg
+D-GL-0528,Baby spinach,13,kg
+D-GL-0530,Maris Piper potatoes,127,kg
+D-GL-0530,Baby spinach,7,kg
+D-GL-0530,Lemons,165,each
+D-GL-0530,Vine tomatoes,34,kg
+D-GL-0530,Flat-leaf parsley,34,bunch
+D-GL-0530,Shallots,13,kg
+D-GL-0602,Vine tomatoes,27,kg
+D-GL-0602,Maris Piper potatoes,59,kg
+D-GL-0602,Baby spinach,10,kg
+D-GL-0602,Shallots,8,kg
+D-GL-0602,Lemons,190,each
+D-GL-0602,Flat-leaf parsley,16,bunch
+D-GL-0604,Vine tomatoes,14,kg
+D-GL-0604,Flat-leaf parsley,20,bunch
+D-GL-0604,Shallots,14,kg
+D-GL-0604,Baby spinach,8,kg
+D-GL-0604,Maris Piper potatoes,51,kg
+D-GL-0606,Flat-leaf parsley,45,bunch
+D-GL-0606,Lemons,186,each
+D-GL-0606,Baby spinach,8,kg
+D-GL-0606,Vine tomatoes,25,kg
+D-GL-0606,Maris Piper potatoes,60,kg
+D-GL-0609,Lemons,172,each
+D-GL-0609,Flat-leaf parsley,44,bunch
+D-GL-0609,Shallots,14,kg
+D-GL-0609,Baby spinach,14,kg
+D-GL-0609,Vine tomatoes,29,kg
+D-GL-0609,Maris Piper potatoes,51,kg
+D-GL-0611,Flat-leaf parsley,36,bunch
+D-GL-0611,Baby spinach,14,kg
+D-GL-0611,Vine tomatoes,36,kg
+D-GL-0611,Lemons,100,each
+D-GL-0613,Baby spinach,11,kg
+D-GL-0613,Flat-leaf parsley,15,bunch
+D-GL-0613,Lemons,200,each
+D-GL-0613,Vine tomatoes,18,kg
+D-GL-0616,Flat-leaf parsley,7,bunch
+D-GL-0616,Maris Piper potatoes,24,kg
+D-GL-0616,Shallots,5,kg
+D-GL-0616,Lemons,32,each
+D-GL-0616,Baby spinach,2,kg
+D-GL-0616,Vine tomatoes,7,kg
+D-GL-0618,Vine tomatoes,33,kg
+D-GL-0618,Baby spinach,15,kg
+D-GL-0618,Shallots,15,kg
+D-GL-0618,Lemons,72,each
+D-GL-0620,Flat-leaf parsley,32,bunch
+D-GL-0620,Shallots,19,kg
+D-GL-0620,Maris Piper potatoes,107,kg
+D-GL-0620,Baby spinach,13,kg
+D-GL-0620,Vine tomatoes,17,kg
+D-GL-0620,Lemons,130,each
+D-GL-0623,Vine tomatoes,26,kg
+D-GL-0623,Flat-leaf parsley,40,bunch
+D-GL-0623,Shallots,16,kg
+D-GL-0623,Lemons,176,each
+D-GL-0623,Baby spinach,14,kg
+D-GL-0625,Shallots,3,kg
+D-GL-0625,Vine tomatoes,4,kg
+D-GL-0625,Baby spinach,1,kg
+D-GL-0625,Lemons,49,each
+D-GL-0625,Flat-leaf parsley,10,bunch
+D-GL-0627,Vine tomatoes,24,kg
+D-GL-0627,Flat-leaf parsley,37,bunch
+D-GL-0627,Shallots,8,kg
+D-GL-0627,Maris Piper potatoes,79,kg
+D-GL-0627,Lemons,180,each
+D-GL-0630,Maris Piper potatoes,80,kg
+D-GL-0630,Lemons,167,each
+D-GL-0630,Baby spinach,5,kg
+D-GL-0630,Shallots,13,kg
+D-GL-0702,Shallots,15,kg
+D-GL-0702,Baby spinach,12,kg
+D-GL-0702,Lemons,157,each
+D-GL-0702,Vine tomatoes,29,kg
+D-GL-0704,Vine tomatoes,23,kg
+D-GL-0704,Lemons,121,each
+D-GL-0704,Baby spinach,13,kg
+D-GL-0704,Shallots,11,kg
+D-GL-0704,Flat-leaf parsley,23,bunch
+D-GL-0704,Maris Piper potatoes,138,kg
+D-GL-0707,Flat-leaf parsley,18,bunch
+D-GL-0707,Shallots,15,kg
+D-GL-0707,Vine tomatoes,25,kg
+D-GL-0707,Baby spinach,8,kg
+D-GL-0707,Lemons,79,each
+D-GL-0709,Baby spinach,5,kg
+D-GL-0709,Lemons,122,each
+D-GL-0709,Shallots,9,kg
+D-GL-0709,Vine tomatoes,15,kg
+D-GL-0709,Maris Piper potatoes,73,kg
+D-GL-0709,Flat-leaf parsley,39,bunch
+D-GL-0711,Shallots,20,kg
+D-GL-0711,Maris Piper potatoes,44,kg
+D-GL-0711,Flat-leaf parsley,21,bunch
+D-GL-0711,Vine tomatoes,36,kg
+D-GL-0714,Flat-leaf parsley,45,bunch
+D-GL-0714,Shallots,17,kg
+D-GL-0714,Vine tomatoes,28,kg
+D-GL-0714,Baby spinach,13,kg
+D-GL-0714,Lemons,68,each
+D-GL-0714,Maris Piper potatoes,64,kg
+D-GL-0716,Flat-leaf parsley,23,bunch
+D-GL-0716,Lemons,112,each
+D-GL-0716,Vine tomatoes,14,kg
+D-GL-0716,Baby spinach,9,kg
+D-GL-0716,Shallots,15,kg
+D-GL-0716,Maris Piper potatoes,122,kg
+D-GL-0718,Lemons,102,each
+D-GL-0718,Maris Piper potatoes,110,kg
+D-GL-0718,Vine tomatoes,34,kg
+D-GL-0718,Shallots,14,kg
+D-GL-0721,Shallots,13,kg
+D-GL-0721,Baby spinach,6,kg
+D-GL-0721,Lemons,122,each
+D-GL-0721,Vine tomatoes,15,kg
+D-GL-0721,Flat-leaf parsley,15,bunch
+D-GL-0721,Maris Piper potatoes,92,kg
+D-GL-0723,Shallots,2,kg
+D-GL-0723,Vine tomatoes,7,kg
+D-GL-0723,Lemons,27,each
+D-GL-0723,Maris Piper potatoes,26,kg
+D-GL-0723,Flat-leaf parsley,9,bunch
+D-GL-0725,Lemons,19,each
+D-GL-0725,Maris Piper potatoes,33,kg
+D-GL-0725,Baby spinach,1,kg
+D-GL-0725,Flat-leaf parsley,11,bunch
+D-GL-0725,Vine tomatoes,8,kg
+D-GL-0728,Baby spinach,6,kg
+D-GL-0728,Lemons,95,each
+D-GL-0728,Flat-leaf parsley,15,bunch
+D-GL-0728,Maris Piper potatoes,88,kg
+D-GL-0728,Shallots,7,kg
+D-GL-0728,Vine tomatoes,36,kg
+D-GL-0730,Flat-leaf parsley,9,bunch
+D-GL-0730,Lemons,16,each
+D-GL-0730,Maris Piper potatoes,30,kg
+D-GL-0730,Shallots,2,kg
+D-GL-0730,Baby spinach,2,kg
+D-GL-0801,Lemons,105,each
+D-GL-0801,Baby spinach,9,kg
+D-GL-0801,Maris Piper potatoes,135,kg
+D-GL-0801,Flat-leaf parsley,32,bunch
+D-GL-0804,Vine tomatoes,17,kg
+D-GL-0804,Maris Piper potatoes,71,kg
+D-GL-0804,Baby spinach,15,kg
+D-GL-0804,Shallots,13,kg
+D-GL-0806,Shallots,1,kg
+D-GL-0806,Flat-leaf parsley,8,bunch
+D-GL-0806,Lemons,48,each
+D-GL-0806,Vine tomatoes,5,kg
+D-GL-0808,Lemons,98,each
+D-GL-0808,Maris Piper potatoes,88,kg
+D-GL-0808,Vine tomatoes,34,kg
+D-GL-0808,Baby spinach,15,kg
+D-GL-0811,Lemons,143,each
+D-GL-0811,Shallots,13,kg
+D-GL-0811,Vine tomatoes,16,kg
+D-GL-0811,Flat-leaf parsley,42,bunch
+D-GL-0813,Maris Piper potatoes,134,kg
+D-GL-0813,Lemons,165,each
+D-GL-0813,Shallots,13,kg
+D-GL-0813,Flat-leaf parsley,24,bunch
+D-GL-0813,Baby spinach,10,kg
+D-GL-0815,Vine tomatoes,36,kg
+D-GL-0815,Shallots,10,kg
+D-GL-0815,Flat-leaf parsley,37,bunch
+D-GL-0815,Lemons,163,each
+D-GL-0818,Flat-leaf parsley,19,bunch
+D-GL-0818,Maris Piper potatoes,116,kg
+D-GL-0818,Baby spinach,10,kg
+D-GL-0818,Vine tomatoes,34,kg
+D-GL-0820,Lemons,175,each
+D-GL-0820,Baby spinach,8,kg
+D-GL-0820,Maris Piper potatoes,62,kg
+D-GL-0820,Flat-leaf parsley,31,bunch
+D-GL-0820,Shallots,10,kg
+D-GL-0820,Vine tomatoes,15,kg
+D-GL-0822,Shallots,12,kg
+D-GL-0822,Baby spinach,15,kg
+D-GL-0822,Maris Piper potatoes,103,kg
+D-GL-0822,Vine tomatoes,35,kg
+D-GL-0822,Flat-leaf parsley,16,bunch
+D-GL-0822,Lemons,138,each
+D-GL-0825,Vine tomatoes,36,kg
+D-GL-0825,Shallots,16,kg
+D-GL-0825,Maris Piper potatoes,108,kg
+D-GL-0825,Lemons,190,each
+D-GL-0825,Baby spinach,9,kg
+D-GL-0825,Flat-leaf parsley,40,bunch
+D-GL-0827,Shallots,3,kg
+D-GL-0827,Flat-leaf parsley,7,bunch
+D-GL-0827,Maris Piper potatoes,22,kg
+D-GL-0827,Baby spinach,3,kg
+D-GL-0827,Lemons,38,each
+D-GL-0827,Vine tomatoes,5,kg
+D-GL-0829,Shallots,8,kg
+D-GL-0829,Lemons,185,each
+D-GL-0829,Maris Piper potatoes,119,kg
+D-GL-0829,Flat-leaf parsley,27,bunch
+D-GL-0829,Vine tomatoes,29,kg
+D-GL-0829,Baby spinach,7,kg
+D-GL-0901,Shallots,7,kg
+D-GL-0901,Baby spinach,8,kg
+D-GL-0901,Maris Piper potatoes,90,kg
+D-GL-0901,Vine tomatoes,17,kg
+D-GL-0901,Lemons,177,each
+D-GL-0903,Maris Piper potatoes,40,kg
+D-GL-0903,Shallots,7,kg
+D-GL-0903,Vine tomatoes,16,kg
+D-GL-0903,Baby spinach,10,kg
+D-GL-0903,Lemons,98,each
+D-GL-0903,Flat-leaf parsley,29,bunch
+D-GL-0905,Lemons,91,each
+D-GL-0905,Vine tomatoes,16,kg
+D-GL-0905,Shallots,11,kg
+D-GL-0905,Flat-leaf parsley,22,bunch
+D-GL-0905,Baby spinach,7,kg
+D-GL-0905,Maris Piper potatoes,96,kg
+D-GL-0908,Vine tomatoes,7,kg
+D-GL-0908,Shallots,3,kg
+D-GL-0908,Lemons,19,each
+D-GL-0908,Flat-leaf parsley,7,bunch
+D-GL-0908,Maris Piper potatoes,25,kg
+D-GL-0910,Lemons,18,each
+D-GL-0910,Flat-leaf parsley,7,bunch
+D-GL-0910,Maris Piper potatoes,15,kg
+D-GL-0910,Shallots,3,kg
+D-GL-0912,Vine tomatoes,14,kg
+D-GL-0912,Maris Piper potatoes,58,kg
+D-GL-0912,Baby spinach,14,kg
+D-GL-0912,Lemons,138,each
+D-GL-0912,Flat-leaf parsley,23,bunch
+D-GL-0912,Shallots,18,kg
+D-GL-0915,Vine tomatoes,16,kg
+D-GL-0915,Baby spinach,14,kg
+D-GL-0915,Maris Piper potatoes,138,kg
+D-GL-0915,Flat-leaf parsley,34,bunch
+D-GL-0915,Shallots,10,kg
+D-GL-0917,Lemons,124,each
+D-GL-0917,Shallots,6,kg
+D-GL-0917,Maris Piper potatoes,111,kg
+D-GL-0917,Vine tomatoes,33,kg
+D-GL-0917,Flat-leaf parsley,23,bunch
+D-GL-0919,Lemons,173,each
+D-GL-0919,Maris Piper potatoes,60,kg
+D-GL-0919,Flat-leaf parsley,26,bunch
+D-GL-0919,Shallots,19,kg
+D-GL-0919,Baby spinach,13,kg
+D-GL-0919,Vine tomatoes,23,kg
+D-GL-0922,Maris Piper potatoes,83,kg
+D-GL-0922,Vine tomatoes,36,kg
+D-GL-0922,Baby spinach,10,kg
+D-GL-0922,Shallots,17,kg
+D-GL-0922,Flat-leaf parsley,44,bunch
+D-GL-0924,Vine tomatoes,35,kg
+D-GL-0924,Maris Piper potatoes,53,kg
+D-GL-0924,Lemons,155,each
+D-GL-0924,Shallots,19,kg
+D-GL-0924,Baby spinach,11,kg
+D-GL-0924,Flat-leaf parsley,39,bunch
+D-GL-0926,Lemons,37,each
+D-GL-0926,Shallots,3,kg
+D-GL-0926,Maris Piper potatoes,33,kg
+D-GL-0926,Flat-leaf parsley,6,bunch
+D-GL-0926,Baby spinach,2,kg
+D-GL-0926,Vine tomatoes,7,kg
+D-GL-0929,Maris Piper potatoes,130,kg
+D-GL-0929,Lemons,135,each
+D-GL-0929,Shallots,14,kg
+D-GL-0929,Vine tomatoes,31,kg
+D-NS-0102,Salmon fillet,10,kg
+D-NS-0102,Hake fillet,8,kg
+D-NS-0106,Cod loin,5,kg
+D-NS-0106,Salmon fillet,4,kg
+D-NS-0109,Mussels,8,kg
+D-NS-0109,Salmon fillet,17,kg
+D-NS-0109,Hake fillet,5,kg
+D-NS-0109,King prawns,16,kg
+D-NS-0113,Mussels,28,kg
+D-NS-0113,Salmon fillet,4,kg
+D-NS-0113,King prawns,18,kg
+D-NS-0113,Cod loin,14,kg
+D-NS-0116,Mussels,24,kg
+D-NS-0116,Hake fillet,18,kg
+D-NS-0120,Mussels,13,kg
+D-NS-0120,Salmon fillet,11,kg
+D-NS-0120,King prawns,8,kg
+D-NS-0120,Cod loin,10,kg
+D-NS-0123,Mussels,6,kg
+D-NS-0123,Cod loin,18,kg
+D-NS-0123,Salmon fillet,11,kg
+D-NS-0123,King prawns,9,kg
+D-NS-0127,Hake fillet,8,kg
+D-NS-0127,Salmon fillet,7,kg
+D-NS-0130,Hake fillet,17,kg
+D-NS-0130,Salmon fillet,15,kg
+D-NS-0203,Hake fillet,7,kg
+D-NS-0203,Cod loin,14,kg
+D-NS-0203,Salmon fillet,8,kg
+D-NS-0203,King prawns,7,kg
+D-NS-0206,Mussels,13,kg
+D-NS-0206,Salmon fillet,8,kg
+D-NS-0206,Hake fillet,12,kg
+D-NS-0210,Hake fillet,18,kg
+D-NS-0210,Mussels,8,kg
+D-NS-0210,King prawns,18,kg
+D-NS-0210,Salmon fillet,8,kg
+D-NS-0213,Mussels,8,kg
+D-NS-0213,Salmon fillet,15,kg
+D-NS-0213,Cod loin,8,kg
+D-NS-0213,Hake fillet,23,kg
+D-NS-0217,King prawns,4,kg
+D-NS-0217,Salmon fillet,4,kg
+D-NS-0220,Mussels,28,kg
+D-NS-0220,King prawns,13,kg
+D-NS-0220,Hake fillet,27,kg
+D-NS-0224,Mussels,14,kg
+D-NS-0224,Salmon fillet,7,kg
+D-NS-0224,Hake fillet,12,kg
+D-NS-0227,King prawns,14,kg
+D-NS-0227,Salmon fillet,20,kg
+D-NS-0227,Hake fillet,13,kg
+D-NS-0303,Mussels,5,kg
+D-NS-0303,King prawns,8,kg
+D-NS-0306,Cod loin,27,kg
+D-NS-0306,King prawns,4,kg
+D-NS-0306,Mussels,15,kg
+D-NS-0310,Cod loin,23,kg
+D-NS-0310,Mussels,13,kg
+D-NS-0310,Hake fillet,8,kg
+D-NS-0313,Mussels,5,kg
+D-NS-0313,King prawns,17,kg
+D-NS-0313,Salmon fillet,28,kg
+D-NS-0317,King prawns,23,kg
+D-NS-0317,Mussels,18,kg
+D-NS-0317,Cod loin,23,kg
+D-NS-0317,Hake fillet,8,kg
+D-NS-0320,Cod loin,16,kg
+D-NS-0320,King prawns,13,kg
+D-NS-0320,Hake fillet,17,kg
+D-NS-0324,Hake fillet,4,kg
+D-NS-0324,Salmon fillet,9,kg
+D-NS-0324,King prawns,18,kg
+D-NS-0327,Hake fillet,5,kg
+D-NS-0327,Mussels,15,kg
+D-NS-0327,Salmon fillet,17,kg
+D-NS-0331,King prawns,8,kg
+D-NS-0331,Hake fillet,14,kg
+D-NS-0331,Salmon fillet,13,kg
+D-NS-0403,Mussels,6,kg
+D-NS-0403,Salmon fillet,10,kg
+D-NS-0403,Hake fillet,10,kg
+D-NS-0407,Mussels,12,kg
+D-NS-0407,Salmon fillet,20,kg
+D-NS-0407,Hake fillet,25,kg
+D-NS-0410,Salmon fillet,11,kg
+D-NS-0410,King prawns,13,kg
+D-NS-0414,Cod loin,11,kg
+D-NS-0414,King prawns,4,kg
+D-NS-0417,Cod loin,8,kg
+D-NS-0417,Salmon fillet,27,kg
+D-NS-0421,Salmon fillet,17,kg
+D-NS-0421,Mussels,8,kg
+D-NS-0421,Hake fillet,9,kg
+D-NS-0421,Cod loin,4,kg
+D-NS-0424,King prawns,4,kg
+D-NS-0424,Cod loin,4,kg
+D-NS-0428,Hake fillet,10,kg
+D-NS-0428,Cod loin,5,kg
+D-NS-0501,Hake fillet,6,kg
+D-NS-0501,King prawns,5,kg
+D-NS-0505,Salmon fillet,16,kg
+D-NS-0505,King prawns,4,kg
+D-NS-0505,Mussels,13,kg
+D-NS-0508,King prawns,15,kg
+D-NS-0508,Cod loin,11,kg
+D-NS-0508,Salmon fillet,11,kg
+D-NS-0508,Hake fillet,10,kg
+D-NS-0512,Salmon fillet,18,kg
+D-NS-0512,Cod loin,20,kg
+D-NS-0512,Hake fillet,10,kg
+D-NS-0512,King prawns,9,kg
+D-NS-0515,Salmon fillet,7,kg
+D-NS-0515,Mussels,10,kg
+D-NS-0515,Cod loin,16,kg
+D-NS-0519,King prawns,28,kg
+D-NS-0519,Mussels,5,kg
+D-NS-0519,Salmon fillet,27,kg
+D-NS-0522,Cod loin,17,kg
+D-NS-0522,Mussels,16,kg
+D-NS-0522,King prawns,16,kg
+D-NS-0522,Salmon fillet,4,kg
+D-NS-0526,Cod loin,4,kg
+D-NS-0526,Hake fillet,10,kg
+D-NS-0526,Salmon fillet,27,kg
+D-NS-0526,Mussels,4,kg
+D-NS-0529,Salmon fillet,12,kg
+D-NS-0529,King prawns,4,kg
+D-NS-0529,Hake fillet,9,kg
+D-NS-0602,Salmon fillet,15,kg
+D-NS-0602,King prawns,17,kg
+D-NS-0602,Mussels,25,kg
+D-NS-0602,Hake fillet,23,kg
+D-NS-0605,King prawns,20,kg
+D-NS-0605,Cod loin,12,kg
+D-NS-0605,Mussels,26,kg
+D-NS-0609,Cod loin,7,kg
+D-NS-0609,Salmon fillet,10,kg
+D-NS-0612,Salmon fillet,6,kg
+D-NS-0612,Cod loin,10,kg
+D-NS-0616,Cod loin,6,kg
+D-NS-0616,Hake fillet,16,kg
+D-NS-0616,Salmon fillet,17,kg
+D-NS-0619,Cod loin,20,kg
+D-NS-0619,Hake fillet,15,kg
+D-NS-0623,Mussels,15,kg
+D-NS-0623,Salmon fillet,14,kg
+D-NS-0626,Cod loin,9,kg
+D-NS-0626,King prawns,9,kg
+D-NS-0626,Hake fillet,28,kg
+D-NS-0630,King prawns,9,kg
+D-NS-0630,Salmon fillet,5,kg
+D-NS-0630,Mussels,23,kg
+D-NS-0703,Cod loin,9,kg
+D-NS-0703,King prawns,5,kg
+D-NS-0707,Hake fillet,5,kg
+D-NS-0707,Salmon fillet,18,kg
+D-NS-0710,Hake fillet,8,kg
+D-NS-0710,Salmon fillet,4,kg
+D-NS-0710,King prawns,16,kg
+D-NS-0710,Mussels,10,kg
+D-NS-0714,Cod loin,6,kg
+D-NS-0714,Salmon fillet,28,kg
+D-NS-0714,Hake fillet,15,kg
+D-NS-0717,King prawns,10,kg
+D-NS-0717,Mussels,15,kg
+D-NS-0717,Cod loin,8,kg
+D-NS-0721,King prawns,14,kg
+D-NS-0721,Hake fillet,6,kg
+D-NS-0721,Cod loin,21,kg
+D-NS-0724,Cod loin,15,kg
+D-NS-0724,Mussels,10,kg
+D-NS-0724,King prawns,17,kg
+D-NS-0724,Hake fillet,7,kg
+D-NS-0728,Salmon fillet,8,kg
+D-NS-0728,Hake fillet,11,kg
+D-NS-0728,Cod loin,10,kg
+D-NS-0728,King prawns,24,kg
+D-NS-0731,Cod loin,27,kg
+D-NS-0731,King prawns,13,kg
+D-NS-0804,Mussels,13,kg
+D-NS-0804,King prawns,8,kg
+D-NS-0804,Salmon fillet,17,kg
+D-NS-0804,Hake fillet,18,kg
+D-NS-0807,Salmon fillet,10,kg
+D-NS-0807,Hake fillet,17,kg
+D-NS-0811,Salmon fillet,10,kg
+D-NS-0811,Mussels,10,kg
+D-NS-0811,Cod loin,10,kg
+D-NS-0814,Mussels,4,kg
+D-NS-0814,Cod loin,10,kg
+D-NS-0818,King prawns,10,kg
+D-NS-0818,Mussels,15,kg
+D-NS-0821,Salmon fillet,16,kg
+D-NS-0821,King prawns,16,kg
+D-NS-0825,Salmon fillet,6,kg
+D-NS-0825,King prawns,21,kg
+D-NS-0825,Mussels,18,kg
+D-NS-0825,Hake fillet,6,kg
+D-NS-0828,Cod loin,20,kg
+D-NS-0828,Mussels,10,kg
+D-NS-0828,Hake fillet,17,kg
+D-NS-0901,Mussels,8,kg
+D-NS-0901,King prawns,8,kg
+D-NS-0904,Cod loin,18,kg
+D-NS-0904,Salmon fillet,13,kg
+D-NS-0904,King prawns,21,kg
+D-NS-0904,Hake fillet,9,kg
+D-NS-0908,Mussels,6,kg
+D-NS-0908,King prawns,5,kg
+D-NS-0908,Cod loin,13,kg
+D-NS-0911,Cod loin,26,kg
+D-NS-0911,Salmon fillet,10,kg
+D-NS-0915,Cod loin,7,kg
+D-NS-0915,King prawns,16,kg
+D-NS-0915,Mussels,24,kg
+D-NS-0915,Salmon fillet,18,kg
+D-NS-0918,Salmon fillet,15,kg
+D-NS-0918,Cod loin,13,kg
+D-NS-0918,Hake fillet,11,kg
+D-NS-0922,Mussels,13,kg
+D-NS-0922,Hake fillet,11,kg
+D-NS-0922,Cod loin,15,kg
+D-NS-0925,Hake fillet,20,kg
+D-NS-0925,Cod loin,10,kg
+D-NS-0925,Mussels,4,kg
+D-NS-0929,Hake fillet,4,kg
+D-NS-0929,King prawns,17,kg
+D-NS-0929,Cod loin,9,kg
