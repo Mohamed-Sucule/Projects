@@ -17,6 +17,7 @@ import { WORLDS, ISLANDS, REGIONS, REPO, FEATURED, DETAILS, AI, islandById, SEAR
 import { islandSVG, SCENE_IDS } from '../atlas/islands.js';
 import { FX_TYPES } from '../atlas/fx.js';
 import { sceneLayout, dialAt, moonPhase, phaseName } from '../atlas/sky.js';
+import { dialPoint, dialRing } from '../atlas/scene.js';
 import { buildIndex, search } from '../shared/search.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -212,6 +213,20 @@ test('every block of the dial is a world, and the dial is only the dial', () => 
     assert.equal(dialAt(L, [ox + R * 3, oy], 0), -1, 'empty sky is not a block');
   }
   assert.equal(ISLANDS.length, 35, 'the dial has thirty-five blocks; the atlas must have thirty-five worlds');
+});
+
+test('the keyboard points at the block it says, however far the dial has turned', () => {
+  for (const [W, H] of SIZES) {
+    const L = sceneLayout(W, H);
+    const [ox, oy, r] = dialRing(L);
+    for (const rot of [0, 0.4, 2.9, 11]) {
+      for (let i = 0; i < 35; i++) {
+        const p = dialPoint(L, i, rot);
+        assert.equal(dialAt(L, p, rot), i, `${W}x${H} rot ${rot}: block ${i} is not where the keyboard says`);
+        assert.ok(Math.hypot(p[0] - ox, p[1] - oy) < r, 'the block lies inside the circle the keyboard focuses');
+      }
+    }
+  }
 });
 
 test('where the AI is: every claim about a model is backed by the project\'s own README', () => {

@@ -17,7 +17,7 @@ import { KINDS } from '../shared/atlas.js';
 import { buildIndex, search, explain, detectIntent } from '../shared/search.js';
 import { ISLANDS, REGIONS, SEARCHABLE, islandById } from './worlds.js';
 import { islandSVG } from './islands.js';
-import { createSky, sceneLayout, toScreen, moonPhase, phaseName } from './sky.js';
+import { createSky, sceneLayout, dialRing, toScreen, moonPhase, phaseName } from './sky.js';
 import { createFx } from './fx.js';
 import { createStage, kindLabel } from './stage.js';
 
@@ -32,11 +32,12 @@ const root = document.documentElement;
 const skyCanvas = $('#sky');
 let sky = null;
 try { sky = createSky(skyCanvas, { reduced, lowPower }); } catch (e) { console.warn('sky failed', e); sky = null; }
-let fallback = null;
+/* Without WebGL the same scene is drawn in 2D, behind the same calls, so
+   everything below works the same either way. */
 if (!sky) {
   document.body.classList.add('no-webgl');
   const { startWorld } = await import('./hero.js');
-  fallback = startWorld(skyCanvas, { reduced, onPortal: () => explore() });
+  sky = startWorld(skyCanvas, { reduced });
 }
 const fx = createFx($('#near'), $('#veil'), { reduced });
 const stage = createStage({ sky, fx, reduced, coarse, onFocusChange: (isle) => { $('#guide').hidden = !!isle; document.body.classList.toggle('in-world', !!isle); } });
@@ -103,8 +104,7 @@ function portalPx() {
     const [x, y] = toScreen(L.portal, innerWidth, innerHeight);
     return { x, y, r: L.portal[2] * innerHeight };
   }
-  const p = fallback?.portal();
-  return p ? { x: p.x, y: p.y, r: p.ry } : null;
+  return null;
 }
 
 function onScroll() {
@@ -217,6 +217,74 @@ $('.threshold').addEventListener('click', (ev) => {
   if (P && Math.hypot(ev.clientX - P.x, ev.clientY - P.y) < P.r * 0.85) explore();
 });
 
+/* the same dial from the keyboard: the arrows go round it, Enter steps in */
+const dial = $('.dial');
+let dialKey = -1, dialTimer = 0;
+/* (looked up here, not from the const above: with reduced motion the intro ends,
+   and this runs, before the module has got that far) */
+function placeDial() {
+  const dial = $('.dial');
+  const L = sky?.layout();
+  dial.hidden = !L || !introDone;
+  if (dial.hidden) return;
+  const [x, y, r] = dialRing(L);
+  const [px, py] = toScreen([x, y], innerWidth, innerHeight);
+  const rp = r * innerHeight;
+  Object.assign(dial.style, { left: `${px - rp}px`, top: `${py - rp}px`, width: `${rp * 2}px`, height: `${rp * 2}px` });
+}
+function fillDial() {
+  dial.replaceChildren(...stage.order().map((id, i) => {
+    const isle = islandById.get(id);
+    const region = REGIONS.find((r) => r.id === isle.region)?.name;
+    const o = document.createElement('div');
+    o.id = `dial-${i}`;
+    o.setAttribute('role', 'option');
+    o.setAttribute('aria-selected', 'false');
+    o.textContent = [isle.title, region, stage.wasSeen(id) && 'visited'].filter(Boolean).join(', ');
+    return o;
+  }));
+}
+/* the block turns with the dial, so the label follows it */
+function labelDial() {
+  const [x, y] = sky.dialPoint(dialKey);
+  const half = hint.offsetWidth / 2 + 12;
+  hint.style.left = `${Math.max(half, Math.min(innerWidth - half, x))}px`;
+  hint.style.top = `${y + 24}px`;
+}
+function pointDial(i) {
+  dialKey = dialHot = i;
+  sky.set({ dialHot: i });
+  for (const o of dial.children) o.setAttribute('aria-selected', String(o.id === `dial-${i}`));
+  dial.setAttribute('aria-activedescendant', `dial-${i}`);
+  hint.querySelector('span').textContent = `${islandById.get(stage.order()[i]).title}: enter its world`;
+  hint.classList.add('on', 'dial');
+  labelDial();
+}
+dial.addEventListener('focus', () => {
+  fillDial();
+  pointDial(Math.max(0, dialKey));
+  clearInterval(dialTimer);
+  if (!reduced) dialTimer = setInterval(labelDial, 250);
+});
+dial.addEventListener('blur', () => {
+  clearInterval(dialTimer);
+  dialHot = -1;
+  hovering = false;
+  sky?.set({ dialHot: -1 });
+  hint.classList.remove('on', 'dial');
+});
+dial.addEventListener('keydown', (e) => {
+  const n = stage.order().length;
+  const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+  if (step) pointDial((dialKey + step + n) % n);
+  else if (e.key === 'Home') pointDial(0);
+  else if (e.key === 'End') pointDial(n - 1);
+  else if (e.key === 'Enter' || e.key === ' ') stage.select(stage.order()[dialKey]);
+  else return;
+  e.preventDefault();
+  e.stopPropagation();
+});
+
 /* ── things to find ─────────────────────────────────────────────────── */
 
 const note = $('.note');
@@ -234,6 +302,7 @@ function placeSpots() {
     b.hidden = !p || !introDone;
     if (p) { b.style.left = `${p[0]}px`; b.style.top = `${p[1]}px`; }
   }
+  placeDial();
 }
 function showNote(text, at) {
   note.querySelector('p').textContent = text;
