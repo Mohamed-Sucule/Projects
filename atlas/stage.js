@@ -575,6 +575,7 @@ export function createStage({ sky, fx, reduced, coarse, onFocusChange = () => {}
     selected: () => selected,
     state: () => state,
     seenCount: () => seen.size,
+    wasSeen: (id) => seen.has(id),
     /* the worlds in the order the dial shows them, clockwise from the top */
     order: () => order.map((i) => i.id),
     light(ids) {

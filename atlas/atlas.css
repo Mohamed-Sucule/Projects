@@ -47,8 +47,6 @@ kbd { font-family: var(--mono); font-size: .9em; padding: 0 5px; border: 1px sol
 .sky { z-index: 0; background: var(--void); }
 .near { z-index: 1; }
 .veil { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 70; pointer-events: none; }
-body.no-webgl .worlds { background: radial-gradient(120% 80% at 70% 30%, #4a4a7a 0%, #1f2a4a 40%, #0b1020 100%); }
-body.no-webgl #sky { pointer-events: auto; }
 
 /* ── the corner ──────────────────────────────────────────────────────── */
 .nav {
@@ -114,6 +112,11 @@ body.resolve .hero > *:not(h1) { transition: opacity .9s ease .5s; }
 }
 .portal-hint.on { opacity: .95; }
 .portal-hint span::after { content: " \2193"; }
+.portal-hint.dial span::after { content: none; }
+/* the dial is drawn by the sky; this is the circle a keyboard focuses, over it */
+.dial { position: absolute; z-index: 2; border-radius: 50%; pointer-events: none; outline: none; }
+.dial:focus-visible { box-shadow: 0 0 0 1px rgba(232, 199, 170, .55), 0 0 0 5px rgba(232, 199, 170, .12); }
+.dial [role="option"] { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .hotspots .spot { position: absolute; z-index: 3; width: 34px; height: 34px; margin: -17px 0 0 -17px; border: 0; background: none; border-radius: 50%; cursor: pointer; }
 .hotspots .spot:focus-visible { outline: 1px solid var(--starlight); }
 .hotspots .spot:hover::after, .hotspots .spot:focus-visible::after {

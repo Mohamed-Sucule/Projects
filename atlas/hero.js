@@ -1,17 +1,16 @@
-/* atlas/hero.js — the first screen: a portal, a floating city and the water under both.
+/* atlas/hero.js — the floating city, and the threshold for browsers without WebGL.
 
-   One canvas, no image files. The sky, the city and the far islands are drawn
-   once per resize into offscreen canvases; each frame then composes them with
-   the parts that move (stars, the portal's rim and its swirl, the city's slow
-   bob) into a "scene" above the horizon, and builds the water by copying that
-   scene back upside down, one strip at a time, each strip pushed sideways by a
-   pair of travelling waves. That is the whole reflection trick, and it is why
-   the portal and the city really are in the water rather than painted there.
+   buildCity draws the city that floats beyond the ring, once, with the 2D
+   canvas; the shader (sky.js) uploads it as its one texture. startWorld draws the
+   whole threshold in 2D from the same layout the shader uses (scene.js): the ring
+   as a tube in perspective with its dial, the stack, the cables, the causeway,
+   the cliffs, and the sea, which is the scene above it copied back upside down
+   one strip at a time, each strip pushed sideways by a pair of travelling waves.
+   It answers the same calls as the shader, so the page, the hotspots and the
+   dial work the same either way. Off screen, in a background tab, or for someone
+   who has asked for reduced motion, it stops. */
 
-   The cursor leans every layer by an amount set by its depth, tips the portal
-   towards it and pulls the swirl off centre. Off screen, in a background tab, or
-   for someone who has asked for reduced motion, it stops: reduced motion gets a
-   single still frame that still answers hover and click. */
+import { EYE, DIAL_SPEED, sceneLayout, dialAt, dialPoint, toScreen, moonPhase } from './scene.js';
 
 const TAU = Math.PI * 2;
 const LIT = 'rgba(255, 217, 138,';
@@ -36,81 +35,6 @@ function offscreen(w, h, dpr) {
   return [c, x];
 }
 
-/* ── things drawn once ─────────────────────────────────────────────────── */
-
-function buildSky(w, h, dpr, portal) {
-  const [c, x] = offscreen(w, h, dpr);
-  const g = x.createLinearGradient(0, 0, 0, h);
-  g.addColorStop(0, '#080B14');
-  g.addColorStop(0.5, '#0e1730');
-  g.addColorStop(0.85, '#1a2747');
-  g.addColorStop(1, '#2a2f4e');
-  x.fillStyle = g;
-  x.fillRect(0, 0, w, h);
-  const rand = seeded(7);
-  /* Nebula: soft clouds, densest around the portal so the eye goes there. */
-  const blobs = [[portal.x, portal.y, 0.9, '113,142,200', 0.22], [portal.x - w * 0.25, h * 0.3, 0.7, '113,142,200', 0.12],
-    [portal.x + w * 0.12, h * 0.15, 0.5, '154,230,208', 0.07], [w * 0.12, h * 0.55, 0.6, '232,199,170', 0.06]];
-  for (let i = 0; i < 7; i++) blobs.push([rand() * w, rand() * h * 0.8, 0.3 + rand() * 0.4, '113,142,200', 0.05 + rand() * 0.06]);
-  for (const [bx, by, k, col, a] of blobs) {
-    const rad = Math.max(w, h) * 0.45 * k;
-    const rg = x.createRadialGradient(bx, by, 0, bx, by, rad);
-    rg.addColorStop(0, `rgba(${col},${a})`);
-    rg.addColorStop(1, `rgba(${col},0)`);
-    x.fillStyle = rg;
-    x.fillRect(bx - rad, by - rad, rad * 2, rad * 2);
-  }
-  /* A warm band low in the sky, as if the light were coming from beyond the horizon. */
-  const band = x.createLinearGradient(0, h * 0.72, 0, h);
-  band.addColorStop(0, 'rgba(232,199,170,0)');
-  band.addColorStop(1, 'rgba(232,199,170,0.12)');
-  x.fillStyle = band;
-  x.fillRect(0, h * 0.72, w, h * 0.28);
-  const n = Math.round((w * h) / 2600);
-  for (let i = 0; i < n; i++) {
-    const sx = rand() * w;
-    const sy = Math.pow(rand(), 1.4) * h * 0.95;
-    const a = 0.15 + rand() * 0.55;
-    x.fillStyle = `rgba(232,236,255,${a})`;
-    const s = rand() < 0.08 ? 1.6 : 0.9;
-    x.fillRect(sx, sy, s, s);
-  }
-  return c;
-}
-
-/* The far islands: flat silhouettes with a lit edge, small enough to read as distance. */
-function buildFar(w, h, dpr) {
-  const [c, x] = offscreen(w, h, dpr);
-  const rand = seeded(23);
-  const spots = [[0.08, 0.3, 0.05], [0.2, 0.18, 0.03], [0.46, 0.22, 0.025], [0.86, 0.2, 0.04], [0.94, 0.48, 0.03], [0.4, 0.55, 0.02]];
-  for (const [fx, fy, fs] of spots) {
-    const cx = fx * w;
-    const cy = fy * h;
-    const s = fs * Math.max(w, 900);
-    x.beginPath();
-    x.moveTo(cx - s, cy);
-    for (let i = 0; i <= 6; i++) {
-      const t = i / 6;
-      x.lineTo(cx - s + t * 2 * s, cy + Math.sin(Math.PI * t) * s * (0.8 + rand() * 0.5));
-    }
-    x.closePath();
-    x.fillStyle = 'rgba(20,30,56,0.75)';
-    x.fill();
-    x.beginPath();
-    x.ellipse(cx, cy, s, s * 0.14, 0, 0, TAU);
-    x.fillStyle = 'rgba(64,88,130,0.7)';
-    x.fill();
-    for (let k = 0; k < 3; k++) {
-      const tw = s * (0.12 + rand() * 0.12);
-      const th = s * (0.3 + rand() * 0.9);
-      const tx = cx - s * 0.6 + rand() * s * 1.2;
-      x.fillStyle = 'rgba(28,40,70,0.95)';
-      x.fillRect(tx, cy - th, tw, th);
-      if (rand() < 0.7) { x.fillStyle = `${LIT}0.8)`; x.fillRect(tx + tw * 0.35, cy - th * 0.7, Math.max(1, tw * 0.3), Math.max(1, tw * 0.3)); }
-    }
-  }
-  return c;
-}
 
 /* The floating city: a mountain of rock with towers on top, a second city hanging
    upside down beneath it, a stair that climbs into nothing, and a waterfall that
@@ -250,292 +174,547 @@ export function buildCity(size, dpr) {
   return { canvas: c, w: W, h: H, capY };
 }
 
-/* ── the moving parts ───────────────────────────────────────────────────── */
+/* ── the 2D threshold ───────────────────────────────────────────────────── */
 
-export function startWorld(canvas, { art = null, onPortal = () => {}, onHover = () => {}, reduced = false } = {}) {
+const DEPTH = 0.26;
+const ss = (e0, e1, x) => { const t = Math.min(1, Math.max(0, (x - e0) / (e1 - e0))); return t * t * (3 - 2 * t); };
+const mix = (a, b, t) => a + (b - a) * t;
+
+/* A smooth seeded curve on 0..1, for cliff edges and cloud banks. */
+function curve(rand, n) {
+  const v = Array.from({ length: n + 2 }, () => rand());
+  return (t) => {
+    const x = Math.max(0, Math.min(0.9999, t)) * n;
+    const i = Math.floor(x);
+    const f = x - i;
+    const u = f * f * (3 - 2 * f);
+    return v[i] * (1 - u) + v[i + 1] * u;
+  };
+}
+
+/* The world beyond the ring, as a picture: the sky, a warm horizon, the sea of
+   cloud and the floating city, with the region's weather laid over it. Used both
+   in the ring's opening and, full size, behind the islands. */
+function paintBeyond(x, w, h, city, { env = [0, 0, 0, 0, 0, 0, 0, 0], tint = [1, 1, 1], focus = [0, 0, 0], full = true } = {}) {
+  const [stars, grid, water, aurora, night, warm, lamps] = env;
+  const hz = h * 0.56;
+  const sky = x.createLinearGradient(0, 0, 0, hz);
+  sky.addColorStop(0, night > 0.5 ? '#04060f' : '#0b1430');
+  sky.addColorStop(0.62, night > 0.5 ? '#0d1530' : '#2a3a64');
+  sky.addColorStop(1, night > 0.5 ? '#2a3354' : warm > 0.5 ? '#f0a890' : '#f2cfa6');
+  x.fillStyle = sky;
+  x.fillRect(0, 0, w, hz);
+  const sun = x.createRadialGradient(w * 0.42, hz, 0, w * 0.42, hz, w * 0.5);
+  sun.addColorStop(0, `rgba(255,214,160,${0.5 * (1 - night * 0.8)})`);
+  sun.addColorStop(1, 'rgba(255,214,160,0)');
+  x.fillStyle = sun;
+  x.fillRect(0, 0, w, h);
+  if (full && stars) {
+    const r = seeded(91);
+    x.fillStyle = '#e8ecff';
+    for (let i = 0; i < 160; i++) { x.globalAlpha = (0.3 + r() * 0.6) * stars; x.fillRect(r() * w, Math.pow(r(), 1.3) * hz * 0.85, 1.2, 1.2); }
+    x.globalAlpha = 1;
+  }
+  if (full && aurora) {
+    for (const [col, off] of [['rgba(80,240,190,', 0], ['rgba(140,100,240,', 0.08]]) {
+      x.beginPath();
+      for (let i = 0; i <= 40; i++) { const u = i / 40; x.lineTo(u * w, hz * (0.35 + off + 0.06 * Math.sin(u * 7) + 0.03 * Math.sin(u * 17))); }
+      x.lineWidth = h * 0.05;
+      x.strokeStyle = `${col}${0.12 * aurora})`;
+      x.stroke();
+    }
+  }
+  /* the sea of cloud, or water, below the horizon */
+  const sea = x.createLinearGradient(0, hz, 0, h);
+  if (water > 0.5) { sea.addColorStop(0, '#d9c8b6'); sea.addColorStop(0.3, '#6b7895'); sea.addColorStop(1, '#1d2740'); }
+  else { sea.addColorStop(0, night > 0.5 ? '#3a4262' : '#e8d2bc'); sea.addColorStop(0.25, night > 0.5 ? '#232a44' : '#9d9ab4'); sea.addColorStop(1, night > 0.5 ? '#0b0f1e' : '#454a6e'); }
+  x.fillStyle = sea;
+  x.fillRect(0, hz, w, h - hz);
+  const r = seeded(17);
+  if (water < 0.5) {
+    /* puffs of cloud, bigger nearer */
+    for (let i = 0; i < 26; i++) {
+      const u = r();
+      const py = hz + Math.pow(u, 1.6) * (h - hz);
+      const rad = (8 + u * 90) * (w / 900);
+      const g = x.createRadialGradient(r() * w, py, 0, 0, 0, 0);
+      void g;
+      x.fillStyle = night > 0.5 ? `rgba(120,135,180,${0.12 + 0.1 * r()})` : `rgba(255,236,220,${0.14 + 0.12 * r()})`;
+      x.beginPath();
+      x.ellipse(r() * w, py, rad * 2.4, rad * 0.5, 0, 0, Math.PI * 2);
+      x.fill();
+    }
+  } else {
+    /* a path of glints towards the sun */
+    x.fillStyle = 'rgba(255,240,220,0.5)';
+    for (let i = 0; i < 70; i++) { const u = r(); const py = hz + 3 + Math.pow(u, 1.5) * (h - hz); x.fillRect(w * 0.42 + (r() - 0.5) * (10 + u * w * 0.3), py, 6 + u * 30, 1.5); }
+  }
+  if (grid > 0.5) {
+    x.strokeStyle = 'rgba(160,230,225,0.22)';
+    x.lineWidth = 1;
+    for (let i = -12; i <= 12; i++) { x.beginPath(); x.moveTo(w * 0.5 + i * w * 0.004, hz); x.lineTo(w * 0.5 + i * w * 0.12, h); x.stroke(); }
+    for (let i = 1; i < 12; i++) { const py = hz + (h - hz) * Math.pow(i / 12, 2); x.beginPath(); x.moveTo(0, py); x.lineTo(w, py); x.stroke(); }
+  }
+  if (lamps) {
+    for (let i = 0; i < 40; i++) {
+      const u = r();
+      const px = r() * w, py = hz + 4 + Math.pow(u, 1.8) * (h - hz) * 0.8;
+      const g = x.createRadialGradient(px, py, 0, px, py, 3 + u * 16);
+      g.addColorStop(0, `rgba(255,200,120,${0.9 * lamps})`);
+      g.addColorStop(1, 'rgba(255,200,120,0)');
+      x.fillStyle = g;
+      x.fillRect(px - 20, py - 20, 40, 40);
+    }
+  }
+  /* the city */
+  if (city) {
+    const cw = Math.min(w * 0.3, h * 0.42);
+    const chh = cw * (city.h / city.w);
+    const cx = full ? w * 0.7 : w * 0.5;
+    x.globalAlpha = night > 0.5 ? 0.7 : 1;
+    x.drawImage(city.canvas, cx - cw / 2, hz - chh * 0.62, cw, chh);
+    x.globalAlpha = 1;
+  }
+  if (focus[2] > 0.01) {
+    const g = x.createLinearGradient(0, 0, 0, focus[1]);
+    g.addColorStop(0, 'rgba(232,220,200,0)');
+    g.addColorStop(1, `rgba(232,220,200,${0.18 * focus[2]})`);
+    x.fillStyle = g;
+    x.fillRect(focus[0] - 50, 0, 100, focus[1]);
+  }
+  if (tint.some((v) => Math.abs(v - 1) > 0.02)) {
+    x.globalCompositeOperation = 'multiply';
+    x.fillStyle = `rgb(${Math.min(255, tint[0] * 230)},${Math.min(255, tint[1] * 230)},${Math.min(255, tint[2] * 230)})`;
+    x.fillRect(0, 0, w, h);
+    x.globalCompositeOperation = 'source-over';
+  }
+}
+
+/* The same scene as the shader, drawn with the 2D canvas for browsers without
+   WebGL: the ring as a tube in perspective (its face, its bore, its far opening
+   and the dial of thirty-five blocks), the cables, the sea stack and its lamp,
+   the causeway and the person on it, the cliffs, and the sea that reflects it
+   all. It takes the same settings as the shader (set(), layout(), dialAt()), so
+   the page drives either without knowing which one it has. */
+export function startWorld(canvas, { reduced = false } = {}) {
   const ctx = canvas.getContext('2d');
-  let W = 0, H = 0, DPR = 1, horizon = 0, narrow = false;
-  let portal = { x: 0, y: 0, rx: 0, ry: 0 };
-  let sky, far, city, scene, sctx;
-  let particles = [];
-  let motes = [];
-  let twinkles = [];
-  let mx = 0, my = 0, tx = 0, ty = 0;
-  let hover = false, hoverAmt = 0;
-  let t = 2.4, last = 0, raf = 0, visible = true, alive = true;
-  let image = art;
-  /* If frames keep coming in slow (an old phone, a busy laptop), draw fewer
-     pixels: up to two steps down in resolution, never back up in a visit. */
-  let quality = 1, slow = 0, sampled = 0;
+  let W = 0, H = 0, DPR = 1, L = null;
+  let bg, up, upx, fg, beyond, cityArt;
+  let raf = 0, last = 0, visible = true, alive = true, dialRot = 0;
+  const t0 = performance.now();
+  const target = {
+    intro: reduced ? 1 : 0, travel: 0, hover: 0, alt: 0, lamp: 0, mouse: [0, 0], tint: [1, 1, 1],
+    env: [0, 0, 0, 0, 0, 0, 0, 0], focus: [0, 0, 0], accent: [0.6, 0.9, 0.82], accentAmt: 0, seen: [0, 0], dialHot: -1, flash: 0,
+  };
+  const now = { hover: 0, lamp: 0, mouse: [0, 0] };
+  const stats = { fps: 0, frameMs: 0, scale: 1, px: 0, quality: '2D canvas', renderer: '2D canvas (no WebGL)' };
+  let frames = 0, fpsT = performance.now();
+  let beyondKey = '';
+
+  const S = (x, y) => [x * H + W / 2, H / 2 - y * H];
 
   function layout() {
     W = canvas.clientWidth;
     H = canvas.clientHeight;
     if (!W || !H) return;
-    narrow = W < 760;
-    DPR = Math.min(window.devicePixelRatio || 1, narrow ? 1.25 : 1.5) * quality;
+    /* one pixel per CSS pixel: a browser without WebGL is often one without much graphics power */
+    DPR = 1;
     canvas.width = Math.round(W * DPR);
     canvas.height = Math.round(H * DPR);
-    horizon = Math.round(H * (narrow ? 0.76 : 0.7));
-    const ry = Math.min(H * (narrow ? 0.15 : 0.27), W * (narrow ? 0.34 : 0.26));
-    portal = { x: W * (narrow ? 0.64 : 0.66), y: H * (narrow ? 0.23 : 0.38), ry, rx: ry * 0.66 };
-    sky = buildSky(W, horizon, DPR, portal);
-    far = buildFar(W, horizon, DPR);
-    const size = Math.min(W * (narrow ? 0.5 : 0.3), H * 0.56, 480);
-    city = buildCity(size, DPR);
-    /* Up and to the left, so its land sits above the headline and only its dark rock is behind the words. */
-    city.at = narrow ? { x: -W * 0.04, y: H * 0.2 - city.capY } : { x: W * 0.07, y: H * 0.31 - city.capY };
-    [scene, sctx] = offscreen(W, horizon, DPR);
-    const rand = seeded(42);
-    particles = Array.from({ length: narrow ? 240 : 520 }, () => ({
-      a: rand() * TAU, r: rand(), s: 0.5 + rand() * 0.9, z: rand() < 0.2 ? 2 : 1, warm: rand() < 0.35,
-    }));
-    motes = Array.from({ length: narrow ? 26 : 50 }, () => ({ x: rand() * W, y: rand() * horizon, v: 4 + rand() * 10, p: rand() * TAU }));
-    twinkles = Array.from({ length: 70 }, () => ({ x: rand() * W, y: Math.pow(rand(), 1.5) * horizon * 0.9, p: rand() * TAU, s: 0.6 + rand() * 1.8 }));
+    L = sceneLayout(W, H);
+    stats.px = canvas.width * canvas.height;
+    cityArt = buildCity(Math.round(Math.min(W * 0.4, 420)), DPR);
+    buildBackground();
+    buildForeground();
+    [up, upx] = offscreen(W, H, DPR);
+    beyondKey = '';
   }
 
-  /* Where the portal is drawn this frame, after parallax: hit-testing uses the same numbers. */
-  function portalNow() {
-    const k = narrow ? 0.4 : 1;
-    return { x: portal.x + mx * W * 0.018 * k, y: portal.y + my * H * 0.012 * k, rx: portal.rx, ry: portal.ry, tilt: mx * 0.07 };
-  }
-
-  function drawPortal(c, dt) {
-    const p = portalNow();
-    const glow = 0.55 + hoverAmt * 0.45;
-    /* the halo */
-    c.save();
-    c.translate(p.x, p.y);
-    c.rotate(p.tilt);
-    c.scale(p.rx / p.ry, 1);
-    const halo = c.createRadialGradient(0, 0, p.ry * 0.7, 0, 0, p.ry * 2.1);
-    halo.addColorStop(0, `rgba(154,230,208,${0.22 * glow})`);
-    halo.addColorStop(0.45, `rgba(113,142,200,${0.1 * glow})`);
-    halo.addColorStop(1, 'rgba(113,142,200,0)');
-    c.fillStyle = halo;
-    c.beginPath();
-    c.arc(0, 0, p.ry * 2.1, 0, TAU);
-    c.fill();
-    c.restore();
-
-    /* the other side: a deeper sky, and the featured island floating in it */
-    c.save();
-    c.beginPath();
-    c.ellipse(p.x, p.y, p.rx * 0.97, p.ry * 0.97, p.tilt, 0, TAU);
-    c.clip();
-    const inside = c.createRadialGradient(p.x - mx * p.rx * 0.2, p.y - my * p.ry * 0.2, 0, p.x, p.y, p.ry);
-    inside.addColorStop(0, '#34507e');
-    inside.addColorStop(0.55, '#162444');
-    inside.addColorStop(1, '#070a13');
-    c.fillStyle = inside;
-    c.fillRect(p.x - p.rx, p.y - p.ry, p.rx * 2, p.ry * 2);
-    if (image && image.complete && image.naturalWidth) {
-      const iw = p.rx * 1.55;
-      const ih = iw * (image.naturalHeight / image.naturalWidth);
-      c.globalAlpha = 0.6 + hoverAmt * 0.4;
-      c.drawImage(image, p.x - iw / 2 - mx * p.rx * 0.18, p.y - ih * 0.46 + Math.sin(t * 0.8) * 4 - my * p.ry * 0.12, iw, ih);
-      c.globalAlpha = 1;
+  /* the sky, the moons, the far city, the isles, the cloud banks and the arch: drawn once */
+  function buildBackground() {
+    let x;
+    [bg, x] = offscreen(W, H, DPR);
+    const [, hzY] = S(0, L.hz);
+    const g = x.createLinearGradient(0, 0, 0, hzY);
+    g.addColorStop(0, '#03060d');
+    g.addColorStop(0.6, '#0b1328');
+    g.addColorStop(1, '#1e2846');
+    x.fillStyle = g;
+    x.fillRect(0, 0, W, hzY);
+    const [cX, cY] = S(L.portal[0], L.portal[1]);
+    const R = L.portal[2] * H;
+    for (const [px, py, rad, col] of [[cX, hzY, W * 0.5, 'rgba(242,184,140,0.16)'], [cX, cY, R * 2.6, 'rgba(70,130,128,0.2)'], [W * 0.25, H * 0.25, W * 0.4, 'rgba(113,142,200,0.08)']]) {
+      const rg = x.createRadialGradient(px, py, 0, px, py, rad);
+      rg.addColorStop(0, col);
+      rg.addColorStop(1, 'rgba(0,0,0,0)');
+      x.fillStyle = rg;
+      x.fillRect(0, 0, W, hzY);
     }
-    /* the swirl, pulled towards the cursor */
-    c.globalCompositeOperation = 'lighter';
-    const cos = Math.cos(p.tilt);
-    const sin = Math.sin(p.tilt);
-    const bright = 0.7 + hoverAmt * 0.5;
-    /* Two passes, one colour each, alpha set per grain: no colour strings built per frame. */
-    for (const warm of [false, true]) {
-      c.fillStyle = warm ? '#E8C7AA' : '#9AE6D0';
-      for (const q of particles) {
-        if (q.warm !== warm) continue;
-        if (dt) {
-          q.a += dt * (0.18 + 1.1 * (1 - q.r)) * q.s;
-          q.r -= dt * 0.035 * q.s;
-          if (q.r < 0.04) q.r = 1;
-        }
-        const pull = (1 - q.r) * 0.22;
-        const lx = Math.cos(q.a) * p.rx * q.r + mx * p.rx * pull;
-        const ly = Math.sin(q.a) * p.ry * q.r + my * p.ry * pull;
-        c.globalAlpha = Math.min(1, (0.25 + 0.6 * q.r) * bright);
-        c.fillRect(p.x + lx * cos - ly * sin, p.y + lx * sin + ly * cos, q.z * 1.2, q.z * 1.2);
+    const rand = seeded(7);
+    for (let i = 0, n = Math.round((W * hzY) / 2400); i < n; i++) {
+      x.fillStyle = `rgba(232,236,255,${0.15 + rand() * 0.6})`;
+      const s = rand() < 0.07 ? 1.6 : 0.9;
+      x.fillRect(rand() * W, Math.pow(rand(), 1.3) * hzY * 0.92, s, s);
+    }
+    /* the ringed moon, in tonight's phase, and its small companion */
+    const [mx, my] = S(L.moon[0], L.moon[1]);
+    const mr = L.moon[2] * H;
+    const phase = moonPhase();
+    x.save();
+    x.translate(mx, my);
+    x.fillStyle = '#d8d2c8';
+    x.beginPath(); x.arc(0, 0, mr, 0, TAU); x.fill();
+    const lit = Math.cos(phase * TAU);
+    x.fillStyle = 'rgba(10,14,26,0.92)';
+    x.beginPath();
+    x.ellipse(phase < 0.5 ? -mr * (1 - lit) * 0.5 - mr * 0.5 * (1 + lit) : mr * (1 - lit) * 0.5 + mr * 0.5 * (1 + lit), 0, mr * Math.abs(lit) * 0.5 + mr * 0.5, mr, 0, 0, TAU);
+    x.fill();
+    x.rotate(-0.42);
+    x.strokeStyle = 'rgba(220,205,185,0.4)';
+    x.lineWidth = mr * 0.12;
+    x.beginPath(); x.ellipse(0, 0, mr * 2, mr * 0.46, 0, 0, Math.PI); x.stroke();
+    x.restore();
+    x.fillStyle = '#b8b0c8';
+    const [m2x, m2y] = S(L.moon[0] + 0.11, L.moon[1] - 0.06);
+    x.beginPath(); x.arc(m2x, m2y, mr * 0.3, 0, TAU); x.fill();
+    /* the far city in the haze */
+    const [fx, fy] = S(L.far[0], L.far[1]);
+    const fw = L.far[2] * H;
+    x.fillStyle = 'rgba(70,85,120,0.55)';
+    x.beginPath();
+    x.moveTo(fx - fw, fy);
+    for (let i = 0; i <= 12; i++) { const u = i / 12 * 2 - 1; x.lineTo(fx + u * fw, fy + 0.6 * fw * Math.pow(1 - u * u, 0.6) * (0.85 + 0.3 * rand())); }
+    x.closePath();
+    x.fill();
+    for (let i = 0; i < 26; i++) {
+      const u = (i / 26) * 1.7 - 0.85;
+      const th = fw * (0.06 + 0.3 * Math.pow(rand(), 2)) * (1 - Math.abs(u) * 0.8) + (rand() > 0.86 ? fw * 0.26 : 0);
+      x.fillStyle = 'rgba(64,78,112,0.6)';
+      x.fillRect(fx + u * fw, fy - th, fw * 0.045, th);
+      if (rand() > 0.5) { x.fillStyle = 'rgba(255,214,150,0.6)'; x.fillRect(fx + u * fw + 1, fy - th * rand(), 1.2, 1.2); }
+    }
+    x.fillStyle = 'rgba(180,235,225,0.12)';
+    x.fillRect(fx + fw * 0.16, 0, 1.2, fy - fw * 0.56);
+    /* the cloud banks and the broken arch on the horizon */
+    const bank = curve(seeded(31), 9);
+    x.fillStyle = 'rgba(62,72,102,0.6)';
+    x.beginPath(); x.moveTo(0, hzY);
+    for (let i = 0; i <= 80; i++) x.lineTo((i / 80) * W, hzY - H * (0.02 + 0.09 * Math.pow(bank(i / 80), 1.6)));
+    x.lineTo(W, hzY); x.fill();
+    const [ax, ay] = S(-0.42 * L.a, L.hz - 0.08);
+    x.strokeStyle = 'rgba(52,62,92,0.85)';
+    x.lineWidth = H * 0.02;
+    for (let k = 0; k < 4; k++) { x.beginPath(); x.arc(ax, ay, H * 0.4, -2.5 + k * 0.56, -2.5 + k * 0.56 + 0.44); x.stroke(); }
+    /* the sea */
+    const sea = x.createLinearGradient(0, hzY, 0, H);
+    sea.addColorStop(0, '#111a30');
+    sea.addColorStop(1, '#03050a');
+    x.fillStyle = sea;
+    x.fillRect(0, hzY, W, H - hzY);
+  }
+
+  /* the causeway, the low rock and the cliffs: also drawn once */
+  function buildForeground() {
+    let x;
+    [fg, x] = offscreen(W, H, DPR);
+    const hz = L.hz;
+    const cxw = L.portal[0];
+    const l0 = (L.narrow ? 0 : 0.13) * 0.1;
+    const lat = (z) => mix(l0, cxw, (z - 0.1) / 0.9);
+    const hw = L.narrow ? 0.011 : 0.016;
+    const left = [], right = [];
+    for (let z = 0.12; z <= 0.975; z += 0.01) {
+      left.push(S((lat(z) - hw) / z, hz - EYE / z));
+      right.push(S((lat(z) + hw) / z, hz - EYE / z));
+    }
+    x.fillStyle = '#0a0d17';
+    x.beginPath();
+    left.forEach(([px, py], i) => (i ? x.lineTo(px, py) : x.moveTo(px, py)));
+    right.reverse().forEach(([px, py]) => x.lineTo(px, py));
+    x.fill();
+    x.strokeStyle = 'rgba(120,210,195,0.25)';
+    x.lineWidth = 1;
+    for (let z = 0.2; z < 0.97; z += 1 / 15) {
+      const [a1, b1] = S((lat(z) - hw) / z, hz - EYE / z);
+      const [a2] = S((lat(z) + hw) / z, hz - EYE / z);
+      x.globalAlpha = 0.3 + 0.7 * ss(0.3, 0.97, z);
+      x.beginPath(); x.moveTo(a1, b1); x.lineTo(a2, b1); x.stroke();
+    }
+    x.globalAlpha = 1;
+    /* the person, just short of the ring */
+    const [px, py] = S(L.figure[0], L.figure[1]);
+    const fh = L.figure[2] * H;
+    x.fillStyle = '#020306';
+    x.fillRect(px - fh * 0.12, py - fh * 0.75, fh * 0.24, fh * 0.75);
+    x.beginPath(); x.arc(px, py - fh * 0.88, fh * 0.11, 0, TAU); x.fill();
+    /* the cliffs: a leaning wall each side, with a few lit openings */
+    const wallSide = (x0, side, seed) => {
+      const big = curve(seeded(seed), 6), small = curve(seeded(seed + 1), 30);
+      const pts = [];
+      for (let y = -0.52; y <= 0.52; y += 0.01) {
+        const e = x0 - side * (0.11 * ss(0.05, -0.5, y) + 0.05 * ss(0.15, 0.5, y)) + side * (0.08 * (big(y + 0.5) - 0.5) + 0.02 * (small(y + 0.5) - 0.5));
+        pts.push(S(e, y));
       }
-    }
-    c.globalAlpha = 1;
-    c.globalCompositeOperation = 'source-over';
-    c.restore();
-
-    /* the rim */
-    c.save();
-    const ring = (k, w, style, dash = null, offset = 0) => {
-      c.beginPath();
-      c.ellipse(p.x, p.y, p.rx * k, p.ry * k, p.tilt, 0, TAU);
-      c.lineWidth = w;
-      c.strokeStyle = style;
-      c.setLineDash(dash || []);
-      c.lineDashOffset = offset;
-      c.stroke();
+      const edgeX = side > 0 ? W : 0;
+      const g = x.createLinearGradient(side > 0 ? pts[50][0] : 0, 0, side > 0 ? W : pts[50][0], 0);
+      g.addColorStop(0, side > 0 ? '#0b0e16' : '#05060b');
+      g.addColorStop(1, side > 0 ? '#05060b' : '#0b0e16');
+      x.fillStyle = g;
+      x.beginPath();
+      x.moveTo(edgeX, H + 2);
+      pts.forEach(([a, b]) => x.lineTo(a, b));
+      x.lineTo(edgeX, -2);
+      x.fill();
+      x.strokeStyle = 'rgba(110,200,185,0.35)';
+      x.lineWidth = 1.2;
+      x.beginPath();
+      pts.forEach(([a, b], i) => (i ? x.lineTo(a, b) : x.moveTo(a, b)));
+      x.stroke();
+      const r = seeded(seed + 7);
+      x.fillStyle = 'rgba(255,200,130,0.85)';
+      for (let i = 0; i < 10; i++) {
+        const k = Math.floor(r() * pts.length);
+        const [a, b] = pts[k];
+        if (b < H * 0.06 || b > H * 0.75) continue;
+        x.fillRect(a + side * H * (0.015 + r() * 0.05), b, 2, 3);
+      }
     };
-    ring(1.0, 16, `rgba(232,199,170,${0.07 * glow})`);
-    ring(1.0, 6, `rgba(154,230,208,${0.32 + 0.3 * hoverAmt})`);
-    ring(1.0, 1.8, 'rgba(255,246,232,0.95)');
-    ring(1.07, 2.2, `rgba(232,199,170,${0.55 + 0.3 * hoverAmt})`, [p.ry * 0.5, p.ry * 0.32], -t * 28);
-    ring(1.15, 1, 'rgba(113,142,200,0.45)', [2, 10], t * 12);
-    c.setLineDash([]);
-    /* a column of light down into the water */
-    const col = c.createLinearGradient(0, p.y + p.ry, 0, horizon);
-    col.addColorStop(0, `rgba(154,230,208,${0.28 * glow})`);
-    col.addColorStop(1, 'rgba(154,230,208,0)');
-    c.fillStyle = col;
-    c.fillRect(p.x - 1.5, p.y + p.ry, 3, horizon - p.y - p.ry);
-    c.restore();
+    wallSide(L.cliff[0], 1, 41);
+    wallSide(L.narrow ? -L.cliff[0] : -0.5 * L.a + 0.07, -1, 53);
+    /* the low rock in front of the headline */
+    const lr = curve(seeded(61), 12);
+    x.fillStyle = '#05070c';
+    x.beginPath(); x.moveTo(0, H);
+    for (let i = 0; i <= 60; i++) {
+      const u = i / 60;
+      const xs = -0.5 * L.a + u * 0.62 * L.a;
+      x.lineTo(...S(xs, -0.5 + 0.25 * (1 - ss(-0.5 * L.a, -0.5 * L.a + 0.62 * L.a * (L.narrow ? 1 : 0.6), xs)) + 0.035 * (lr(u) - 0.5)));
+    }
+    x.lineTo(W * 0.62, H); x.fill();
   }
 
-  function compose(dt) {
-    const c = sctx;
-    c.clearRect(0, 0, W, horizon);
-    c.drawImage(sky, 0, 0, W, horizon);
-    c.fillStyle = '#f0f0ff';
-    for (const s of twinkles) {
-      c.globalAlpha = 0.35 + 0.65 * Math.abs(Math.sin(t * s.s + s.p));
-      c.fillRect(s.x + mx * 2, s.y + my * 2, 1.4, 1.4);
+  function cached() {
+    const key = `${target.env.join(',')}|${target.tint.join(',')}|${W}x${H}`;
+    if (key !== beyondKey) {
+      let x;
+      [beyond, x] = offscreen(W, H, DPR);
+      paintBeyond(x, W, H, cityArt, { env: target.env, tint: target.tint });
+      beyondKey = key;
     }
-    c.globalAlpha = 1;
-    c.drawImage(far, mx * W * 0.006, my * H * 0.004, W, horizon);
-    drawPortal(c, dt);
-    const bob = Math.sin(t * 0.45) * 7;
-    c.drawImage(city.canvas, city.at.x + mx * W * 0.03, city.at.y + bob + my * H * 0.02, city.w, city.h);
-    /* drifting motes of light, the nearest layer */
-    c.fillStyle = '#E8C7AA';
-    for (const m of motes) {
-      if (dt) { m.y -= m.v * dt; m.x += Math.sin(t + m.p) * dt * 6; if (m.y < 0) m.y = horizon; }
-      c.globalAlpha = 0.25 + 0.35 * Math.abs(Math.sin(t * 0.7 + m.p));
-      c.fillRect(m.x + mx * W * 0.05, m.y + my * H * 0.03, 1.6, 1.6);
-    }
-    c.globalAlpha = 1;
-    /* mist sitting on the horizon */
-    const mist = c.createLinearGradient(0, horizon - H * 0.08, 0, horizon);
-    mist.addColorStop(0, 'rgba(113,142,200,0)');
-    mist.addColorStop(1, 'rgba(113,142,200,0.16)');
-    c.fillStyle = mist;
-    c.fillRect(0, horizon - H * 0.08, W, H * 0.08);
+    return beyond;
   }
 
-  function frame(now) {
-    if (!alive) return;
-    const gap = last ? now - last : 0;
-    const dt = reduced ? 0 : Math.min(0.05, gap / 1000);
-    last = now;
-    if (!reduced && gap && gap < 200 && quality > 0.6) {
-      sampled++;
-      if (gap > 30) slow++;
-      if (sampled === 60) {
-        if (slow > 40) { quality = Math.max(0.6, quality - 0.2); layout(); }
-        sampled = 0;
-        slow = 0;
-      }
+  /* the ring, the stack, the cables: everything above the water that moves */
+  function drawUpper(x, t) {
+    x.clearRect(0, 0, W, H);
+    x.drawImage(bg, 0, 0, W, H);
+    const hov = now.hover;
+    const [mx, my] = now.mouse;
+    const R = L.portal[2] * H;
+    const [Cx, Cy] = S(L.portal[0], L.portal[1]);
+    const [Vx, Vy] = S(0, L.hz);
+    const par = (k) => [mx * R * 0.05 * k, my * R * 0.03 * k];
+    const [ox, oy] = par(1);
+    const C = [Cx + ox, Cy + oy];
+    const f = 1 / (1 + DEPTH);
+    const Cb = [Vx + (C[0] - Vx) * f, Vy + (C[1] - Vy) * f];
+    const Ri = R * 0.78;
+    const intro = 1;
+    /* the outer wall: the tube's side, swept from its far end to its near end */
+    for (let i = 0; i <= 10; i++) {
+      const u = i / 10;
+      const c = 10 + Math.round(u * 10);
+      x.fillStyle = `rgb(${c},${c + 3},${c + 10})`;
+      x.beginPath(); x.arc(mix(Cb[0], C[0], u), mix(Cb[1], C[1], u), mix(R * f, R, u), 0, TAU); x.fill();
     }
-    t += dt;
-    mx += (tx - mx) * Math.min(1, dt * 3 || 1);
-    my += (ty - my) * Math.min(1, dt * 3 || 1);
-    hoverAmt += ((hover ? 1 : 0) - hoverAmt) * Math.min(1, dt * 5 || 1);
-    compose(dt);
+    /* the dial: thirty-five blocks, one for each world */
+    const Cd = [Vx + (C[0] - Vx) / 0.95, Vy + (C[1] - Vy) / 0.95];
+    for (let i = 0; i < 35; i++) {
+      const a = -(Math.PI / 2 + dialRot - ((i + 0.5) / 35) * TAU);
+      const half = (0.43 * TAU) / 35;
+      const hot = i === target.dialHot;
+      const r0 = (1.035 + (hot ? 0.03 : 0)) * R / 0.95, r1 = (1.13 + (hot ? 0.03 : 0)) * R / 0.95;
+      x.fillStyle = hot ? '#2a3040' : '#151924';
+      x.beginPath(); x.arc(Cd[0], Cd[1], r1, a - half, a + half); x.arc(Cd[0], Cd[1], r0, a + half, a - half, true); x.fill();
+      const seen = i < 18 ? Math.floor(target.seen[0] / 2 ** i) % 2 : Math.floor(target.seen[1] / 2 ** (i - 18)) % 2;
+      const ign = ss((i + 0.5) / 35 - 0.03, (i + 0.5) / 35, (intro - 0.52) / 0.3);
+      x.strokeStyle = hot ? 'rgba(255,246,230,0.95)' : seen ? `rgba(255,214,160,${0.9 * ign})` : `rgba(110,200,185,${0.35 * ign})`;
+      x.lineWidth = Math.max(1, R * 0.012);
+      x.beginPath(); x.arc(Cd[0], Cd[1], (r0 + r1) / 2, a - half * 0.5, a + half * 0.5); x.stroke();
+    }
+    /* the front face */
+    const face = x.createLinearGradient(C[0] - R, C[1] - R, C[0] + R, C[1] + R);
+    face.addColorStop(0, '#1c202b');
+    face.addColorStop(1, '#07090f');
+    x.fillStyle = face;
+    x.beginPath(); x.arc(C[0], C[1], R, 0, TAU); x.arc(C[0], C[1], Ri, 0, TAU, true); x.fill('evenodd');
+    x.strokeStyle = 'rgba(0,0,0,0.4)';
+    x.lineWidth = 1;
+    for (let i = 0; i < 20; i++) { const a = (i / 20) * TAU; x.beginPath(); x.moveTo(C[0] + Math.cos(a) * Ri, C[1] + Math.sin(a) * Ri); x.lineTo(C[0] + Math.cos(a) * R, C[1] + Math.sin(a) * R); x.stroke(); }
+    x.strokeStyle = `rgba(110,210,190,${(0.22 + 0.3 * hov) * ss(0.55, 0.8, intro)})`;
+    for (const k of [0.46, 0.74]) { x.beginPath(); x.arc(C[0], C[1], Ri + (R - Ri) * k, 0, TAU); x.stroke(); }
+    /* the bore, lit from its far opening, and the opening itself */
+    x.save();
+    x.beginPath(); x.arc(C[0], C[1], Ri, 0, TAU); x.clip();
+    const bore = x.createRadialGradient(Cb[0], Cb[1], Ri * f * 0.9, Cb[0], Cb[1], Ri * 1.4);
+    bore.addColorStop(0, `rgba(214,180,150,${0.85 * ss(0.4, 0.7, intro)})`);
+    bore.addColorStop(1, '#0a0c14');
+    x.fillStyle = bore;
+    x.fillRect(C[0] - R, C[1] - R, R * 2, R * 2);
+    x.strokeStyle = 'rgba(110,210,190,0.14)';
+    for (let j = 1; j <= 6; j++) { const u = j / 7; x.beginPath(); x.arc(mix(C[0], Cb[0], u), mix(C[1], Cb[1], u), mix(Ri, Ri * f, u), 0, TAU); x.stroke(); }
+    x.beginPath(); x.arc(Cb[0], Cb[1], Ri * f, 0, TAU); x.clip();
+    const b = cached();
+    const bw = Ri * f * 2 / 0.78;
+    x.globalAlpha = ss(0.45, 0.73, intro);
+    x.drawImage(b, Cb[0] - bw * 0.8, Cb[1] - bw * 0.5 * (H / W) * 1.6 - mx * 6, bw * 1.6, bw * 1.6 * (H / W));
+    x.globalAlpha = 1;
+    x.restore();
+    x.strokeStyle = 'rgba(255,246,232,0.9)';
+    x.lineWidth = 1.3;
+    x.beginPath(); x.arc(C[0], C[1], Ri, 0, TAU); x.stroke();
+    if (hov > 0.05) {
+      x.lineWidth = 1;
+      x.strokeStyle = `rgba(255,120,140,${0.35 * hov})`; x.beginPath(); x.arc(C[0], C[1], Ri - 2, 0, TAU); x.stroke();
+      x.strokeStyle = `rgba(120,200,255,${0.35 * hov})`; x.beginPath(); x.arc(C[0], C[1], Ri + 2, 0, TAU); x.stroke();
+    }
+    /* the orbit of light, with its pulses */
+    x.strokeStyle = `rgba(150,230,210,${0.22 * ss(0.72, 0.95, intro)})`;
+    x.beginPath(); x.arc(C[0], C[1], R * 1.27, 0, TAU); x.stroke();
+    for (let i = 0; i < 3; i++) {
+      const a = -(t * (0.22 + 0.25 * hov) + i * 2.0944);
+      const g = x.createRadialGradient(C[0] + Math.cos(a) * R * 1.27, C[1] + Math.sin(a) * R * 1.27, 0, C[0] + Math.cos(a) * R * 1.27, C[1] + Math.sin(a) * R * 1.27, 8);
+      g.addColorStop(0, `rgba(170,240,220,${0.9 * ss(0.72, 0.95, intro)})`);
+      g.addColorStop(1, 'rgba(170,240,220,0)');
+      x.fillStyle = g;
+      x.fillRect(C[0] + Math.cos(a) * R * 1.27 - 8, C[1] + Math.sin(a) * R * 1.27 - 8, 16, 16);
+    }
+    /* cables, to the stack and to the cliff */
+    const ringPt = (ang) => [C[0] + Math.cos(ang) * R, C[1] - Math.sin(ang) * R];
+    const cable = (p0, p1, sag) => { x.beginPath(); x.moveTo(...p0); x.quadraticCurveTo((p0[0] + p1[0]) / 2, Math.max(p0[1], p1[1]) + sag * H, ...p1); x.stroke(); };
+    x.strokeStyle = 'rgba(4,6,10,0.95)';
+    x.lineWidth = 1.6;
+    const cliffAt = (y) => S(L.cliff[0] + 0.004 - 0.045 * ss(-0.25, 0.5, y), y);
+    if (L.light) cable(S(L.cliff[1] + 0.008, L.cliff[2] - 0.004), ringPt(2.55), 0.04);
+    cable(ringPt(0.62), cliffAt(0.39), 0.03);
+    cable(ringPt(-0.3), cliffAt(0.02), 0.035);
+    /* the sea stack and its lamp */
+    if (L.light) {
+      const [sx] = S(L.cliff[1], 0);
+      const [, base] = S(0, L.hz - EYE / 0.8);
+      const [, top] = S(0, L.cliff[2]);
+      const jag = curve(seeded(71), 14);
+      x.fillStyle = '#0b0e18';
+      x.beginPath();
+      const steps = 30;
+      for (let i = 0; i <= steps; i++) { const u = i / steps; const w = mix(0.052, 0.012, Math.pow(u, 0.55)) * H * (0.8 + 0.4 * jag(u)); x.lineTo(sx + w + u * u * 0.012 * H, mix(base, top, u)); }
+      for (let i = steps; i >= 0; i--) { const u = i / steps; const w = mix(0.052, 0.012, Math.pow(u, 0.55)) * H * (0.8 + 0.4 * jag(1 - u)); x.lineTo(sx - w + u * u * 0.012 * H, mix(base, top, u)); }
+      x.fill();
+      const [lx, ly] = S(L.light[0], L.light[1]);
+      x.fillStyle = '#0b0e18';
+      x.fillRect(lx - 2.5, ly, 5, top - ly);
+      const lg = x.createRadialGradient(lx, ly, 0, lx, ly, 10 + 40 * now.lamp);
+      lg.addColorStop(0, `rgba(255,224,160,${0.5 + 0.5 * now.lamp})`);
+      lg.addColorStop(1, 'rgba(255,224,160,0)');
+      x.fillStyle = lg;
+      x.fillRect(lx - 60, ly - 60, 120, 120);
+    }
+  }
 
-    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-    ctx.drawImage(scene, 0, 0, W, horizon);
-    /* the water: the scene again, upside down, strip by strip */
-    const depth = H - horizon;
-    const water = ctx.createLinearGradient(0, horizon, 0, H);
-    water.addColorStop(0, '#16203a');
-    water.addColorStop(1, '#05070d');
-    ctx.fillStyle = water;
-    ctx.fillRect(0, horizon, W, depth);
-    const step = narrow ? 3 : 2;
-    for (let y = 0; y < depth; y += step) {
-      const src = horizon - 1 - y * 1.15;
+  /* the threshold, composed into one picture whenever something in it changes */
+  let frameCanvas = null, frameX = null, dirty = true;
+  function compose(t) {
+    if (!frameCanvas || frameCanvas.width !== canvas.width) [frameCanvas, frameX] = offscreen(W, H, DPR);
+    drawUpper(upx, t);
+    const x = frameX;
+    x.setTransform(DPR, 0, 0, DPR, 0, 0);
+    x.clearRect(0, 0, W, H);
+    x.drawImage(up, 0, 0, W, H);
+    /* the water: the scene above it again, upside down, strip by strip */
+    const hzY = S(0, L.hz)[1];
+    const step = 3;
+    for (let y = hzY; y < H; y += step) {
+      const src = 2 * hzY - y;
       if (src < 0) break;
-      const k = y / depth;
-      const shift = Math.sin(y * 0.09 - t * 1.7) * (1 + y * 0.05) + Math.sin(y * 0.031 + t * 0.8) * 2.2;
-      ctx.globalAlpha = 0.62 * (1 - k * 0.85);
-      ctx.drawImage(scene, 0, Math.floor(src * DPR), scene.width, Math.max(1, Math.ceil(step * DPR)), shift, horizon + y, W, step);
+      const kk = (y - hzY) / (H - hzY);
+      const shift = Math.sin(y * 0.09 - t * 1.7) * (1 + (y - hzY) * 0.04) + Math.sin(y * 0.031 + t * 0.8) * 2.2;
+      x.globalAlpha = 0.5 * (1 - kk * 0.85);
+      x.drawImage(up, 0, Math.floor(src * DPR), up.width, Math.max(1, Math.ceil(step * DPR)), shift, y, W, step);
     }
+    x.globalAlpha = 1;
+    x.drawImage(fg, 0, 0, W, H);
+    dirty = false;
+  }
+
+  function draw(ts) {
+    raf = 0;
+    if (!alive || !L) return;
+    const dt = Math.min(0.1, last ? (ts - last) / 1000 : 0);
+    last = ts;
+    const k = reduced ? 1 : 1 - Math.exp(-dt * 5);
+    const before = now.hover + now.lamp;
+    now.hover += (target.hover - now.hover) * k;
+    now.lamp += (target.lamp - now.lamp) * k;
+    if (Math.abs(now.hover + now.lamp - before) > 0.002) dirty = true;
+    const t = reduced ? 30 : (ts - t0) / 1000;
+    dialRot = reduced ? 0 : t * DIAL_SPEED;
+    const e = target.travel;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     ctx.globalAlpha = 1;
-    /* glints under the portal, and a fine line where water meets sky */
-    const p = portalNow();
-    for (let i = 0; i < 18; i++) {
-      const gy = horizon + 6 + i * (depth / 20);
-      const gw = (12 + (i % 5) * 9) * (1 + hoverAmt * 0.6);
-      const ga = (0.12 + 0.2 * Math.abs(Math.sin(t * 1.3 + i))) * (1 - i / 20);
-      ctx.fillStyle = `rgba(154,230,208,${ga})`;
-      ctx.fillRect(p.x - gw / 2 + Math.sin(t + i) * 6, gy, gw, 1);
+    if (e >= 0.999) {
+      ctx.drawImage(cached(), 0, 0, W, H);
+    } else {
+      if (dirty) compose(t);
+      /* the crossing: everything swells round the far opening, then the world beyond takes over */
+      const zoom = 1 + 14 * e * e;
+      const [Cx, Cy] = S(L.portal[0], L.portal[1]);
+      const [Vx, Vy] = S(0, L.hz);
+      const f = 1 / (1 + DEPTH);
+      const fx = Vx + (Cx - Vx) * f, fy = Vy + (Cy - Vy) * f;
+      ctx.save();
+      ctx.translate(fx * (1 - zoom), fy * (1 - zoom));
+      ctx.scale(zoom, zoom);
+      ctx.drawImage(frameCanvas, 0, 0, W, H);
+      ctx.restore();
+      if (e > 0.6) { ctx.globalAlpha = ss(0.6, 0.98, e); ctx.drawImage(cached(), 0, 0, W, H); ctx.globalAlpha = 1; }
     }
-    ctx.fillStyle = 'rgba(232,199,170,0.22)';
-    ctx.fillRect(0, horizon, W, 1);
+    /* the opening: the whole picture rises out of the dark */
+    if (target.intro < 1) { ctx.fillStyle = `rgba(0,0,0,${1 - ss(0, 1, target.intro)})`; ctx.fillRect(0, 0, W, H); }
+    frames++;
+    if (ts - fpsT > 1000) { stats.fps = Math.round((frames * 1000) / (ts - fpsT)); frames = 0; fpsT = ts; }
+    /* keep drawing only while something is still changing */
+    const settling = Math.abs(now.hover - target.hover) > 0.002 || Math.abs(now.lamp - target.lamp) > 0.002 || target.intro < 1;
+    if (visible && !document.hidden && settling && e < 0.999) kick();
+  }
+  function kick() { if (!raf && alive) raf = requestAnimationFrame(draw); }
 
-    if (!reduced && visible && !document.hidden) raf = requestAnimationFrame(frame);
-    else raf = 0;
-  }
-
-  function kick() {
-    if (!raf && alive) raf = requestAnimationFrame(frame);
-  }
-
-  function inPortal(x, y) {
-    const p = portalNow();
-    const dx = x - p.x;
-    const dy = y - p.y;
-    const cos = Math.cos(-p.tilt);
-    const sin = Math.sin(-p.tilt);
-    const lx = dx * cos - dy * sin;
-    const ly = dx * sin + dy * cos;
-    return (lx / p.rx) ** 2 + (ly / p.ry) ** 2 < 1.08;
-  }
-
-  function onMove(ev) {
-    const rect = canvas.getBoundingClientRect();
-    const x = ev.clientX - rect.left;
-    const y = ev.clientY - rect.top;
-    if (!reduced) {
-      tx = (x / rect.width) * 2 - 1;
-      ty = (y / rect.height) * 2 - 1;
-    }
-    const h = inPortal(x, y);
-    if (h !== hover) {
-      hover = h;
-      canvas.style.cursor = h ? 'pointer' : '';
-      onHover(h, portalNow());
-    }
-    kick();
-  }
-  function onLeave() {
-    tx = 0; ty = 0;
-    if (hover) { hover = false; canvas.style.cursor = ''; onHover(false, portalNow()); }
-    kick();
-  }
-  function onClick(ev) {
-    const rect = canvas.getBoundingClientRect();
-    const x = ev.clientX - rect.left;
-    const y = ev.clientY - rect.top;
-    if (inPortal(x, y)) { const p = portalNow(); onPortal(p.x + rect.left, p.y + rect.top); }
-  }
-
-  canvas.addEventListener('pointermove', onMove);
-  canvas.addEventListener('pointerleave', onLeave);
-  canvas.addEventListener('click', onClick);
-  const ro = new ResizeObserver(() => { layout(); last = 0; frame(performance.now()); });
+  const ro = new ResizeObserver(() => { layout(); dirty = true; last = 0; kick(); });
   ro.observe(canvas);
-  const io = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; if (visible) { last = 0; kick(); } });
-  io.observe(canvas);
   const onVis = () => { if (!document.hidden) { last = 0; kick(); } };
   document.addEventListener('visibilitychange', onVis);
   layout();
-  frame(performance.now());
+  kick();
 
   return {
-    portal: () => { const rect = canvas.getBoundingClientRect(); const p = portalNow(); return { x: p.x + rect.left, y: p.y + rect.top, rx: p.rx, ry: p.ry }; },
-    setArt(img) { image = img; if (img && !img.complete) img.addEventListener('load', () => { last = 0; frame(performance.now()); }, { once: true }); kick(); },
+    set(values) {
+      for (const [key, v] of Object.entries(values)) {
+        if (['dialHot', 'seen'].includes(key) && String(target[key]) !== String(v)) dirty = true;
+        target[key] = Array.isArray(v) ? [...v] : v;
+      }
+      kick();
+    },
+    setVisible(v) { visible = v; if (v) { last = 0; kick(); } },
+    layout: () => L,
+    dialAt: (px, py) => dialAt(L, [(px - W / 2) / H, (H / 2 - py) / H], dialRot),
+    dialPoint: (i) => toScreen(dialPoint(L, i, dialRot), W, H),
+    size: () => [W, H],
+    stats: () => ({ ...stats, intro: target.intro, travel: target.travel, alt: target.alt }),
+    redraw() { dirty = true; last = 0; kick(); },
+    setScale() {},
     destroy() {
       alive = false;
       cancelAnimationFrame(raf);
       ro.disconnect();
-      io.disconnect();
       document.removeEventListener('visibilitychange', onVis);
     },
   };

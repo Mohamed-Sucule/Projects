@@ -25,10 +25,11 @@
    returns null and the page falls back to the 2D canvas world. */
 
 import { buildCity } from './hero.js';
+import { EYE, DIAL_SPEED, sceneLayout, dialAt, dialPoint, toScreen, moonPhase } from './scene.js';
 
 const VERT = `attribute vec2 a; void main() { gl_Position = vec4(a, 0.0, 1.0); }`;
 
-const FRAG = (oct) => `
+const FRAG = (oct, mode) => `
 precision highp float;
 uniform vec2 uRes;
 uniform float uTime, uIntro, uTravel, uHover, uAlt, uMoon, uLamp, uAccentAmt, uFlash;
@@ -47,6 +48,7 @@ uniform float uDialRot, uDialHot;
 uniform sampler2D uCity;
 uniform float uCityA;      // city texture height / width
 #define OCT ${oct}
+${mode === 'beyond' ? '#define BEYOND_ONLY' : ''}
 #define DEPTH 0.26
 #define EYE 0.03
 #define NB 35.0
@@ -494,10 +496,12 @@ vec4 ring(vec2 p, vec2 O, float mir, out vec3 glow) {
     /* the orbit of light, with three pulses running round it */
     float orbit = exp(-pow((rf - 1.27) / 0.0045, 2.0));
     float pulses = 0.0;
-    for (int i = 0; i < 3; i++) {
-      float pa = uTime * (0.22 + 0.25 * hov) + float(i) * 2.0944;
-      float dpa = abs(mod(a - pa + PI, TAU) - PI);
-      pulses += exp(-dpa * dpa * 60.0);
+    if (mir < 0.5) {
+      for (int i = 0; i < 3; i++) {
+        float pa = uTime * (0.22 + 0.25 * hov) + float(i) * 2.0944;
+        float dpa = abs(mod(a - pa + PI, TAU) - PI);
+        pulses += exp(-dpa * dpa * 60.0);
+      }
     }
     glow += vec3(0.6, 0.9, 0.85) * orbit * (0.16 + pulses * 1.2) * on(0.72, 0.95) * (0.8 + 0.6 * hov);
     /* a hairline of light at the lip, split into colours when you come close */
@@ -634,6 +638,53 @@ vec4 ring(vec2 p, vec2 O, float mir, out vec3 glow) {
   return vec4(0.0);
 }
 
+/* The ring as the sea shows it: the same outline, rippled and dim, so it is drawn
+   with far less work than the ring itself. No depth solving, no dial glyphs,
+   and the world in its opening is a gradient with the city in it rather than
+   a full sky and cloud sea. */
+vec4 ringMirror(vec2 p, vec2 O, out vec3 glow) {
+  glow = vec3(0.0);
+  vec2 V = Vp();
+  vec2 Om = O - gM;
+  float R = uPortal.z;
+  float zf = 1.0 - gS, zb = 1.0 + DEPTH - gS;
+  if (zf < 0.02) return vec4(0.0);
+  vec2 Cf = V + Om / zf;
+  float rf = length(p - Cf) * zf / R;
+  if (rf > 1.32) return vec4(0.0);
+  float lit = on(0.45, 0.8);
+  glow += vec3(0.6, 0.9, 0.85) * exp(-pow((rf - 1.27) / 0.006, 2.0)) * 0.2 * on(0.72, 0.95);
+  glow += vec3(1.0, 0.97, 0.92) * exp(-pow((rf - 0.78) / 0.008, 2.0)) * (0.7 + uHover) * on(0.5, 0.75);
+  vec2 dd = p - Cf;
+  float face = 0.5 - 0.5 * dot(normalize(dd), vec2(-0.6, 0.8));
+  if (rf > 1.02) {
+    float fa = fract((PI * 0.5 + atan(dd.y, dd.x) + uDialRot) / TAU) * NB;
+    float blk = step(0.07, fract(fa)) * step(fract(fa), 0.93) * step(rf, 1.15);
+    return vec4(mix(vec3(0.03, 0.035, 0.055), vec3(0.12, 0.13, 0.17), face), blk);
+  }
+  if (rf > 0.78) return vec4(mix(vec3(0.026, 0.032, 0.05), vec3(0.09, 0.1, 0.13), face), 1.0);
+  vec2 Cb = V + Om / zb;
+  float rb = R * 0.78 / zb;
+  vec2 m = (p - Cb) / rb;
+  float mr = length(m);
+  if (mr < 1.0) {
+    /* the world beyond, upside down: its sky, its warm horizon, its city */
+    float t = -m.y * 0.78 + 0.11;
+    vec3 b = mix(vec3(1.0, 0.8, 0.6), vec3(0.17, 0.25, 0.42), smoothstep(0.0, 0.16, t));
+    b = mix(b, vec3(0.035, 0.055, 0.14), smoothstep(0.12, 0.55, t));
+    if (t < 0.0) b = mix(vec3(0.52, 0.52, 0.68), vec3(1.0, 0.8, 0.6) * 0.92, exp(t * 9.0));
+    vec4 cty = city(vec2(m.x, -m.y) * 0.78, vec2(0.02, -0.11 + 0.19), 0.6);
+    b = mix(b, cty.rgb * vec3(0.85, 0.82, 1.0) + vec3(0.06, 0.05, 0.04), cty.a * 0.96);
+    b *= mix(1.0, 0.62, smoothstep(0.7, 1.0, mr));
+    float fill = smoothstep(mr - 0.25, mr, (uIntro - 0.45) / 0.28 * 1.3);
+    return vec4(mix(vec3(0.01, 0.015, 0.03), b, fill), 1.0);
+  }
+  /* the bore, as a warm gradient towards the far opening */
+  float dep = sat((0.78 - rf) / 0.78 * 3.0);
+  vec3 wall = mix(vec3(0.02, 0.024, 0.038), vec3(0.16, 0.14, 0.15), dep * on(0.4, 0.7)) + vec3(1.0, 0.8, 0.6) * pow(dep, 4.0) * 0.3 * lit;
+  return vec4(wall, 1.0);
+}
+
 /* ── the sea, and what stands in it ───────────────────────────────────── */
 
 /* The causeway's line across the water: from just in front of you to the foot
@@ -709,7 +760,7 @@ vec3 sea(vec2 p) {
   vec3 refl = above(rp, 0.0);
   vec2 rq = vec2(p.x + rip * k * 0.07, p.y - rip * k * 0.5);
   vec3 g2;
-  vec4 rr = ring(rq, vec2(gO.x, -gO.y - 2.0 * EYE), 1.0, g2);
+  vec4 rr = ringMirror(rq, vec2(gO.x, -gO.y - 2.0 * EYE), g2);
   float rfade = exp(-k * 3.2);
   refl = mix(refl, rr.rgb, rr.a * (0.35 + 0.65 * rfade)) + g2 * 0.8 * rfade;
   if (gS < 0.79) {
@@ -822,6 +873,8 @@ vec3 cables(vec2 p, vec3 col) {
 /* The cliffs in the foreground: a wall that leans in over the water, with ledges
    and a few lit openings cut into it. side +1 puts the rock to the right of x0. */
 vec3 wall(vec2 p, vec3 col, float x0, float side) {
+  /* nothing to do this far from the cliff: its outline never reaches past here */
+  if ((p.x - x0) * side < -0.23) return col;
   float y = p.y;
   /* the outline: broad buttresses stepping out towards the base, an overhang at the top */
   float big = fbm3(vec2(y * 1.7, 2.0 + side * 3.0));
@@ -849,6 +902,7 @@ vec3 wall(vec2 p, vec3 col, float x0, float side) {
   return mix(col, stone, m);
 }
 vec3 lowRock(vec2 p, vec3 col) {
+  if (p.y > -0.2) return col;
   float hA = 0.5 * A();
   float x = p.x;
   float narrow = uCliff.w;
@@ -892,7 +946,15 @@ void main() {
   gS = (1.0 + DEPTH) * e;
   float lat = 1.0 - smoothstep(0.05, 0.9, gS);
   gM = gO * (1.0 - lat) + uMouse * vec2(0.012, 0.008) * (1.0 - e);
-  vec3 col = (e >= 1.0 || gS > 1.0 + DEPTH - 0.0006) ? beyond(p, 1.0) : threshold(p);
+  /* Two programs are built from this source. Past the ring the page uses one that
+     draws only the world beyond: a branch on a uniform is not always skipped
+     (software renderers run both sides), so the field, where people spend most
+     of their time, does not pay for a threshold it cannot see. */
+#ifdef BEYOND_ONLY
+  vec3 col = beyond(p, 1.0);
+#else
+  vec3 col = threshold(p);
+#endif
   col += uFlash * vec3(0.9, 0.95, 1.0);
   /* atmosphere first: everything fades up from black in the opening seconds */
   col *= smoothstep(0.0, 0.3, uIntro);
@@ -904,69 +966,7 @@ void main() {
   gl_FragColor = vec4(col, 1.0);
 }`;
 
-/* The geometry of the scene, in the shader's units (y from -0.5 to 0.5, x scaled
-   by the aspect ratio). Kept here so the page can hit-test the ring and its dial,
-   and place the hidden hotspots exactly where the shader draws them. */
-export const EYE = 0.03;
-export const DIAL_SPEED = 0.01;
-export function sceneLayout(W, H) {
-  const a = W / H;
-  const narrow = a < 0.9;
-  const hz = narrow ? 0.06 : -0.14;
-  const R = narrow ? Math.min(0.14, a * 0.29) : Math.min(0.25, a * 0.17);
-  const cx = narrow ? 0.02 * a : 0.21 * a;
-  const cy = hz + R * (narrow ? 1.25 : 1.22);
-  const portal = [cx, cy, R];
-  /* the cliff that leans in on the ring's right, and the sea stack on its left;
-     a phone gets a second cliff instead of the stack */
-  const cliffX = narrow ? 0.5 * a - 0.035 : cx + R * 1.02;
-  const stackX = narrow ? 9 : cx - R * 1.32;
-  const stackTop = hz + 0.31;
-  const ss = (e0, e1, x) => { const t = Math.min(1, Math.max(0, (x - e0) / (e1 - e0))); return t * t * (3 - 2 * t); };
-  const footX = (narrow ? 0 : 0.12) + (cx - (narrow ? 0 : 0.12)) * ss(0.05, 1, 0.93);
-  return {
-    a, narrow, hz, portal,
-    cliff: [cliffX, stackX, stackTop, narrow ? 1 : 0],
-    moon: narrow ? [-0.14, 0.43, 0.018] : [-0.33 * a, 0.35, 0.028],
-    far: narrow ? [0.12, 0.43, 0.05] : [-0.22, 0.31, 0.12],
-    /* the lamp on top of the stack (none on a phone) */
-    light: narrow ? null : [stackX + 0.012, stackTop + 0.043],
-    figure: [footX, hz - EYE / 0.93, (R * 0.05) / 0.93],
-  };
-}
-
-/* Which block of the dial is under a point (scene units), or -1. Block i is the
-   i-th world in the atlas, counted clockwise from the top. */
-export function dialAt(L, [x, y], rot) {
-  if (!L) return -1;
-  const [cx, cy, R] = L.portal;
-  const ox = cx / 0.95, oy = L.hz + (cy - L.hz) / 0.95;
-  const dx = x - ox, dy = y - oy;
-  const rr = Math.hypot(dx, dy) * 0.95 / R;
-  if (rr < 1.02 || rr > 1.2) return -1;
-  let fa = (Math.PI / 2 - Math.atan2(dy, dx) + rot) / (Math.PI * 2);
-  fa -= Math.floor(fa);
-  return Math.floor(fa * 35);
-}
-
-/** Scene units to CSS pixels. */
-export function toScreen([x, y], W, H) {
-  return [x * H + W / 2, H / 2 - y * H];
-}
-
-/* The real phase of the moon today: 0 new, 0.5 full. Computed from the date,
-   so the sky is a little different on each visit without anything being stored. */
-export function moonPhase(date = new Date()) {
-  const synodic = 29.530588853;
-  const knownNew = Date.UTC(2000, 0, 6, 18, 14);
-  const days = (date.getTime() - knownNew) / 86400000;
-  return ((days % synodic) + synodic) % synodic / synodic;
-}
-
-export function phaseName(phase) {
-  const names = ['new moon', 'waxing crescent', 'first quarter', 'waxing gibbous', 'full moon', 'waning gibbous', 'last quarter', 'waning crescent'];
-  return names[Math.round(phase * 8) % 8];
-}
+export { EYE, DIAL_SPEED, sceneLayout, dialAt, dialRing, toScreen, moonPhase, phaseName } from './scene.js';
 
 export function createSky(canvas, { reduced = false, lowPower = false } = {}) {
   const gl = canvas.getContext('webgl', { antialias: false, alpha: false, depth: false, stencil: false, premultipliedAlpha: false, powerPreference: 'high-performance' });
@@ -983,23 +983,7 @@ export function createSky(canvas, { reduced = false, lowPower = false } = {}) {
     return s;
   }
   const vs = shader(gl.VERTEX_SHADER, VERT);
-  const fs = shader(gl.FRAGMENT_SHADER, FRAG(lowPower ? 3 : 5));
-  if (!vs || !fs) return null;
-  const prog = gl.createProgram();
-  gl.attachShader(prog, vs);
-  gl.attachShader(prog, fs);
-  gl.linkProgram(prog);
-  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { console.warn('sky link:', gl.getProgramInfoLog(prog)); return null; }
-  gl.useProgram(prog);
-  const buf = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-  const loc = gl.getAttribLocation(prog, 'a');
-  gl.enableVertexAttribArray(loc);
-  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-  const U = {};
-  for (const n of ['uRes', 'uTime', 'uIntro', 'uTravel', 'uHover', 'uAlt', 'uMoon', 'uLamp', 'uAccentAmt', 'uFlash', 'uMouse', 'uPortal',
-    'uHz', 'uCliff', 'uMoonA', 'uFar', 'uAccent', 'uTint', 'uEnvA', 'uEnvB', 'uFocus', 'uSeen', 'uDialRot', 'uDialHot', 'uCity', 'uCityA']) U[n] = gl.getUniformLocation(prog, n);
+  if (!vs) return null;
 
   /* the city, drawn once in 2D and uploaded */
   const cityArt = buildCity(512, 1);
@@ -1010,8 +994,41 @@ export function createSky(canvas, { reduced = false, lowPower = false } = {}) {
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, cityArt.canvas);
-  gl.uniform1i(U.uCity, 0);
-  gl.uniform1f(U.uCityA, cityArt.canvas.height / cityArt.canvas.width);
+
+  const NAMES = ['uRes', 'uTime', 'uIntro', 'uTravel', 'uHover', 'uAlt', 'uMoon', 'uLamp', 'uAccentAmt', 'uFlash', 'uMouse', 'uPortal',
+    'uHz', 'uCliff', 'uMoonA', 'uFar', 'uAccent', 'uTint', 'uEnvA', 'uEnvB', 'uFocus', 'uSeen', 'uDialRot', 'uDialHot', 'uCity', 'uCityA'];
+  function program(mode) {
+    const fs = shader(gl.FRAGMENT_SHADER, FRAG(lowPower ? 3 : 5, mode));
+    if (!fs) return null;
+    const prog = gl.createProgram();
+    gl.attachShader(prog, vs);
+    gl.attachShader(prog, fs);
+    gl.bindAttribLocation(prog, 0, 'a');
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { console.warn('sky link:', gl.getProgramInfoLog(prog)); return null; }
+    const U = {};
+    for (const n of NAMES) U[n] = gl.getUniformLocation(prog, n);
+    /* set its sampler, then put back whichever program was in use */
+    const prev = gl.getParameter(gl.CURRENT_PROGRAM);
+    gl.useProgram(prog);
+    gl.uniform1i(U.uCity, 0);
+    gl.uniform1f(U.uCityA, cityArt.canvas.height / cityArt.canvas.width);
+    if (prev) gl.useProgram(prev);
+    return { prog, fs, U };
+  }
+  const near = program('threshold');
+  if (!near) return null;
+  /* the lighter one for past the ring, built a moment after the first frame */
+  let far = null;
+  const buildFar = () => { if (!far) far = program('beyond') ?? near; return far; };
+  let active = near;
+  gl.useProgram(near.prog);
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0);
+  gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+  setTimeout(buildFar, 1500);
 
   /* Targets are set by the page; the values drawn chase them, so nothing jumps. */
   const target = {
@@ -1065,6 +1082,9 @@ export function createSky(canvas, { reduced = false, lowPower = false } = {}) {
     const t = reduced ? 30 : (ts - t0) / 1000;
     dialRot = reduced ? 0 : t * DIAL_SPEED;
     const L = layout;
+    const P = now.travel >= 0.9995 ? buildFar() : near;
+    if (P !== active) { gl.useProgram(P.prog); active = P; }
+    const U = P.U;
     gl.uniform2f(U.uRes, canvas.width, canvas.height);
     gl.uniform1f(U.uTime, t);
     gl.uniform1f(U.uIntro, now.intro);
@@ -1128,6 +1148,8 @@ export function createSky(canvas, { reduced = false, lowPower = false } = {}) {
     layout: () => layout,
     /* which world's block of the dial is under a point on the screen, or -1 */
     dialAt: (x, y) => dialAt(layout, [(x - W / 2) / H, (H / 2 - y) / H], dialRot),
+    /* and where block i is now, in screen px (the dial turns slowly) */
+    dialPoint: (i) => toScreen(dialPoint(layout, i, dialRot), W, H),
     size: () => [W, H],
     stats: () => ({ ...stats, intro: now.intro, travel: now.travel, alt: now.alt }),
     redraw() { last = 0; kick(); },
@@ -1140,7 +1162,8 @@ export function createSky(canvas, { reduced = false, lowPower = false } = {}) {
       document.removeEventListener('visibilitychange', onVis);
       gl.deleteTexture(tex);
       gl.deleteBuffer(buf);
-      gl.deleteProgram(prog);
+      for (const P of new Set([near, far].filter(Boolean))) { gl.deleteProgram(P.prog); gl.deleteShader(P.fs); }
+      gl.deleteShader(vs);
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     },
   };

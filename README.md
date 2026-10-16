@@ -14,7 +14,8 @@ grammar. Step onto one and the world changes to match it: a floor plan for the r
 for the transformer, a lamp that turns towards you for the lighthouse story. The panel holds the problem, the most
 interesting decision, the evidence and, for the AI products, what the model does and what ordinary code does;
 "Try it here" opens the real app full size. The thirty-five blocks on the ring's dial are the thirty-five worlds,
-and they light up as you visit them. The sky, sea and ring are one WebGL fragment shader. Every project also has a
+and they light up as you visit them; point at one, or Tab to the dial and use the arrow keys, and Enter takes you
+there. The sky, sea and ring are one WebGL fragment shader, and without WebGL the same scene is drawn in 2D. Every project also has a
 plain page of its own ([`atlas/projects/`](atlas/projects/)), generated from the same data by
 `node atlas/build.mjs`, so none of it needs WebGL or script to read. [Tests](tests/atlas.test.mjs) check that every
 island leads somewhere real. ([`atlas/`](atlas/))
