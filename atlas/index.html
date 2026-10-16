@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<link rel="icon" href="../favicon.svg" />
+<meta name="theme-color" content="#080B14" />
+<title>The Portal Atlas — Mohamed Sucule: ideas that escape the ordinary</title>
+<meta name="description" content="A world of floating islands, one for every working project: AI products a business could use tomorrow, the machinery under them, stories, games and engineering tools. Hover to bring one closer, click to step inside, launch the real thing." />
+<meta property="og:title" content="The Portal Atlas — ideas that escape the ordinary" />
+<meta property="og:description" content="Thirty-five working projects, each one a floating world. Step through the portal, explore the islands, launch the real apps, then read how one of them was engineered." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://mohamed-sucule.github.io/Projects/atlas/" />
+<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/atlas/shots/og.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="canonical" href="https://mohamed-sucule.github.io/Projects/atlas/" />
+<link rel="preload" href="../assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="atlas.css" />
+</head>
+<body>
+
+<canvas id="stars" aria-hidden="true"></canvas>
+
+<header class="corner">
+  <a class="name" href="#top">Mohamed Sucule</a>
+  <nav aria-label="Sections">
+    <a href="#islands">Islands</a>
+    <a href="#builder">The builder</a>
+    <a href="#contact" class="keep">Write to me</a>
+    <a href="../index.html">Classic site</a>
+  </nav>
+</header>
+
+<!-- 01 — arrive -->
+<section class="arrive" id="top" aria-label="Arrive">
+  <canvas id="world" aria-label="A giant glowing portal above still water, with a floating city to its left. Click the portal to step through to a featured project." role="img"></canvas>
+  <div class="arrive-copy">
+    <p class="eyebrow">The Portal Atlas</p>
+    <h1>Ideas that escape the <em>ordinary.</em></h1>
+    <p class="lede">Thirty-five working things, each one a world: AI products a business could use tomorrow,
+      the machinery under them, stories, games and engineering tools. Every island opens the real thing.</p>
+    <div class="cta">
+      <a class="btn primary" href="#islands">Drift toward the islands <span class="arrow" aria-hidden="true">&darr;</span></a>
+      <button class="btn" id="enterPortal" type="button">Step through the portal</button>
+    </div>
+  </div>
+  <p class="portal-hint" id="portalHint" aria-hidden="true"></p>
+  <a class="scroll-cue" href="#islands" aria-hidden="true" tabindex="-1">Scroll</a>
+</section>
+<div class="flash" id="flash" aria-hidden="true"></div>
+
+<!-- 02 — discover the islands -->
+<main class="world" id="islands">
+  <div class="world-intro">
+    <h2>Thirty-five islands. Every one of them opens.</h2>
+    <p>Hover to bring one closer, click to step inside. Not sure where to start? The guide, bottom left,
+      picks three if you tell it what you are after.</p>
+  </div>
+  <div id="islands-field"></div>
+  <noscript><p class="world-intro">The islands are drawn by script. <a href="../index.html">The classic front page</a> lists everything without it.</p></noscript>
+</main>
+
+<!-- 04 — meet the builder -->
+<section class="builder" id="builder" aria-labelledby="builder-title">
+  <div class="b-wrap">
+    <p class="b-eyebrow">Meet the builder</p>
+    <h2 id="builder-title">Mohamed Sucule, forward deployed engineer and AI engineer.</h2>
+    <p class="b-lede">I sit with a client, find the work that is costing them, and ship the software that does it.
+      The islands are the evidence. Here is one of them from the inside: the brief, the architecture, where the AI
+      is and where it deliberately isn&rsquo;t, the trade-offs, and the numbers.</p>
+
+    <article class="case" aria-labelledby="case-title">
+      <div class="case-head">
+        <div><p>Case study</p><h3 id="case-title">Tally: an AI analyst that checks every supplier invoice</h3></div>
+        <p>Python &middot; FastAPI &middot; Claude &middot; SQLite</p>
+      </div>
+      <div class="case-grid">
+        <section>
+          <h4>The problem</h4>
+          <blockquote>&ldquo;We pay hundreds of supplier invoices a month and nobody has time to check them against the contracts.&rdquo;</blockquote>
+        </section>
+        <section>
+          <h4>What it does</h4>
+          <p>Tally reads the supplier contracts and the accounts export. It answers questions with cited sources,
+            audits every invoice against the terms in force on its date, and drafts the dispute emails, which a
+            person approves before anything goes out.</p>
+        </section>
+        <section class="wide">
+          <h4>Architecture</h4>
+          <div class="flow" role="list">
+            <div class="flow-row" role="listitem"><b>Read</b><span>Contracts: PDF, Word, HTML, Markdown</span><i>&rarr;</i><span>checked by content, parsed with limits, chunked by heading</span><i>&rarr;</i><span>full-text index, injection flags</span><i>&middot;</i><span>Accounts CSV</span><i>&rarr;</i><span>validated into a separate database</span></div>
+            <div class="flow-row" role="listitem"><b>Answer</b><span>Question</span><i>&rarr;</i><span class="ai">Claude</span><i>&#8644;</i><span>search &middot; read &middot; read-only SQL &middot; calculator</span><i>&rarr;</i><span>every quote checked word for word</span><i>&rarr;</i><span>answer streamed to the page</span></div>
+            <div class="flow-row" role="listitem"><b>Act</b><span class="ai">Claude extracts contract terms, with quotes</span><i>&rarr;</i><span>plain code audits every invoice line</span><i>&rarr;</i><span class="ai">Claude drafts dispute emails</span><i>&rarr;</i><span>guardrails: every invoice, every &pound;</span><i>&rarr;</i><span class="human">a person approves</span><i>&rarr;</i><span>outbox</span></div>
+          </div>
+          <p class="legend"><em class="ai">Claude</em> &nbsp; <em class="human">a person</em> &nbsp; everything else is ordinary, tested code.</p>
+        </section>
+        <section>
+          <h4>Where the AI is, and where it isn&rsquo;t</h4>
+          <ul>
+            <li><b>Claude reads.</b> It answers questions using tools, and turns each contract into typed terms, each with a quote that must be found in the source.</li>
+            <li><b>Code decides.</b> Whether money is owed is worked out by plain Python, tested to the penny, so no note on an invoice can talk it out of a finding.</li>
+            <li><b>People approve.</b> No email leaves until someone has read it, edited it or rejected it.</li>
+          </ul>
+        </section>
+        <section>
+          <h4>Decisions and trade-offs</h4>
+          <ul>
+            <li><b>Keyword search before embeddings.</b> Contract language is exact, and the retrieval eval found the right document for every test question. Embeddings wait until an eval shows a miss.</li>
+            <li><b>Structured output plus a quote check.</b> The schema guarantees the shape; the quote check catches a term the model invented.</li>
+            <li><b>One process and SQLite.</b> Right for one business. Several would need Postgres and a shared rate limiter.</li>
+            <li><b>Built to be run.</b> Refusal fallbacks, a daily spending cap, every call&rsquo;s cost logged, an admin token, rate limits and a strict content policy.</li>
+          </ul>
+        </section>
+        <section class="wide">
+          <h4>Results</h4>
+          <div class="results-wrap">
+            <table class="results">
+              <thead><tr><th>Check</th><th>What it measures</th><th>Result</th></tr></thead>
+              <tbody>
+                <tr><td>Audit</td><td>23 billing errors planted in the demo books, found to the penny, with nothing else flagged</td><td>23 / 23</td></tr>
+                <tr><td>Retrieval</td><td>One search with the raw question puts the right document in front of the model</td><td>27 / 27</td></tr>
+                <tr><td>SQL sandbox</td><td>Writes, schema probes, file reads, extensions and runaway queries refused</td><td>20 / 20</td></tr>
+                <tr><td>Ingestion</td><td>Every document parsed and flagged correctly; hostile files, a zip bomb among them, refused</td><td>19 / 19</td></tr>
+                <tr><td>Unit and API tests</td><td>Agent loop, citation checks, error handling, budget, guardrails, approvals, auth, limits</td><td>103 passing</td></tr>
+                <tr><td>Question answering</td><td>50 questions graded against the data, including unanswerable ones and injection traps</td><td>needs an API key</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="legend">The model evals are written and graded against facts computed from the data, but they have not been run
+            for this build: they need an Anthropic API key. The page will say so until they have.</p>
+        </section>
+      </div>
+      <div class="case-foot">
+        <a class="btn primary" href="https://github.com/Mohamed-Sucule/Projects/blob/main/tally/README.md">Read the full case study</a>
+        <a class="btn" href="https://github.com/Mohamed-Sucule/Projects/tree/main/tally">The source</a>
+      </div>
+    </article>
+
+    <section class="rules" aria-labelledby="rules-title">
+      <h3 id="rules-title">How I work</h3>
+      <article><h4>The right tool, not the biggest model</h4><p>Where a parser, a search index or a rule is faster, cheaper, testable and can&rsquo;t make things up, it does the work. Models handle what those can&rsquo;t.</p></article>
+      <article><h4>Measured on questions it never saw</h4><p>Each AI product has a held-out test set, run once, with the first score kept even when it is bad. The numbers are on the islands.</p></article>
+      <article><h4>Safe when unsure</h4><p>The receptionist hands over to a person, the handbook says it doesn&rsquo;t know, the claims desk refers what it can&rsquo;t read, and Tally asks a person before it sends anything.</p></article>
+    </section>
+
+    <section class="numbers" aria-label="In numbers">
+      <div><b>35</b><span>working projects, one for every island above</span></div>
+      <div><b data-claim="tests">850+</b><span>tests run in CI before anything is published</span></div>
+      <div><b>0</b><span>sign-ups or installs needed to try the ones that run in your browser</span></div>
+    </section>
+
+    <section class="invite" id="contact" aria-labelledby="contact-title">
+      <h3 id="contact-title">Have an idea that escapes the ordinary?</h3>
+      <p>If your team has a problem like one of the products above, or one nobody has built software for yet,
+        write to me. This is the fastest way to reach me.</p>
+      <div class="cta">
+        <a class="btn primary" href="mailto:mohamedsucule@gmail.com">mohamedsucule@gmail.com</a>
+        <a class="btn" href="https://github.com/Mohamed-Sucule/Projects">Read the source on GitHub</a>
+      </div>
+    </section>
+  </div>
+</section>
+<footer class="foot">
+  <p>Every island, the portal, the city and the water are drawn by code in this page; there are no image files in the world.
+    Prefer a plain list? <a href="../index.html">The classic front page</a>.</p>
+</footer>
+
+<!-- 03 — enter the product -->
+<dialog class="panel" id="panel" aria-labelledby="panel-title">
+  <button class="panel-close" type="button" aria-label="Close and return to the islands">&times;</button>
+  <div class="panel-sky">
+    <div class="panel-art"></div>
+    <p class="panel-world"></p>
+  </div>
+  <div class="panel-body">
+    <p class="panel-kind"></p>
+    <h2 id="panel-title"></h2>
+    <p class="panel-blurb"></p>
+    <div class="panel-actions"></div>
+    <p class="panel-note" hidden></p>
+    <figure class="panel-shot"><img alt="" loading="lazy" decoding="async" width="960" height="600" /><figcaption></figcaption></figure>
+    <dl class="facts">
+      <div><dt>The problem</dt><dd data-fact="problem"></dd></div>
+      <div><dt>Try this</dt><dd data-fact="try"></dd></div>
+      <div><dt>Built with</dt><dd data-fact="tech"></dd></div>
+      <div><dt>Evidence</dt><dd data-fact="evidence"></dd></div>
+    </dl>
+    <nav class="panel-nav" aria-label="Other islands">
+      <button type="button" data-nav="prev"></button>
+      <button type="button" data-nav="next"></button>
+    </nav>
+  </div>
+</dialog>
+
+<!-- the guide -->
+<div class="guide" id="guide">
+  <div class="guide-card" hidden role="dialog" aria-labelledby="guide-title">
+    <h2 id="guide-title">Where should you start?</h2>
+    <p>Say what you are building, what you care about, or how long you have. The guide is a search engine running in this page, not a chatbot.</p>
+    <form>
+      <label class="sr" for="guide-q">What are you after?</label>
+      <input id="guide-q" type="text" autocomplete="off" placeholder="e.g. AI for a restaurant" />
+      <button type="submit">Ask</button>
+    </form>
+    <div class="guide-chips">
+      <button type="button">AI for my business</button>
+      <button type="button">I have two minutes</button>
+      <button type="button">the hardest engineering</button>
+      <button type="button">something beautiful</button>
+      <button type="button">surprise me</button>
+    </div>
+    <ul class="guide-results" aria-live="polite"></ul>
+    <p class="guide-foot"><button type="button" id="guide-show" class="btn" hidden>Fly to them</button></p>
+  </div>
+  <button class="guide-orb" type="button" aria-expanded="false"><span class="wisp" aria-hidden="true"></span><span class="label">Ask the guide</span></button>
+</div>
+
+<script type="module" src="atlas.js"></script>
+<script type="module" src="../shared/navigator.js"></script>
+</body>
+</html>

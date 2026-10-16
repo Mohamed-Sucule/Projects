@@ -6,6 +6,12 @@ API key, no video of someone else using it.
 
 **→ [Open the playground](https://mohamed-sucule.github.io/Projects/)**
 
+**→ [Or step through the Portal Atlas](https://mohamed-sucule.github.io/Projects/atlas/)**: the same work as a
+world of floating islands, one per project, each drawn as what it does. Every island opens a panel with the
+problem, a screenshot, what it is built with and the evidence, then launches the real thing. It is built the
+same way as everything else here: plain HTML, CSS and JavaScript, no image files in the world, with
+[tests](tests/atlas.test.mjs) that every island leads somewhere real. ([`atlas/`](atlas/))
+
 One project here is different: **[Tally](tally/)** is a full AI application with a Python backend. It ingests
 supplier contracts and an accounts export, answers questions with Claude using tools and checked citations, and
 audits every invoice against the contract. Claude drafts the dispute emails, and a person approves each one. Its
