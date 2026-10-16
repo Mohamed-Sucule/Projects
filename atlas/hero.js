@@ -196,7 +196,7 @@ function curve(rand, n) {
    cloud and the floating city, with the region's weather laid over it. Used both
    in the ring's opening and, full size, behind the islands. */
 function paintBeyond(x, w, h, city, { env = [0, 0, 0, 0, 0, 0, 0, 0], tint = [1, 1, 1], focus = [0, 0, 0], full = true } = {}) {
-  const [stars, grid, water, aurora, night, warm, lamps] = env;
+  const [stars, grid, water, aurora, night, warm, lamps, away = 0] = env;
   const hz = h * 0.56;
   const sky = x.createLinearGradient(0, 0, 0, hz);
   sky.addColorStop(0, night > 0.5 ? '#04060f' : '#0b1430');
@@ -268,10 +268,11 @@ function paintBeyond(x, w, h, city, { env = [0, 0, 0, 0, 0, 0, 0, 0], tint = [1,
   }
   /* the city */
   if (city) {
-    const cw = Math.min(w * 0.3, h * 0.42);
+    const far = full ? away : 0;
+    const cw = Math.min(w * 0.3, h * 0.42) * (1 - 0.7 * far);
     const chh = cw * (city.h / city.w);
-    const cx = full ? w * 0.7 : w * 0.5;
-    x.globalAlpha = night > 0.5 ? 0.7 : 1;
+    const cx = (full ? w * 0.7 : w * 0.5) + w * 0.08 * far;
+    x.globalAlpha = (night > 0.5 ? 0.7 : 1) * (1 - 0.45 * far);
     x.drawImage(city.canvas, cx - cw / 2, hz - chh * 0.62, cw, chh);
     x.globalAlpha = 1;
   }
