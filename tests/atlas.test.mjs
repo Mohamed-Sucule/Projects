@@ -13,10 +13,10 @@ import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 import { test, assert } from './harness.mjs';
 import { ATLAS } from '../shared/atlas.js';
-import { WORLDS, ISLANDS, REGIONS, REPO, FEATURED, DETAILS, islandById, SEARCHABLE } from '../atlas/worlds.js';
+import { WORLDS, ISLANDS, REGIONS, REPO, FEATURED, DETAILS, AI, islandById, SEARCHABLE } from '../atlas/worlds.js';
 import { islandSVG, SCENE_IDS } from '../atlas/islands.js';
 import { FX_TYPES } from '../atlas/fx.js';
-import { sceneLayout, moonPhase, phaseName } from '../atlas/sky.js';
+import { sceneLayout, dialAt, moonPhase, phaseName } from '../atlas/sky.js';
 import { buildIndex, search } from '../shared/search.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -59,7 +59,7 @@ test('every island can be drawn, and is well-formed SVG', () => {
     assert.ok(SCENE_IDS.includes(i.id), `${i.id} has no scene`);
     const svg = islandSVG(i);
     assert.ok(svg.startsWith('<svg') && svg.endsWith('</svg>'), `${i.id} is not one SVG`);
-    for (const tag of ['g', 'defs', 'linearGradient', 'radialGradient']) {
+    for (const tag of ['g', 'defs', 'linearGradient', 'radialGradient', 'clipPath']) {
       const open = (svg.match(new RegExp(`<${tag}[\\s>]`, 'g')) ?? []).length;
       const close = (svg.match(new RegExp(`</${tag}>`, 'g')) ?? []).length;
       assert.equal(open, close, `${i.id}: ${open} <${tag}> but ${close} </${tag}>`);
@@ -175,17 +175,58 @@ test('the guide opens with the question and the four starting points', () => {
   }
 });
 
-test('the portal, the moon and the lighthouse are on screen at every common size', () => {
-  for (const [W, H] of [[1440, 900], [1920, 1080], [1280, 800], [1024, 768], [390, 844], [360, 740], [768, 1024], [2560, 1080]]) {
+const SIZES = [[1440, 900], [1920, 1080], [1280, 800], [1024, 768], [390, 844], [360, 740], [768, 1024], [2560, 1080]];
+
+test('the ring, the moon, the lamp and the person are on screen at every common size', () => {
+  for (const [W, H] of SIZES) {
     const L = sceneLayout(W, H);
     const half = L.a / 2;
     const [cx, cy, R] = L.portal;
     const outer = R * 1.3;
-    assert.ok(cx - outer > -half && cx + outer < half, `${W}x${H}: the portal runs off the side`);
-    assert.ok(cy + outer < 0.5, `${W}x${H}: the portal runs off the top`);
-    assert.ok(Math.abs(L.light[0]) < half - 0.01, `${W}x${H}: the lighthouse is off screen`);
+    assert.ok(cx - outer > -half && cx + outer < half, `${W}x${H}: the ring runs off the side`);
+    assert.ok(cy + outer < 0.5, `${W}x${H}: the ring runs off the top`);
+    /* it hangs: its lowest edge is clear of the water at its own distance */
+    assert.ok(cy - R > L.hz - 0.03, `${W}x${H}: the ring is standing in the sea, not hanging over it`);
+    if (L.light) assert.ok(Math.abs(L.light[0]) < half - 0.01 && L.light[1] < 0.5, `${W}x${H}: the lamp is off screen`);
     assert.ok(Math.abs(L.moon[0]) < half - L.moon[2], `${W}x${H}: the moon is off screen`);
+    const [fx, fy] = L.figure;
+    assert.ok(Math.abs(fx) < half && fy > -0.5 && fy < L.hz, `${W}x${H}: the person on the causeway is off screen`);
+    assert.ok(L.cliff[0] > cx && L.cliff[0] < half, `${W}x${H}: the cliff is not to the right of the ring`);
   }
+});
+
+test('every block of the dial is a world, and the dial is only the dial', () => {
+  for (const [W, H] of SIZES) {
+    const L = sceneLayout(W, H);
+    const [cx, cy, R] = L.portal;
+    const ox = cx / 0.95, oy = L.hz + (cy - L.hz) / 0.95;
+    const rr = (R * 1.09) / 0.95;
+    const found = new Set();
+    for (let i = 0; i < 35; i++) {
+      const a = Math.PI / 2 - ((i + 0.5) / 35) * Math.PI * 2;
+      found.add(dialAt(L, [ox + Math.cos(a) * rr, oy + Math.sin(a) * rr], 0));
+    }
+    assert.equal(found.size, 35, `${W}x${H}: the dial does not have thirty-five distinct blocks`);
+    assert.ok([...found].every((b) => b >= 0 && b < ISLANDS.length));
+    assert.equal(dialAt(L, [ox, oy], 0), -1, 'the middle of the ring is not a block');
+    assert.equal(dialAt(L, [ox + R * 3, oy], 0), -1, 'empty sky is not a block');
+  }
+  assert.equal(ISLANDS.length, 35, 'the dial has thirty-five blocks; the atlas must have thirty-five worlds');
+});
+
+test('where the AI is: every claim about a model is backed by the project\'s own README', () => {
+  const readme = (id) => readFileSync(join(root, id === 'tally' ? 'tally/README.md' : `apps/${id}/README.md`), 'utf8');
+  for (const [id, ai] of Object.entries(AI)) {
+    assert.ok(islandById.has(id), `AI notes for ${id}, which has no island`);
+    for (const key of ['model', 'code', 'guards', 'limits']) assert.ok(ai[key]?.length, `${id} says nothing under ${key}`);
+    const text = readme(id).replace(/,(?=\d{3})/g, '');
+    for (const line of Object.values(ai).flat()) {
+      for (const n of line.match(/\d+(?:\.\d+)?/g) ?? []) {
+        assert.ok(text.includes(n), `${id}: "${n}" in "${line}" is not in its README`);
+      }
+    }
+  }
+  for (const id of ['tally', 'frontdesk', 'handbook', 'claims']) assert.ok(AI[id], `${id} uses a model and must say where`);
 });
 
 test('the moon in the sky is the moon outside', () => {

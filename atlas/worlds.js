@@ -480,7 +480,107 @@ export const DETAILS = {
 export const FEATURED = 'frontdesk';
 
 /* Every world joined to its catalogue entry and its details, so the page needs only one list. */
-export const ISLANDS = WORLDS.map((w) => ({ ...(w.id === 'tally' ? TALLY : byId.get(w.id)), ...w, ...DETAILS[w.id] }));
+/* For the projects with AI in them: what the model does, what ordinary code does,
+   what keeps it honest, and what is not built yet. Every line is taken from the
+   project's own README, which is where the evidence for it lives. */
+export const AI = {
+  tally: {
+    model: [
+      'Answers plain-English questions with five tools: document search, document reading, a document list, read-only SQL and a calculator',
+      'Reads each contract and its amendments into typed terms, every term with a quote from the source',
+      'Drafts one dispute email per supplier',
+    ],
+    code: [
+      'Decides whether money is owed: plain Python checks every invoice line against the terms',
+      'Drops any citation that does not quote, word for word, a passage the model was shown',
+      'Runs the model\'s SQL read-only, on a separate database file, behind an allow-list, a time budget and a row cap',
+    ],
+    guards: [
+      'A person edits, approves or rejects every draft before it reaches the outbox',
+      'A draft must name every disputed invoice, and every £ amount in it must be one the audit produced',
+      'Document text reaches the model marked as untrusted evidence; both planted prompt injections are flagged',
+      'A daily budget stops model calls once it is spent, and every call\'s tokens and cost are logged',
+    ],
+    limits: [
+      'The model evals (questions, extraction, drafts) need an API key and have not been run for this build; the four offline suites pass in CI',
+      'Scanned and encrypted PDFs are refused',
+    ],
+  },
+  frontdesk: {
+    model: [
+      'A small on-device embedding model, asked only when the parser finds nothing at all',
+      'Even then it only suggests the intent: whether this is a booking request at all',
+    ],
+    code: [
+      'A purpose-built parser reads party size, day, time, name and number, and the exact words each came from',
+      'The Covers table engine is asked about every table, and asked again at the moment of booking',
+      'Hands over to a person for more than ten guests, a complaint, a name it cannot find twice, or three misunderstandings in a row',
+    ],
+    guards: [
+      'Reads everything back before it books',
+      'Held-out phrasings: 75 of 82 on the first run, and the tests fail if the score ever drops below that',
+      'Four hundred random callers on every test run: no double bookings, nothing after closing, nothing in the past',
+    ],
+    limits: ['No phone line yet: a telephony provider would stream call audio into the same text pipeline', 'Confirmation texts are drafted, not sent'],
+  },
+  handbook: {
+    model: [
+      'Optional: a small sentence-embedding model (MiniLM, 23 MB), loaded in your browser by "Run with the model"',
+      'It adds meaning to the ranking. It never writes an answer',
+    ],
+    code: [
+      'Every answer is a sentence from the documents, with its source: nothing writes new prose about a policy',
+      'Porter stemming and BM25 rank every sentence in the handbook',
+      'Refuses when the question\'s subject is not in the documents, and never cites a replaced policy as the answer',
+    ],
+    guards: [
+      'About a fifth of the test questions are deliberately unanswerable',
+      '"Answers made up" is counted across all 164 questions and shown on the page',
+      'Held-out first runs are recorded and never edited: 25 of 41, then 21 of 43',
+    ],
+    limits: ['Word matching copes badly with phrasings the handbook never uses; that is what the model is for', 'Text and Markdown only: no PDFs, Word files, connectors or permissions yet'],
+  },
+  callcoach: {
+    model: ['None. Every tag, card, nudge and note comes from rules a sales manager would recognise, so each one can be read and tested'],
+    code: [
+      'Tags seventeen kinds of moment: eight objections, five buying signals and four pains',
+      'Reads spoken numbers and sums of money into values with their units',
+      'Writes MEDDICC notes, a CRM record and the follow-up email from quotes',
+    ],
+    guards: [
+      'A test checks that every quote in the notes and the email was actually said on the call',
+      'Held-out lines, run once: 27 of 28, precision 96%, recall 100%',
+      'The same person wrote the rules and the test lines, so that score is optimistic, and the page says so',
+    ],
+    limits: ['No call audio yet: it needs a speech-to-text service with speaker labels', 'CRM records are drafts for the rep to approve'],
+  },
+  claims: {
+    model: ['Tesseract OCR, running in WebAssembly and served from this site, reads the scans into words with their positions on the page'],
+    code: [
+      'Turns the OCR text into facts, allowing for OCR\'s usual slips (£ read as E, O as 0)',
+      'Runs up to thirteen checks against the policy and between the documents, each citing a field or a clause',
+      'Recommends approve, decline with the clause quoted, or refer to a person',
+    ],
+    guards: [
+      '180 deliberately smudged scans on every test run: a misread may send a claim to a person, but must never pay or decline wrongly',
+      'Records who approved or overrode the recommendation',
+      'A referral asks for something and never uses the words fraud, suspicious or investigation',
+    ],
+    limits: ['Images only: no PDFs or multi-page documents', 'Typed forms only: handwriting would need a handwriting model and a person checking it'],
+  },
+  agents: {
+    model: ['Not real, on purpose: a scripted policy emits the same content blocks a model would, so each failure can be shown on demand'],
+    code: [
+      'The loop, the five tools and the 300-line expense ledger are real',
+      'Guards for bad arguments, tool errors, loops and oversized results, plus a turn limit that cannot be switched off',
+      'Token counts come from a real byte-pair tokeniser run over the actual conversation',
+    ],
+    guards: ['29 tests, including that each turn costs more than the one before'],
+    limits: ['A real model drops in behind one function, policy({ messages, tools, turn }), without the harness knowing'],
+  },
+};
+
+export const ISLANDS = WORLDS.map((w) => ({ ...(w.id === 'tally' ? TALLY : byId.get(w.id)), ...w, ...DETAILS[w.id], ai: AI[w.id] ?? null }));
 export const islandById = new Map(ISLANDS.map((i) => [i.id, i]));
 
 /* The entries the guide searches: the catalogue plus Tally, each with the extra words

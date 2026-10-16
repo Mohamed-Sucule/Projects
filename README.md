@@ -7,14 +7,17 @@ API key, no video of someone else using it.
 **→ [Open the playground](https://mohamed-sucule.github.io/Projects/)**
 
 **→ [Or step through the Portal Atlas](https://mohamed-sucule.github.io/Projects/atlas/)**: the same work as a
-world. A ring stands in a night sea; scroll and you pass through it into a sea of cloud, flying past floating
-islands, one per project, each drawn as what it does. Step onto one and the world around it changes to match
-(a floor plan for the restaurant system, attention arcs for the transformer, a sweeping beam for the lighthouse
-story), with a panel holding the problem, the most interesting decision, the evidence, and the real app running
-inside it. The sky, sea and portal are one WebGL fragment shader; every project also has a plain page of its
-own ([`atlas/projects/`](atlas/projects/)), generated from the same data by `node atlas/build.mjs`, so none of it
-needs WebGL or script to read. [Tests](tests/atlas.test.mjs) check that every island leads somewhere real.
-([`atlas/`](atlas/))
+world. A ring of stone hangs on cables between a sea stack and a cliff, with a causeway leading to it and one person
+on it for scale. Scroll, and the camera lines up with its axis, flies down its lit bore and out over a sea of
+cloud, past floating islands, one per project, in six regions with their own weather and their own visual
+grammar. Step onto one and the world changes to match it: a floor plan for the restaurant system, attention arcs
+for the transformer, a lamp that turns towards you for the lighthouse story. The panel holds the problem, the most
+interesting decision, the evidence and, for the AI products, what the model does and what ordinary code does;
+"Try it here" opens the real app full size. The thirty-five blocks on the ring's dial are the thirty-five worlds,
+and they light up as you visit them. The sky, sea and ring are one WebGL fragment shader. Every project also has a
+plain page of its own ([`atlas/projects/`](atlas/projects/)), generated from the same data by
+`node atlas/build.mjs`, so none of it needs WebGL or script to read. [Tests](tests/atlas.test.mjs) check that every
+island leads somewhere real. ([`atlas/`](atlas/))
 
 One project here is different: **[Tally](tally/)** is a full AI application with a Python backend. It ingests
 supplier contracts and an accounts export, answers questions with Claude using tools and checked citations, and

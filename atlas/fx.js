@@ -41,6 +41,15 @@ function glowDot(x, px, py, rad, col, a) {
   x.fillRect(px - rad, py - rad, rad * 2, rad * 2);
 }
 
+/* Where the visitor's pointer is, inside the world they are visiting. A few worlds
+   answer it in the way their app would: the tuning fork reads the pitch of the
+   height you hold it at, the prism takes its light from wherever you are, the
+   lamp turns towards you, and liquid metal ripples where you touch it. */
+const ptr = { x: 0, y: 0, on: false, last: 0 };
+const touches = [];
+const NOTE_NAMES = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
+let beamAim = null;
+
 const FAMILIES = {
   /* attention arcs between tokens / citation threads to sentences */
   neural(x, c, t, k, o, v) {
@@ -130,7 +139,21 @@ const FAMILIES = {
       return;
     }
     if (v === 'sine') {
-      const f = 3 + 0.6 * Math.sin(t * 0.4);
+      let f = 3 + 0.6 * Math.sin(t * 0.4);
+      /* hold the pointer high or low: the wave takes that pitch, and says which note it is */
+      if (ptr.on && Math.abs(ptr.x - o.x) < o.r * 2.4) {
+        const u = Math.max(0, Math.min(1, (o.y + o.r * 0.6 - ptr.y) / (o.r * 2.8)));
+        const hz = 82.41 * 2 ** (u * 2.5);
+        f = hz / 30;
+        const midi = 69 + 12 * Math.log2(hz / 440);
+        const n = Math.round(midi);
+        const cents = Math.round((midi - n) * 100);
+        x.font = '15px "Instrument Serif", Georgia, serif';
+        x.fillStyle = rgba(STAR, 0.9 * k);
+        x.textAlign = 'center';
+        x.fillText(`${NOTE_NAMES[((n % 12) + 12) % 12]}${Math.floor(n / 12) - 1}  ${cents >= 0 ? '+' : '−'}${Math.abs(cents)} cents  ·  ${hz.toFixed(1)} Hz`, o.x, o.y - o.r * 1.15 - 34);
+        x.textAlign = 'start';
+      }
       for (const [off, col, a] of [[0, c, 0.8], [0.5, STAR, 0.35]]) {
         x.strokeStyle = rgba(col, a * k);
         x.lineWidth = 1.6;
@@ -360,6 +383,17 @@ const FAMILIES = {
   },
 
   ripple(x, c, t, k, o) {
+    /* rings spread from wherever the pointer touches the surface */
+    for (const r0 of touches) {
+      const age = t - r0.t;
+      if (age < 0 || age > 2.4) continue;
+      const p = age / 2.4;
+      x.strokeStyle = rgba(STAR, (1 - p) * 0.7 * k);
+      x.lineWidth = 1.2;
+      x.beginPath();
+      x.ellipse(r0.x, r0.y, 6 + p * o.r * 1.4, 2 + p * o.r * 0.4, 0, 0, TAU);
+      x.stroke();
+    }
     for (let i = 0; i < 6; i++) {
       const p = (t * 0.25 + i / 6) % 1;
       x.strokeStyle = rgba(i % 2 ? STAR : c, (1 - p) * 0.6 * k);
@@ -402,16 +436,20 @@ const FAMILIES = {
   spectrum(x, c, t, k, o) {
     const px = o.x;
     const py = o.y - o.r * 0.8;
+    /* the white light comes from wherever you hold the pointer, to the left of the prism */
+    const sx = ptr.on && ptr.x < px - 20 ? ptr.x : o.x - o.r * 2.4;
+    const sy = ptr.on && ptr.x < px - 20 ? ptr.y : py + 10;
+    const tilt = Math.max(-0.5, Math.min(0.5, (py - sy) / (o.r * 4)));
     x.strokeStyle = rgba([255, 255, 255], 0.8 * k);
     x.lineWidth = 2;
-    x.beginPath(); x.moveTo(o.x - o.r * 2.4, py + 10); x.lineTo(px, py); x.stroke();
+    x.beginPath(); x.moveTo(sx, sy); x.lineTo(px, py); x.stroke();
     const hues = [[255, 107, 138], [255, 168, 107], [255, 224, 107], [122, 209, 138], [107, 184, 255], [168, 138, 255]];
     hues.forEach((h, i) => {
       x.fillStyle = rgba(h, (0.35 + 0.15 * Math.sin(t + i)) * k);
       x.beginPath();
       x.moveTo(px, py);
-      x.lineTo(o.x + o.r * 2.6, py - o.r * 0.7 + i * o.r * 0.28);
-      x.lineTo(o.x + o.r * 2.6, py - o.r * 0.7 + (i + 1) * o.r * 0.28);
+      x.lineTo(o.x + o.r * 2.6, py - o.r * (0.7 - tilt * 2) + i * o.r * 0.28);
+      x.lineTo(o.x + o.r * 2.6, py - o.r * (0.7 - tilt * 2) + (i + 1) * o.r * 0.28);
       x.fill();
     });
   },
@@ -486,7 +524,13 @@ const FAMILIES = {
     const lx = o.x;
     const ly = o.y - o.r * 0.9;
     /* the light sweeps; a soft halo of a beam round a brighter core, in lamp colour */
-    const a = -Math.PI / 2 + Math.sin(t * 0.56) * 1.3;
+    let a = -Math.PI / 2 + Math.sin(t * 0.56) * 1.3;
+    /* the keeper turns the lamp towards you */
+    if (ptr.on) {
+      const want = Math.atan2(ptr.y - ly, ptr.x - lx);
+      beamAim = beamAim == null ? want : beamAim + Math.atan2(Math.sin(want - beamAim), Math.cos(want - beamAim)) * 0.08;
+      a = beamAim;
+    } else beamAim = null;
     const lamp = [255, 222, 160];
     x.save();
     x.globalCompositeOperation = 'lighter';
@@ -526,7 +570,6 @@ export function createFx(near, veil, { reduced = false } = {}) {
   const transitions = [];
   const r = rand(11);
   const motes = Array.from({ length: 90 }, () => ({ x: r(), y: r(), z: 0.3 + r() * 0.7, a: r() * TAU, s: 0.4 + r() }));
-  const frags = Array.from({ length: 7 }, (_, i) => ({ u: r() * 2 - 1, v: r() * 2 - 1, z: 0.4 + r() * 0.8, rot: r() * TAU, spin: (r() - 0.5) * 0.25, size: 8 + r() * 18, seed: i }));
 
   function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, 1.5);
@@ -575,39 +618,60 @@ export function createFx(near, veil, { reduced = false } = {}) {
       const s = 1 + m.z * 1.2 + travel * 3 * m.z;
       x.fillRect(mx, my, s, travel > 0.2 ? s * (1 + travel * 4) : s);
     }
-    if (amb.mode === 'threshold' && P) {
-      for (const f of frags) {
-        if (!reduced && dt) f.rot += f.spin * dt;
-        const spread = 1 + travel * travel * 14 * f.z;
-        const fx = P.x + f.u * P.r * 2.3 * spread + amb.mouse[0] * 22 * f.z + Math.sin(t * 0.2 + f.seed) * 6;
-        const fy = P.y + f.v * P.r * 1.4 * spread + amb.mouse[1] * 14 * f.z + Math.cos(t * 0.17 + f.seed) * 5 - (1 - spread) * 0;
-        const d = Math.hypot(f.u, f.v);
-        if (d < 0.75 || d > 1.5) continue;
-        x.save();
-        x.translate(fx, fy);
-        x.rotate(f.rot);
-        const sz = f.size * f.z * (1 + travel * 3);
-        const pts = [[-sz, -sz * 0.3], [-sz * 0.2, -sz * 0.8], [sz * 0.9, -sz * 0.2], [sz * 0.4, sz * 0.7], [-sz * 0.6, sz * 0.5]];
-        x.beginPath();
-        pts.forEach(([px, py], k) => (k ? x.lineTo(px, py) : x.moveTo(px, py)));
-        x.closePath();
-        /* lit from the portal's side: a cool face fading into shadow */
-        x.rotate(-f.rot);
-        const g = x.createLinearGradient(0, -sz, 0, sz);
-        g.addColorStop(0, 'rgba(46,58,86,0.96)');
-        g.addColorStop(0.55, 'rgba(14,18,30,0.97)');
-        g.addColorStop(1, 'rgba(6,8,14,0.98)');
-        x.fillStyle = g;
-        x.fill();
-        x.rotate(f.rot);
-        /* the rim the portal light catches, on the two upper edges only */
-        x.beginPath();
-        x.moveTo(...pts[0]); x.lineTo(...pts[1]); x.lineTo(...pts[2]);
-        x.strokeStyle = `rgba(170,236,218,${0.3 + 0.4 * amb.hover})`;
-        x.lineWidth = 1.2;
-        x.stroke();
-        x.restore();
+  }
+
+  /* ── the threads between islands ─────────────────────────────────
+     Neighbouring worlds in a region are joined, each region in its own way:
+     cables with a packet of light running along them in the archipelago, a
+     constellation in the observatory, nothing at all among the night isles, a
+     dotted hop on the reef, pipes in the shallows, and circuit traces in the
+     engine rooms. */
+  let links = [];
+  function drawLinks(t) {
+    for (const [i, L] of links.entries()) {
+      const { a, b, style } = L;
+      const al = L.alpha;
+      if (al < 0.02) continue;
+      x.save();
+      x.lineWidth = 1;
+      if (style === 'products') {
+        const mx = (a.x + b.x) / 2, my = Math.max(a.y, b.y) + Math.abs(b.x - a.x) * 0.12;
+        x.strokeStyle = `rgba(232,199,170,${0.32 * al})`;
+        x.beginPath(); x.moveTo(a.x, a.y); x.quadraticCurveTo(mx, my, b.x, b.y); x.stroke();
+        const u = (t * 0.18 + i * 0.37) % 1;
+        const px = (1 - u) * (1 - u) * a.x + 2 * (1 - u) * u * mx + u * u * b.x;
+        const py = (1 - u) * (1 - u) * a.y + 2 * (1 - u) * u * my + u * u * b.y;
+        glowDot(x, px, py, 7, [255, 217, 138], 0.85 * al);
+      } else if (style === 'models') {
+        x.strokeStyle = `rgba(154,230,208,${0.3 * al})`;
+        x.setLineDash([2, 5]);
+        x.beginPath(); x.moveTo(a.x, a.y); x.lineTo(b.x, b.y); x.stroke();
+        glowDot(x, a.x, a.y, 6, [154, 230, 208], 0.7 * al);
+        glowDot(x, b.x, b.y, 6, [154, 230, 208], 0.7 * al);
+      } else if (style === 'games') {
+        const n = 9;
+        for (let k = 1; k < n; k++) {
+          const u = k / n;
+          const hop = Math.sin(Math.PI * u) * Math.min(80, Math.abs(b.x - a.x) * 0.3);
+          const bounce = Math.sin(t * 2 + k) * 2;
+          x.fillStyle = `rgba(255,190,220,${0.55 * al})`;
+          x.beginPath(); x.arc(a.x + (b.x - a.x) * u, a.y + (b.y - a.y) * u - hop + bounce, 1.8, 0, TAU); x.fill();
+        }
+      } else if (style === 'workshop') {
+        const my = Math.max(a.y, b.y) + 26;
+        x.strokeStyle = `rgba(192,138,82,${0.42 * al})`;
+        x.lineWidth = 2;
+        x.beginPath(); x.moveTo(a.x, a.y + 8); x.bezierCurveTo(a.x, my, b.x, my, b.x, b.y + 8); x.stroke();
+      } else if (style === 'engines') {
+        const mx = (a.x + b.x) / 2;
+        x.strokeStyle = `rgba(154,230,208,${0.38 * al})`;
+        x.beginPath(); x.moveTo(a.x, a.y); x.lineTo(mx, a.y); x.lineTo(mx, b.y); x.lineTo(b.x, b.y); x.stroke();
+        for (const [qx, qy] of [[mx, a.y], [mx, b.y]]) { x.strokeRect(qx - 2, qy - 2, 4, 4); }
+        const u = (t * 0.25 + i * 0.29) % 1;
+        const seg = u < 0.5 ? [a.x + (mx - a.x) * u * 2, a.y] : [mx, a.y + (b.y - a.y) * (u - 0.5) * 2];
+        glowDot(x, seg[0], seg[1], 6, [154, 230, 208], 0.85 * al);
       }
+      x.restore();
     }
   }
 
@@ -619,8 +683,9 @@ export function createFx(near, veil, { reduced = false } = {}) {
     x.setTransform(dpr, 0, 0, dpr, 0, 0);
     x.clearRect(0, 0, W, H);
     drawAmbient(t, reduced ? 0 : dt);
+    drawLinks(t);
     env.k += (env.target - env.k) * (reduced ? 1 : 1 - Math.pow(0.92, Math.max(1, dt)));
-    if (env.island && env.k > 0.01 && env.focal) {
+    if (env.island && env.k > 0.01 && env.focal && amb.mode !== 'threshold') {
       const { type, variant } = env.island.fx;
       FAMILIES[type]?.(x, env.color, reduced ? 2 : t, env.k, env.focal, variant ?? '');
     }
@@ -652,6 +717,17 @@ export function createFx(near, veil, { reduced = false } = {}) {
       kick();
     },
     moveFocal(focal) { env.focal = focal; },
+    links(list) { links = list; kick(); },
+    pointer(px, py, on) {
+      ptr.x = px; ptr.y = py; ptr.on = on;
+      const now = (performance.now() - t0) / 1000;
+      if (on && env.island?.fx.type === 'ripple' && now - ptr.last > 0.22) {
+        ptr.last = now;
+        touches.push({ x: px, y: py, t: now });
+        if (touches.length > 8) touches.shift();
+      }
+      kick();
+    },
     unfocus() { env.target = 0; if (reduced) env.k = 0; kick(); },
     /* fragments in the island's colours gather from the island into the panel */
     assemble(from, rect, colors, ms = 700) {

@@ -14,7 +14,7 @@
    the index and the renderer's own numbers. */
 
 import { KINDS } from '../shared/atlas.js';
-import { buildIndex, search, explain } from '../shared/search.js';
+import { buildIndex, search, explain, detectIntent } from '../shared/search.js';
 import { ISLANDS, REGIONS, SEARCHABLE, islandById } from './worlds.js';
 import { islandSVG } from './islands.js';
 import { createSky, sceneLayout, toScreen, moonPhase, phaseName } from './sky.js';
@@ -168,6 +168,8 @@ nav.querySelector('a[href="#worlds"]').addEventListener('click', (e) => { e.prev
 const hint = $('.portal-hint');
 let hovering = false;
 function onPointer(ev) {
+  /* inside a world, a few of them answer the pointer the way their app would */
+  fx.pointer(ev.clientX, ev.clientY, !!stage.selected() && stage.state() !== 'live' && !ev.target.closest?.('.reveal, .theatre, .nav'));
   if (ev.pointerType === 'touch') return;
   const mx = (ev.clientX / innerWidth) * 2 - 1;
   const my = (ev.clientY / innerHeight) * 2 - 1;
@@ -178,28 +180,41 @@ function onPointer(ev) {
   const d = Math.hypot(ev.clientX - P.x, ev.clientY - P.y);
   /* approaching counts, not only touching: the light gathers as the cursor nears the ring */
   const near = Math.max(0, Math.min(1, 1 - (d - P.r) / (P.r * 1.2)));
-  const inside = d < P.r * 1.05;
+  const inside = d < P.r * 0.8;
   sky?.set({ hover: near });
   fx.ambient({ hover: near, portal: P });
-  if (inside !== hovering) {
-    hovering = inside;
-    document.querySelector('.threshold').style.cursor = inside ? 'pointer' : '';
-    hint.classList.toggle('on', inside);
-    hint.style.left = `${P.x}px`;
-    hint.style.top = `${P.y + P.r * 1.3 + 10}px`;
+  /* the dial round the ring: one block for each world, and it says which */
+  const block = sky ? sky.dialAt(ev.clientX, ev.clientY) : -1;
+  if (block !== dialHot) {
+    dialHot = block;
+    sky?.set({ dialHot: block });
+    const isle = block >= 0 ? islandById.get(stage.order()[block]) : null;
+    hint.querySelector('span').textContent = isle ? `${isle.title}: enter its world` : 'Step through';
   }
-  if (sky) {
-    const L = sky.layout();
-    const [lx, ly] = toScreen([L.light[0], L.light[1] + 0.02], innerWidth, innerHeight);
+  const on = inside || dialHot >= 0;
+  if (on !== hovering || dialHot >= 0) {
+    hovering = on;
+    document.querySelector('.threshold').style.cursor = on ? 'pointer' : '';
+    hint.classList.toggle('on', on);
+    hint.classList.toggle('dial', dialHot >= 0);
+    hint.style.left = `${dialHot >= 0 ? ev.clientX : P.x}px`;
+    hint.style.top = `${dialHot >= 0 ? ev.clientY + 24 : P.y + P.r * 1.3 + 10}px`;
+  }
+  const L = sky?.layout();
+  if (L?.light) {
+    const [lx, ly] = toScreen([L.light[0], L.light[1]], innerWidth, innerHeight);
     const dl = Math.hypot(ev.clientX - lx, ev.clientY - ly);
     sky.set({ lamp: Math.max(0, 1 - dl / 140) });
   }
 }
+let dialHot = -1;
 addEventListener('pointermove', onPointer, { passive: true });
 $('.threshold').addEventListener('click', (ev) => {
   if (ev.target.closest('a, button')) return;
+  const block = sky ? sky.dialAt(ev.clientX, ev.clientY) : -1;
+  if (block >= 0) { stage.select(stage.order()[block]); return; }
   const P = portalPx();
-  if (P && Math.hypot(ev.clientX - P.x, ev.clientY - P.y) < P.r * 1.05) explore();
+  if (P && Math.hypot(ev.clientX - P.x, ev.clientY - P.y) < P.r * 0.85) explore();
 });
 
 /* ── things to find ─────────────────────────────────────────────────── */
@@ -209,10 +224,9 @@ function spotPos(name) {
   if (!sky) return null;
   const L = sky.layout();
   if (!L) return null;
-  const [cx, cy, R] = L.portal;
-  if (name === 'figure') return toScreen([cx + R * 0.05, cy - R * 0.8 + R * 0.04], innerWidth, innerHeight);
+  if (name === 'figure') return toScreen([L.figure[0], L.figure[1] + L.figure[2] * 0.5], innerWidth, innerHeight);
   if (name === 'moon') return toScreen([L.moon[0], L.moon[1]], innerWidth, innerHeight);
-  return toScreen([L.light[0], L.light[1] + 0.018], innerWidth, innerHeight);
+  return L.light ? toScreen([L.light[0], L.light[1]], innerWidth, innerHeight) : null;
 }
 function placeSpots() {
   for (const b of document.querySelectorAll('.hotspots .spot')) {
@@ -235,7 +249,7 @@ document.querySelectorAll('.hotspots .spot').forEach((b) => b.addEventListener('
   const at = [parseFloat(b.style.left), parseFloat(b.style.top)];
   const phase = moonPhase();
   if (b.dataset.spot === 'figure') {
-    showNote('For scale: the doorway is about twenty times the height of the person standing in it. Everything on this screen, from them to the moons and the sea, is worked out pixel by pixel in one fragment shader. The sea is the sky drawn a second time, upside down, pushed about by two layers of moving noise.', at);
+    showNote('For scale: the ring is about forty times the height of the person on the causeway. It is a tube, not a hoop: every layer of this scene sits at its own distance from you, so the ring is drawn in true perspective and you can see into its bore. All of it, sea and cliffs included, is one fragment shader, worked out pixel by pixel.', at);
   } else if (b.dataset.spot === 'moon') {
     const lit = Math.round(((1 - Math.cos(phase * Math.PI * 2)) / 2) * 100);
     showNote(`Tonight’s moon: ${phaseName(phase)}, ${lit}% lit. The phase is worked out from today’s date, so the sky is a little different each time you come back, and nothing about you is stored to do it.`, at);
@@ -261,8 +275,24 @@ orb.addEventListener('click', () => {
 });
 document.addEventListener('pointerdown', (e) => { if (!card.hidden && !guide.contains(e.target)) { card.hidden = true; orb.setAttribute('aria-expanded', 'false'); } });
 function ask(q) {
-  const hits = search(q, index, { limit: 3 });
+  /* The search falls back to the flagship pieces when nothing matches, which is
+     right for the site's navigator but would be a made-up recommendation here:
+     only results that matched something, or that answer an explicit "surprise
+     me", "the best" or "five minutes", count. */
+  const intent = detectIntent(q);
+  const hits = search(q, index, { limit: 3 }).filter((h) => h.score > 0 || intent.random || intent.featured || intent.maxMinutes);
   results.replaceChildren();
+  if (!hits.length) {
+    /* nothing real matches: say so, and offer the two honest ways forward */
+    const li = document.createElement('li');
+    li.className = 'none';
+    li.innerHTML = '<p></p><a href="#projects">See every project as a list</a>';
+    li.querySelector('p').textContent = `Nothing in the catalogue matches “${q}”. Try describing the problem rather than the tool: “double bookings”, “checking invoices against contracts”, “a game for two”.`;
+    li.querySelector('a').addEventListener('click', () => { card.hidden = true; orb.setAttribute('aria-expanded', 'false'); });
+    results.append(li);
+    stage.light([]);
+    return;
+  }
   for (const h of hits) {
     const isle = islandById.get(h.entry.id);
     const li = document.createElement('li');
@@ -273,7 +303,12 @@ function ask(q) {
     b.querySelector('span').textContent = isle.hook;
     b.querySelector('small').textContent = `${kindLabel(isle)} · ${explain(h, q)}`;
     b.addEventListener('click', () => { card.hidden = true; orb.setAttribute('aria-expanded', 'false'); stage.select(isle.id); });
-    li.append(b);
+    const page = document.createElement('a');
+    page.className = 'page';
+    page.href = `projects/${isle.id}/`;
+    page.textContent = 'Its page';
+    page.setAttribute('aria-label', `${isle.title}: its page`);
+    li.append(b, page);
     results.append(li);
   }
   stage.light(hits.map((h) => h.entry.id));
@@ -341,7 +376,18 @@ function devText() {
     `scene      ${s.travel <= 0 ? 'threshold' : s.travel >= 1 ? 'beyond' : 'crossing'}  travel ${s.travel.toFixed(2)}  altitude ${s.alt.toFixed(2)}`,
   ] : ['renderer   2D canvas fallback (no WebGL)'];
   lines.push(`moon       ${phaseName(phase)}, ${Math.round(((1 - Math.cos(phase * Math.PI * 2)) / 2) * 100)}% lit`);
-  lines.push(`islands    ${stage.visibleCount()} of ${ISLANDS.length} drawn`);
+  lines.push(`islands    ${stage.visibleCount()} of ${ISLANDS.length} drawn, ${stage.seenCount()} visited (dial lights them)`);
+  lines.push(`stage      ${stage.state()}`);
+  const isle = islandById.get(stage.selected());
+  if (isle) {
+    const block = stage.order().indexOf(isle.id);
+    lines.push('', `world      ${isle.id} · ${REGIONS.find((r) => r.id === isle.region).name}`);
+    lines.push(`dial       block ${block + 1} of ${ISLANDS.length}, clockwise from the top`);
+    lines.push(`drawn as   ${isle.base} silhouette, ${isle.fx.type}${isle.fx.variant ? ` (${isle.fx.variant})` : ''} effect, ${isle.size} island`);
+    lines.push(`launches   ${isle.href ? `../${isle.href}` : 'a server (Tally)'}`);
+    if (isle.tests) lines.push(`tests      ${isle.tests.replace(/^.*\/blob\/main\//, '')}`);
+    if (isle.ai) lines.push(`ai         ${isle.ai.model.length} model role(s), ${isle.ai.code.length} jobs left to plain code`);
+  }
   lines.push(`motion     ${reduced ? 'reduced' : 'full'}${lowPower ? ', low-power device' : ''}`);
   lines.push('', 'press ` to close');
   return lines.join('\n');

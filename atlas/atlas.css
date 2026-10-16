@@ -145,6 +145,9 @@ body.resolve .hero > *:not(h1) { transition: opacity .9s ease .5s; }
 .isle-body { display: block; transition: transform .7s var(--spring), filter .5s ease; }
 .isle-art { display: block; filter: drop-shadow(0 24px 36px rgba(0, 0, 0, .35)); transition: filter .5s ease; }
 .isle-art svg { display: block; width: 100%; height: auto; overflow: visible; }
+/* the reef's islands never quite sit still */
+.isle[data-region="games"] .isle-art { animation: reef 3.4s ease-in-out infinite alternate; }
+@keyframes reef { from { transform: translateY(-4px) rotate(-1.2deg); } to { transform: translateY(5px) rotate(1.4deg); } }
 .isle-name { display: block; margin-top: -10px; font-family: var(--serif); font-size: 26px; line-height: 1.05; text-shadow: 0 2px 16px rgba(8, 11, 20, .7); opacity: 0; transition: opacity .4s; }
 .isle.named .isle-name { opacity: .92; }
 .isle:hover .isle-body, .isle:focus-visible .isle-body, .isle.hot .isle-body { transform: translateY(-16px) scale(1.04); }
@@ -228,6 +231,13 @@ body.resolve .hero > *:not(h1) { transition: opacity .9s ease .5s; }
 .try { position: absolute; right: 12px; top: 12px; padding: 8px 14px; border-radius: 999px; border: 0; background: rgba(8, 11, 20, .78); color: var(--ink); cursor: pointer; font-size: 13px; backdrop-filter: blur(6px); }
 .try:hover { background: var(--signal); color: var(--void); }
 .reveal section { border-top: 1px solid var(--line); padding: 14px 0; }
+.rv-ai h4 { margin: 12px 0 6px; font-size: 12px; font-weight: 600; color: var(--starlight); }
+.rv-ai ul { margin: 0; padding-left: 18px; display: grid; gap: 5px; font-size: 14px; line-height: 1.5; }
+.rv-split { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.rv-split > div { padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: rgba(23, 35, 61, .35); }
+.rv-split > div:first-child { border-color: color-mix(in srgb, var(--glow, #9AE6D0) 45%, transparent); }
+.rv-split h4 { margin-top: 0; }
+@media (max-width: 640px) { .rv-split { grid-template-columns: 1fr; } }
 .reveal h3 { margin: 0 0 6px; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); font-weight: 600; }
 .reveal section p, .reveal section ul { margin: 0; font-size: 15px; }
 .rv-features { padding-left: 18px; display: grid; gap: 4px; }
@@ -262,11 +272,41 @@ body.resolve .hero > *:not(h1) { transition: opacity .9s ease .5s; }
 .guide-results { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 6px; }
 .guide-results button { width: 100%; text-align: left; padding: 9px 12px; border-radius: 10px; border: 1px solid var(--line); background: rgba(23, 35, 61, .45); cursor: pointer; }
 .guide-results button:hover { border-color: var(--signal); }
+.guide-results li { position: relative; }
+.guide-results .page { position: absolute; right: 10px; top: 10px; font-size: 11px; color: var(--dim); text-underline-offset: 3px; }
+.guide-results .page:hover { color: var(--starlight); }
+.guide-results .none { padding: 10px 12px; border-radius: 10px; border: 1px dashed var(--line); font-size: 13px; color: var(--dim); }
+.guide-results .none p { margin: 0 0 6px; }
+.guide-results .none a { color: var(--starlight); }
 .guide-results b { display: block; font-family: var(--serif); font-weight: 400; font-size: 19px; }
 .guide-results span { display: block; font-size: 12.5px; color: var(--dim); }
 .guide-results small { display: block; margin-top: 4px; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--signal); opacity: .85; }
 .guide-foot { margin: 12px 0 0; font-size: 11.5px; color: var(--dim); }
 body.on-paper .guide { opacity: 0; pointer-events: none; }
+
+/* ── the world becomes software: the live app, full size ─────────────── */
+.theatre { position: fixed; inset: 0; z-index: 60; background: rgba(5, 7, 13, 0); transition: background-color .5s var(--ease); }
+.theatre.open { background: rgba(5, 7, 13, .72); backdrop-filter: blur(3px); }
+.th-panel {
+  position: absolute; inset: 72px clamp(12px, 4vw, 56px) clamp(12px, 3vh, 28px); display: flex; flex-direction: column;
+  border-radius: 16px; overflow: hidden; background: #0d1424; transform-origin: 0 0;
+  border: 1px solid color-mix(in srgb, var(--glow, #9AE6D0) 40%, transparent);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .4), 0 30px 90px rgba(0, 0, 0, .6), 0 0 60px color-mix(in srgb, var(--glow, #9AE6D0) 18%, transparent);
+  transition: transform .58s cubic-bezier(.2, .8, .2, 1);
+}
+.th-bar { display: flex; align-items: center; gap: 14px; padding: 8px 10px 8px 8px; background: rgba(8, 11, 20, .96); border-bottom: 1px solid var(--line); opacity: 0; transition: opacity .3s ease .25s; }
+.theatre.open .th-bar { opacity: 1; }
+.th-back, .th-open { flex: none; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--line); background: none; font-size: 12.5px; text-decoration: none; cursor: pointer; }
+.th-back:hover, .th-open:hover { border-color: var(--starlight); }
+.th-title { flex: 1; margin: 0; text-align: center; font-family: var(--serif); font-size: 19px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.th-frame { position: relative; flex: 1; background: #fff; }
+.th-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+body.in-live .guide, body.in-live .nav { opacity: 0; pointer-events: none; }
+@media (max-width: 640px) {
+  .th-panel { inset: 0; border-radius: 0; }
+  .th-title { font-size: 15px; }
+  .th-open span { display: none; }
+}
 
 /* ── the index ───────────────────────────────────────────────────────── */
 .index-drawer { position: fixed; inset: 0; z-index: 80; background: rgba(5, 7, 13, .86); backdrop-filter: blur(14px); overflow-y: auto; }
@@ -381,7 +421,7 @@ table.results td:last-child { white-space: nowrap; font-variant-numeric: tabular
 
 /* ── less motion ─────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  [class^="a-"], [class*=" a-"], .lantern, .lantern::after, .isle.chosen::before, .hotspots .spot::after { animation: none !important; }
+  [class^="a-"], [class*=" a-"], .lantern, .lantern::after, .isle.chosen::before, .hotspots .spot::after, .isle .isle-art { animation: none !important; }
   .isle-body, .isle-art, .isles, .preview, .frag, .btn, .explore, .region-title { transition: none !important; }
   .reveal.enter .rv-scroll > *, .reveal.fold { animation: none !important; }
   body.resolve h1 .line, body.resolve .hero > *:not(h1) { transition: none !important; }
