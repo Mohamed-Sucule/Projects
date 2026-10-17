@@ -4,72 +4,46 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="icon" href="../../../favicon.svg" />
-<meta name="theme-color" content="#080B14" />
+<meta name="theme-color" content="#0c0d10" />
 <title>Minesweeper — game by Mohamed Sucule</title>
 <meta name="description" content="Classic Minesweeper, except every board is proven solvable by logic before you see it, so it never comes down to a coin flip." />
 <meta property="og:title" content="Minesweeper — Portal Atlas" />
 <meta property="og:description" content="Every classic Minesweeper ends in a coin flip; every board here is proven solvable first." />
 <meta property="og:type" content="article" />
-<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/atlas/shots/sweeper.jpg" />
+<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/atlas/art/sweeper-1800.webp" />
 <link rel="canonical" href="https://mohamed-sucule.github.io/Projects/atlas/projects/sweeper/" />
 <link rel="stylesheet" href="../project.css" />
 </head>
 <body>
 <header class="top">
   <a class="home" href="../../">&larr; Portal Atlas</a>
-  <a class="list" href="../../#projects">Every project</a>
+  <a class="list" href="../../#r-games">The Playground Reef</a>
 </header>
-<main class="project" style="--glow:#ff6b6b">
+<main class="project">
+  <figure class="art">
+    <img src="../../art/sweeper-900.webp" srcset="../../art/sweeper-900.webp 900w, ../../art/sweeper-1800.webp 1800w" sizes="100vw" width="1800" height="1200" alt="A minefield, every square decided by logic, one flag." />
+  </figure>
   <div class="intro">
-    <div class="art" aria-hidden="true"><svg viewBox="0 0 240 230" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <defs>
-    <clipPath id="sweeper-clip"><path d="M38,118 L42.6,125.5 L60.8,165.0 L80.3,157.0 L101.0,167.9 L117.4,157.8 L138.3,161.2 L159.1,155.8 L179.9,164.8 L199.7,124.3 L202,118 Z"/></clipPath>
-    <linearGradient id="sweeper-rock" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#4d5462"/><stop offset=".55" stop-color="#262f40"/><stop offset="1" stop-color="#11151d"/>
-    </linearGradient>
-    <linearGradient id="sweeper-land" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#7e8b7e"/><stop offset="1" stop-color="#445044"/>
-    </linearGradient>
-    <radialGradient id="sweeper-glow">
-      <stop offset="0" stop-color="#ff6b6b" stop-opacity=".55"/><stop offset="1" stop-color="#ff6b6b" stop-opacity="0"/>
-    </radialGradient>
-  </defs>
-  <g class="glow-under"><ellipse cx="120" cy="177.94531258242205" rx="74" ry="22" fill="url(#sweeper-glow)" class="a-pulse slow"/></g>
-  
-  <path d="M38,118 L42.6,125.5 L60.8,165.0 L80.3,157.0 L101.0,167.9 L117.4,157.8 L138.3,161.2 L159.1,155.8 L179.9,164.8 L199.7,124.3 L202,118 Z" fill="url(#sweeper-rock)" />
-  <path d="M62.400000000000006,138.0808594038477 Q120,144.0808594038477 177.6,136.0808594038477" stroke="#191f2a" stroke-width="1.4" fill="none" opacity=".6"/><path d="M78.4,149.56718754945322 Q120,155.56718754945322 161.6,147.56718754945322" stroke="#191f2a" stroke-width="1.4" fill="none" opacity=".6"/><path d="M56.76838324405253,127.26594438683242 q-1.7842549970373511,7.320024163229391 -1.9800498210825026,14.640048326458782" stroke="#485548" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="54.92319828690961" cy="144.64004832645878" r="1.4" fill="#ff6b6b" opacity=".7"/><path d="M94.2604579757899,126.14076338382438 q2.6938659441657364,8.90661809942685 1.3837188421748579,17.8132361988537" stroke="#485548" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="94.44394656317309" cy="147.8132361988537" r="1.4" fill="#ff6b6b" opacity=".7"/><path d="M119.13785079214722,131.3343416978605 q0.890260967426002,16.859782984713092 -0.0559004838578403,33.719565969426185" stroke="#485548" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="117.304366605822" cy="163.71956596942618" r="1.4" fill="#ff6b6b" opacity=".7"/><path d="M154.25570651236922,129.21057053189725 q-3.8159693242050707,7.633054112782702 0.8529687174595892,15.266108225565404" stroke="#485548" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="155.73703618906438" cy="145.2661082255654" r="1.4" fill="#ff6b6b" opacity=".7"/><path d="M174.2064731027931,129.63200193922967 q3.8517435477115214,9.793166578514501 1.674500219989568,19.586333157029003" stroke="#485548" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="173.24408797826618" cy="149.586333157029" r="1.4" fill="#ff6b6b" opacity=".7"/><defs><linearGradient id="sweeper-fall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfe6ff" stop-opacity=".7"/><stop offset="1" stop-color="#cfe6ff" stop-opacity="0"/></linearGradient></defs><rect x="186" y="120" width="5" height="90" fill="url(#sweeper-fall)" /><rect x="188" y="124" width="1.4" height="70" fill="#ffffff" opacity=".5" class="a-pulse" style="--d:0.4s"/>
-  <g clip-path="url(#sweeper-clip)"></g>
-  <ellipse cx="120" cy="118" rx="84" ry="21" fill="#3b453b" />
-  <ellipse cx="120" cy="115" rx="82" ry="19" fill="url(#sweeper-land)" />
-  <g class="a-bob" style="--d:0s"><circle cx="62.560358447022736" cy="169.09650175338612" r="6.87899172026664" fill="#ff9f9f" opacity=".9"/><circle cx="58.769066548347475" cy="166.34490506527945" r="2.407647102093324" fill="#ffffff" opacity=".5"/></g><g class="a-bob" style="--d:0.5s"><circle cx="99.24448150163516" cy="170.422077028919" r="4.127940744161606" fill="#ff6b6b" opacity=".9"/><circle cx="99.80064213024453" cy="168.77090073125436" r="1.444779260456562" fill="#ffffff" opacity=".5"/></g><g class="a-bob" style="--d:1s"><circle cx="137.93810590961948" cy="163.84857502244412" r="4.39938938152045" fill="#ff9f9f" opacity=".9"/><circle cx="136.99181206272914" cy="162.08881926983594" r="1.5397862835321574" fill="#ffffff" opacity=".5"/></g><g class="a-bob" style="--d:1.5s"><circle cx="178.1079161656089" cy="168.04511592304334" r="5.361535898409784" fill="#ff6b6b" opacity=".9"/><circle cx="178.29927489208058" cy="165.90050156367943" r="1.8765375644434241" fill="#ffffff" opacity=".5"/></g><path d="M48,108 Q120,86 192,108" stroke="#ffa6a6" stroke-width="2" fill="none" opacity=".55" stroke-linecap="round"/>
-  <path d="M42,112 Q120,90 198,112" stroke="#E8C7AA" stroke-width="1.2" fill="none" opacity=".35"/>
-  <g class="frag frag-l"><g class="a-bob" style="--d:1.701787346508354s"><polygon points="14,96 24,92 28,100 20,108" fill="url(#sweeper-rock)" /></g></g>
-  <g class="frag frag-r"><g class="a-bob" style="--d:3.8780664580408484s"><polygon points="210,128 222,124 226,134 214,140" fill="url(#sweeper-rock)" /></g></g><g class="scene">
-      <g ><polygon points="80,112 90,107 170,107 160,112" fill="#717d75" /><polygon points="160,120 160,112 170,107 170,115" fill="#27322c" /><rect x="80" y="112" width="80" height="8" fill="#3a4a40" /></g><rect x="84" y="66" width="16" height="16" fill="#2c3a3a" rx="2"/><rect x="84" y="84" width="16" height="16" fill="#2c3a3a" rx="2"/><text x="92" y="96" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#8ad1ff">1</text><rect x="84" y="102" width="16" height="16" fill="#7b887b" rx="2"/><rect x="84" y="102" width="16" height="3" fill="#a4ada4" rx="1.5"/><rect x="102" y="66" width="16" height="16" fill="#2c3a3a" rx="2"/><text x="110" y="78" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#8ad1ff">1</text><rect x="102" y="84" width="16" height="16" fill="#2c3a3a" rx="2"/><text x="110" y="96" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#ffb36b">3</text><rect x="102" y="102" width="16" height="16" fill="#7b887b" rx="2"/><rect x="102" y="102" width="16" height="3" fill="#a4ada4" rx="1.5"/><rect x="120" y="66" width="16" height="16" fill="#2c3a3a" rx="2"/><text x="128" y="78" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#9af0b8">2</text><rect x="120" y="84" width="16" height="16" fill="#7b887b" rx="2"/><rect x="120" y="84" width="16" height="3" fill="#a4ada4" rx="1.5"/><rect x="120" y="102" width="16" height="16" fill="#7b887b" rx="2"/><rect x="120" y="102" width="16" height="3" fill="#a4ada4" rx="1.5"/><rect x="138" y="66" width="16" height="16" fill="#7b887b" rx="2"/><rect x="138" y="66" width="16" height="3" fill="#a4ada4" rx="1.5"/><rect x="138" y="84" width="16" height="16" fill="#2c3a3a" rx="2"/><text x="146" y="96" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#8ad1ff">1</text><rect x="138" y="102" width="16" height="16" fill="#7b887b" rx="2"/><rect x="138" y="102" width="16" height="3" fill="#a4ada4" rx="1.5"/>
-      <line x1="150" y1="106" x2="150" y2="88" stroke="#E8C7AA" stroke-width="1.4" stroke-linecap="round" /><polygon points="150,88 160,92 150,96" fill="#ff6b6b" class="a-sway"/>
-      <rect x="120" y="102" width="16" height="16" fill="#ff6b6b" rx="2" style="--o:.3" class="a-pulse"/></g></svg></div>
-    <div>
-      <p class="kicker">game · about 5 min &middot; The Playground Reef</p>
-      <h1>Minesweeper</h1>
-      <p class="blurb">Classic Minesweeper, except every board is proven solvable by logic before you see it, so it never comes down to a coin flip.</p>
-      <div class="actions">
-        <a class="btn primary" href="../../../play/sweeper/index.html">Launch Minesweeper &rarr;</a>
+    <p class="kicker">game · about 5 min &middot; The Playground Reef</p>
+    <h1>Minesweeper</h1>
+    <p class="blurb">Classic Minesweeper, except every board is proven solvable by logic before you see it, so it never comes down to a coin flip.</p>
+    <div class="actions">
+        <a class="btn primary" href="../../../play/sweeper/index.html">Launch Minesweeper <span aria-hidden="true">&#8599;</span></a>
         <a class="btn" href="https://github.com/Mohamed-Sucule/Projects/blob/main/play/sweeper/README.md">Engineering case study</a>
         <a class="btn" href="https://github.com/Mohamed-Sucule/Projects/tree/main/play/sweeper">Source</a>
-        <a class="btn" href="../../#world/sweeper">See its world in the atlas</a>
-      </div>
     </div>
   </div>
-  <figure class="shot"><img src="../../shots/sweeper.jpg" alt="Minesweeper as it first opens" width="960" height="600" loading="lazy" /><figcaption>Minesweeper, as it opens.</figcaption></figure>
-  <section><h2>The problem</h2><p>Every classic Minesweeper ends in a coin flip; every board here is proven solvable first.</p></section>
-  <section><h2>What it does</h2><ul><li>The three classic sizes</li><li>Every board solvable by reasoning alone</li><li>Lose, and it shows the square you could have proved safe</li></ul></section>
-  <section><h2>The most interesting decision</h2><div><p class="dtitle">The fix is in the generator</p><p>After laying the mines it plays the board from your first click with only what a player can see. If it cannot finish without a guess, the board is thrown away and another is laid.</p></div></section>
-  <section><h2>Built with</h2><ul class="chips"><li>Logic solver</li><li>Board generation</li><li>Keyboard play</li></ul></section>
-  <section><h2>Evidence</h2><p>Lose, and it shows you the square you could have proved safe. <a href="https://github.com/Mohamed-Sucule/Projects/blob/main/tests/sweeper.test.mjs">Read its tests</a></p></section>
-  <section><h2>Its world</h2><p>A field of squares, every one of them provable.</p></section>
+  <div class="glance">
+    <section><h2>The problem</h2><p>Every classic Minesweeper ends in a coin flip; every board here is proven solvable first.</p></section>
+    <section><h2>Evidence</h2><p>Lose, and it shows you the square you could have proved safe. <a href="https://github.com/Mohamed-Sucule/Projects/blob/main/tests/sweeper.test.mjs">Read its tests</a></p></section>
+  </div>
+  <figure class="shot"><img src="../../shots/sweeper-960.webp" srcset="../../shots/sweeper-960.webp 960w, ../../shots/sweeper-1920.webp 1920w" sizes="(min-width: 1000px) 920px, 100vw" width="960" height="600" alt="Minesweeper as it first opens" loading="lazy" /><figcaption>Minesweeper, as it opens.</figcaption></figure>
+  <section class="row"><h2>What it does</h2><ul><li>The three classic sizes</li><li>Every board solvable by reasoning alone</li><li>Lose, and it shows the square you could have proved safe</li></ul></section>
+  <section class="row"><h2>The most interesting decision</h2><div><p class="dtitle">The fix is in the generator</p><p>After laying the mines it plays the board from your first click with only what a player can see. If it cannot finish without a guess, the board is thrown away and another is laid.</p></div></section>
+  <section class="row"><h2>Built with</h2><ul class="chips"><li>Logic solver</li><li>Board generation</li><li>Keyboard play</li></ul></section>
   <nav class="pn" aria-label="Other projects">
-    <a href="../tangle/">&larr; Tangle</a>
-    <a href="../sudoku/">Sudoku &rarr;</a>
+    <a href="../tangle/"><span>Previous</span>Tangle</a>
+    <a href="../sudoku/"><span>Next</span>Sudoku</a>
   </nav>
 </main>
 <script type="module" src="../../../shared/navigator.js"></script>

@@ -4,72 +4,46 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="icon" href="../../../favicon.svg" />
-<meta name="theme-color" content="#080B14" />
+<meta name="theme-color" content="#0c0d10" />
 <title>Trace Explorer — engineering tool by Mohamed Sucule</title>
 <meta name="description" content="Where a slow web request actually spent its time, explained in sentences instead of charts." />
 <meta property="og:title" content="Trace Explorer — Portal Atlas" />
 <meta property="og:description" content="Tracing dashboards show where the time went but not why." />
 <meta property="og:type" content="article" />
-<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/atlas/shots/trace-explorer.jpg" />
+<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/atlas/art/trace-explorer-1800.webp" />
 <link rel="canonical" href="https://mohamed-sucule.github.io/Projects/atlas/projects/trace-explorer/" />
 <link rel="stylesheet" href="../project.css" />
 </head>
 <body>
 <header class="top">
   <a class="home" href="../../">&larr; Portal Atlas</a>
-  <a class="list" href="../../#projects">Every project</a>
+  <a class="list" href="../../#r-engines">The Engine Rooms</a>
 </header>
-<main class="project" style="--glow:#7af0c8">
+<main class="project">
+  <figure class="art">
+    <img src="../../art/trace-explorer-900.webp" srcset="../../art/trace-explorer-900.webp 900w, ../../art/trace-explorer-1800.webp 1800w" sizes="100vw" width="1800" height="1200" alt="Where a slow request spent its time, as a flame chart in stone." />
+  </figure>
   <div class="intro">
-    <div class="art" aria-hidden="true"><svg viewBox="0 0 240 230" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <defs>
-    <clipPath id="trace-explorer-clip"><path d="M38,118 L38.8,125.3 L57.7,158.1 L78.8,152.2 L99.9,167.9 L122.9,150.0 L140.0,165.0 L159.2,156.6 L182.9,164.0 L199.9,128.3 L202,118 Z"/></clipPath>
-    <linearGradient id="trace-explorer-rock" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#49556b"/><stop offset=".55" stop-color="#21304a"/><stop offset="1" stop-color="#0f1621"/>
-    </linearGradient>
-    <linearGradient id="trace-explorer-land" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#688c7e"/><stop offset="1" stop-color="#2e5044"/>
-    </linearGradient>
-    <radialGradient id="trace-explorer-glow">
-      <stop offset="0" stop-color="#7af0c8" stop-opacity=".55"/><stop offset="1" stop-color="#7af0c8" stop-opacity="0"/>
-    </radialGradient>
-  </defs>
-  <g class="glow-under"><ellipse cx="120" cy="177.89271900849417" rx="74" ry="22" fill="url(#trace-explorer-glow)" class="a-pulse slow"/></g>
-  
-  <path d="M38,118 L38.8,125.3 L57.7,158.1 L78.8,152.2 L99.9,167.9 L122.9,150.0 L140.0,165.0 L159.2,156.6 L182.9,164.0 L199.9,128.3 L202,118 Z" fill="url(#trace-explorer-rock)" />
-  <path d="M62.400000000000006,138.06245165297295 Q120,144.06245165297295 177.6,136.06245165297295" stroke="#151f30" stroke-width="1.4" fill="none" opacity=".6"/><path d="M78.4,149.5356314050965 Q120,155.5356314050965 161.6,147.5356314050965" stroke="#151f30" stroke-width="1.4" fill="none" opacity=".6"/><path d="M60.422356612980366,126.07906073704362 q3.5411058738827705,7.150392560753971 -0.2970450329594314,14.300785121507943" stroke="#315648" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="58.073832504451275" cy="144.30078512150794" r="1.4" fill="#7af0c8" opacity=".7"/><path d="M93.3616228653118,131.71959319571033 q-3.6632301099598408,18.94780892995186 -0.6484276866540313,37.89561785990372" stroke="#315648" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="92.73645850270987" cy="167.89561785990372" r="1.4" fill="#7af0c8" opacity=".7"/><path d="M119.85738208796829,126.91720702964813 q4.083265098743141,16.868153777206317 1.9709215820766985,33.73630755441263" stroke="#315648" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="122.3992137783207" cy="163.73630755441263" r="1.4" fill="#7af0c8" opacity=".7"/><path d="M147.98546443507075,129.35743277566507 q-0.7965649804100394,10.68154052272439 1.9722261931747198,21.36308104544878" stroke="#315648" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="147.64131958270445" cy="151.36308104544878" r="1.4" fill="#7af0c8" opacity=".7"/><path d="M182.17443139571697,130.53914377419278 q-4.536252557300031,18.34833665774204 -1.3578076022677124,36.69667331548408" stroke="#315648" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="179.98246838478372" cy="166.69667331548408" r="1.4" fill="#7af0c8" opacity=".7"/><defs><linearGradient id="trace-explorer-fall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfe6ff" stop-opacity=".7"/><stop offset="1" stop-color="#cfe6ff" stop-opacity="0"/></linearGradient></defs><rect x="186" y="120" width="5" height="90" fill="url(#trace-explorer-fall)" /><rect x="188" y="124" width="1.4" height="70" fill="#ffffff" opacity=".5" class="a-pulse" style="--d:0.4s"/>
-  <g clip-path="url(#trace-explorer-clip)"><rect x="30" y="110" width="180" height="130" fill="#0c2533" opacity=".55"/><line x1="40" y1="112" x2="40" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="50" y1="112" x2="50" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="60" y1="112" x2="60" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="70" y1="112" x2="70" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="80" y1="112" x2="80" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="90" y1="112" x2="90" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="100" y1="112" x2="100" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="110" y1="112" x2="110" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="120" y1="112" x2="120" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="130" y1="112" x2="130" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="140" y1="112" x2="140" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="150" y1="112" x2="150" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="160" y1="112" x2="160" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="170" y1="112" x2="170" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="180" y1="112" x2="180" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="190" y1="112" x2="190" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="200" y1="112" x2="200" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="118" x2="210" y2="118" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="128" x2="210" y2="128" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="138" x2="210" y2="138" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="148" x2="210" y2="148" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="158" x2="210" y2="158" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="168" x2="210" y2="168" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="178" x2="210" y2="178" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="188" x2="210" y2="188" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="198" x2="210" y2="198" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="208" x2="210" y2="208" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="218" x2="210" y2="218" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="228" x2="210" y2="228" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/></g>
-  <ellipse cx="120" cy="118" rx="84" ry="21" fill="#28463b" />
-  <ellipse cx="120" cy="115" rx="82" ry="19" fill="url(#trace-explorer-land)" />
-  <path d="M38,118 L38.8,125.3 L57.7,158.1 L78.8,152.2 L99.9,167.9 L122.9,150.0 L140.0,165.0 L159.2,156.6 L182.9,164.0 L199.9,128.3 L202,118" fill="none" stroke="#9AE6D0" stroke-width="1.1" opacity=".75"/><rect x="36.965720831230286" y="123.48282192861662" width="3.6" height="3.6" fill="none" stroke="#9AE6D0" stroke-width=".9" opacity=".8"/><rect x="98.10428078640253" y="166.09271900849416" width="3.6" height="3.6" fill="none" stroke="#9AE6D0" stroke-width=".9" opacity=".8"/><rect x="157.36234365059062" y="154.76884239055215" width="3.6" height="3.6" fill="none" stroke="#9AE6D0" stroke-width=".9" opacity=".8"/><g opacity=".6"><line x1="40" y1="181.89271900849417" x2="200" y2="181.89271900849417" stroke="#9AE6D0" stroke-width="0.8" stroke-linecap="round" /><line x1="40" y1="177.89271900849417" x2="40" y2="185.89271900849417" stroke="#9AE6D0" stroke-width="0.8" stroke-linecap="round" /><line x1="200" y1="177.89271900849417" x2="200" y2="185.89271900849417" stroke="#9AE6D0" stroke-width="0.8" stroke-linecap="round" /></g>
-  <path d="M42,112 Q120,90 198,112" stroke="#E8C7AA" stroke-width="1.2" fill="none" opacity=".35"/>
-  <g class="frag frag-l"><g class="a-bob" style="--d:1.0306632255669683s"><polygon points="14,96 24,92 28,100 20,108" fill="url(#trace-explorer-rock)" /></g></g>
-  <g class="frag frag-r"><g class="a-bob" style="--d:2.964889037422836s"><polygon points="210,128 222,124 226,134 214,140" fill="url(#trace-explorer-rock)" /></g></g><g class="scene">
-      <line x1="60" y1="112" x2="182" y2="112" stroke="#E8C7AA" stroke-width="1" stroke-linecap="round" opacity=".5"/>
-      <line x1="60" y1="110" x2="60" y2="114" stroke="#E8C7AA" stroke-width="1" stroke-linecap="round" opacity=".5"/><line x1="90" y1="110" x2="90" y2="114" stroke="#E8C7AA" stroke-width="1" stroke-linecap="round" opacity=".5"/><line x1="120" y1="110" x2="120" y2="114" stroke="#E8C7AA" stroke-width="1" stroke-linecap="round" opacity=".5"/><line x1="150" y1="110" x2="150" y2="114" stroke="#E8C7AA" stroke-width="1" stroke-linecap="round" opacity=".5"/><line x1="180" y1="110" x2="180" y2="114" stroke="#E8C7AA" stroke-width="1" stroke-linecap="round" opacity=".5"/>
-      <g class="a-pulse" style="--d:0s"><polygon points="64,50 70,47 182,47 176,50" fill="#9ff4d7" /><polygon points="176,58 176,50 182,47 182,55" fill="#53a388" /><rect x="64" y="50" width="112" height="8" fill="#7af0c8" /></g><g class="a-pulse" style="--d:0.2s"><polygon points="72,62 78,59 138,59 132,62" fill="#9ff4d7" /><polygon points="132,70 132,62 138,59 138,67" fill="#53a388" /><rect x="72" y="62" width="60" height="8" fill="#7af0c8" /></g><g ><polygon points="134,62 140,59 180,59 174,62" fill="#adc0b9" /><polygon points="174,70 174,62 180,59 180,67" fill="#60726b" /><rect x="134" y="62" width="40" height="8" fill="#8da89e" /></g><g ><polygon points="78,74 84,71 114,71 108,74" fill="#97afa6" /><polygon points="108,82 108,74 114,71 114,79" fill="#4b6259" /><rect x="78" y="74" width="30" height="8" fill="#6e9083" /></g><g class="a-pulse" style="--d:0.8s"><polygon points="96,74 102,71 136,71 130,74" fill="#9ff4d7" /><polygon points="130,82 130,74 136,71 136,79" fill="#53a388" /><rect x="96" y="74" width="34" height="8" fill="#7af0c8" /></g><g class="a-pulse" style="--d:1s"><polygon points="100,86 106,83 132,83 126,86" fill="#9ff4d7" /><polygon points="126,94 126,86 132,83 132,91" fill="#53a388" /><rect x="100" y="86" width="26" height="8" fill="#7af0c8" /></g><g ><polygon points="130,86 136,83 156,83 150,86" fill="#97afa6" /><polygon points="150,94 150,86 156,83 156,91" fill="#4b6259" /><rect x="130" y="86" width="20" height="8" fill="#6e9083" /></g><g class="a-pulse" style="--d:1.4000000000000001s"><polygon points="104,98 110,95 128,95 122,98" fill="#9ff4d7" /><polygon points="122,106 122,98 128,95 128,103" fill="#53a388" /><rect x="104" y="98" width="18" height="8" fill="#7af0c8" /></g></g></svg></div>
-    <div>
-      <p class="kicker">engineering tool · about 5 min &middot; The Engine Rooms</p>
-      <h1>Trace Explorer</h1>
-      <p class="blurb">Where a slow web request actually spent its time, explained in sentences instead of charts.</p>
-      <div class="actions">
-        <a class="btn primary" href="../../../projects/trace-explorer/index.html">Launch Trace Explorer &rarr;</a>
+    <p class="kicker">engineering tool · about 5 min &middot; The Engine Rooms</p>
+    <h1>Trace Explorer</h1>
+    <p class="blurb">Where a slow web request actually spent its time, explained in sentences instead of charts.</p>
+    <div class="actions">
+        <a class="btn primary" href="../../../projects/trace-explorer/index.html">Launch Trace Explorer <span aria-hidden="true">&#8599;</span></a>
         <a class="btn" href="https://github.com/Mohamed-Sucule/Projects/blob/main/projects/trace-explorer/README.md">Engineering case study</a>
         <a class="btn" href="https://github.com/Mohamed-Sucule/Projects/tree/main/projects/trace-explorer">Source</a>
-        <a class="btn" href="../../#world/trace-explorer">See its world in the atlas</a>
-      </div>
     </div>
   </div>
-  <figure class="shot"><img src="../../shots/trace-explorer.jpg" alt="Trace Explorer as it first opens" width="960" height="600" loading="lazy" /><figcaption>Trace Explorer, as it opens.</figcaption></figure>
-  <section><h2>The problem</h2><p>Tracing dashboards show where the time went but not why.</p></section>
-  <section><h2>What it does</h2><ul><li>260 traces across ten services</li><li>A span waterfall with the critical path marked</li><li>Findings written in sentences</li></ul></section>
-  <section><h2>The most interesting decision</h2><div><p class="dtitle">The analyser never sees the answer</p><p>The generator injects problems at random, but the analyser only ever sees spans, exactly as it would with real telemetry.</p></div></section>
-  <section><h2>Built with</h2><ul class="chips"><li>Span waterfall</li><li>Critical-path analysis</li><li>Findings in sentences</li></ul></section>
-  <section><h2>Evidence</h2><p>260 traces across ten services, explained in words. <a href="https://github.com/Mohamed-Sucule/Projects/blob/main/tests/trace.test.mjs">Read its tests</a></p></section>
-  <section><h2>Its world</h2><p>Terraces of spans cascading down, with the critical path lit.</p></section>
+  <div class="glance">
+    <section><h2>The problem</h2><p>Tracing dashboards show where the time went but not why.</p></section>
+    <section><h2>Evidence</h2><p>260 traces across ten services, explained in words. <a href="https://github.com/Mohamed-Sucule/Projects/blob/main/tests/trace.test.mjs">Read its tests</a></p></section>
+  </div>
+  <figure class="shot"><img src="../../shots/trace-explorer-960.webp" srcset="../../shots/trace-explorer-960.webp 960w, ../../shots/trace-explorer-1920.webp 1920w" sizes="(min-width: 1000px) 920px, 100vw" width="960" height="600" alt="Trace Explorer as it first opens" loading="lazy" /><figcaption>Trace Explorer, as it opens.</figcaption></figure>
+  <section class="row"><h2>What it does</h2><ul><li>260 traces across ten services</li><li>A span waterfall with the critical path marked</li><li>Findings written in sentences</li></ul></section>
+  <section class="row"><h2>The most interesting decision</h2><div><p class="dtitle">The analyser never sees the answer</p><p>The generator injects problems at random, but the analyser only ever sees spans, exactly as it would with real telemetry.</p></div></section>
+  <section class="row"><h2>Built with</h2><ul class="chips"><li>Span waterfall</li><li>Critical-path analysis</li><li>Findings in sentences</li></ul></section>
   <nav class="pn" aria-label="Other projects">
-    <a href="../raft-lab/">&larr; Raft Lab</a>
-    <a href="../diff-forge/">Diff Forge &rarr;</a>
+    <a href="../raft-lab/"><span>Previous</span>Raft Lab</a>
+    <a href="../diff-forge/"><span>Next</span>Diff Forge</a>
   </nav>
 </main>
 <script type="module" src="../../../shared/navigator.js"></script>

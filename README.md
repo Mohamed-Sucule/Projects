@@ -6,19 +6,18 @@ API key, no video of someone else using it.
 
 **→ [Open the playground](https://mohamed-sucule.github.io/Projects/)**
 
-**→ [Or step through the Portal Atlas](https://mohamed-sucule.github.io/Projects/atlas/)**: the same work as a
-world. A ring of stone hangs on cables between a sea stack and a cliff, with a causeway leading to it and one person
-on it for scale. Scroll, and the camera lines up with its axis, flies down its lit bore and out over a sea of
-cloud, past floating islands, one per project, in six regions with their own weather and their own visual
-grammar. Step onto one and the world changes to match it: a floor plan for the restaurant system, attention arcs
-for the transformer, a lamp that turns towards you for the lighthouse story. The panel holds the problem, the most
-interesting decision, the evidence and, for the AI products, what the model does and what ordinary code does;
-"Try it here" opens the real app full size. The thirty-five blocks on the ring's dial are the thirty-five worlds,
-and they light up as you visit them; point at one, or Tab to the dial and use the arrow keys, and Enter takes you
-there. The sky, sea and ring are one WebGL fragment shader, and without WebGL the same scene is drawn in 2D. Every project also has a
-plain page of its own ([`atlas/projects/`](atlas/projects/)), generated from the same data by
-`node atlas/build.mjs`, so none of it needs WebGL or script to read. [Tests](tests/atlas.test.mjs) check that every
-island leads somewhere real. ([`atlas/`](atlas/))
+**→ [Or walk through the Portal Atlas](https://mohamed-sucule.github.io/Projects/atlas/)**: the same work as a
+gallery of worlds. It opens on a ring a quarter of a kilometre across, standing in a calm sea at dusk, with a
+different, golden evening on the far side of it. Below that, every project stands in a world of its own, made
+from what it does: a ledger of slabs for the invoice analyst, a door of light for the receptionist, a balance on
+a bell curve for the statistics, a lighthouse in the fog for the story about one. Open one and its sheet has the
+problem, the evidence, the most interesting decision and, for the AI products, what the model does and what
+ordinary code does; "Run it here" starts the real app on the page. Every picture is rendered from one raymarched
+shader ([`atlas/art/scenes.js`](atlas/art/scenes.js)) by `node atlas/art/render.mjs`, offline and at full
+resolution, so the page itself only downloads small WebP files. The gallery and every project's own page
+([`atlas/projects/`](atlas/projects/)) are plain HTML generated from the same data by `node atlas/build.mjs`, so
+none of it needs script to read. [Tests](tests/atlas.test.mjs) check that every world leads somewhere real.
+([`atlas/`](atlas/))
 
 One project here is different: **[Tally](tally/)** is a full AI application with a Python backend. It ingests
 supplier contracts and an accounts export, answers questions with Claude using tools and checked citations, and

@@ -4,369 +4,550 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <link rel="icon" href="../favicon.svg" />
-<meta name="theme-color" content="#080B14" />
+<meta name="theme-color" content="#0c0d10" />
 <title>Portal Atlas — Mohamed Sucule, AI product builder: ideas that escape the ordinary</title>
-<meta name="description" content="The portfolio of Mohamed Sucule, an independent AI product builder: thirty-five working applications, each one a floating world beyond a portal. Step through, explore the islands, and open the real software with its architecture, decisions and evidence." />
+<meta name="description" content="The portfolio of Mohamed Sucule, an independent AI product builder: thirty-five working applications, each with its own world, the problem it solves, how it was built and the evidence that it works." />
 <meta property="og:title" content="Portal Atlas — ideas that escape the ordinary" />
-<meta property="og:description" content="Thirty-five working applications, each one a world. Step through the portal, explore the islands, open the real software." />
+<meta property="og:description" content="Thirty-five working applications, each with its own world. Open any of them and the real software runs." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://mohamed-sucule.github.io/Projects/atlas/" />
-<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/atlas/shots/og.jpg" />
+<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/atlas/art/og.jpg" />
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="canonical" href="https://mohamed-sucule.github.io/Projects/atlas/" />
 <link rel="preload" href="../assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" as="image" href="art/portal-1600.webp" imagesrcset="art/portal-960.webp 960w, art/portal-1600.webp 1600w, art/portal-2560.webp 2560w" imagesizes="100vw" media="(min-aspect-ratio: 4/5)" />
+<link rel="preload" as="image" href="art/portal-tall-750.webp" imagesrcset="art/portal-tall-750.webp 750w, art/portal-tall-1200.webp 1200w" imagesizes="100vw" media="(max-aspect-ratio: 4/5)" />
 <link rel="stylesheet" href="atlas.css" />
-<script>document.documentElement.classList.add('booting');setTimeout(function(){document.documentElement.classList.remove('booting')},4000)</script>
+<script>document.documentElement.classList.add('js')</script>
 <script type="module" src="main.js"></script>
 </head>
 <body>
-<a class="skip" href="#projects">Skip to the list of projects</a>
-
-<canvas id="sky" class="sky" aria-hidden="true"></canvas>
-<canvas id="near" class="near" aria-hidden="true"></canvas>
+<a class="skip" href="#work">Skip to the work</a>
 
 <header class="nav">
-  <a class="who" href="#top"><b>Mohamed Sucule</b><span>AI product builder</span></a>
+  <a class="who" href="#top">Mohamed Sucule</a>
   <nav aria-label="Main">
-    <a href="#worlds">Worlds</a>
-    <a href="#projects">Projects</a>
+    <a href="#work">Work</a>
     <a href="#about">About</a>
     <a href="#contact">Contact</a>
+    <button type="button" class="search" aria-label="Search every project">Search <kbd>/</kbd></button>
   </nav>
-  <button class="index-btn" type="button" aria-haspopup="dialog" aria-controls="index" title="Every world, at a glance (I)">
-    <span aria-hidden="true" class="dots"></span><span class="label">Index</span>
-  </button>
 </header>
 
 <main>
-  <!-- 01 the threshold -->
-  <section id="top" class="threshold" aria-labelledby="hl">
-    <div class="hero">
-      <p class="kicker">Portal Atlas</p>
-      <h1 id="hl"><span class="line">Ideas that</span> <span class="line">escape the</span> <span class="line warm">ordinary.</span></h1>
-      <p class="sub">I build AI-powered products, immersive tools, and unconventional solutions to real problems.</p>
-      <div class="hero-actions">
-        <a class="explore" href="#worlds"><span class="ring" aria-hidden="true"></span>Explore my worlds</a>
-        <a class="quiet" href="#projects">or see every project as a list</a>
-      </div>
+  <section id="top" class="hero" aria-labelledby="hl">
+    <picture class="hero-art">
+      <source media="(max-aspect-ratio: 4/5)" srcset="art/portal-tall-750.webp 750w, art/portal-tall-1200.webp 1200w" sizes="100vw" />
+      <img src="art/portal-1600.webp" srcset="art/portal-960.webp 960w, art/portal-1600.webp 1600w, art/portal-2560.webp 2560w" sizes="100vw" width="2560" height="1440" fetchpriority="high"
+        alt="A ring a quarter of a kilometre across, standing in a calm sea at dusk. Through it, a different evening: gold." />
+    </picture>
+    <div class="hero-text">
+      <p class="eyebrow">Portal Atlas &middot; independent AI product builder</p>
+      <h1 id="hl">Ideas that escape the <em>ordinary.</em></h1>
+      <p class="sub">I build AI-powered products, immersive tools, and unconventional solutions to real problems. Thirty-five of them are here, and every one of them runs.</p>
+      <p class="actions"><a class="primary" href="#work">See the work</a><a class="quiet" href="#contact">Start a conversation</a></p>
     </div>
-    <p class="portal-hint" aria-hidden="true"><span>Step through</span></p>
-    <div class="dial" role="listbox" tabindex="0" hidden aria-label="The dial round the portal: one block for each world. Arrow keys choose a world, Enter steps into it."></div>
-    <div class="hotspots">
-      <button type="button" class="spot" data-spot="figure" aria-label="A person standing in the portal. Read a note on how this scene is drawn."></button>
-      <button type="button" class="spot" data-spot="moon" aria-label="The larger moon. Read about today's phase."></button>
-      <button type="button" class="spot" data-spot="light" aria-label="A distant lighthouse. Go to The Lamplighter."></button>
-    </div>
-    <div class="note" role="status" hidden><p></p><button type="button" class="note-close" aria-label="Close the note">&times;</button></div>
-    <button type="button" class="skip-intro" hidden>Skip intro</button>
+    <p class="plate" aria-hidden="true">The portal &middot; rendered from code</p>
   </section>
 
-  <!-- 02 the worlds -->
-  <section id="worlds" class="worlds" aria-labelledby="worlds-title">
-    <div class="passage" aria-hidden="true"></div>
-    <div class="field">
-      <div class="stage">
-        <h2 id="worlds-title" class="sr">Worlds: every project as a floating island</h2>
-        <div class="region-title" aria-live="polite"><p class="n"></p><h3></h3><p class="line"></p></div>
-        <div class="isles"></div>
-        <div class="preview" hidden aria-hidden="true"><p class="pv-kind"></p><b class="pv-title"></b><p class="pv-hook"></p><span class="pv-cta"></span></div>
-        <nav class="regions" aria-label="Regions"></nav>
-        <p class="hint">Scroll to travel &middot; <span class="fine">choose</span><span class="touch">tap</span> a world to enter it</p>
-
-        <aside id="reveal" class="reveal" hidden aria-labelledby="rv-title">
-          <button type="button" class="back"><span aria-hidden="true">&larr;</span> Back to the atlas</button>
-          <div class="rv-scroll">
-            <p class="rv-kind"></p>
-            <h2 id="rv-title" class="rv-title"></h2>
-            <p class="rv-blurb"></p>
-            <div class="rv-actions"></div>
-            <p class="rv-note" hidden></p>
-            <figure class="rv-preview">
-              <div class="rv-frame"><img alt="" decoding="async" width="960" height="600" /></div>
-              <figcaption></figcaption>
-              <button type="button" class="try" hidden>Try it here <span aria-hidden="true">&#8599;</span></button>
-            </figure>
-            <section><h3>The problem</h3><p class="rv-problem"></p></section>
-            <section><h3>What it does</h3><ul class="rv-features"></ul></section>
-            <section><h3>Evidence</h3><p class="rv-evidence"></p></section>
-            <section class="rv-decision"><h3>The most interesting decision</h3><p class="rv-dtitle"></p><p class="rv-dtext"></p></section>
-            <section class="rv-ai" hidden>
-              <h3>Where the AI is, and where it isn&rsquo;t</h3>
-              <div class="rv-split">
-                <div><h4>The model</h4><ul class="rv-model"></ul></div>
-                <div><h4>Ordinary code</h4><ul class="rv-code"></ul></div>
-              </div>
-              <h4>What keeps it honest</h4><ul class="rv-guards"></ul>
-              <h4>Not built yet</h4><ul class="rv-limits"></ul>
-            </section>
-            <section><h3>Built with</h3><ul class="chips rv-tech"></ul></section>
-            <nav class="rv-nav" aria-label="Other worlds"><button type="button" data-go="prev"></button><button type="button" data-go="next"></button></nav>
-          </div>
-        </aside>
+  <section id="work" class="work" aria-labelledby="work-title">
+    <div class="work-head wrap">
+      <h2 id="work-title">Thirty-five worlds</h2>
+      <div>
+        <p class="lede">Each project stands in a world of its own, made from what it does: a ledger of slabs for the invoice analyst, a door of light for the receptionist, a balance on a bell curve for the statistics. Open one for the problem, how it was built and the evidence, and to run the real thing.</p>
+        <!-- contents:start -->
+        <ol class="contents">
+          <li><a href="#r-products"><span class="n">I</span><span class="t">The Product Archipelago</span><span class="c">6</span></a></li>
+          <li><a href="#r-models"><span class="n">II</span><span class="t">The Observatory Reach</span><span class="c">4</span></a></li>
+          <li><a href="#r-stories"><span class="n">III</span><span class="t">The Night Isles</span><span class="c">3</span></a></li>
+          <li><a href="#r-games"><span class="n">IV</span><span class="t">The Playground Reef</span><span class="c">8</span></a></li>
+          <li><a href="#r-workshop"><span class="n">V</span><span class="t">The Workshop Shallows</span><span class="c">8</span></a></li>
+          <li><a href="#r-engines"><span class="n">VI</span><span class="t">The Engine Rooms</span><span class="c">6</span></a></li>
+        </ol>
+        <!-- contents:end -->
       </div>
+    </div>
+    <div class="regions wrap">
+      <!-- gallery:start -->
+      <section class="region" id="r-products" data-region="products" aria-labelledby="rh-products">
+        <header class="region-head">
+          <p class="num">I</p>
+          <h3 id="rh-products">The Product Archipelago</h3>
+          <p class="line">Software a business could ask for tomorrow: working, measured, and ready to try.</p>
+        </header>
+        <ol class="tiles">
+          <li class="tile feature" data-id="tally" data-alt="A ledger of slabs, and one invoice pulled out of it.">
+            <a class="tile-media" href="projects/tally/" data-open="tally" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/tally-900.webp" srcset="art/tally-900.webp 900w, art/tally-1800.webp 1800w" sizes="(min-width: 980px) 60vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/tally-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">AI product · Python service</p>
+              <h4><a href="projects/tally/" data-open="tally">Tally</a></h4>
+              <p class="blurb">An AI accounts-payable analyst. It reads supplier contracts and the accounts, answers questions with cited sources, audits every invoice against the contract and drafts the dispute emails a person approves.</p>
+              <p class="tile-links"><span>Runs on a server</span><a href="projects/tally/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile feature" data-id="frontdesk" data-alt="A door of light under a listening mast.">
+            <a class="tile-media" href="projects/frontdesk/" data-open="frontdesk" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/frontdesk-900.webp" srcset="art/frontdesk-900.webp 900w, art/frontdesk-1800.webp 1800w" sizes="(min-width: 980px) 60vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/frontdesk-960.webp" srcset="shots/frontdesk-960.webp 960w, shots/frontdesk-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">AI product · about 4 min</p>
+              <h4><a href="projects/frontdesk/" data-open="frontdesk">Front Desk</a></h4>
+              <p class="blurb">An AI phone receptionist for a busy restaurant. It checks the real table plan, offers the nearest free times and books straight into the host-stand system.</p>
+              <p class="tile-links"><a href="../apps/frontdesk/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/frontdesk/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="handbook" data-alt="An open book, and the one quoted line rising out of it.">
+            <a class="tile-media" href="projects/handbook/" data-open="handbook" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/handbook-900.webp" srcset="art/handbook-900.webp 900w, art/handbook-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/handbook-960.webp" srcset="shots/handbook-960.webp 960w, shots/handbook-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">AI product · about 4 min</p>
+              <h4><a href="projects/handbook/" data-open="handbook">Ask the Handbook</a></h4>
+              <p class="blurb">A knowledge assistant that answers staff questions from company documents, quotes its source, and says “the handbook doesn’t say” rather than guess.</p>
+              <p class="tile-links"><a href="../apps/handbook/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/handbook/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="callcoach" data-alt="An amphitheatre of half rings round a mast.">
+            <a class="tile-media" href="projects/callcoach/" data-open="callcoach" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/callcoach-900.webp" srcset="art/callcoach-900.webp 900w, art/callcoach-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/callcoach-960.webp" srcset="shots/callcoach-960.webp 960w, shots/callcoach-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">AI product · about 4 min</p>
+              <h4><a href="projects/callcoach/" data-open="callcoach">Call Coach</a></h4>
+              <p class="blurb">A live assistant for sales calls: the right answer on screen the moment a prospect objects, and the notes, CRM record and follow-up written when the call ends.</p>
+              <p class="tile-links"><a href="../apps/callcoach/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/callcoach/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="claims" data-alt="Three monoliths, and the beam that reads them.">
+            <a class="tile-media" href="projects/claims/" data-open="claims" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/claims-900.webp" srcset="art/claims-900.webp 900w, art/claims-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/claims-960.webp" srcset="shots/claims-960.webp 960w, shots/claims-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">AI product · about 3 min</p>
+              <h4><a href="projects/claims/" data-open="claims">Claims Desk</a></h4>
+              <p class="blurb">Reads an insurance claim — email, scanned form, invoice — checks it against the policy and itself, and recommends a decision with the evidence for every line.</p>
+              <p class="tile-links"><a href="../apps/claims/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/claims/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="covers" data-alt="A floor plan floating mid-service, one table lit.">
+            <a class="tile-media" href="projects/covers/" data-open="covers" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/covers-900.webp" srcset="art/covers-900.webp 900w, art/covers-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/covers-960.webp" srcset="shots/covers-960.webp 960w, shots/covers-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">product · about 12 min</p>
+              <h4><a href="projects/covers/" data-open="covers">Covers</a></h4>
+              <p class="blurb">A restaurant floor and booking system you drop into at 19:42 on a Saturday, mid-service, with a double-booking to sort out.</p>
+              <p class="tile-links"><a href="../apps/covers/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/covers/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+        </ol>
+      </section>
+      <section class="region" id="r-models" data-region="models" aria-labelledby="rh-models">
+        <header class="region-head">
+          <p class="num">II</p>
+          <h3 id="rh-models">The Observatory Reach</h3>
+          <p class="line">How language models really work, built from nothing so every step can be watched.</p>
+        </header>
+        <ol class="tiles">
+          <li class="tile feature" data-id="attention" data-alt="Tokens, and the arcs one attention head learns to draw between them.">
+            <a class="tile-media" href="projects/attention/" data-open="attention" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/attention-900.webp" srcset="art/attention-900.webp 900w, art/attention-1800.webp 1800w" sizes="(min-width: 980px) 60vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/attention-960.webp" srcset="shots/attention-960.webp 960w, shots/attention-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">machine learning · about 6 min</p>
+              <h4><a href="projects/attention/" data-open="attention">Attention</a></h4>
+              <p class="blurb">A transformer trained from scratch with hand-written backpropagation, and the exact step it learned to copy.</p>
+              <p class="tile-links"><a href="../apps/attention/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/attention/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="tokens" data-alt="A word split along the seams a tokeniser sees.">
+            <a class="tile-media" href="projects/tokens/" data-open="tokens" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/tokens-900.webp" srcset="art/tokens-900.webp 900w, art/tokens-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/tokens-960.webp" srcset="shots/tokens-960.webp 960w, shots/tokens-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">machine learning · about 4 min</p>
+              <h4><a href="projects/tokens/" data-open="tokens">Tokens</a></h4>
+              <p class="blurb">A byte-pair tokeniser that trains itself in front of you, and the three things it explains about why models behave the way they do.</p>
+              <p class="tile-links"><a href="../apps/tokens/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/tokens/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="evals" data-alt="A balance on a hill shaped like a bell curve.">
+            <a class="tile-media" href="projects/evals/" data-open="evals" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/evals-900.webp" srcset="art/evals-900.webp 900w, art/evals-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/evals-960.webp" srcset="shots/evals-960.webp 960w, shots/evals-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">machine learning · about 5 min</p>
+              <h4><a href="projects/evals/" data-open="evals">Evals</a></h4>
+              <p class="blurb">Two real parsers, eight hundred real inputs, graded live — and the confidence interval that decides whether the change was real.</p>
+              <p class="tile-links"><a href="../apps/evals/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/evals/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="agents" data-alt="The agent’s loop, its stations, and the agent on it.">
+            <a class="tile-media" href="projects/agents/" data-open="agents" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/agents-900.webp" srcset="art/agents-900.webp 900w, art/agents-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/agents-960.webp" srcset="shots/agents-960.webp 960w, shots/agents-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">machine learning · about 4 min</p>
+              <h4><a href="projects/agents/" data-open="agents">Agents</a></h4>
+              <p class="blurb">A real tool-use loop you can step through, then break on purpose — with every guard switchable so you can see what it was holding back.</p>
+              <p class="tile-links"><a href="../apps/agents/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/agents/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+        </ol>
+      </section>
+      <section class="region" id="r-stories" data-region="stories" aria-labelledby="rh-stories">
+        <header class="region-head">
+          <p class="num">III</p>
+          <h3 id="rh-stories">The Night Isles</h3>
+          <p class="line">Stories that draw themselves. No image files: the sea, the sky and the dread are code.</p>
+        </header>
+        <ol class="tiles">
+          <li class="tile" data-id="lamplighter" data-alt="A lighthouse on its rock, the beam still turning.">
+            <a class="tile-media" href="projects/lamplighter/" data-open="lamplighter" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/lamplighter-900.webp" srcset="art/lamplighter-900.webp 900w, art/lamplighter-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/lamplighter-960.webp" srcset="shots/lamplighter-960.webp 960w, shots/lamplighter-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">fiction · about 5 min</p>
+              <h4><a href="projects/lamplighter/" data-open="lamplighter">The Lamplighter</a></h4>
+              <p class="blurb">One night, and a keeper about to be replaced by a machine. Scroll and the sun goes down, the gale gets up, and the light keeps turning.</p>
+              <p class="tile-links"><a href="../apps/lamplighter/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/lamplighter/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="room" data-alt="One locked room, floating, with the light on inside.">
+            <a class="tile-media" href="projects/room/" data-open="room" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/room-900.webp" srcset="art/room-900.webp 900w, art/room-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/room-960.webp" srcset="shots/room-960.webp 960w, shots/room-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">fiction · about 10 min</p>
+              <h4><a href="projects/room/" data-open="room">The Room</a></h4>
+              <p class="blurb">Edmund Harkness is dead at his desk and the door was locked from inside. Look at nineteen things, question four people, then name somebody.</p>
+              <p class="tile-links"><a href="../apps/room/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/room/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="nightshift" data-alt="A watch hut in the fog: one window lit, the radio still on.">
+            <a class="tile-media" href="projects/nightshift/" data-open="nightshift" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/nightshift-900.webp" srcset="art/nightshift-900.webp 900w, art/nightshift-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/nightshift-960.webp" srcset="shots/nightshift-960.webp 960w, shots/nightshift-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">fiction · about 5 min</p>
+              <h4><a href="projects/nightshift/" data-open="nightshift">Nightshift</a></h4>
+              <p class="blurb">A coastal watch log from one night in 1987. It opens with the weather and the shipping, and it does not stay there.</p>
+              <p class="tile-links"><a href="../apps/nightshift/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/nightshift/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+        </ol>
+      </section>
+      <section class="region" id="r-games" data-region="games" aria-labelledby="rh-games">
+        <header class="region-head">
+          <p class="num">IV</p>
+          <h3 id="rh-games">The Playground Reef</h3>
+          <p class="line">Games, from a two-minute one-button flight to a three-act action game in the dark.</p>
+        </header>
+        <ol class="tiles">
+          <li class="tile feature" data-id="ember" data-alt="A dark rock with one beacon still burning, and embers that do not come down.">
+            <a class="tile-media" href="projects/ember/" data-open="ember" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/ember-900.webp" srcset="art/ember-900.webp 900w, art/ember-1800.webp 1800w" sizes="(min-width: 980px) 60vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/ember-960.webp" srcset="shots/ember-960.webp 960w, shots/ember-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">game · about 15 min</p>
+              <h4><a href="projects/ember/" data-open="ember">Ember</a></h4>
+              <p class="blurb">An action game in the dark. Your flame is your life and your light: three acts, three bosses, nine ash-stones, and one question — who put out the Beacon?</p>
+              <p class="tile-links"><a href="../play/ember/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/ember/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="ace" data-alt="A paper plane the size of a house.">
+            <a class="tile-media" href="projects/ace/" data-open="ace" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/ace-900.webp" srcset="art/ace-900.webp 900w, art/ace-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/ace-960.webp" srcset="shots/ace-960.webp 960w, shots/ace-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">game · about 2 min</p>
+              <h4><a href="projects/ace/" data-open="ace">Ace</a></h4>
+              <p class="blurb">Tap to fly a paper plane through a canyon. Do not hit the rocks.</p>
+              <p class="tile-links"><a href="../play/ace/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/ace/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="stack" data-alt="Blocks stacked as far as they would go, and the slice that fell.">
+            <a class="tile-media" href="projects/stack/" data-open="stack" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/stack-900.webp" srcset="art/stack-900.webp 900w, art/stack-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/stack-960.webp" srcset="shots/stack-960.webp 960w, shots/stack-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">game · about 2 min</p>
+              <h4><a href="projects/stack/" data-open="stack">Stack</a></h4>
+              <p class="blurb">A block slides past. Tap. Whatever hangs over the edge is sliced off and falls.</p>
+              <p class="tile-links"><a href="../play/stack/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/stack/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="tether" data-alt="A planet, an orbit, and a ship on a line about to let go.">
+            <a class="tile-media" href="projects/tether/" data-open="tether" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/tether-900.webp" srcset="art/tether-900.webp 900w, art/tether-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/tether-960.webp" srcset="shots/tether-960.webp 960w, shots/tether-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">game · about 3 min</p>
+              <h4><a href="projects/tether/" data-open="tether">Tether</a></h4>
+              <p class="blurb">You swing round a planet on a tether. Tap and you let go, flying off exactly the way you were already pointing.</p>
+              <p class="tile-links"><a href="../play/tether/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/tether/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="sumo" data-alt="A ring that closes under two players.">
+            <a class="tile-media" href="projects/sumo/" data-open="sumo" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/sumo-900.webp" srcset="art/sumo-900.webp 900w, art/sumo-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/sumo-960.webp" srcset="shots/sumo-960.webp 960w, shots/sumo-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">game · about 3 min</p>
+              <h4><a href="projects/sumo/" data-open="sumo">Sumo</a></h4>
+              <p class="blurb">Two people, one keyboard, one key each. Knock the other one out of the ring before it closes under you.</p>
+              <p class="tile-links"><a href="../play/sumo/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/sumo/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="tangle" data-alt="Tiles with pipes on them, one lifted to turn.">
+            <a class="tile-media" href="projects/tangle/" data-open="tangle" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/tangle-900.webp" srcset="art/tangle-900.webp 900w, art/tangle-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/tangle-960.webp" srcset="shots/tangle-960.webp 960w, shots/tangle-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">game · about 4 min</p>
+              <h4><a href="projects/tangle/" data-open="tangle">Tangle</a></h4>
+              <p class="blurb">Tap a tile to turn it. The board is solved when no connector is left dangling.</p>
+              <p class="tile-links"><a href="../play/tangle/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/tangle/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="sweeper" data-alt="A minefield, every square decided by logic, one flag.">
+            <a class="tile-media" href="projects/sweeper/" data-open="sweeper" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/sweeper-900.webp" srcset="art/sweeper-900.webp 900w, art/sweeper-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/sweeper-960.webp" srcset="shots/sweeper-960.webp 960w, shots/sweeper-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">game · about 5 min</p>
+              <h4><a href="projects/sweeper/" data-open="sweeper">Minesweeper</a></h4>
+              <p class="blurb">Classic Minesweeper, except every board is proven solvable by logic before you see it, so it never comes down to a coin flip.</p>
+              <p class="tile-links"><a href="../play/sweeper/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/sweeper/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="sudoku" data-alt="Eighty-one columns, every height a digit.">
+            <a class="tile-media" href="projects/sudoku/" data-open="sudoku" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/sudoku-900.webp" srcset="art/sudoku-900.webp 900w, art/sudoku-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/sudoku-960.webp" srcset="shots/sudoku-960.webp 960w, shots/sudoku-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">game · about 10 min</p>
+              <h4><a href="projects/sudoku/" data-open="sudoku">Sudoku</a></h4>
+              <p class="blurb">A daily Sudoku at three levels, each with exactly one answer and a way to it that needs no guessing.</p>
+              <p class="tile-links"><a href="../play/sudoku/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/sudoku/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+        </ol>
+      </section>
+      <section class="region" id="r-workshop" data-region="workshop" aria-labelledby="rh-workshop">
+        <header class="region-head">
+          <p class="num">V</p>
+          <h3 id="rh-workshop">The Workshop Shallows</h3>
+          <p class="line">Small useful things and physical toys, each with the hard part written from scratch.</p>
+        </header>
+        <ol class="tiles">
+          <li class="tile" data-id="sandbox" data-alt="A heap of sand, and the stream still pouring.">
+            <a class="tile-media" href="projects/sandbox/" data-open="sandbox" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/sandbox-900.webp" srcset="art/sandbox-900.webp 900w, art/sandbox-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/sandbox-960.webp" srcset="shots/sandbox-960.webp 960w, shots/sandbox-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">physics · about 5 min</p>
+              <h4><a href="projects/sandbox/" data-open="sandbox">Sandbox</a></h4>
+              <p class="blurb">Pour sand. Add water. Set it on fire and watch the smoke rise.</p>
+              <p class="tile-links"><a href="../play/sandbox/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/sandbox/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="mercury" data-alt="Liquid metal, risen out of the sea.">
+            <a class="tile-media" href="projects/mercury/" data-open="mercury" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/mercury-900.webp" srcset="art/mercury-900.webp 900w, art/mercury-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/mercury-960.webp" srcset="shots/mercury-960.webp 960w, shots/mercury-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">physics · about 3 min</p>
+              <h4><a href="projects/mercury/" data-open="mercury">Mercury</a></h4>
+              <p class="blurb">A sheet of liquid metal under a sunset sky. Drag it and the ripples bend the reflections as they spread.</p>
+              <p class="tile-links"><a href="../apps/mercury/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/mercury/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="beats" data-alt="A step sequencer, the playing steps lit.">
+            <a class="tile-media" href="projects/beats/" data-open="beats" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/beats-900.webp" srcset="art/beats-900.webp 900w, art/beats-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/beats-960.webp" srcset="shots/beats-960.webp 960w, shots/beats-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">instrument · about 4 min</p>
+              <h4><a href="projects/beats/" data-open="beats">Beat Lab</a></h4>
+              <p class="blurb">A drum machine with no sound files in it — every kick and snare is generated from scratch.</p>
+              <p class="tile-links"><a href="../play/beats/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/beats/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="island" data-alt="A world made by pressing a button.">
+            <a class="tile-media" href="projects/island/" data-open="island" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/island-900.webp" srcset="art/island-900.webp 900w, art/island-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/island-960.webp" srcset="shots/island-960.webp 960w, shots/island-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">instrument · about 3 min</p>
+              <h4><a href="projects/island/" data-open="island">Islandsmith</a></h4>
+              <p class="blurb">Press the button, get a brand new world: coastline, mountains, forests, rivers and a name.</p>
+              <p class="tile-links"><a href="../play/island/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/island/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="qr" data-alt="A code you can scan, raised out of the water.">
+            <a class="tile-media" href="projects/qr/" data-open="qr" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/qr-900.webp" srcset="art/qr-900.webp 900w, art/qr-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/qr-960.webp" srcset="shots/qr-960.webp 960w, shots/qr-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">app · about 2 min</p>
+              <h4><a href="projects/qr/" data-open="qr">QR codes</a></h4>
+              <p class="blurb">Type a link, some text, a Wi-Fi password or an email and it is a QR code before you finish typing. The encoder is written from scratch.</p>
+              <p class="tile-links"><a href="../apps/qr/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/qr/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="split" data-alt="A sphere split exactly in two.">
+            <a class="tile-media" href="projects/split/" data-open="split" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/split-900.webp" srcset="art/split-900.webp 900w, art/split-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/split-960.webp" srcset="shots/split-960.webp 960w, shots/split-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">app · about 3 min</p>
+              <h4><a href="projects/split/" data-open="split">Split</a></h4>
+              <p class="blurb">Who paid for what on a trip or at dinner, and the fewest bank transfers that settle everybody up, to the penny.</p>
+              <p class="tile-links"><a href="../apps/split/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/split/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="tuner" data-alt="A tuning fork, still ringing.">
+            <a class="tile-media" href="projects/tuner/" data-open="tuner" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/tuner-900.webp" srcset="art/tuner-900.webp 900w, art/tuner-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/tuner-960.webp" srcset="shots/tuner-960.webp 960w, shots/tuner-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">app · about 2 min</p>
+              <h4><a href="projects/tuner/" data-open="tuner">Tuner</a></h4>
+              <p class="blurb">Play a note into your microphone and see how sharp or flat it is, to the cent. Guitar, bass, ukulele, violin or cello.</p>
+              <p class="tile-links"><a href="../apps/tuner/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/tuner/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="sift" data-alt="A funnel that lets only some of it through.">
+            <a class="tile-media" href="projects/sift/" data-open="sift" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/sift-900.webp" srcset="art/sift-900.webp 900w, art/sift-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/sift-960.webp" srcset="shots/sift-960.webp 960w, shots/sift-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">app · about 5 min</p>
+              <h4><a href="projects/sift/" data-open="sift">Sift</a></h4>
+              <p class="blurb">Drop a spreadsheet in and it tells you what is actually in it: what each column holds, where the gaps are, what the numbers look like.</p>
+              <p class="tile-links"><a href="../apps/sift/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/sift/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+        </ol>
+      </section>
+      <section class="region" id="r-engines" data-region="engines" aria-labelledby="rh-engines">
+        <header class="region-head">
+          <p class="num">VI</p>
+          <h3 id="rh-engines">The Engine Rooms</h3>
+          <p class="line">The invisible parts of software, made visible: regex, query plans, consensus, traces, merges, colour.</p>
+        </header>
+        <ol class="tiles">
+          <li class="tile" data-id="regex-lab" data-alt="A pattern compiled into a machine of states.">
+            <a class="tile-media" href="projects/regex-lab/" data-open="regex-lab" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/regex-lab-900.webp" srcset="art/regex-lab-900.webp 900w, art/regex-lab-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/regex-lab-960.webp" srcset="shots/regex-lab-960.webp 960w, shots/regex-lab-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">engineering tool · about 6 min</p>
+              <h4><a href="projects/regex-lab/" data-open="regex-lab">Regex Lab</a></h4>
+              <p class="blurb">A search pattern compiled into a machine you can watch run, one character at a time — including the kind that quietly takes a website down.</p>
+              <p class="tile-links"><a href="../projects/regex-lab/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/regex-lab/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="query-planner" data-alt="A plan: the question at the top, the tables at the bottom.">
+            <a class="tile-media" href="projects/query-planner/" data-open="query-planner" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/query-planner-900.webp" srcset="art/query-planner-900.webp 900w, art/query-planner-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/query-planner-960.webp" srcset="shots/query-planner-960.webp 960w, shots/query-planner-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">engineering tool · about 6 min</p>
+              <h4><a href="projects/query-planner/" data-open="query-planner">Query Planner</a></h4>
+              <p class="blurb">A database deciding how to answer a question, with its reasoning attached. Drag a table’s size and watch it change its mind.</p>
+              <p class="tile-links"><a href="../projects/query-planner/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/query-planner/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="raft-lab" data-alt="Five servers agreeing; the leader a little taller.">
+            <a class="tile-media" href="projects/raft-lab/" data-open="raft-lab" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/raft-lab-900.webp" srcset="art/raft-lab-900.webp 900w, art/raft-lab-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/raft-lab-960.webp" srcset="shots/raft-lab-960.webp 960w, shots/raft-lab-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">engineering tool · about 7 min</p>
+              <h4><a href="projects/raft-lab/" data-open="raft-lab">Raft Lab</a></h4>
+              <p class="blurb">Five servers agreeing with each other. Cut the network in half, crash the leader, and watch the safety guarantees hold.</p>
+              <p class="tile-links"><a href="../projects/raft-lab/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/raft-lab/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="trace-explorer" data-alt="Where a slow request spent its time, as a flame chart in stone.">
+            <a class="tile-media" href="projects/trace-explorer/" data-open="trace-explorer" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/trace-explorer-900.webp" srcset="art/trace-explorer-900.webp 900w, art/trace-explorer-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/trace-explorer-960.webp" srcset="shots/trace-explorer-960.webp 960w, shots/trace-explorer-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">engineering tool · about 5 min</p>
+              <h4><a href="projects/trace-explorer/" data-open="trace-explorer">Trace Explorer</a></h4>
+              <p class="blurb">Where a slow web request actually spent its time, explained in sentences instead of charts.</p>
+              <p class="tile-links"><a href="../projects/trace-explorer/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/trace-explorer/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="diff-forge" data-alt="Two histories meeting, and the one that leaves.">
+            <a class="tile-media" href="projects/diff-forge/" data-open="diff-forge" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/diff-forge-900.webp" srcset="art/diff-forge-900.webp 900w, art/diff-forge-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/diff-forge-960.webp" srcset="shots/diff-forge-960.webp 960w, shots/diff-forge-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">engineering tool · about 5 min</p>
+              <h4><a href="projects/diff-forge/" data-open="diff-forge">Diff Forge</a></h4>
+              <p class="blurb">The merge conflict — software’s most hated screen — rebuilt as a choice you can actually read.</p>
+              <p class="tile-links"><a href="../projects/diff-forge/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/diff-forge/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+          <li class="tile" data-id="oklch-studio" data-alt="A fan of swatches, every one of them passing.">
+            <a class="tile-media" href="projects/oklch-studio/" data-open="oklch-studio" tabindex="-1" aria-hidden="true">
+              <img class="art" src="art/oklch-studio-900.webp" srcset="art/oklch-studio-900.webp 900w, art/oklch-studio-1800.webp 1800w" sizes="(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+              <img class="shot" src="shots/oklch-studio-960.webp" srcset="shots/oklch-studio-960.webp 960w, shots/oklch-studio-1920.webp 1920w" sizes="(min-width: 980px) 20vw, 40vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+            </a>
+            <div class="tile-body">
+              <p class="kind">engineering tool · about 4 min</p>
+              <h4><a href="projects/oklch-studio/" data-open="oklch-studio">OKLCH Studio</a></h4>
+              <p class="blurb">Building a colour palette that still passes when someone runs an accessibility check on it.</p>
+              <p class="tile-links"><a href="../projects/oklch-studio/index.html">Launch <span aria-hidden="true">&#8599;</span></a><a href="projects/oklch-studio/">How it&rsquo;s built</a></p>
+            </div>
+          </li>
+        </ol>
+      </section>
+      <!-- gallery:end -->
     </div>
   </section>
 
-  <!-- the same projects, as a plain list: works without WebGL, without script, and for search engines -->
-  <section id="projects" class="paper projects" aria-labelledby="projects-title">
-    <div class="wrap">
-      <p class="eyebrow">Projects</p>
-      <h2 id="projects-title">Every world, as a list</h2>
-      <p class="lede">The same thirty-five projects, without the scenery. Each has its own page with the problem, how it is built and the evidence.</p>
-      <!-- projects:start -->
-      <div class="plist">
-      <section class="pgroup" aria-labelledby="pg-products">
-        <h3 id="pg-products">The Product Archipelago</h3>
-        <p>Software a business could ask for tomorrow: working, measured, and ready to try.</p>
-        <ul>
-          <li>
-            <a class="pname" href="projects/tally/">Tally</a>
-            <span class="pkind">AI product · Python service</span>
-            <p>An AI accounts-payable analyst. It reads supplier contracts and the accounts, answers questions with cited sources, audits every invoice against the contract and drafts the dispute emails a person approves.</p>
-            <span class="plinks"><span>Runs on a server</span><a href="projects/tally/">How it&rsquo;s built</a><a href="#world/tally" data-world="tally">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/frontdesk/">Front Desk</a>
-            <span class="pkind">AI product · about 4 min</span>
-            <p>An AI phone receptionist for a busy restaurant. It checks the real table plan, offers the nearest free times and books straight into the host-stand system.</p>
-            <span class="plinks"><a href="../apps/frontdesk/index.html">Launch</a><a href="projects/frontdesk/">How it&rsquo;s built</a><a href="#world/frontdesk" data-world="frontdesk">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/handbook/">Ask the Handbook</a>
-            <span class="pkind">AI product · about 4 min</span>
-            <p>A knowledge assistant that answers staff questions from company documents, quotes its source, and says “the handbook doesn’t say” rather than guess.</p>
-            <span class="plinks"><a href="../apps/handbook/index.html">Launch</a><a href="projects/handbook/">How it&rsquo;s built</a><a href="#world/handbook" data-world="handbook">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/callcoach/">Call Coach</a>
-            <span class="pkind">AI product · about 4 min</span>
-            <p>A live assistant for sales calls: the right answer on screen the moment a prospect objects, and the notes, CRM record and follow-up written when the call ends.</p>
-            <span class="plinks"><a href="../apps/callcoach/index.html">Launch</a><a href="projects/callcoach/">How it&rsquo;s built</a><a href="#world/callcoach" data-world="callcoach">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/claims/">Claims Desk</a>
-            <span class="pkind">AI product · about 3 min</span>
-            <p>Reads an insurance claim — email, scanned form, invoice — checks it against the policy and itself, and recommends a decision with the evidence for every line.</p>
-            <span class="plinks"><a href="../apps/claims/index.html">Launch</a><a href="projects/claims/">How it&rsquo;s built</a><a href="#world/claims" data-world="claims">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/covers/">Covers</a>
-            <span class="pkind">product · about 12 min</span>
-            <p>A restaurant floor and booking system you drop into at 19:42 on a Saturday, mid-service, with a double-booking to sort out.</p>
-            <span class="plinks"><a href="../apps/covers/index.html">Launch</a><a href="projects/covers/">How it&rsquo;s built</a><a href="#world/covers" data-world="covers">Its world</a></span>
-          </li>
-        </ul>
-      </section>
-      <section class="pgroup" aria-labelledby="pg-models">
-        <h3 id="pg-models">The Observatory Reach</h3>
-        <p>How language models really work, built from nothing so every step can be watched.</p>
-        <ul>
-          <li>
-            <a class="pname" href="projects/attention/">Attention</a>
-            <span class="pkind">machine learning · about 6 min</span>
-            <p>A transformer trained from scratch with hand-written backpropagation, and the exact step it learned to copy.</p>
-            <span class="plinks"><a href="../apps/attention/index.html">Launch</a><a href="projects/attention/">How it&rsquo;s built</a><a href="#world/attention" data-world="attention">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/tokens/">Tokens</a>
-            <span class="pkind">machine learning · about 4 min</span>
-            <p>A byte-pair tokeniser that trains itself in front of you, and the three things it explains about why models behave the way they do.</p>
-            <span class="plinks"><a href="../apps/tokens/index.html">Launch</a><a href="projects/tokens/">How it&rsquo;s built</a><a href="#world/tokens" data-world="tokens">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/evals/">Evals</a>
-            <span class="pkind">machine learning · about 5 min</span>
-            <p>Two real parsers, eight hundred real inputs, graded live — and the confidence interval that decides whether the change was real.</p>
-            <span class="plinks"><a href="../apps/evals/index.html">Launch</a><a href="projects/evals/">How it&rsquo;s built</a><a href="#world/evals" data-world="evals">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/agents/">Agents</a>
-            <span class="pkind">machine learning · about 4 min</span>
-            <p>A real tool-use loop you can step through, then break on purpose — with every guard switchable so you can see what it was holding back.</p>
-            <span class="plinks"><a href="../apps/agents/index.html">Launch</a><a href="projects/agents/">How it&rsquo;s built</a><a href="#world/agents" data-world="agents">Its world</a></span>
-          </li>
-        </ul>
-      </section>
-      <section class="pgroup" aria-labelledby="pg-stories">
-        <h3 id="pg-stories">The Night Isles</h3>
-        <p>Stories that draw themselves. No image files: the sea, the sky and the dread are code.</p>
-        <ul>
-          <li>
-            <a class="pname" href="projects/lamplighter/">The Lamplighter</a>
-            <span class="pkind">fiction · about 5 min</span>
-            <p>One night, and a keeper about to be replaced by a machine. Scroll and the sun goes down, the gale gets up, and the light keeps turning.</p>
-            <span class="plinks"><a href="../apps/lamplighter/index.html">Launch</a><a href="projects/lamplighter/">How it&rsquo;s built</a><a href="#world/lamplighter" data-world="lamplighter">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/room/">The Room</a>
-            <span class="pkind">fiction · about 10 min</span>
-            <p>Edmund Harkness is dead at his desk and the door was locked from inside. Look at nineteen things, question four people, then name somebody.</p>
-            <span class="plinks"><a href="../apps/room/index.html">Launch</a><a href="projects/room/">How it&rsquo;s built</a><a href="#world/room" data-world="room">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/nightshift/">Nightshift</a>
-            <span class="pkind">fiction · about 5 min</span>
-            <p>A coastal watch log from one night in 1987. It opens with the weather and the shipping, and it does not stay there.</p>
-            <span class="plinks"><a href="../apps/nightshift/index.html">Launch</a><a href="projects/nightshift/">How it&rsquo;s built</a><a href="#world/nightshift" data-world="nightshift">Its world</a></span>
-          </li>
-        </ul>
-      </section>
-      <section class="pgroup" aria-labelledby="pg-games">
-        <h3 id="pg-games">The Playground Reef</h3>
-        <p>Games, from a two-minute one-button flight to a three-act action game in the dark.</p>
-        <ul>
-          <li>
-            <a class="pname" href="projects/ember/">Ember</a>
-            <span class="pkind">game · about 15 min</span>
-            <p>An action game in the dark. Your flame is your life and your light: three acts, three bosses, nine ash-stones, and one question — who put out the Beacon?</p>
-            <span class="plinks"><a href="../play/ember/index.html">Launch</a><a href="projects/ember/">How it&rsquo;s built</a><a href="#world/ember" data-world="ember">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/ace/">Ace</a>
-            <span class="pkind">game · about 2 min</span>
-            <p>Tap to fly a paper plane through a canyon. Do not hit the rocks.</p>
-            <span class="plinks"><a href="../play/ace/index.html">Launch</a><a href="projects/ace/">How it&rsquo;s built</a><a href="#world/ace" data-world="ace">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/stack/">Stack</a>
-            <span class="pkind">game · about 2 min</span>
-            <p>A block slides past. Tap. Whatever hangs over the edge is sliced off and falls.</p>
-            <span class="plinks"><a href="../play/stack/index.html">Launch</a><a href="projects/stack/">How it&rsquo;s built</a><a href="#world/stack" data-world="stack">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/tether/">Tether</a>
-            <span class="pkind">game · about 3 min</span>
-            <p>You swing round a planet on a tether. Tap and you let go, flying off exactly the way you were already pointing.</p>
-            <span class="plinks"><a href="../play/tether/index.html">Launch</a><a href="projects/tether/">How it&rsquo;s built</a><a href="#world/tether" data-world="tether">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/sumo/">Sumo</a>
-            <span class="pkind">game · about 3 min</span>
-            <p>Two people, one keyboard, one key each. Knock the other one out of the ring before it closes under you.</p>
-            <span class="plinks"><a href="../play/sumo/index.html">Launch</a><a href="projects/sumo/">How it&rsquo;s built</a><a href="#world/sumo" data-world="sumo">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/tangle/">Tangle</a>
-            <span class="pkind">game · about 4 min</span>
-            <p>Tap a tile to turn it. The board is solved when no connector is left dangling.</p>
-            <span class="plinks"><a href="../play/tangle/index.html">Launch</a><a href="projects/tangle/">How it&rsquo;s built</a><a href="#world/tangle" data-world="tangle">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/sweeper/">Minesweeper</a>
-            <span class="pkind">game · about 5 min</span>
-            <p>Classic Minesweeper, except every board is proven solvable by logic before you see it, so it never comes down to a coin flip.</p>
-            <span class="plinks"><a href="../play/sweeper/index.html">Launch</a><a href="projects/sweeper/">How it&rsquo;s built</a><a href="#world/sweeper" data-world="sweeper">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/sudoku/">Sudoku</a>
-            <span class="pkind">game · about 10 min</span>
-            <p>A daily Sudoku at three levels, each with exactly one answer and a way to it that needs no guessing.</p>
-            <span class="plinks"><a href="../play/sudoku/index.html">Launch</a><a href="projects/sudoku/">How it&rsquo;s built</a><a href="#world/sudoku" data-world="sudoku">Its world</a></span>
-          </li>
-        </ul>
-      </section>
-      <section class="pgroup" aria-labelledby="pg-workshop">
-        <h3 id="pg-workshop">The Workshop Shallows</h3>
-        <p>Small useful things and physical toys, each with the hard part written from scratch.</p>
-        <ul>
-          <li>
-            <a class="pname" href="projects/sandbox/">Sandbox</a>
-            <span class="pkind">physics · about 5 min</span>
-            <p>Pour sand. Add water. Set it on fire and watch the smoke rise.</p>
-            <span class="plinks"><a href="../play/sandbox/index.html">Launch</a><a href="projects/sandbox/">How it&rsquo;s built</a><a href="#world/sandbox" data-world="sandbox">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/mercury/">Mercury</a>
-            <span class="pkind">physics · about 3 min</span>
-            <p>A sheet of liquid metal under a sunset sky. Drag it and the ripples bend the reflections as they spread.</p>
-            <span class="plinks"><a href="../apps/mercury/index.html">Launch</a><a href="projects/mercury/">How it&rsquo;s built</a><a href="#world/mercury" data-world="mercury">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/beats/">Beat Lab</a>
-            <span class="pkind">instrument · about 4 min</span>
-            <p>A drum machine with no sound files in it — every kick and snare is generated from scratch.</p>
-            <span class="plinks"><a href="../play/beats/index.html">Launch</a><a href="projects/beats/">How it&rsquo;s built</a><a href="#world/beats" data-world="beats">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/island/">Islandsmith</a>
-            <span class="pkind">instrument · about 3 min</span>
-            <p>Press the button, get a brand new world: coastline, mountains, forests, rivers and a name.</p>
-            <span class="plinks"><a href="../play/island/index.html">Launch</a><a href="projects/island/">How it&rsquo;s built</a><a href="#world/island" data-world="island">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/qr/">QR codes</a>
-            <span class="pkind">app · about 2 min</span>
-            <p>Type a link, some text, a Wi-Fi password or an email and it is a QR code before you finish typing. The encoder is written from scratch.</p>
-            <span class="plinks"><a href="../apps/qr/index.html">Launch</a><a href="projects/qr/">How it&rsquo;s built</a><a href="#world/qr" data-world="qr">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/split/">Split</a>
-            <span class="pkind">app · about 3 min</span>
-            <p>Who paid for what on a trip or at dinner, and the fewest bank transfers that settle everybody up, to the penny.</p>
-            <span class="plinks"><a href="../apps/split/index.html">Launch</a><a href="projects/split/">How it&rsquo;s built</a><a href="#world/split" data-world="split">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/tuner/">Tuner</a>
-            <span class="pkind">app · about 2 min</span>
-            <p>Play a note into your microphone and see how sharp or flat it is, to the cent. Guitar, bass, ukulele, violin or cello.</p>
-            <span class="plinks"><a href="../apps/tuner/index.html">Launch</a><a href="projects/tuner/">How it&rsquo;s built</a><a href="#world/tuner" data-world="tuner">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/sift/">Sift</a>
-            <span class="pkind">app · about 5 min</span>
-            <p>Drop a spreadsheet in and it tells you what is actually in it: what each column holds, where the gaps are, what the numbers look like.</p>
-            <span class="plinks"><a href="../apps/sift/index.html">Launch</a><a href="projects/sift/">How it&rsquo;s built</a><a href="#world/sift" data-world="sift">Its world</a></span>
-          </li>
-        </ul>
-      </section>
-      <section class="pgroup" aria-labelledby="pg-engines">
-        <h3 id="pg-engines">The Engine Rooms</h3>
-        <p>The invisible parts of software, made visible: regex, query plans, consensus, traces, merges, colour.</p>
-        <ul>
-          <li>
-            <a class="pname" href="projects/regex-lab/">Regex Lab</a>
-            <span class="pkind">engineering tool · about 6 min</span>
-            <p>A search pattern compiled into a machine you can watch run, one character at a time — including the kind that quietly takes a website down.</p>
-            <span class="plinks"><a href="../projects/regex-lab/index.html">Launch</a><a href="projects/regex-lab/">How it&rsquo;s built</a><a href="#world/regex-lab" data-world="regex-lab">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/query-planner/">Query Planner</a>
-            <span class="pkind">engineering tool · about 6 min</span>
-            <p>A database deciding how to answer a question, with its reasoning attached. Drag a table’s size and watch it change its mind.</p>
-            <span class="plinks"><a href="../projects/query-planner/index.html">Launch</a><a href="projects/query-planner/">How it&rsquo;s built</a><a href="#world/query-planner" data-world="query-planner">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/raft-lab/">Raft Lab</a>
-            <span class="pkind">engineering tool · about 7 min</span>
-            <p>Five servers agreeing with each other. Cut the network in half, crash the leader, and watch the safety guarantees hold.</p>
-            <span class="plinks"><a href="../projects/raft-lab/index.html">Launch</a><a href="projects/raft-lab/">How it&rsquo;s built</a><a href="#world/raft-lab" data-world="raft-lab">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/trace-explorer/">Trace Explorer</a>
-            <span class="pkind">engineering tool · about 5 min</span>
-            <p>Where a slow web request actually spent its time, explained in sentences instead of charts.</p>
-            <span class="plinks"><a href="../projects/trace-explorer/index.html">Launch</a><a href="projects/trace-explorer/">How it&rsquo;s built</a><a href="#world/trace-explorer" data-world="trace-explorer">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/diff-forge/">Diff Forge</a>
-            <span class="pkind">engineering tool · about 5 min</span>
-            <p>The merge conflict — software’s most hated screen — rebuilt as a choice you can actually read.</p>
-            <span class="plinks"><a href="../projects/diff-forge/index.html">Launch</a><a href="projects/diff-forge/">How it&rsquo;s built</a><a href="#world/diff-forge" data-world="diff-forge">Its world</a></span>
-          </li>
-          <li>
-            <a class="pname" href="projects/oklch-studio/">OKLCH Studio</a>
-            <span class="pkind">engineering tool · about 4 min</span>
-            <p>Building a colour palette that still passes when someone runs an accessibility check on it.</p>
-            <span class="plinks"><a href="../projects/oklch-studio/index.html">Launch</a><a href="projects/oklch-studio/">How it&rsquo;s built</a><a href="#world/oklch-studio" data-world="oklch-studio">Its world</a></span>
-          </li>
-        </ul>
-      </section>
-      </div>
-      <!-- projects:end -->
-    </div>
-  </section>
-
-  <section id="about" class="paper about" aria-labelledby="about-title">
+  <section id="about" class="about" aria-labelledby="about-title">
     <div class="wrap">
       <p class="eyebrow">About</p>
       <h2 id="about-title">Mohamed Sucule, independent AI product builder.</h2>
@@ -442,80 +623,108 @@
       <section class="rules" aria-labelledby="rules-title">
       <h3 id="rules-title">How I work</h3>
       <article><h4>The right tool, not the biggest model</h4><p>Where a parser, a search index or a rule is faster, cheaper, testable and can&rsquo;t make things up, it does the work. Models handle what those can&rsquo;t.</p></article>
-      <article><h4>Measured on questions it never saw</h4><p>Each AI product has a held-out test set, run once, with the first score kept even when it is bad. The numbers are on the islands.</p></article>
+      <article><h4>Measured on questions it never saw</h4><p>Each AI product has a held-out test set, run once, with the first score kept even when it is bad. The numbers are on each project.</p></article>
       <article><h4>Safe when unsure</h4><p>The receptionist hands over to a person, the handbook says it doesn&rsquo;t know, the claims desk refers what it can&rsquo;t read, and Tally asks a person before it sends anything.</p></article>
     </section>
       <section class="numbers" aria-label="In numbers">
-      <div><b>35</b><span>working projects, one for every island above</span></div>
+      <div><b>35</b><span>working projects, every one in the gallery above</span></div>
       <div><b data-claim="tests">850+</b><span>tests run in CI before anything is published</span></div>
       <div><b>0</b><span>sign-ups or installs needed to try the ones that run in your browser</span></div>
     </section>
     </div>
   </section>
 
-  <section id="contact" class="paper contact" aria-labelledby="contact-title">
+  <section id="contact" class="contact" aria-labelledby="contact-title">
+    <picture class="contact-art" aria-hidden="true">
+      <source media="(max-aspect-ratio: 4/5)" srcset="art/portal-tall-750.webp 750w, art/portal-tall-1200.webp 1200w" sizes="100vw" />
+      <img src="art/portal-1600.webp" srcset="art/portal-960.webp 960w, art/portal-1600.webp 1600w, art/portal-2560.webp 2560w" sizes="100vw" width="2560" height="1440" alt="" loading="lazy" decoding="async" />
+    </picture>
     <div class="wrap">
       <h2 id="contact-title">Have an idea that escapes the ordinary?</h2>
-      <p>If your team has a problem like one of the worlds above, or one nobody has built software for yet,
+      <p>If your team has a problem like one of these, or one nobody has built software for yet,
         write to me. This is the fastest way to reach me.</p>
-      <div class="cta">
-        <a class="btn primary" href="mailto:mohamedsucule@gmail.com">mohamedsucule@gmail.com</a>
-        <a class="btn" href="https://github.com/Mohamed-Sucule/Projects">Read the source on GitHub</a>
-      </div>
+      <p class="cta">
+        <a class="primary" href="mailto:mohamedsucule@gmail.com">mohamedsucule@gmail.com</a>
+        <a class="quiet" href="https://github.com/Mohamed-Sucule/Projects">Read the source on GitHub</a>
+      </p>
     </div>
   </section>
 </main>
 
-<footer class="foot paper">
-  <p>The sky, the sea, the portal and the city beyond it are one fragment shader; every island is a small SVG drawing. There are no image files in the world.
-    Press <kbd>`</kbd> for the renderer&rsquo;s own numbers. Prefer something plainer? <a href="../index.html">The classic front page</a>.</p>
+<footer class="foot">
+  <div class="wrap">
+    <p>Every picture here is rendered from code: one raymarched shader, a sea that goes to the horizon, and a monument for each project
+      (<a href="https://github.com/Mohamed-Sucule/Projects/blob/main/atlas/art/scenes.js">atlas/art/scenes.js</a>). No stock, no photographs.
+      Prefer something plainer? <a href="../index.html">The classic front page</a>.</p>
+  </div>
 </footer>
+
+<div id="sheet" class="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sh-title">
+  <div class="sh-bar">
+    <button type="button" class="sh-close"><span aria-hidden="true">&larr;</span> All work</button>
+    <p class="sh-crumb"></p>
+    <div class="sh-step">
+      <button type="button" data-go="prev" aria-label="Previous project"><span aria-hidden="true">&larr;</span></button>
+      <button type="button" data-go="next" aria-label="Next project"><span aria-hidden="true">&rarr;</span></button>
+    </div>
+  </div>
+  <header class="sh-hero">
+    <img class="sh-art" alt="" width="1800" height="1200" />
+    <div class="sh-head wrap">
+      <p class="kind"></p>
+      <h2 id="sh-title"></h2>
+      <p class="blurb"></p>
+      <div class="sh-actions"></div>
+      <p class="sh-note" hidden></p>
+    </div>
+  </header>
+  <div class="sh-body wrap">
+    <div class="sh-glance">
+      <section><h3>The problem</h3><p class="sh-problem"></p></section>
+      <section class="sh-evidence-wrap"><h3>Evidence</h3><p class="sh-evidence"></p></section>
+    </div>
+    <div class="sh-cols">
+      <div class="sh-main">
+        <section><h3>What it does</h3><ul class="sh-features"></ul></section>
+        <section><h3>The most interesting decision</h3><p class="sh-dtitle"></p><p class="sh-dtext"></p></section>
+        <section class="sh-ai" hidden>
+          <h3>Where the AI is, and where it isn&rsquo;t</h3>
+          <div class="sh-split">
+            <div><h4>The model</h4><ul class="sh-model"></ul></div>
+            <div><h4>Ordinary code</h4><ul class="sh-code"></ul></div>
+          </div>
+          <h4>What keeps it honest</h4><ul class="sh-guards"></ul>
+          <h4>Not built yet</h4><ul class="sh-limits"></ul>
+        </section>
+        <section><h3>Built with</h3><ul class="chips sh-tech"></ul></section>
+      </div>
+      <aside class="sh-side">
+        <figure class="sh-shot">
+          <img alt="" width="960" height="600" />
+          <figcaption></figcaption>
+          <button type="button" class="try" hidden>Run it here <span aria-hidden="true">&#8599;</span></button>
+        </figure>
+        <p class="sh-alt"></p>
+      </aside>
+    </div>
+  </div>
+  <a class="sh-next" href="#">
+    <img alt="" width="1800" height="1200" loading="lazy" />
+    <span class="label">Next world</span>
+    <b class="title"></b>
+  </a>
+</div>
 
 <div id="theatre" class="theatre" hidden role="dialog" aria-modal="true" aria-labelledby="th-title">
   <div class="th-panel">
     <div class="th-bar">
-      <button type="button" class="th-back">&larr; Back to its world</button>
+      <button type="button" class="th-back"><span aria-hidden="true">&larr;</span> Back</button>
       <p class="th-title" id="th-title"></p>
       <a class="th-open" href="#" target="_blank" rel="noopener">Open in its own tab <span aria-hidden="true">&#8599;</span></a>
     </div>
     <div class="th-frame"></div>
   </div>
 </div>
-
-<canvas id="veil" class="veil" aria-hidden="true"></canvas>
-
-<div id="guide" class="guide">
-  <button type="button" class="guide-orb" aria-expanded="false" aria-controls="guide-card"><span class="lantern" aria-hidden="true"></span><span class="label">Ask the observatory</span></button>
-  <div id="guide-card" class="guide-card" hidden role="dialog" aria-labelledby="guide-title">
-    <h2 id="guide-title">Every world here solves a different problem.</h2>
-    <p>What are you trying to build?</p>
-    <form>
-      <label class="sr" for="guide-q">What are you trying to build?</label>
-      <input id="guide-q" type="text" autocomplete="off" maxlength="200" placeholder="Describe it in your own words" />
-      <button type="submit">Find</button>
-    </form>
-    <div class="guide-chips">
-      <button type="button">I want to automate a repetitive workflow.</button>
-      <button type="button">I need an AI-powered product prototype.</button>
-      <button type="button">I have a data problem.</button>
-      <button type="button">Show me your most technically interesting project.</button>
-    </div>
-    <ol class="guide-results" aria-live="polite"></ol>
-    <p class="guide-foot">A search over the real catalogue, running in this page. It does not use an AI model, so it cannot invent a project.</p>
-  </div>
-</div>
-
-<div id="index" class="index-drawer" hidden role="dialog" aria-modal="true" aria-labelledby="index-title">
-  <div class="index-inner">
-    <div class="index-head"><h2 id="index-title">Every world</h2><button type="button" class="index-close" aria-label="Close the index">&times;</button></div>
-    <nav class="index-nav" aria-label="Sections">
-      <a href="#worlds">Worlds</a><a href="#projects">Projects</a><a href="#about">About</a><a href="#contact">Contact</a>
-    </nav>
-    <div class="index-list"></div>
-  </div>
-</div>
-
-<aside id="dev" class="dev" hidden aria-label="Renderer statistics"><pre></pre></aside>
 
 <script type="module" src="../shared/navigator.js"></script>
 </body>
