@@ -4,73 +4,46 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="icon" href="../../../favicon.svg" />
-<meta name="theme-color" content="#080B14" />
+<meta name="theme-color" content="#0c0d10" />
 <title>Raft Lab — engineering tool by Mohamed Sucule</title>
 <meta name="description" content="Five servers agreeing with each other. Cut the network in half, crash the leader, and watch the safety guarantees hold." />
 <meta property="og:title" content="Raft Lab — Portal Atlas" />
 <meta property="og:description" content="Consensus guarantees are taken on faith. Here you can cut the network and check them." />
 <meta property="og:type" content="article" />
-<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/atlas/shots/raft-lab.jpg" />
+<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/atlas/art/raft-lab-1800.webp" />
 <link rel="canonical" href="https://mohamed-sucule.github.io/Projects/atlas/projects/raft-lab/" />
 <link rel="stylesheet" href="../project.css" />
 </head>
 <body>
 <header class="top">
   <a class="home" href="../../">&larr; Portal Atlas</a>
-  <a class="list" href="../../#projects">Every project</a>
+  <a class="list" href="../../#r-engines">The Engine Rooms</a>
 </header>
-<main class="project" style="--glow:#ffd27a">
+<main class="project">
+  <figure class="art">
+    <img src="../../art/raft-lab-900.webp" srcset="../../art/raft-lab-900.webp 900w, ../../art/raft-lab-1800.webp 1800w" sizes="100vw" width="1800" height="1200" alt="Five servers agreeing; the leader a little taller." />
+  </figure>
   <div class="intro">
-    <div class="art" aria-hidden="true"><svg viewBox="0 0 240 230" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <defs>
-    <clipPath id="raft-lab-clip"><path d="M38,118 L38.1,121.2 L59.2,132.5 L79.1,136.2 L95.5,135.6 L111.0,145.8 L128.9,141.9 L148.4,137.9 L161.8,135.5 L180.6,126.4 L198.9,118.7 L202,118 Z"/></clipPath>
-    <linearGradient id="raft-lab-rock" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#4d5062"/><stop offset=".55" stop-color="#262a40"/><stop offset="1" stop-color="#11131d"/>
-    </linearGradient>
-    <linearGradient id="raft-lab-land" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#7e7268"/><stop offset="1" stop-color="#44382e"/>
-    </linearGradient>
-    <radialGradient id="raft-lab-glow">
-      <stop offset="0" stop-color="#ffd27a" stop-opacity=".55"/><stop offset="1" stop-color="#ffd27a" stop-opacity="0"/>
-    </radialGradient>
-  </defs>
-  <g class="glow-under"><ellipse cx="120" cy="155.79451965554142" rx="74" ry="22" fill="url(#raft-lab-glow)" class="a-pulse slow"/></g>
-  
-  <path d="M38,118 L38.1,121.2 L59.2,132.5 L79.1,136.2 L95.5,135.6 L111.0,145.8 L128.9,141.9 L148.4,137.9 L161.8,135.5 L180.6,126.4 L198.9,118.7 L202,118 Z" fill="url(#raft-lab-rock)" />
-  <path d="M62.400000000000006,130.3280818794395 Q120,136.3280818794395 177.6,128.3280818794395" stroke="#191b2a" stroke-width="1.4" fill="none" opacity=".6"/><path d="M78.4,136.27671179332486 Q120,142.27671179332486 161.6,134.27671179332486" stroke="#191b2a" stroke-width="1.4" fill="none" opacity=".6"/><path d="M63.9205810809508,128.7905016602017 q-0.16657075844705105,7.942779067903757 -0.6328421286307275,15.885558135807514" stroke="#483b31" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="65.73918423196301" cy="145.8855581358075" r="1.4" fill="#ffd27a" opacity=".7"/><path d="M95.8651577224955,131.423370170407 q0.41465228190645576,12.695216174703091 0.8502419698052108,25.390432349406183" stroke="#483b31" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="98.67334765009582" cy="155.39043234940618" r="1.4" fill="#ffd27a" opacity=".7"/><path d="M120.85008727479726,128.41174234589562 q0.451219086535275,7.791386219905689 1.8743015807121992,15.582772439811379" stroke="#483b31" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="117.98792993975803" cy="145.58277243981138" r="1.4" fill="#ffd27a" opacity=".7"/><path d="M153.04320784192532,130.39625966968015 q3.5892518213950098,12.067513123620301 -1.633640333544463,24.135026247240603" stroke="#483b31" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="154.0186194414273" cy="154.1350262472406" r="1.4" fill="#ffd27a" opacity=".7"/><path d="M178.81871838960797,131.24370659328997 q-3.893616006243974,10.698784871026874 -1.3961968892253935,21.397569742053747" stroke="#483b31" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="177.28179079201072" cy="151.39756974205375" r="1.4" fill="#ffd27a" opacity=".7"/><g transform="translate(120 160) scale(1 .3)"><g><animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="18s" repeatCount="indefinite"/><polygon points="-5,0 0,-4 6,-1 2,5" fill="url(#raft-lab-rock)" transform="rotate(0) translate(46 0)"/><polygon points="-5,0 0,-4 6,-1 2,5" fill="url(#raft-lab-rock)" transform="rotate(60) translate(46 0)"/><polygon points="-5,0 0,-4 6,-1 2,5" fill="url(#raft-lab-rock)" transform="rotate(120) translate(46 0)"/><polygon points="-5,0 0,-4 6,-1 2,5" fill="url(#raft-lab-rock)" transform="rotate(180) translate(46 0)"/><polygon points="-5,0 0,-4 6,-1 2,5" fill="url(#raft-lab-rock)" transform="rotate(240) translate(46 0)"/><polygon points="-5,0 0,-4 6,-1 2,5" fill="url(#raft-lab-rock)" transform="rotate(300) translate(46 0)"/></g></g><ellipse cx="120" cy="160" rx="46" ry="14" fill="none" stroke="#ffd27a" stroke-width=".8" stroke-dasharray="2 5" opacity=".5"/>
-  <g clip-path="url(#raft-lab-clip)"><rect x="30" y="110" width="180" height="130" fill="#0c2533" opacity=".55"/><line x1="40" y1="112" x2="40" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="50" y1="112" x2="50" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="60" y1="112" x2="60" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="70" y1="112" x2="70" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="80" y1="112" x2="80" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="90" y1="112" x2="90" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="100" y1="112" x2="100" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="110" y1="112" x2="110" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="120" y1="112" x2="120" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="130" y1="112" x2="130" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="140" y1="112" x2="140" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="150" y1="112" x2="150" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="160" y1="112" x2="160" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="170" y1="112" x2="170" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="180" y1="112" x2="180" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="190" y1="112" x2="190" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="200" y1="112" x2="200" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="118" x2="210" y2="118" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="128" x2="210" y2="128" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="138" x2="210" y2="138" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="148" x2="210" y2="148" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="158" x2="210" y2="158" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="168" x2="210" y2="168" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="178" x2="210" y2="178" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="188" x2="210" y2="188" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="198" x2="210" y2="198" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="208" x2="210" y2="208" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="218" x2="210" y2="218" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="228" x2="210" y2="228" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/></g>
-  <ellipse cx="120" cy="118" rx="84" ry="21" fill="#3b3028" />
-  <ellipse cx="120" cy="115" rx="82" ry="19" fill="url(#raft-lab-land)" />
-  <path d="M38,118 L38.1,121.2 L59.2,132.5 L79.1,136.2 L95.5,135.6 L111.0,145.8 L128.9,141.9 L148.4,137.9 L161.8,135.5 L180.6,126.4 L198.9,118.7 L202,118" fill="none" stroke="#9AE6D0" stroke-width="1.1" opacity=".75"/><rect x="36.333167129009965" y="119.42880595177412" width="3.6" height="3.6" fill="none" stroke="#9AE6D0" stroke-width=".9" opacity=".8"/><rect x="93.66721728642781" y="133.76214565455126" width="3.6" height="3.6" fill="none" stroke="#9AE6D0" stroke-width=".9" opacity=".8"/><rect x="146.596574160705" y="136.0994778499195" width="3.6" height="3.6" fill="none" stroke="#9AE6D0" stroke-width=".9" opacity=".8"/><rect x="197.14090369716286" y="116.85103664062918" width="3.6" height="3.6" fill="none" stroke="#9AE6D0" stroke-width=".9" opacity=".8"/><g opacity=".6"><line x1="40" y1="159.79451965554142" x2="200" y2="159.79451965554142" stroke="#9AE6D0" stroke-width="0.8" stroke-linecap="round" /><line x1="40" y1="155.79451965554142" x2="40" y2="163.79451965554142" stroke="#9AE6D0" stroke-width="0.8" stroke-linecap="round" /><line x1="200" y1="155.79451965554142" x2="200" y2="163.79451965554142" stroke="#9AE6D0" stroke-width="0.8" stroke-linecap="round" /></g>
-  <path d="M42,112 Q120,90 198,112" stroke="#E8C7AA" stroke-width="1.2" fill="none" opacity=".35"/>
-  <g class="frag frag-l"><g class="a-bob" style="--d:2.344716045074165s"><polygon points="14,96 24,92 28,100 20,108" fill="url(#raft-lab-rock)" /></g></g>
-  <g class="frag frag-r"><g class="a-bob" style="--d:3.740423559676856s"><polygon points="210,128 222,124 226,134 214,140" fill="url(#raft-lab-rock)" /></g></g><g class="scene">
-      <line x1="120" y1="70" x2="160" y2="86" stroke="#E8C7AA" stroke-width="1" stroke-linecap="round" opacity=".35"/><line x1="120" y1="70" x2="146" y2="114" stroke="#E8C7AA" stroke-width="1" stroke-linecap="round" opacity=".35"/><line x1="120" y1="70" x2="94" y2="114" stroke="#E8C7AA" stroke-width="1" stroke-linecap="round" opacity=".35"/><line x1="120" y1="70" x2="80" y2="86" stroke="#E8C7AA" stroke-width="1" stroke-linecap="round" opacity=".35"/>
-      <g ><polygon points="114,40 122,36 134,36 126,40" fill="#9f947d" /><polygon points="126,70 126,40 134,36 134,66" fill="#534832" /><rect x="114" y="40" width="12" height="30" fill="#7a6a4a" /></g><g ><polygon points="154,66 162,62 174,62 166,66" fill="#887d73" /><polygon points="166,86 166,66 174,62 174,82" fill="#3d3229" /><rect x="154" y="66" width="12" height="20" fill="#5a4a3d" /></g><g ><polygon points="140,94 148,90 160,90 152,94" fill="#887d73" /><polygon points="152,114 152,94 160,90 160,110" fill="#3d3229" /><rect x="140" y="94" width="12" height="20" fill="#5a4a3d" /></g><g ><polygon points="88,94 96,90 108,90 100,94" fill="#887d73" /><polygon points="100,114 100,94 108,90 108,110" fill="#3d3229" /><rect x="88" y="94" width="12" height="20" fill="#5a4a3d" /></g><g ><polygon points="74,66 82,62 94,62 86,66" fill="#887d73" /><polygon points="86,86 86,66 94,62 94,82" fill="#3d3229" /><rect x="74" y="66" width="12" height="20" fill="#5a4a3d" /></g>
-      <polygon points="112,36 116,30 120,35 124,30 128,36 128,40 112,40" fill="#ffd27a" />
-      <g><animateMotion path="M120,64 L160,80" dur="1.6s" begin="0s" repeatCount="indefinite" rotate="0"/><circle cx="0" cy="0" r="2" fill="#ffd27a" /></g><g><animateMotion path="M120,64 L146,108" dur="1.6s" begin="0.1s" repeatCount="indefinite" rotate="0"/><circle cx="0" cy="0" r="2" fill="#ffd27a" /></g><g><animateMotion path="M120,64 L94,108" dur="1.6s" begin="0.2s" repeatCount="indefinite" rotate="0"/><circle cx="0" cy="0" r="2" fill="#ffd27a" /></g><g><animateMotion path="M120,64 L80,80" dur="1.6s" begin="0.30000000000000004s" repeatCount="indefinite" rotate="0"/><circle cx="0" cy="0" r="2" fill="#ffd27a" /></g></g></svg></div>
-    <div>
-      <p class="kicker">engineering tool · about 7 min &middot; The Engine Rooms</p>
-      <h1>Raft Lab</h1>
-      <p class="blurb">Five servers agreeing with each other. Cut the network in half, crash the leader, and watch the safety guarantees hold.</p>
-      <div class="actions">
-        <a class="btn primary" href="../../../projects/raft-lab/index.html">Launch Raft Lab &rarr;</a>
+    <p class="kicker">engineering tool · about 7 min &middot; The Engine Rooms</p>
+    <h1>Raft Lab</h1>
+    <p class="blurb">Five servers agreeing with each other. Cut the network in half, crash the leader, and watch the safety guarantees hold.</p>
+    <div class="actions">
+        <a class="btn primary" href="../../../projects/raft-lab/index.html">Launch Raft Lab <span aria-hidden="true">&#8599;</span></a>
         <a class="btn" href="https://github.com/Mohamed-Sucule/Projects/blob/main/projects/raft-lab/README.md">Engineering case study</a>
         <a class="btn" href="https://github.com/Mohamed-Sucule/Projects/tree/main/projects/raft-lab">Source</a>
-        <a class="btn" href="../../#world/raft-lab">See its world in the atlas</a>
-      </div>
     </div>
   </div>
-  <figure class="shot"><img src="../../shots/raft-lab.jpg" alt="Raft Lab as it first opens" width="960" height="600" loading="lazy" /><figcaption>Raft Lab, as it opens.</figcaption></figure>
-  <section><h2>The problem</h2><p>Consensus guarantees are taken on faith. Here you can cut the network and check them.</p></section>
-  <section><h2>What it does</h2><ul><li>Five servers running real leader election and log replication</li><li>Cut the network in half or crash the leader</li><li>An invariant checker that keeps score</li></ul></section>
-  <section><h2>The most interesting decision</h2><div><p class="dtitle">Virtual time and a seeded clock</p><p>A run is reproducible: the same seed and interventions give the same history, which is what makes the invariant checker meaningful rather than decorative.</p></div></section>
-  <section><h2>Built with</h2><ul class="chips"><li>Raft leader election</li><li>Log replication</li><li>Deterministic virtual clock</li></ul></section>
-  <section><h2>Evidence</h2><p>Crash the leader, partition the cluster, and the safety guarantees still hold. <a href="https://github.com/Mohamed-Sucule/Projects/blob/main/tests/raft.test.mjs">Read its tests</a></p></section>
-  <section><h2>Its world</h2><p>Five pillars in a ring, one of them crowned, all of them listening for a heartbeat.</p></section>
+  <div class="glance">
+    <section><h2>The problem</h2><p>Consensus guarantees are taken on faith. Here you can cut the network and check them.</p></section>
+    <section><h2>Evidence</h2><p>Crash the leader, partition the cluster, and the safety guarantees still hold. <a href="https://github.com/Mohamed-Sucule/Projects/blob/main/tests/raft.test.mjs">Read its tests</a></p></section>
+  </div>
+  <figure class="shot"><img src="../../shots/raft-lab-960.webp" srcset="../../shots/raft-lab-960.webp 960w, ../../shots/raft-lab-1920.webp 1920w" sizes="(min-width: 1000px) 920px, 100vw" width="960" height="600" alt="Raft Lab as it first opens" loading="lazy" /><figcaption>Raft Lab, as it opens.</figcaption></figure>
+  <section class="row"><h2>What it does</h2><ul><li>Five servers running real leader election and log replication</li><li>Cut the network in half or crash the leader</li><li>An invariant checker that keeps score</li></ul></section>
+  <section class="row"><h2>The most interesting decision</h2><div><p class="dtitle">Virtual time and a seeded clock</p><p>A run is reproducible: the same seed and interventions give the same history, which is what makes the invariant checker meaningful rather than decorative.</p></div></section>
+  <section class="row"><h2>Built with</h2><ul class="chips"><li>Raft leader election</li><li>Log replication</li><li>Deterministic virtual clock</li></ul></section>
   <nav class="pn" aria-label="Other projects">
-    <a href="../query-planner/">&larr; Query Planner</a>
-    <a href="../trace-explorer/">Trace Explorer &rarr;</a>
+    <a href="../query-planner/"><span>Previous</span>Query Planner</a>
+    <a href="../trace-explorer/"><span>Next</span>Trace Explorer</a>
   </nav>
 </main>
 <script type="module" src="../../../shared/navigator.js"></script>

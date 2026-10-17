@@ -4,77 +4,46 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="icon" href="../../../favicon.svg" />
-<meta name="theme-color" content="#080B14" />
+<meta name="theme-color" content="#0c0d10" />
 <title>Tokens — machine learning by Mohamed Sucule</title>
 <meta name="description" content="A byte-pair tokeniser that trains itself in front of you, and the three things it explains about why models behave the way they do." />
 <meta property="og:title" content="Tokens — Portal Atlas" />
 <meta property="og:description" content="Models miscount letters and charge more for Japanese, and the reason, tokenisation, is invisible." />
 <meta property="og:type" content="article" />
-<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/atlas/shots/tokens.jpg" />
+<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/atlas/art/tokens-1800.webp" />
 <link rel="canonical" href="https://mohamed-sucule.github.io/Projects/atlas/projects/tokens/" />
 <link rel="stylesheet" href="../project.css" />
 </head>
 <body>
 <header class="top">
   <a class="home" href="../../">&larr; Portal Atlas</a>
-  <a class="list" href="../../#projects">Every project</a>
+  <a class="list" href="../../#r-models">The Observatory Reach</a>
 </header>
-<main class="project" style="--glow:#e2b8ff">
+<main class="project">
+  <figure class="art">
+    <img src="../../art/tokens-900.webp" srcset="../../art/tokens-900.webp 900w, ../../art/tokens-1800.webp 1800w" sizes="100vw" width="1800" height="1200" alt="A word split along the seams a tokeniser sees." />
+  </figure>
   <div class="intro">
-    <div class="art" aria-hidden="true"><svg viewBox="0 0 240 230" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <defs>
-    <clipPath id="tokens-clip"><path d="M38,118 L40.0,118.0 L58.0,150.0 L72.0,142.0 L86.0,176.0 L104.0,166.0 L118.0,214.0 L134.0,170.0 L150.0,182.0 L166.0,146.0 L184.0,152.0 L200.0,118.0 L202,118 Z"/></clipPath>
-    <linearGradient id="tokens-rock" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#4e506c"/><stop offset=".55" stop-color="#272a4c"/><stop offset="1" stop-color="#121322"/>
-    </linearGradient>
-    <linearGradient id="tokens-land" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#7e7296"/><stop offset="1" stop-color="#44385a"/>
-    </linearGradient>
-    <radialGradient id="tokens-glow">
-      <stop offset="0" stop-color="#e2b8ff" stop-opacity=".55"/><stop offset="1" stop-color="#e2b8ff" stop-opacity="0"/>
-    </radialGradient>
-  </defs>
-  <g class="glow-under"><ellipse cx="120" cy="224" rx="74" ry="22" fill="url(#tokens-glow)" class="a-pulse slow"/></g>
-  <path d="M14,124 A106,26 0 0 1 226,124" fill="none" stroke="#e2b8ff" stroke-width=".9" opacity=".35"/>
-  <path d="M38,118 L40.0,118.0 L58.0,150.0 L72.0,142.0 L86.0,176.0 L104.0,166.0 L118.0,214.0 L134.0,170.0 L150.0,182.0 L166.0,146.0 L184.0,152.0 L200.0,118.0 L202,118 Z" fill="url(#tokens-rock)" />
-  <path d="M62.400000000000006,154.2 Q120,160.2 177.6,152.2" stroke="#191b31" stroke-width="1.4" fill="none" opacity=".6"/><path d="M78.4,177.2 Q120,183.2 161.6,175.2" stroke="#191b31" stroke-width="1.4" fill="none" opacity=".6"/><path d="M54.31724243424833,126.00693050120026 q-4.791070017963648,18.274764036759734 -0.06067421520128846,36.54952807351947" stroke="#483b60" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="53.67479569092393" cy="166.54952807351947" r="1.4" fill="#e2b8ff" opacity=".7"/><path d="M91.04820920526981,127.92377665406093 q-1.5368767362087965,18.958889639237896 -2.074800592381507,37.91777927847579" stroke="#483b60" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="92.95716625079513" cy="167.9177792784758" r="1.4" fill="#e2b8ff" opacity=".7"/><path d="M121.25415331218392,131.34494081838056 q3.8281608559191227,13.76315523777157 -2.7645972361788154,27.52631047554314" stroke="#483b60" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="120.33896860526875" cy="157.52631047554314" r="1.4" fill="#e2b8ff" opacity=".7"/><path d="M155.4461258528754,126.97956948867068 q0.4348809225484729,12.824884053319693 -2.939731603022665,25.649768106639385" stroke="#483b60" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="155.90147631336004" cy="155.64976810663939" r="1.4" fill="#e2b8ff" opacity=".7"/><path d="M184.87467332649976,126.4123029448092 q-1.1653021560050547,8.177294579101726 0.3776819072663784,16.354589158203453" stroke="#483b60" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="186.43391559412703" cy="146.35458915820345" r="1.4" fill="#e2b8ff" opacity=".7"/><polygon points="76,170 84,170 80,192" fill="#e2b8ff" opacity=".55" class="a-pulse" style="--d:1.6s"/><polygon points="114,210 122,210 118,240" fill="#e2b8ff" opacity=".55" class="a-pulse" style="--d:2.36s"/><polygon points="146,184 154,184 150,202" fill="#e2b8ff" opacity=".55" class="a-pulse" style="--d:3s"/><path d="M72,142 L104,166 L118,214" stroke="#e2b8ff" stroke-width=".8" fill="none" opacity=".45"/>
-  <g clip-path="url(#tokens-clip)"><rect x="30" y="110" width="180" height="130" fill="#1b2350" opacity=".35"/><line x1="70" y1="128" x2="96" y2="140" stroke="#e2b8ff" stroke-width="1" stroke-linecap="round" opacity=".55"/><line x1="96" y1="140" x2="118" y2="158" stroke="#e2b8ff" stroke-width="1" stroke-linecap="round" opacity=".55"/><line x1="118" y1="158" x2="142" y2="138" stroke="#e2b8ff" stroke-width="1" stroke-linecap="round" opacity=".55"/><line x1="142" y1="138" x2="166" y2="128" stroke="#e2b8ff" stroke-width="1" stroke-linecap="round" opacity=".55"/><line x1="166" y1="128" x2="124" y2="186" stroke="#e2b8ff" stroke-width="1" stroke-linecap="round" opacity=".55"/><line x1="124" y1="186" x2="104" y2="170" stroke="#e2b8ff" stroke-width="1" stroke-linecap="round" opacity=".55"/><circle cx="70" cy="128" r="1.8" fill="#e2b8ff" class="a-pulse" style="--d:0s"/><circle cx="96" cy="140" r="1.8" fill="#e2b8ff" class="a-pulse" style="--d:0.4s"/><circle cx="118" cy="158" r="1.8" fill="#e2b8ff" class="a-pulse" style="--d:0.8s"/><circle cx="142" cy="138" r="1.8" fill="#e2b8ff" class="a-pulse" style="--d:1.2000000000000002s"/><circle cx="166" cy="128" r="1.8" fill="#e2b8ff" class="a-pulse" style="--d:1.6s"/><circle cx="124" cy="186" r="1.8" fill="#e2b8ff" class="a-pulse" style="--d:2s"/><circle cx="104" cy="170" r="1.8" fill="#e2b8ff" class="a-pulse" style="--d:2.4000000000000004s"/></g>
-  <ellipse cx="120" cy="118" rx="84" ry="21" fill="#3b304e" />
-  <ellipse cx="120" cy="115" rx="82" ry="19" fill="url(#tokens-land)" />
-  <path d="M226,124 A106,26 0 0 1 14,124" fill="none" stroke="#e2b8ff" stroke-width="1" opacity=".55"/><circle r="2.6" fill="#E8C7AA"><animateMotion path="M14,124 A106,26 0 1 0 226,124 A106,26 0 1 0 14,124" dur="12.844652033410966s" begin="0s" repeatCount="indefinite" rotate="0"/></circle>
-  <path d="M42,112 Q120,90 198,112" stroke="#E8C7AA" stroke-width="1.2" fill="none" opacity=".35"/>
-  <g class="frag frag-l"><g class="a-bob" style="--d:1.9175505700986832s"><polygon points="14,96 24,92 28,100 20,108" fill="url(#tokens-rock)" /></g></g>
-  <g class="frag frag-r"><g class="a-bob" style="--d:1.9190828616265208s"><polygon points="210,128 222,124 226,134 214,140" fill="url(#tokens-rock)" /></g></g><g class="scene"><g class="a-bob" style="--d:0s"><rect x="62" y="74" width="25" height="18" fill="#73658c" rx="4"/><rect x="62" y="74" width="25" height="3.5" fill="#a49bb5" rx="2"/>
-        <text x="66.5" y="87.5" font-family="JetBrains Mono, ui-monospace, monospace" font-size="11" fill="#e2b8ff">st</text></g><g class="a-bob" style="--d:0.35s"><rect x="90" y="62" width="25" height="18" fill="#73658c" rx="4"/><rect x="90" y="62" width="25" height="3.5" fill="#a49bb5" rx="2"/>
-        <text x="94.5" y="75.5" font-family="JetBrains Mono, ui-monospace, monospace" font-size="11" fill="#e2b8ff">ra</text></g><g class="a-bob" style="--d:0.7s"><rect x="118" y="74" width="17" height="18" fill="#73658c" rx="4"/><rect x="118" y="74" width="17" height="3.5" fill="#a49bb5" rx="2"/>
-        <text x="122.5" y="87.5" font-family="JetBrains Mono, ui-monospace, monospace" font-size="11" fill="#e2b8ff">w</text></g><g class="a-bob" style="--d:1.0499999999999998s"><rect x="138" y="62" width="33" height="18" fill="#73658c" rx="4"/><rect x="138" y="62" width="33" height="3.5" fill="#a49bb5" rx="2"/>
-        <text x="142.5" y="75.5" font-family="JetBrains Mono, ui-monospace, monospace" font-size="11" fill="#e2b8ff">ber</text></g><g class="a-bob" style="--d:1.4s"><rect x="174" y="74" width="17" height="18" fill="#73658c" rx="4"/><rect x="174" y="74" width="17" height="3.5" fill="#a49bb5" rx="2"/>
-        <text x="178.5" y="87.5" font-family="JetBrains Mono, ui-monospace, monospace" font-size="11" fill="#e2b8ff">r</text></g><g class="a-bob" style="--d:1.75s"><rect x="194" y="62" width="17" height="18" fill="#73658c" rx="4"/><rect x="194" y="62" width="17" height="3.5" fill="#a49bb5" rx="2"/>
-        <text x="198.5" y="75.5" font-family="JetBrains Mono, ui-monospace, monospace" font-size="11" fill="#e2b8ff">y</text></g>
-      <polygon points="92,118 98,96 104,118" fill="#b593cc" opacity=".75"/><polygon points="128,120 136,100 142,120" fill="#e2b8ff" opacity=".6"/>
-      <polygon points="150,116 154,104 158,116" fill="#E8C7AA" opacity=".6"/></g></svg></div>
-    <div>
-      <p class="kicker">machine learning · about 4 min &middot; The Observatory Reach</p>
-      <h1>Tokens</h1>
-      <p class="blurb">A byte-pair tokeniser that trains itself in front of you, and the three things it explains about why models behave the way they do.</p>
-      <div class="actions">
-        <a class="btn primary" href="../../../apps/tokens/index.html">Launch Tokens &rarr;</a>
+    <p class="kicker">machine learning · about 4 min &middot; The Observatory Reach</p>
+    <h1>Tokens</h1>
+    <p class="blurb">A byte-pair tokeniser that trains itself in front of you, and the three things it explains about why models behave the way they do.</p>
+    <div class="actions">
+        <a class="btn primary" href="../../../apps/tokens/index.html">Launch Tokens <span aria-hidden="true">&#8599;</span></a>
         <a class="btn" href="https://github.com/Mohamed-Sucule/Projects/blob/main/apps/tokens/README.md">Engineering case study</a>
         <a class="btn" href="https://github.com/Mohamed-Sucule/Projects/tree/main/apps/tokens">Source</a>
-        <a class="btn" href="../../#world/tokens">See its world in the atlas</a>
-      </div>
     </div>
   </div>
-  <figure class="shot"><img src="../../shots/tokens.jpg" alt="Tokens as it first opens" width="960" height="600" loading="lazy" /><figcaption>Tokens, as it opens.</figcaption></figure>
-  <section><h2>The problem</h2><p>Models miscount letters and charge more for Japanese, and the reason, tokenisation, is invisible.</p></section>
-  <section><h2>What it does</h2><ul><li>Trains a byte-pair tokeniser in front of you</li><li>Shows why a model cannot count the letters in a word</li><li>Shows why the same sentence costs three times as much in Japanese</li></ul></section>
-  <section><h2>The most interesting decision</h2><div><p class="dtitle">Build the tokeniser rather than call one</p><p>The interesting part is the order of the merges, not the finished vocabulary, and a tokeniser you trained is one you can interrogate.</p></div></section>
-  <section><h2>Built with</h2><ul class="chips"><li>Byte-level BPE, 240 lines</li><li>Trains in the page</li><li>GPT-2 vs GPT-4 pre-tokenisation</li></ul></section>
-  <section><h2>Evidence</h2><p>Trains on 64,000 characters in under half a second, with 40 tests. <a href="https://github.com/Mohamed-Sucule/Projects/blob/main/tests/tokens.test.mjs">Read its tests</a></p></section>
-  <section><h2>Its world</h2><p>A crystal word that has split along the seams a tokeniser sees.</p></section>
+  <div class="glance">
+    <section><h2>The problem</h2><p>Models miscount letters and charge more for Japanese, and the reason, tokenisation, is invisible.</p></section>
+    <section><h2>Evidence</h2><p>Trains on 64,000 characters in under half a second, with 40 tests. <a href="https://github.com/Mohamed-Sucule/Projects/blob/main/tests/tokens.test.mjs">Read its tests</a></p></section>
+  </div>
+  <figure class="shot"><img src="../../shots/tokens-960.webp" srcset="../../shots/tokens-960.webp 960w, ../../shots/tokens-1920.webp 1920w" sizes="(min-width: 1000px) 920px, 100vw" width="960" height="600" alt="Tokens as it first opens" loading="lazy" /><figcaption>Tokens, as it opens.</figcaption></figure>
+  <section class="row"><h2>What it does</h2><ul><li>Trains a byte-pair tokeniser in front of you</li><li>Shows why a model cannot count the letters in a word</li><li>Shows why the same sentence costs three times as much in Japanese</li></ul></section>
+  <section class="row"><h2>The most interesting decision</h2><div><p class="dtitle">Build the tokeniser rather than call one</p><p>The interesting part is the order of the merges, not the finished vocabulary, and a tokeniser you trained is one you can interrogate.</p></div></section>
+  <section class="row"><h2>Built with</h2><ul class="chips"><li>Byte-level BPE, 240 lines</li><li>Trains in the page</li><li>GPT-2 vs GPT-4 pre-tokenisation</li></ul></section>
   <nav class="pn" aria-label="Other projects">
-    <a href="../attention/">&larr; Attention</a>
-    <a href="../evals/">Evals &rarr;</a>
+    <a href="../attention/"><span>Previous</span>Attention</a>
+    <a href="../evals/"><span>Next</span>Evals</a>
   </nav>
 </main>
 <script type="module" src="../../../shared/navigator.js"></script>

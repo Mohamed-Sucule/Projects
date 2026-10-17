@@ -4,74 +4,46 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="icon" href="../../../favicon.svg" />
-<meta name="theme-color" content="#080B14" />
+<meta name="theme-color" content="#0c0d10" />
 <title>Query Planner — engineering tool by Mohamed Sucule</title>
 <meta name="description" content="A database deciding how to answer a question, with its reasoning attached. Drag a table’s size and watch it change its mind." />
 <meta property="og:title" content="Query Planner — Portal Atlas" />
 <meta property="og:description" content="Why a database chose a slow plan hides behind EXPLAIN output nobody reads." />
 <meta property="og:type" content="article" />
-<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/atlas/shots/query-planner.jpg" />
+<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/atlas/art/query-planner-1800.webp" />
 <link rel="canonical" href="https://mohamed-sucule.github.io/Projects/atlas/projects/query-planner/" />
 <link rel="stylesheet" href="../project.css" />
 </head>
 <body>
 <header class="top">
   <a class="home" href="../../">&larr; Portal Atlas</a>
-  <a class="list" href="../../#projects">Every project</a>
+  <a class="list" href="../../#r-engines">The Engine Rooms</a>
 </header>
-<main class="project" style="--glow:#8ad1ff">
+<main class="project">
+  <figure class="art">
+    <img src="../../art/query-planner-900.webp" srcset="../../art/query-planner-900.webp 900w, ../../art/query-planner-1800.webp 1800w" sizes="100vw" width="1800" height="1200" alt="A plan: the question at the top, the tables at the bottom." />
+  </figure>
   <div class="intro">
-    <div class="art" aria-hidden="true"><svg viewBox="0 0 240 230" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <defs>
-    <clipPath id="query-planner-clip"><path d="M38,118 L46.0,118.0 L64.0,140.0 L84.0,150.0 L100.0,182.0 L112.0,226.0 L124.0,190.0 L140.0,160.0 L160.0,146.0 L182.0,132.0 L194.0,118.0 L202,118 Z"/></clipPath>
-    <linearGradient id="query-planner-rock" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#49556b"/><stop offset=".55" stop-color="#21304a"/><stop offset="1" stop-color="#0f1621"/>
-    </linearGradient>
-    <linearGradient id="query-planner-land" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#687e8c"/><stop offset="1" stop-color="#2e4450"/>
-    </linearGradient>
-    <radialGradient id="query-planner-glow">
-      <stop offset="0" stop-color="#8ad1ff" stop-opacity=".55"/><stop offset="1" stop-color="#8ad1ff" stop-opacity="0"/>
-    </radialGradient>
-  </defs>
-  <g class="glow-under"><ellipse cx="120" cy="236" rx="74" ry="22" fill="url(#query-planner-glow)" class="a-pulse slow"/></g>
-  
-  <path d="M38,118 L46.0,118.0 L64.0,140.0 L84.0,150.0 L100.0,182.0 L112.0,226.0 L124.0,190.0 L140.0,160.0 L160.0,146.0 L182.0,132.0 L194.0,118.0 L202,118 Z" fill="url(#query-planner-rock)" />
-  <path d="M62.400000000000006,158.4 Q120,164.4 177.6,156.4" stroke="#151f30" stroke-width="1.4" fill="none" opacity=".6"/><path d="M78.4,184.4 Q120,190.4 161.6,182.4" stroke="#151f30" stroke-width="1.4" fill="none" opacity=".6"/><path d="M55.03012938145548,130.8267172537744 q-4.775262889452279,7.148355676792562 2.412776147481054,14.296711353585124" stroke="#314856" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="53.317355192732066" cy="144.29671135358512" r="1.4" fill="#8ad1ff" opacity=".7"/><path d="M93.03156117908657,127.01240200409666 q-2.630666824989021,16.042207897407934 -2.723184233531356,32.08441579481587" stroke="#314856" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="94.93422452313825" cy="162.08441579481587" r="1.4" fill="#8ad1ff" opacity=".7"/><path d="M119.55354179721326,131.64037516806275 q-4.229725326877087,10.260483240475878 -2.5381093360483646,20.520966480951756" stroke="#314856" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="120.34228020021692" cy="150.52096648095176" r="1.4" fill="#8ad1ff" opacity=".7"/><path d="M154.84416695684195,131.66009291494265 q3.3382114837877452,11.861004374921322 0.3605688354000449,23.722008749842644" stroke="#314856" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="155.09861964080483" cy="153.72200874984264" r="1.4" fill="#8ad1ff" opacity=".7"/><path d="M180.23220711294562,126.1678191027604 q-2.3154013347811997,10.674770588753745 -0.356786095071584,21.34954117750749" stroke="#314856" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="178.3007152453065" cy="151.3495411775075" r="1.4" fill="#8ad1ff" opacity=".7"/>
-  <g clip-path="url(#query-planner-clip)"><rect x="30" y="110" width="180" height="130" fill="#0c2533" opacity=".55"/><line x1="40" y1="112" x2="40" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="50" y1="112" x2="50" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="60" y1="112" x2="60" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="70" y1="112" x2="70" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="80" y1="112" x2="80" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="90" y1="112" x2="90" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="100" y1="112" x2="100" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="110" y1="112" x2="110" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="120" y1="112" x2="120" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="130" y1="112" x2="130" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="140" y1="112" x2="140" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="150" y1="112" x2="150" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="160" y1="112" x2="160" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="170" y1="112" x2="170" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="180" y1="112" x2="180" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="190" y1="112" x2="190" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="200" y1="112" x2="200" y2="230" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="118" x2="210" y2="118" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="128" x2="210" y2="128" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="138" x2="210" y2="138" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="148" x2="210" y2="148" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="158" x2="210" y2="158" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="168" x2="210" y2="168" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="178" x2="210" y2="178" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="188" x2="210" y2="188" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="198" x2="210" y2="198" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="208" x2="210" y2="208" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="218" x2="210" y2="218" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/><line x1="30" y1="228" x2="210" y2="228" stroke="#9AE6D0" stroke-width="0.5" stroke-linecap="round" opacity=".22"/></g>
-  <ellipse cx="120" cy="118" rx="84" ry="21" fill="#283b46" />
-  <ellipse cx="120" cy="115" rx="82" ry="19" fill="url(#query-planner-land)" />
-  <path d="M38,118 L46.0,118.0 L64.0,140.0 L84.0,150.0 L100.0,182.0 L112.0,226.0 L124.0,190.0 L140.0,160.0 L160.0,146.0 L182.0,132.0 L194.0,118.0 L202,118" fill="none" stroke="#9AE6D0" stroke-width="1.1" opacity=".75"/><rect x="44.2" y="116.2" width="3.6" height="3.6" fill="none" stroke="#9AE6D0" stroke-width=".9" opacity=".8"/><rect x="98.2" y="180.2" width="3.6" height="3.6" fill="none" stroke="#9AE6D0" stroke-width=".9" opacity=".8"/><rect x="138.2" y="158.2" width="3.6" height="3.6" fill="none" stroke="#9AE6D0" stroke-width=".9" opacity=".8"/><rect x="192.2" y="116.2" width="3.6" height="3.6" fill="none" stroke="#9AE6D0" stroke-width=".9" opacity=".8"/><g opacity=".6"><line x1="40" y1="240" x2="200" y2="240" stroke="#9AE6D0" stroke-width="0.8" stroke-linecap="round" /><line x1="40" y1="236" x2="40" y2="244" stroke="#9AE6D0" stroke-width="0.8" stroke-linecap="round" /><line x1="200" y1="236" x2="200" y2="244" stroke="#9AE6D0" stroke-width="0.8" stroke-linecap="round" /></g>
-  <path d="M42,112 Q120,90 198,112" stroke="#E8C7AA" stroke-width="1.2" fill="none" opacity=".35"/>
-  <g class="frag frag-l"><g class="a-bob" style="--d:2.013444723794237s"><polygon points="14,96 24,92 28,100 20,108" fill="url(#query-planner-rock)" /></g></g>
-  <g class="frag frag-r"><g class="a-bob" style="--d:2.1159410749096423s"><polygon points="210,128 222,124 226,134 214,140" fill="url(#query-planner-rock)" /></g></g><g class="scene">
-      <line x1="120" y1="40" x2="92" y2="66" stroke="#E8C7AA" stroke-width="1.2" stroke-linecap="round" opacity=".7"/><line x1="120" y1="40" x2="148" y2="66" stroke="#E8C7AA" stroke-width="1.2" stroke-linecap="round" opacity=".7"/>
-      <line x1="92" y1="66" x2="78" y2="96" stroke="#E8C7AA" stroke-width="1.2" stroke-linecap="round" opacity=".7"/><line x1="92" y1="66" x2="106" y2="96" stroke="#E8C7AA" stroke-width="1.2" stroke-linecap="round" opacity=".7"/><line x1="148" y1="66" x2="160" y2="96" stroke="#E8C7AA" stroke-width="1.2" stroke-linecap="round" opacity=".7"/>
-      <rect x="103" y="33" width="34" height="14" fill="#8ad1ff" rx="4"/><rect x="78" y="59" width="28" height="14" fill="#8b9ca6" rx="4"/><rect x="134" y="59" width="28" height="14" fill="#8b9ca6" rx="4"/>
-      <ellipse cx="78" cy="100" rx="9" ry="3" fill="#9eadb5" /><rect x="69" y="100" width="18" height="12" fill="#3d5a6b" /><ellipse cx="78" cy="112" rx="9" ry="3" fill="#314856" /><ellipse cx="106" cy="104" rx="9" ry="3" fill="#9eadb5" /><rect x="97" y="104" width="18" height="12" fill="#3d5a6b" /><ellipse cx="106" cy="116" rx="9" ry="3" fill="#314856" /><ellipse cx="160" cy="100" rx="9" ry="3" fill="#9eadb5" /><rect x="151" y="100" width="18" height="12" fill="#3d5a6b" /><ellipse cx="160" cy="112" rx="9" ry="3" fill="#314856" />
-      <circle cx="120" cy="40" r="18" fill="#8ad1ff" style="--o:.2" class="a-pulse"/></g></svg></div>
-    <div>
-      <p class="kicker">engineering tool · about 6 min &middot; The Engine Rooms</p>
-      <h1>Query Planner</h1>
-      <p class="blurb">A database deciding how to answer a question, with its reasoning attached. Drag a table’s size and watch it change its mind.</p>
-      <div class="actions">
-        <a class="btn primary" href="../../../projects/query-planner/index.html">Launch Query Planner &rarr;</a>
+    <p class="kicker">engineering tool · about 6 min &middot; The Engine Rooms</p>
+    <h1>Query Planner</h1>
+    <p class="blurb">A database deciding how to answer a question, with its reasoning attached. Drag a table’s size and watch it change its mind.</p>
+    <div class="actions">
+        <a class="btn primary" href="../../../projects/query-planner/index.html">Launch Query Planner <span aria-hidden="true">&#8599;</span></a>
         <a class="btn" href="https://github.com/Mohamed-Sucule/Projects/blob/main/projects/query-planner/README.md">Engineering case study</a>
         <a class="btn" href="https://github.com/Mohamed-Sucule/Projects/tree/main/projects/query-planner">Source</a>
-        <a class="btn" href="../../#world/query-planner">See its world in the atlas</a>
-      </div>
     </div>
   </div>
-  <figure class="shot"><img src="../../shots/query-planner.jpg" alt="Query Planner as it first opens" width="960" height="600" loading="lazy" /><figcaption>Query Planner, as it opens.</figcaption></figure>
-  <section><h2>The problem</h2><p>Why a database chose a slow plan hides behind EXPLAIN output nobody reads.</p></section>
-  <section><h2>What it does</h2><ul><li>A query plan with its reasoning attached</li><li>Drag a table’s size and watch the plan change</li><li>Shows where an index stops being worth it</li></ul></section>
-  <section><h2>The most interesting decision</h2><div><p class="dtitle">The bug that justifies showing the workings</p><p>An early version ignored every filter by looking up aliases in a catalogue filed by table name. The plans still looked plausible; only a test asserting an exact estimate caught it.</p></div></section>
-  <section><h2>Built with</h2><ul class="chips"><li>Cost model</li><li>Join ordering</li><li>Index selection</li><li>Plans with reasons</li></ul></section>
-  <section><h2>Evidence</h2><p>Drag a table’s size and watch the planner change its mind. <a href="https://github.com/Mohamed-Sucule/Projects/blob/main/tests/planner.test.mjs">Read its tests</a></p></section>
-  <section><h2>Its world</h2><p>A tree of operators growing down into its tables.</p></section>
+  <div class="glance">
+    <section><h2>The problem</h2><p>Why a database chose a slow plan hides behind EXPLAIN output nobody reads.</p></section>
+    <section><h2>Evidence</h2><p>Drag a table’s size and watch the planner change its mind. <a href="https://github.com/Mohamed-Sucule/Projects/blob/main/tests/planner.test.mjs">Read its tests</a></p></section>
+  </div>
+  <figure class="shot"><img src="../../shots/query-planner-960.webp" srcset="../../shots/query-planner-960.webp 960w, ../../shots/query-planner-1920.webp 1920w" sizes="(min-width: 1000px) 920px, 100vw" width="960" height="600" alt="Query Planner as it first opens" loading="lazy" /><figcaption>Query Planner, as it opens.</figcaption></figure>
+  <section class="row"><h2>What it does</h2><ul><li>A query plan with its reasoning attached</li><li>Drag a table’s size and watch the plan change</li><li>Shows where an index stops being worth it</li></ul></section>
+  <section class="row"><h2>The most interesting decision</h2><div><p class="dtitle">The bug that justifies showing the workings</p><p>An early version ignored every filter by looking up aliases in a catalogue filed by table name. The plans still looked plausible; only a test asserting an exact estimate caught it.</p></div></section>
+  <section class="row"><h2>Built with</h2><ul class="chips"><li>Cost model</li><li>Join ordering</li><li>Index selection</li><li>Plans with reasons</li></ul></section>
   <nav class="pn" aria-label="Other projects">
-    <a href="../regex-lab/">&larr; Regex Lab</a>
-    <a href="../raft-lab/">Raft Lab &rarr;</a>
+    <a href="../regex-lab/"><span>Previous</span>Regex Lab</a>
+    <a href="../raft-lab/"><span>Next</span>Raft Lab</a>
   </nav>
 </main>
 <script type="module" src="../../../shared/navigator.js"></script>

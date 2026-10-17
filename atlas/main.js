@@ -1,506 +1,332 @@
-/* atlas/main.js — the Portal Atlas, wired together.
+/* atlas/main.js — the Portal Atlas, once script arrives.
 
-   The page is readable before any of this runs: the headline, the full list of
-   projects, the case study and the way to get in touch are in the HTML, and
-   every project has its own static page. This module adds the world on top:
+   The page works without any of this: the gallery is plain HTML (build.mjs),
+   every tile is a link to the project's own page, and the pictures are files.
+   On top of that, this adds:
 
-     sky.js    the threshold, the portal and the world beyond it (WebGL)
-     hero.js   the same idea in 2D canvas, for browsers without WebGL
-     stage.js  the flight past the islands, and stepping into one
-     fx.js     each world's environment, and the particle transitions
-
-   and, here, the things that tie them to the page: the opening, scroll as the
-   journey through the portal, the cursor, the hidden discoveries, the guide,
-   the index and the renderer's own numbers. */
+     the sheet     a project opened in place, at #world/<id>: the problem, the
+                   evidence, how it was built, and the next world after it
+     the theatre   "Run it here" opens the real app full screen, at
+                   #world/<id>/live, so Back and Esc both step out of it
+     the rest      tiles arriving as they scroll into view, the corner turning
+                   solid past the portal, and Search opening the site's finder */
 
 import { KINDS } from '../shared/atlas.js';
-import { buildIndex, search, explain, detectIntent } from '../shared/search.js';
-import { ISLANDS, REGIONS, SEARCHABLE, islandById } from './worlds.js';
-import { islandSVG } from './islands.js';
-import { createSky, sceneLayout, dialRing, toScreen, moonPhase, phaseName } from './sky.js';
-import { createFx } from './fx.js';
-import { createStage, kindLabel } from './stage.js';
+import { ISLANDS, REGIONS, TALLY_URL, islandById } from './worlds.js';
 
-const $ = (s, r = document) => r.querySelector(s);
+const $ = (s, el = document) => el.querySelector(s);
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const coarse = matchMedia('(hover: none)').matches;
-const lowPower = coarse || (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4;
-const root = document.documentElement;
-
-/* ── the renderers ──────────────────────────────────────────────────── */
-
-const skyCanvas = $('#sky');
-let sky = null;
-try { sky = createSky(skyCanvas, { reduced, lowPower }); } catch (e) { console.warn('sky failed', e); sky = null; }
-/* Without WebGL the same scene is drawn in 2D, behind the same calls, so
-   everything below works the same either way. */
-if (!sky) {
-  document.body.classList.add('no-webgl');
-  const { startWorld } = await import('./hero.js');
-  sky = startWorld(skyCanvas, { reduced });
-}
-const fx = createFx($('#near'), $('#veil'), { reduced });
-const stage = createStage({ sky, fx, reduced, coarse, onFocusChange: (isle) => { $('#guide').hidden = !!isle; document.body.classList.toggle('in-world', !!isle); } });
-
-/* ── the opening ────────────────────────────────────────────────────── */
-/* Atmosphere first, then the far structures out of the fog, then the portal
-   lights ring by ring, then the headline. Short, skippable, and on a return
-   visit shorter still. Nothing waits for it: the page is usable throughout. */
-
-let seen = false;
-try { seen = localStorage.getItem('atlas-visited') === '1'; localStorage.setItem('atlas-visited', '1'); } catch { /* private mode */ }
-const INTRO = reduced ? 0 : seen ? 1000 : 2800;
-const skipBtn = $('.skip-intro');
-let introStart = performance.now();
-let introDone = false;
-root.classList.remove('booting');
-document.body.classList.add('intro');
-
-function resolveHeadline() {
-  if (document.body.classList.contains('resolve')) return;
-  document.body.classList.add('resolve');
-  requestAnimationFrame(() => document.body.classList.remove('intro'));
-}
-function finishIntro() {
-  if (introDone) return;
-  introDone = true;
-  sky?.set({ intro: 1 });
-  resolveHeadline();
-  skipBtn.hidden = true;
-  placeSpots();
-}
-if (!INTRO) finishIntro();
-else {
-  skipBtn.hidden = seen;
-  /* the clock starts once frames are actually arriving: on a slow GPU the shader
-     compiles during the first draw, and the opening should not be spent waiting for it */
-  let frames = 0;
-  const tick = (now) => {
-    if (introDone) return;
-    if (frames++ < 2) { introStart = performance.now(); requestAnimationFrame(tick); return; }
-    const u = Math.min(1, Math.max(0, now - introStart) / INTRO);
-    sky?.set({ intro: u });
-    if (u > 0.62) resolveHeadline();
-    if (u >= 1) finishIntro(); else requestAnimationFrame(tick);
-  };
-  requestAnimationFrame(tick);
-  skipBtn.addEventListener('click', finishIntro);
-  for (const ev of ['wheel', 'keydown', 'touchstart', 'pointerdown']) addEventListener(ev, finishIntro, { once: true, passive: true });
+const kindLabel = (i) => (i.id === 'tally' ? 'AI product · Python service' : `${KINDS[i.kind]?.label ?? i.kind} · about ${i.minutes} min`);
+const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI'];
+const launchHref = (i) => (i.id === 'tally' ? TALLY_URL : `../${i.href}`);
+const sourceHref = (i) => i.source ?? (i.study ? i.study.replace('/blob/main/', '/tree/main/').replace(/\/README\.md$/, '') : null);
+const artSet = (id) => `art/${id}-900.webp 900w, art/${id}-1800.webp 1800w`;
+function el(tag, attrs = {}, text = '') {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) if (v != null) n.setAttribute(k, v);
+  if (text) n.textContent = text;
+  return n;
 }
 
-/* ── scroll is the journey ──────────────────────────────────────────── */
+/* ── the corner ──────────────────────────────────────────────────────── */
 
-const field = $('.field');
-const stageEl = $('.stage');
-const hero = $('.hero');
 const nav = $('.nav');
-const projects = $('#projects');
-let lastTravel = -1;
+const hero = $('.hero');
+new IntersectionObserver(([e]) => nav.classList.toggle('solid', !e.isIntersecting), { rootMargin: '-64px 0px 0px 0px' }).observe(hero);
+const navLinks = [...nav.querySelectorAll('nav a')];
+const sections = navLinks.map((a) => document.querySelector(a.getAttribute('href')));
+new IntersectionObserver((entries) => {
+  for (const e of entries) {
+    if (!e.isIntersecting) continue;
+    navLinks.forEach((a, n) => a.setAttribute('aria-current', String(sections[n] === e.target)));
+  }
+}, { rootMargin: '-45% 0px -50% 0px' }).observe(...sections.slice(0, 1));
+sections.slice(1).forEach((s) => s && new IntersectionObserver((entries) => {
+  for (const e of entries) if (e.isIntersecting) navLinks.forEach((a, n) => a.setAttribute('aria-current', String(sections[n] === e.target)));
+}, { rootMargin: '-45% 0px -50% 0px' }).observe(s));
 
-function portalPx() {
-  if (sky) {
-    const L = sky.layout();
-    if (!L) return null;
-    const [x, y] = toScreen(L.portal, innerWidth, innerHeight);
-    return { x, y, r: L.portal[2] * innerHeight };
-  }
-  return null;
-}
-
-function onScroll() {
-  const H = innerHeight;
-  const fieldTop = field.getBoundingClientRect().top + scrollY;
-  const travel = Math.max(0, Math.min(1, scrollY / Math.max(1, fieldTop - H * 0.04)));
-  if (Math.abs(travel - lastTravel) > 0.0005) {
-    lastTravel = travel;
-    sky?.set({ travel: reduced ? (travel > 0.5 ? 1 : 0) : travel });
-  }
-  hero.style.opacity = String(Math.max(0, 1 - scrollY / (H * 0.42)));
-  $('.hotspots').style.visibility = scrollY > H * 0.2 ? 'hidden' : '';
-  restHint();
-  /* the islands rise out of the cloud as the passage ends, rather than sliding up with the page */
-  const fr = field.getBoundingClientRect();
-  const clamp01 = (v) => Math.max(0, Math.min(1, v));
-  /* and sink back into it as the field ends and the paper comes up */
-  stageEl.style.opacity = String(Math.min(clamp01(1 - fr.top / (H * 0.4)), clamp01((fr.bottom - H * 0.25) / (H * 0.5))));
-  stage.onScroll();
-  sky?.set({ alt: stage.progress() });
-  const pTop = projects.getBoundingClientRect().top;
-  const onPaper = pTop < H * 0.5;
-  document.body.classList.toggle('on-paper', onPaper);
-  nav.classList.toggle('on-light', pTop < nav.offsetHeight);
-  sky?.setVisible(pTop > 0);
-  fx.ambient({ mode: onPaper ? 'off' : travel < 1 ? 'threshold' : 'world', travel: travel < 1 ? travel : 0, portal: portalPx() });
-  for (const a of nav.querySelectorAll('nav a')) {
-    const t = document.querySelector(a.getAttribute('href'));
-    const r = t.getBoundingClientRect();
-    a.setAttribute('aria-current', String(r.top < H * 0.5 && r.bottom > H * 0.5));
-  }
-}
-let scrollQueued = false;
-addEventListener('scroll', () => { if (!scrollQueued) { scrollQueued = true; requestAnimationFrame(() => { scrollQueued = false; onScroll(); }); } }, { passive: true });
-addEventListener('resize', () => { onScroll(); placeSpots(); });
-
-/* "Explore my worlds": a short, interruptible flight through the portal to the first island. */
-let flight = 0;
-function explore() {
-  finishIntro();
-  const target = field.getBoundingClientRect().top + scrollY + innerHeight * 0.02;
-  if (reduced) { scrollTo({ top: target, behavior: 'auto' }); return; }
-  const from = scrollY;
-  const start = performance.now();
-  const ms = Math.min(2200, 900 + Math.abs(target - from) * 0.45);
-  cancelAnimationFrame(flight);
-  const stop = () => { cancelAnimationFrame(flight); flight = 0; for (const e of ['wheel', 'touchstart', 'keydown']) removeEventListener(e, stop); };
-  for (const e of ['wheel', 'touchstart', 'keydown']) addEventListener(e, stop, { passive: true });
-  const step = (now) => {
-    const u = Math.min(1, (now - start) / ms);
-    const k = u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
-    scrollTo(0, from + (target - from) * k);
-    if (u < 1) flight = requestAnimationFrame(step); else stop();
-  };
-  flight = requestAnimationFrame(step);
-}
-$('.explore').addEventListener('click', (e) => { e.preventDefault(); explore(); });
-nav.querySelector('a[href="#worlds"]').addEventListener('click', (e) => { e.preventDefault(); explore(); });
-
-/* ── the cursor ─────────────────────────────────────────────────────── */
-
-const hint = $('.portal-hint');
-let hovering = false;
-/* at rest the ring says what it is; on touch this is the only time it can */
-const REST = '35 worlds beyond · step through';
-function restHint() {
-  const P = portalPx();
-  const show = !!P && introDone && scrollY < innerHeight * 0.08 && !hovering && dialHot < 0;
-  hint.classList.toggle('rest', show);
-  if (!show) return;
-  /* just below the dial's rim, which on a phone is just above the headline */
-  const [dx, dy, dr] = dialRing(sky.layout());
-  const [x, y] = toScreen([dx, dy - dr], innerWidth, innerHeight);
-  hint.querySelector('span').textContent = REST;
-  hint.style.left = `${x}px`;
-  hint.style.top = `${y + 8}px`;
-}
-function onPointer(ev) {
-  /* inside a world, a few of them answer the pointer the way their app would */
-  fx.pointer(ev.clientX, ev.clientY, !!stage.selected() && stage.state() !== 'live' && !ev.target.closest?.('.reveal, .theatre, .nav'));
-  if (ev.pointerType === 'touch') return;
-  const mx = (ev.clientX / innerWidth) * 2 - 1;
-  const my = (ev.clientY / innerHeight) * 2 - 1;
-  if (!reduced) { sky?.set({ mouse: [mx, my] }); fx.ambient({ mouse: [mx, my] }); }
-  if (scrollY > innerHeight * 0.3 || !introDone) return;
-  const P = portalPx();
-  if (!P) return;
-  const d = Math.hypot(ev.clientX - P.x, ev.clientY - P.y);
-  /* approaching counts, not only touching: the light gathers as the cursor nears the ring */
-  const near = Math.max(0, Math.min(1, 1 - (d - P.r) / (P.r * 1.2)));
-  const inside = d < P.r * 0.8;
-  sky?.set({ hover: near });
-  fx.ambient({ hover: near, portal: P });
-  /* the dial round the ring: one block for each world, and it says which */
-  const block = sky ? sky.dialAt(ev.clientX, ev.clientY) : -1;
-  if (block !== dialHot) {
-    dialHot = block;
-    sky?.set({ dialHot: block });
-    const isle = block >= 0 ? islandById.get(stage.order()[block]) : null;
-    hint.querySelector('span').textContent = isle ? `${isle.title}: enter its world` : REST;
-  }
-  const on = inside || dialHot >= 0;
-  if (on !== hovering || dialHot >= 0) {
-    hovering = on;
-    document.querySelector('.threshold').style.cursor = on ? 'pointer' : '';
-    hint.classList.toggle('on', on);
-    hint.classList.toggle('dial', dialHot >= 0);
-    hint.style.left = `${dialHot >= 0 ? ev.clientX : P.x}px`;
-    hint.style.top = `${dialHot >= 0 ? ev.clientY + 24 : P.y + P.r * 1.3 + 10}px`;
-    restHint();
-  }
-  const L = sky?.layout();
-  if (L?.light) {
-    const [lx, ly] = toScreen([L.light[0], L.light[1]], innerWidth, innerHeight);
-    const dl = Math.hypot(ev.clientX - lx, ev.clientY - ly);
-    sky.set({ lamp: Math.max(0, 1 - dl / 140) });
-  }
-}
-let dialHot = -1;
-addEventListener('pointermove', onPointer, { passive: true });
-$('.threshold').addEventListener('click', (ev) => {
-  if (ev.target.closest('a, button')) return;
-  const block = sky ? sky.dialAt(ev.clientX, ev.clientY) : -1;
-  if (block >= 0) { stage.select(stage.order()[block]); return; }
-  const P = portalPx();
-  if (P && Math.hypot(ev.clientX - P.x, ev.clientY - P.y) < P.r * 0.85) explore();
+/* Search is the site's own finder (shared/navigator.js); here it has a place in
+   the corner instead of a floating button. */
+$('.search').addEventListener('click', () => {
+  document.querySelector('[data-navigator]')?.shadowRoot?.querySelector('.pill')?.click();
 });
 
-/* the same dial from the keyboard: the arrows go round it, Enter steps in */
-const dial = $('.dial');
-let dialKey = -1, dialTimer = 0;
-/* (looked up here, not from the const above: with reduced motion the intro ends,
-   and this runs, before the module has got that far) */
-function placeDial() {
-  const dial = $('.dial');
-  const L = sky?.layout();
-  dial.hidden = !L || !introDone;
-  if (dial.hidden) return;
-  const [x, y, r] = dialRing(L);
-  const [px, py] = toScreen([x, y], innerWidth, innerHeight);
-  const rp = r * innerHeight;
-  Object.assign(dial.style, { left: `${px - rp}px`, top: `${py - rp}px`, width: `${rp * 2}px`, height: `${rp * 2}px` });
+/* the portal drifts a little slower than the page */
+const heroImg = $('.hero-art img');
+if (!reduced) {
+  let queued = false;
+  addEventListener('scroll', () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => {
+      queued = false;
+      const y = scrollY;
+      if (y < innerHeight * 1.2) heroImg.style.translate = `0 ${(y * 0.22).toFixed(1)}px`;
+    });
+  }, { passive: true });
 }
-function fillDial() {
-  dial.replaceChildren(...stage.order().map((id, i) => {
-    const isle = islandById.get(id);
-    const region = REGIONS.find((r) => r.id === isle.region)?.name;
-    const o = document.createElement('div');
-    o.id = `dial-${i}`;
-    o.setAttribute('role', 'option');
-    o.setAttribute('aria-selected', 'false');
-    o.textContent = [isle.title, region, stage.wasSeen(id) && 'visited'].filter(Boolean).join(', ');
-    return o;
-  }));
+
+/* ── the gallery ─────────────────────────────────────────────────────── */
+
+const tiles = [...document.querySelectorAll('.tile')];
+if (reduced || !('IntersectionObserver' in window)) tiles.forEach((t) => t.classList.add('in'));
+else {
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }, { rootMargin: '0px 0px -8% 0px' });
+  tiles.forEach((t) => io.observe(t));
 }
-/* the block turns with the dial, so the label follows it */
-function labelDial() {
-  const [x, y] = sky.dialPoint(dialKey);
-  const half = hint.offsetWidth / 2 + 12;
-  hint.style.left = `${Math.max(half, Math.min(innerWidth - half, x))}px`;
-  hint.style.top = `${y + 24}px`;
-}
-function pointDial(i) {
-  dialKey = dialHot = i;
-  sky.set({ dialHot: i });
-  for (const o of dial.children) o.setAttribute('aria-selected', String(o.id === `dial-${i}`));
-  dial.setAttribute('aria-activedescendant', `dial-${i}`);
-  hint.querySelector('span').textContent = `${islandById.get(stage.order()[i]).title}: enter its world`;
-  hint.classList.add('on', 'dial');
-  labelDial();
-}
-dial.addEventListener('focus', () => {
-  fillDial();
-  pointDial(Math.max(0, dialKey));
-  clearInterval(dialTimer);
-  if (!reduced) dialTimer = setInterval(labelDial, 250);
-});
-dial.addEventListener('blur', () => {
-  clearInterval(dialTimer);
-  dialHot = -1;
-  hovering = false;
-  sky?.set({ dialHot: -1 });
-  hint.classList.remove('on', 'dial');
-  restHint();
-});
-dial.addEventListener('keydown', (e) => {
-  const n = stage.order().length;
-  const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
-  if (step) pointDial((dialKey + step + n) % n);
-  else if (e.key === 'Home') pointDial(0);
-  else if (e.key === 'End') pointDial(n - 1);
-  else if (e.key === 'Enter' || e.key === ' ') stage.select(stage.order()[dialKey]);
-  else return;
+document.querySelector('.regions').addEventListener('click', (e) => {
+  const a = e.target.closest('[data-open]');
+  if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
   e.preventDefault();
-  e.stopPropagation();
+  open(a.dataset.open, { push: true });
 });
 
-/* ── things to find ─────────────────────────────────────────────────── */
+/* ── a project, opened ───────────────────────────────────────────────── */
 
-const note = $('.note');
-function spotPos(name) {
-  if (!sky) return null;
-  const L = sky.layout();
-  if (!L) return null;
-  if (name === 'figure') return toScreen([L.figure[0], L.figure[1] + L.figure[2] * 0.5], innerWidth, innerHeight);
-  if (name === 'moon') return toScreen([L.moon[0], L.moon[1]], innerWidth, innerHeight);
-  return L.light ? toScreen([L.light[0], L.light[1]], innerWidth, innerHeight) : null;
+const sheet = $('#sheet');
+const outside = [nav, $('main'), $('.foot')];
+let current = null;
+let pushed = false;
+let lastTile = null;
+
+function fill(i) {
+  const q = (s) => sheet.querySelector(s);
+  const ri = REGIONS.findIndex((r) => r.id === i.region);
+  q('.sh-crumb').textContent = `${ROMAN[ri]} · ${REGIONS[ri].name}`;
+  q('.kind').textContent = kindLabel(i);
+  q('#sh-title').textContent = i.title;
+  q('.blurb').textContent = i.blurb;
+  const tile = document.querySelector(`.tile[data-id="${i.id}"]`);
+  const art = q('.sh-art');
+  const loaded = tile?.querySelector('.art')?.currentSrc;
+  art.removeAttribute('srcset');
+  art.src = loaded || `art/${i.id}-900.webp`;
+  art.sizes = '100vw';
+  art.srcset = artSet(i.id);
+  art.alt = '';
+  q('.sh-alt').textContent = tile?.dataset.alt ? `The picture: ${tile.dataset.alt.replace(/\.$/, '')}.` : '';
+
+  const actions = q('.sh-actions');
+  actions.replaceChildren();
+  const launch = launchHref(i);
+  if (launch) actions.append(el('a', { class: 'btn primary', href: launch }, `Launch ${i.title} ↗`));
+  if (i.study) actions.append(el('a', { class: 'btn', href: i.study, rel: 'noopener' }, 'Case study'));
+  const src = sourceHref(i);
+  if (src) actions.append(el('a', { class: 'btn', href: src, rel: 'noopener' }, 'Source'));
+  actions.append(el('a', { class: 'btn', href: `projects/${i.id}/` }, 'Its own page'));
+  const note = q('.sh-note');
+  note.hidden = !!launch;
+  note.textContent = launch ? '' : 'Tally is a Python service rather than a page, so it runs on a server. It deploys in one step from render.yaml; until it does, the case study and the source are the way in, and the About section below walks through how it was built.';
+
+  q('.sh-problem').textContent = i.problem;
+  const ev = q('.sh-evidence');
+  ev.textContent = i.evidence;
+  if (i.tests) ev.append(' ', el('a', { href: i.tests, rel: 'noopener' }, 'Read its tests'));
+  q('.sh-features').replaceChildren(...i.features.map((f) => el('li', {}, f)));
+  q('.sh-dtitle').textContent = i.decision[0];
+  q('.sh-dtext').textContent = i.decision[1];
+  q('.sh-tech').replaceChildren(...i.tech.map((t) => el('li', {}, t)));
+  const ai = q('.sh-ai');
+  ai.hidden = !i.ai;
+  if (i.ai) for (const key of ['model', 'code', 'guards', 'limits']) q(`.sh-${key}`).replaceChildren(...i.ai[key].map((t) => el('li', {}, t)));
+
+  const shot = q('.sh-shot img');
+  shot.src = `shots/${i.id}-960.webp`;
+  shot.srcset = tile?.querySelector('.shot')?.getAttribute('srcset') ?? '';
+  shot.sizes = '(min-width: 860px) 40vw, 100vw';
+  shot.alt = `${i.title} as it first opens.`;
+  q('.sh-shot figcaption').textContent = launch
+    ? `${i.title} as it opens. “Run it here” starts the real app on this page.`
+    : 'Tally’s audit view.';
+  q('.try').hidden = !launch;
+
+  const n = ISLANDS.indexOf(i);
+  const next = ISLANDS[(n + 1) % ISLANDS.length];
+  const nx = q('.sh-next');
+  nx.href = `#world/${next.id}`;
+  nx.dataset.id = next.id;
+  nx.querySelector('img').srcset = artSet(next.id);
+  nx.querySelector('img').sizes = '100vw';
+  nx.querySelector('img').src = `art/${next.id}-900.webp`;
+  nx.querySelector('.title').textContent = next.title;
+  const prev = ISLANDS[(n - 1 + ISLANDS.length) % ISLANDS.length];
+  q('[data-go="prev"]').setAttribute('aria-label', `Previous: ${prev.title}`);
+  q('[data-go="next"]').setAttribute('aria-label', `Next: ${next.title}`);
+  document.title = `${i.title} — Portal Atlas`;
 }
-function placeSpots() {
-  for (const b of document.querySelectorAll('.hotspots .spot')) {
-    const p = spotPos(b.dataset.spot);
-    b.hidden = !p || !introDone;
-    if (p) { b.style.left = `${p[0]}px`; b.style.top = `${p[1]}px`; }
-  }
-  placeDial();
-  requestAnimationFrame(restHint);
+
+/* Where the browser can, the tile's picture itself grows into the sheet. */
+function transition(update, withArt) {
+  if (reduced || !document.startViewTransition || !withArt) { update(); return; }
+  withArt.style.viewTransitionName = 'art';
+  const vt = document.startViewTransition(() => {
+    withArt.style.viewTransitionName = '';
+    update();
+    sheet.querySelector('.sh-art').style.viewTransitionName = 'art';
+  });
+  vt.finished.finally(() => { sheet.querySelector('.sh-art').style.viewTransitionName = ''; });
 }
-function showNote(text, at) {
-  note.querySelector('p').textContent = text;
-  note.hidden = false;
-  const w = Math.min(360, innerWidth - 32);
-  note.style.left = `${Math.max(16, Math.min(innerWidth - w - 16, at[0] - w / 2))}px`;
-  note.style.top = `${Math.max(80, Math.min(innerHeight - 200, at[1] + 26))}px`;
-  note.querySelector('.note-close').focus({ preventScroll: true });
-}
-note.querySelector('.note-close').addEventListener('click', () => { note.hidden = true; });
-document.querySelectorAll('.hotspots .spot').forEach((b) => b.addEventListener('click', (e) => {
-  e.stopPropagation();
-  const at = [parseFloat(b.style.left), parseFloat(b.style.top)];
-  const phase = moonPhase();
-  if (b.dataset.spot === 'figure') {
-    showNote('For scale: the ring is about forty times the height of the person on the causeway. It is a tube, not a hoop: every layer of this scene sits at its own distance from you, so the ring is drawn in true perspective and you can see into its bore. All of it, sea and cliffs included, is one fragment shader, worked out pixel by pixel.', at);
-  } else if (b.dataset.spot === 'moon') {
-    const lit = Math.round(((1 - Math.cos(phase * Math.PI * 2)) / 2) * 100);
-    showNote(`Tonight’s moon: ${phaseName(phase)}, ${lit}% lit. The phase is worked out from today’s date, so the sky is a little different each time you come back, and nothing about you is stored to do it.`, at);
+
+function open(id, { push = false } = {}) {
+  const i = islandById.get(id);
+  if (!i) return;
+  const wasOpen = !sheet.hidden;
+  const tile = document.querySelector(`.tile[data-id="${id}"]`);
+  if (!wasOpen) lastTile = tile;
+  const show = () => {
+    fill(i);
+    current = id;
+    sheet.hidden = false;
+    sheet.scrollTop = 0;
+    document.body.classList.add('locked');
+    outside.forEach((n) => { n.inert = true; });
+    $('.sh-close').focus({ preventScroll: true });
+  };
+  if (wasOpen) {
+    show();
   } else {
-    note.hidden = true;
-    stage.select('lamplighter');
+    sheet.classList.remove('closing');
+    const art = tile?.querySelector('.art');
+    const visible = art && art.getBoundingClientRect().bottom > 0 && art.getBoundingClientRect().top < innerHeight;
+    if (visible && document.startViewTransition && !reduced) transition(show, art);
+    else { show(); if (!reduced) { sheet.classList.add('opening'); setTimeout(() => sheet.classList.remove('opening'), 600); } }
   }
-}));
-
-/* ── the observatory: a guide that only knows what is real ──────────── */
-
-const index = buildIndex(SEARCHABLE, KINDS);
-const guide = $('#guide');
-const card = $('#guide-card');
-const orb = $('.guide-orb');
-const input = $('#guide-q');
-const results = $('.guide-results');
-orb.addEventListener('click', () => {
-  const open = card.hidden;
-  card.hidden = !open;
-  orb.setAttribute('aria-expanded', String(open));
-  if (open) input.focus();
-});
-document.addEventListener('pointerdown', (e) => { if (!card.hidden && !guide.contains(e.target)) { card.hidden = true; orb.setAttribute('aria-expanded', 'false'); } });
-function ask(q) {
-  /* The search falls back to the flagship pieces when nothing matches, which is
-     right for the site's navigator but would be a made-up recommendation here:
-     only results that matched something, or that answer an explicit "surprise
-     me", "the best" or "five minutes", count. */
-  const intent = detectIntent(q);
-  const hits = search(q, index, { limit: 3 }).filter((h) => h.score > 0 || intent.random || intent.featured || intent.maxMinutes);
-  results.replaceChildren();
-  if (!hits.length) {
-    /* nothing real matches: say so, and offer the two honest ways forward */
-    const li = document.createElement('li');
-    li.className = 'none';
-    li.innerHTML = '<p></p><a href="#projects">See every project as a list</a>';
-    li.querySelector('p').textContent = `Nothing in the catalogue matches “${q}”. Try describing the problem rather than the tool: “double bookings”, “checking invoices against contracts”, “a game for two”.`;
-    li.querySelector('a').addEventListener('click', () => { card.hidden = true; orb.setAttribute('aria-expanded', 'false'); });
-    results.append(li);
-    stage.light([]);
-    return;
+  const hash = `#world/${id}`;
+  if (push && location.hash !== hash) {
+    if (wasOpen) history.replaceState({ world: id }, '', hash);
+    else { history.pushState({ world: id }, '', hash); pushed = true; }
   }
-  for (const h of hits) {
-    const isle = islandById.get(h.entry.id);
-    const li = document.createElement('li');
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.innerHTML = `<b></b><span></span><small></small>`;
-    b.querySelector('b').textContent = isle.title;
-    b.querySelector('span').textContent = isle.hook;
-    b.querySelector('small').textContent = `${kindLabel(isle)} · ${explain(h, q)}`;
-    b.addEventListener('click', () => { card.hidden = true; orb.setAttribute('aria-expanded', 'false'); stage.select(isle.id); });
-    const page = document.createElement('a');
-    page.className = 'page';
-    page.href = `projects/${isle.id}/`;
-    page.textContent = 'Its page';
-    page.setAttribute('aria-label', `${isle.title}: its page`);
-    li.append(b, page);
-    results.append(li);
+}
+
+function close({ fromHistory = false } = {}) {
+  if (sheet.hidden) return;
+  closeTheatre({ quiet: true, fromHistory: true });
+  const id = current;
+  const tile = document.querySelector(`.tile[data-id="${id}"]`) ?? lastTile;
+  const hide = () => {
+    sheet.hidden = true;
+    sheet.classList.remove('closing');
+    document.body.classList.remove('locked');
+    outside.forEach((n) => { n.inert = false; });
+    current = null;
+    document.title = 'Portal Atlas — Mohamed Sucule, AI product builder: ideas that escape the ordinary';
+    tile?.querySelector('h4 a')?.focus({ preventScroll: true });
+  };
+  const art = tile?.querySelector('.art');
+  if (!reduced && document.startViewTransition && art && sheet.scrollTop < innerHeight * 0.5) {
+    tile.scrollIntoView({ block: 'center' });
+    sheet.querySelector('.sh-art').style.viewTransitionName = 'art';
+    const vt = document.startViewTransition(() => {
+      sheet.querySelector('.sh-art').style.viewTransitionName = '';
+      hide();
+      art.style.viewTransitionName = 'art';
+    });
+    vt.finished.finally(() => { art.style.viewTransitionName = ''; });
+  } else if (!reduced) {
+    tile?.scrollIntoView({ block: 'center' });
+    sheet.classList.add('closing');
+    setTimeout(hide, 330);
+  } else {
+    tile?.scrollIntoView({ block: 'center' });
+    hide();
   }
-  stage.light(hits.map((h) => h.entry.id));
+  if (!fromHistory) {
+    if (pushed) { pushed = false; history.back(); }
+    else history.replaceState(null, '', location.pathname + location.search);
+  } else pushed = false;
 }
-$('form', card).addEventListener('submit', (e) => { e.preventDefault(); const q = input.value.trim().slice(0, 200); if (q) ask(q); });
-card.querySelectorAll('.guide-chips button').forEach((b) => b.addEventListener('click', () => { input.value = b.textContent; ask(b.textContent); }));
 
-/* ── the index: every world, one keypress away ──────────────────────── */
-
-const drawer = $('#index');
-const indexBtn = $('.index-btn');
-function openIndex() {
-  const list = $('.index-list', drawer);
-  if (!list.childElementCount) {
-    for (const r of REGIONS) {
-      const h = document.createElement('h3');
-      h.textContent = r.name;
-      const ul = document.createElement('ul');
-      for (const isle of ISLANDS.filter((i) => i.region === r.id)) {
-        const li = document.createElement('li');
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.innerHTML = `${islandSVG(isle, { uid: 'ix' })}<span><b></b><span></span></span>`;
-        b.querySelector('b').textContent = isle.title;
-        b.querySelector('span > span').textContent = kindLabel(isle);
-        b.addEventListener('click', () => { closeIndex(); stage.select(isle.id); });
-        li.append(b);
-        ul.append(li);
-      }
-      list.append(h, ul);
-    }
-    for (const svg of list.querySelectorAll('svg')) svg.pauseAnimations?.();
+function step(dir) {
+  const n = ISLANDS.findIndex((i) => i.id === current);
+  const to = ISLANDS[(n + dir + ISLANDS.length) % ISLANDS.length];
+  if (!reduced) {
+    sheet.classList.remove('opening');
+    void sheet.offsetWidth;
+    sheet.classList.add('opening');
+    setTimeout(() => sheet.classList.remove('opening'), 600);
   }
-  drawer.hidden = false;
-  document.body.classList.add('locked');
-  $('.index-close', drawer).focus();
-}
-function closeIndex() {
-  if (drawer.hidden) return;
-  drawer.hidden = true;
-  if (!stage.selected()) document.body.classList.remove('locked');
-  indexBtn.focus({ preventScroll: true });
-}
-indexBtn.addEventListener('click', openIndex);
-$('.index-close', drawer).addEventListener('click', closeIndex);
-drawer.addEventListener('click', (e) => { if (e.target === drawer) closeIndex(); });
-/* on a phone the section links live in here, since the bar has no room for them */
-for (const a of drawer.querySelectorAll('.index-nav a')) {
-  a.addEventListener('click', () => { drawer.hidden = true; document.body.classList.remove('locked'); });
+  open(to.id, { push: true });
 }
 
-/* ── the renderer's own numbers, behind the backtick key ────────────── */
+$('.sh-close').addEventListener('click', () => close());
+sheet.querySelector('[data-go="prev"]').addEventListener('click', () => step(-1));
+sheet.querySelector('[data-go="next"]').addEventListener('click', () => step(1));
+sheet.querySelector('.sh-next').addEventListener('click', (e) => { e.preventDefault(); step(1); });
 
-const dev = $('#dev');
-let devTimer = 0;
-function devText() {
-  const s = sky?.stats();
-  const phase = moonPhase();
-  const lines = s ? [
-    `renderer   ${String(s.renderer).slice(0, 46)}`,
-    `fps        ${s.fps}`,
-    `submit     ${s.frameMs.toFixed(2)} ms`,
-    `pixels     ${skyCanvas.width}×${skyCanvas.height} (${Math.round(s.scale * 100)}% of the screen)`,
-    `quality    ${s.quality}`,
-    `scene      ${s.travel <= 0 ? 'threshold' : s.travel >= 1 ? 'beyond' : 'crossing'}  travel ${s.travel.toFixed(2)}  altitude ${s.alt.toFixed(2)}`,
-  ] : ['renderer   2D canvas fallback (no WebGL)'];
-  lines.push(`moon       ${phaseName(phase)}, ${Math.round(((1 - Math.cos(phase * Math.PI * 2)) / 2) * 100)}% lit`);
-  lines.push(`islands    ${stage.visibleCount()} of ${ISLANDS.length} drawn, ${stage.seenCount()} visited (dial lights them)`);
-  lines.push(`stage      ${stage.state()}`);
-  const isle = islandById.get(stage.selected());
-  if (isle) {
-    const block = stage.order().indexOf(isle.id);
-    lines.push('', `world      ${isle.id} · ${REGIONS.find((r) => r.id === isle.region).name}`);
-    lines.push(`dial       block ${block + 1} of ${ISLANDS.length}, clockwise from the top`);
-    lines.push(`drawn as   ${isle.base} silhouette, ${isle.fx.type}${isle.fx.variant ? ` (${isle.fx.variant})` : ''} effect, ${isle.size} island`);
-    lines.push(`launches   ${isle.href ? `../${isle.href}` : 'a server (Tally)'}`);
-    if (isle.tests) lines.push(`tests      ${isle.tests.replace(/^.*\/blob\/main\//, '')}`);
-    if (isle.ai) lines.push(`ai         ${isle.ai.model.length} model role(s), ${isle.ai.code.length} jobs left to plain code`);
+/* ── the real thing, running ─────────────────────────────────────────── */
+
+const theatre = $('#theatre');
+const thPanel = $('.th-panel');
+let livePushed = false;
+const shotRect = () => sheet.querySelector('.sh-shot img').getBoundingClientRect();
+function flipFrom(rect) {
+  const to = thPanel.getBoundingClientRect();
+  thPanel.style.transform = `translate(${rect.left - to.left}px, ${rect.top - to.top}px) scale(${rect.width / to.width}, ${rect.height / to.height})`;
+}
+function openTheatre({ push = true } = {}) {
+  const i = islandById.get(current);
+  const href = i && launchHref(i);
+  if (!href || !theatre.hidden) return;
+  $('.th-title').textContent = `${i.title}, running live`;
+  $('.th-open').href = href;
+  /* the apps are this site's own pages, so the frame gives them what a direct visit would:
+     Tuner and Front Desk can still ask for the microphone, through the browser's own prompt */
+  $('.th-frame').replaceChildren(el('iframe', { src: href, title: `${i.title}, running live`, allow: 'microphone; autoplay; fullscreen' }));
+  const from = shotRect();
+  theatre.hidden = false;
+  sheet.inert = true;
+  if (!reduced) {
+    thPanel.style.transition = 'none';
+    flipFrom(from);
+    void thPanel.offsetWidth;
+    thPanel.style.transition = '';
+    requestAnimationFrame(() => { thPanel.style.transform = ''; });
   }
-  lines.push(`motion     ${reduced ? 'reduced' : 'full'}${lowPower ? ', low-power device' : ''}`);
-  lines.push('', 'press ` to close');
-  return lines.join('\n');
+  $('.th-back').focus({ preventScroll: true });
+  if (push && !location.hash.endsWith('/live')) {
+    history.pushState({ world: i.id, live: true }, '', `#world/${i.id}/live`);
+    livePushed = true;
+  }
 }
-function toggleDev() {
-  dev.hidden = !dev.hidden;
-  clearInterval(devTimer);
-  if (!dev.hidden) { const upd = () => { $('pre', dev).textContent = devText(); }; upd(); devTimer = setInterval(upd, 500); }
+function closeTheatre({ fromHistory = false, quiet = false } = {}) {
+  if (theatre.hidden) return;
+  const done = () => { theatre.hidden = true; thPanel.style.transform = ''; $('.th-frame').replaceChildren(); };
+  sheet.inert = false;
+  if (reduced || quiet) done();
+  else { flipFrom(shotRect()); setTimeout(done, 480); }
+  if (!fromHistory) {
+    if (livePushed) { livePushed = false; history.back(); }
+    else if (location.hash.endsWith('/live')) history.replaceState({ world: current }, '', `#world/${current}`);
+  } else livePushed = false;
+  if (!quiet) $('.try').focus({ preventScroll: true });
 }
+$('.try').addEventListener('click', () => openTheatre());
+$('.th-back').addEventListener('click', () => closeTheatre());
+
+/* ── addresses, keys ─────────────────────────────────────────────────── */
+
+function route() {
+  const m = location.hash.match(/^#world\/([a-z0-9-]+)(\/live)?$/);
+  if (m && islandById.has(m[1])) {
+    if (current !== m[1]) open(m[1]);
+    if (m[2]) openTheatre({ push: false });
+    else closeTheatre({ fromHistory: true });
+  } else if (current) close({ fromHistory: true });
+}
+addEventListener('popstate', route);
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    closeIndex();
-    if (!note.hidden) note.hidden = true;
-    if (!card.hidden) { card.hidden = true; orb.setAttribute('aria-expanded', 'false'); orb.focus(); }
+    if (!theatre.hidden) { e.preventDefault(); closeTheatre(); return; }
+    if (!sheet.hidden) { e.preventDefault(); close(); }
     return;
   }
-  if (e.target.closest?.('input, textarea')) return;
-  if (e.key === '`') { e.preventDefault(); toggleDev(); }
-  if ((e.key === 'i' || e.key === 'I') && !e.metaKey && !e.ctrlKey && !e.altKey) { if (drawer.hidden) openIndex(); else closeIndex(); }
+  if (sheet.hidden || !theatre.hidden || e.target.closest?.('input, textarea')) return;
+  if (e.key === 'ArrowRight') step(1);
+  if (e.key === 'ArrowLeft') step(-1);
 });
 
-/* links in the plain list that say "its world" open it in the atlas */
-document.querySelectorAll('[data-world]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); stage.select(a.dataset.world); }));
-
-onScroll();
-stage.route();
-placeSpots();
-window.__atlas = { sky, fx, stage, islands: ISLANDS.length };
+route();
+window.__atlas = { open, close, current: () => current, live: () => !theatre.hidden, count: ISLANDS.length };
