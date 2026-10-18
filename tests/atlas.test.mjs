@@ -29,7 +29,7 @@ test('every project in the catalogue is in the atlas, and everything in the atla
 
 test('the page counts its projects correctly', () => {
   assert.equal(ISLANDS.length, 35, `the page says thirty-five; there are ${ISLANDS.length}`);
-  assert.ok(html.includes('Thirty-five worlds') && html.includes('Thirty-five of them') && html.includes('<b>35</b>'), 'the counts on the page have drifted');
+  assert.ok(html.includes('Thirty-five worlds, in six rooms') && html.includes('Thirty-five of them') && html.includes('<b>35</b>'), 'the counts on the page have drifted');
   for (const r of REGIONS) {
     const n = ISLANDS.filter((i) => i.region === r.id).length;
     assert.ok(html.includes(`<span class="t">${r.name}</span><span class="c">${n}</span>`), `the contents miscount ${r.name}`);
@@ -81,6 +81,36 @@ test('no picture on the page is heavy enough to make it wait', () => {
     assert.ok(kb(`atlas/art/${i.id}-900.webp`) < 120, `${i.id}-900 is ${kb(`atlas/art/${i.id}-900.webp`).toFixed(0)} KB`);
     assert.ok(kb(`atlas/art/${i.id}-1800.webp`) < 300, `${i.id}-1800 is ${kb(`atlas/art/${i.id}-1800.webp`).toFixed(0)} KB`);
   }
+});
+
+test('the way in has its film and its flight, and neither is heavy', () => {
+  for (const name of ['portal-loop']) {
+    for (const ext of ['mp4', 'webm']) {
+      const f = `atlas/art/${name}.${ext}`;
+      assert.ok(existsSync(join(root, f)), `${f} is missing: run node atlas/art/motion.mjs loop`);
+      assert.ok(kb(f) < 3500, `${f} is ${kb(f).toFixed(0)} KB`);
+    }
+  }
+  for (const set of ['wide', 'tall']) {
+    let total = 0;
+    for (let i = 0; i < 32; i++) {
+      const f = `atlas/art/flight/${set}-${String(i).padStart(2, '0')}.webp`;
+      assert.ok(existsSync(join(root, f)), `${f} is missing: run node atlas/art/motion.mjs flight`);
+      total += kb(f);
+    }
+    assert.ok(total < 4000, `the ${set} flight is ${total.toFixed(0)} KB`);
+  }
+});
+
+test('the gallery is six rooms, and every project hangs in its own', () => {
+  const gallery = html.match(/<!-- gallery:start -->([\s\S]*?)<!-- gallery:end -->/)?.[1] ?? '';
+  const rooms = [...gallery.matchAll(/<section class="room" id="r-([a-z]+)"/g)].map((m) => m[1]);
+  assert.equal(rooms.join(' '), REGIONS.map((r) => r.id).join(' '), 'the rooms are not the regions, in order');
+  for (const r of REGIONS) {
+    const room = gallery.slice(gallery.indexOf(`id="r-${r.id}"`)).split('<section class="room"')[0];
+    for (const i of ISLANDS.filter((x) => x.region === r.id)) assert.ok(room.includes(`data-id="${i.id}"`), `${i.title} is not hung in ${r.name}`);
+  }
+  assert.equal((gallery.match(/class="painting /g) ?? []).length, ISLANDS.length, 'a painting is missing or hung twice');
 });
 
 test('every project has a screenshot of the real thing', () => {

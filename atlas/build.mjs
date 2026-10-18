@@ -49,41 +49,44 @@ function shot(i, pre) {
 
 /* ── the gallery ─────────────────────────────────────────────────────── */
 
-function tile(i) {
+/* A project, hung: its world in a frame, and a museum label beside it. Hover the
+   frame and the painting gives way to the software it stands for. */
+function painting(i) {
   const a = art(i, '');
   const s = shot(i, '');
   const launch = launchHref(i, 1);
-  const feature = i.size === 'lg';
-  const sizes = feature ? '(min-width: 980px) 60vw, 100vw' : '(min-width: 980px) 46vw, (min-width: 640px) 50vw, 100vw';
-  return `          <li class="tile${feature ? ' feature' : ''}" data-id="${i.id}" data-alt="${esc(a.alt)}">
-            <a class="tile-media" href="projects/${i.id}/" data-open="${i.id}" tabindex="-1" aria-hidden="true">
-              <img class="art" src="${a.src}" srcset="${a.srcset}" sizes="${sizes}" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
-              <img class="shot" src="${s.src}"${s.srcset ? ` srcset="${s.srcset}" sizes="(min-width: 980px) 20vw, 40vw"` : ''} width="960" height="600" alt="" loading="lazy" decoding="async" />
+  return `          <li class="painting size-${i.size}" data-id="${i.id}" data-alt="${esc(a.alt)}">
+            <a class="frame" href="projects/${i.id}/" data-open="${i.id}" tabindex="-1" aria-hidden="true">
+              <span class="canvas">
+                <img class="art" src="${a.src}" srcset="${a.srcset}" sizes="(min-width: 900px) 62vh, 92vw" width="1800" height="1200" alt="" loading="lazy" decoding="async" />
+                <img class="shot" src="${s.src}"${s.srcset ? ` srcset="${s.srcset}" sizes="(min-width: 900px) 62vh, 92vw"` : ''} width="960" height="600" alt="" loading="lazy" decoding="async" />
+              </span>
             </a>
-            <div class="tile-body">
+            <div class="label">
               <p class="kind">${esc(kindLabel(i))}</p>
               <h4><a href="projects/${i.id}/" data-open="${i.id}">${esc(i.title)}</a></h4>
               <p class="blurb">${esc(i.blurb)}</p>
-              <p class="tile-links">${launch ? `<a href="${esc(launch)}">Launch <span aria-hidden="true">&#8599;</span></a>` : '<span>Runs on a server</span>'}<a href="projects/${i.id}/">How it&rsquo;s built</a></p>
+              <p class="label-links"><a href="projects/${i.id}/" data-open="${i.id}">Step inside</a>${launch ? `<a href="${esc(launch)}">Launch <span aria-hidden="true">&#8599;</span></a>` : '<span>Runs on a server</span>'}</p>
             </div>
           </li>`;
 }
 
 function gallery() {
-  const regions = REGIONS.map((r, n) => {
+  const rooms = REGIONS.map((r, n) => {
     const items = ISLANDS.filter((i) => i.region === r.id);
-    return `      <section class="region" id="r-${r.id}" data-region="${r.id}" aria-labelledby="rh-${r.id}">
-        <header class="region-head">
-          <p class="num">${ROMAN[n]}</p>
+    return `      <section class="room" id="r-${r.id}" data-region="${r.id}" aria-labelledby="rh-${r.id}">
+        <header class="room-sign">
+          <p class="num">Room ${ROMAN[n]}</p>
           <h3 id="rh-${r.id}">${esc(r.name)}</h3>
           <p class="line">${esc(r.line)}</p>
+          <p class="count">${items.length} works</p>
         </header>
-        <ol class="tiles">
-${items.map(tile).join('\n')}
+        <ol class="hang">
+${items.map(painting).join('\n')}
         </ol>
       </section>`;
   }).join('\n');
-  return `<!-- gallery:start -->\n${regions}\n      <!-- gallery:end -->`;
+  return `<!-- gallery:start -->\n${rooms}\n      <!-- gallery:end -->`;
 }
 
 function contents() {
