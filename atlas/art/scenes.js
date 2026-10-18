@@ -69,6 +69,7 @@ uniform vec3 uBeamB;        /* the other end */
 uniform vec4 uRipple;        /* rings on the water: centre x, z, strength, spacing */
 uniform vec4 uPortal;        /* the ring's opening: centre, radius (0 when there is none) */
 uniform vec3 uAltZen, uAltHor, uAltSun, uAltSunCol;
+uniform float uTime;         /* 0 to 1 round a loop: the sea and the stars come back to where they started */
 out vec4 outCol;
 
 #define STONE 1.
@@ -77,6 +78,9 @@ out vec4 outCol;
 #define METAL 4.
 #define SHADE 5.
 #define PAINT 7.
+#define GLASS 8.
+#define BRASS 9.
+#define MOSS 10.
 
 float h12(vec2 p) { vec3 p3 = fract(vec3(p.xyx) * .1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
 float h13(vec3 p) { p = fract(p * .1031); p += dot(p, p.zyx + 31.32); return fract((p.x + p.y) * p.z); }
@@ -154,7 +158,7 @@ vec3 sky(vec3 rd, bool alt) {
   c += sc * (smoothstep(.99995, .99998, s) * 7. * disc + pow(s, 90.) * .5 + pow(s, 8.) * .22);
   c += mix(hor, sc, .35) * .16 * exp(-y * 22.);
   if (uClouds > 0. && rd.y > 0.) {
-    vec2 cp = rd.xz / (rd.y + .06);
+    vec2 cp = rd.xz / (rd.y + .06) + vec2(cos(uTime * 6.2832), sin(uTime * 6.2832)) * .05;
     float cl = smoothstep(.5, .86, fbm(cp * vec2(.22, 1.1) + 3.1));
     vec3 cc = mix(hor * 1.05, sc * .55 + hor * .4, pow(s, 3.)) ;
     c = mix(c, cc, cl * uClouds * smoothstep(.0, .12, y) * (alt ? .4 : 1.) * .55);
@@ -163,7 +167,8 @@ vec3 sky(vec3 rd, bool alt) {
     vec2 sp = vec2(atan(rd.z, rd.x), asin(rd.y)) * 520.;
     vec2 ci = floor(sp), cf = fract(sp) - .5;
     float h = h12(ci);
-    if (h > .987) c += vec3(.75, .8, 1.) * smoothstep(.3, .0, length(cf)) * (h - .987) * 90. * uStars * smoothstep(.02, .25, y);
+    float tw = .72 + .28 * sin(6.2832 * (uTime * (1. + floor(h * 1e4) - 3. * floor(h * 1e4 / 3.)) + h * 40.));
+    if (h > .987) c += vec3(.75, .8, 1.) * smoothstep(.3, .0, length(cf)) * (h - .987) * 90. * uStars * smoothstep(.02, .25, y) * tw;
   }
   return c;
 }
@@ -173,7 +178,8 @@ vec3 fogCol(vec3 rd, bool alt) {
 }
 vec3 fog(vec3 c, vec3 rd, float t, bool alt) { return mix(c, fogCol(rd, alt), 1. - exp(-t * uFog)); }
 
-/* has the ray gone through the ring before reaching distance t? */
+/* has the ray gone through the ring before reaching distance t? Each crossing
+   changes which world it is in, so the camera can fly through and look back. */
 bool through(vec3 ro, vec3 rd, float t) {
   if (uPortal.w <= 0.) return false;
   float tc = (uPortal.z - ro.z) / rd.z;
@@ -191,6 +197,9 @@ vec3 albedo(float m) {
   if (m < 3.5) return uAccent;
   if (m < 4.5) return vec3(.9);
   if (m < 5.5) return uStone * .45 + .01;
+  if (m > 9.5) return vec3(.16, .21, .12);
+  if (m > 8.5) return mix(uAccent, vec3(.95, .78, .45), .55);
+  if (m > 7.5) return vec3(.9);
   if (m > 6.95) return uAccent * .72;
   /* 6.xx: a colour round the wheel, for swatches */
   float hu = fract(m) * 6.2832;
@@ -216,6 +225,16 @@ vec3 light(vec3 p, vec3 rd, float m) {
   } else if (m > 3.5 && m < 4.5) {
     c = env(reflect(rd, n)) * (.55 + .45 * fr) * mix(vec3(1), uAccent, .12) * (.5 + .5 * oc);
     c += uSunCol * pow(max(dot(n, h), 0.), 400.) * sh * 6.;
+  } else if (m > 7.5 && m < 8.5) {
+    /* glass: what is behind it, bent, and what is in front of it, mirrored */
+    vec3 tr = refract(rd, n, 1. / 1.45);
+    vec3 behind = dot(tr, tr) > 0. ? env(tr) : env(reflect(rd, n));
+    c = mix(behind * mix(vec3(1), uAccent, .35) * .85, env(reflect(rd, n)), clamp(fr * 1.4, 0., 1.));
+    c += uSunCol * pow(max(dot(n, h), 0.), 300.) * sh * 5.;
+  } else if (m > 8.5 && m < 9.5) {
+    /* brass: a metal that keeps a little of its own colour */
+    c = env(reflect(rd, n)) * a * (.65 + .35 * fr) * (.55 + .45 * oc) + a * uSunCol * dif * sh * .35;
+    c += uSunCol * a * pow(max(dot(n, h), 0.), 120.) * sh * 4.;
   } else {
     c += uSunCol * pow(max(dot(n, h), 0.), 24.) * sh * .07;
     c += env(reflect(rd, n)) * fr * .08 * oc;
@@ -257,6 +276,9 @@ vec3 waterN(vec2 p, float t, bool alt) {
   float a = alt ? .07 : .09 / (1. + t * .12);
   vec2 s = alt ? vec2(.7, 2.6) : vec2(.24, .95);
   float e = .03 + t * .002;
+  /* round a circle in the noise: back where it started at the end of the loop, and
+     where the stills have it at the beginning */
+  p += vec2(alt ? 1.1 : .55, 0) + (vec2(cos(uTime * 6.2832), sin(uTime * 6.2832)) - vec2(1, 0)) * (alt ? 5. : 3.2);
   float h0 = fbm3(p * s), hx = fbm3((p + vec2(e, 0)) * s), hz = fbm3((p + vec2(0, e)) * s);
   vec3 n = normalize(vec3(-(hx - h0) / e * a * .05, 1., -(hz - h0) / e * a * .05));
   if (uRipple.z > 0.) {
@@ -271,7 +293,7 @@ vec3 render(vec3 ro, vec3 rd) {
   float m;
   float t = march(ro, rd, m);
   float tw = rd.y < 0. ? -ro.y / rd.y : 1e9;
-  bool alt = through(ro, rd, min(t, tw));
+  bool alt = (uPortal.w > 0. && ro.z < uPortal.z) != through(ro, rd, min(t, tw));
   vec3 col;
   if (m > 0. && t < tw) {
     col = fog(light(ro + rd * t, rd, m), rd, t, alt);
@@ -281,7 +303,7 @@ vec3 render(vec3 ro, vec3 rd) {
     vec3 r = reflect(rd, n); r.y = abs(r.y);
     float fr = .02 + .98 * pow(1. - max(dot(-rd, n), 0.), 5.);
     float m2; float t2 = march(p + vec3(0, .002, 0), r, m2);
-    bool alt2 = alt || through(p, r, t2);
+    bool alt2 = alt != through(p, r, t2);
     vec3 rc = m2 > 0. ? fog(light(p + r * t2, r, m2), r, t2, alt2) + air(p, r, t2) : sky(r, alt2);
     vec3 deep = uWater * (1. + .8 * (alt ? uAltHor : uHor));
     col = mix(deep, rc, clamp(fr, 0., 1.));
@@ -356,16 +378,21 @@ export const FORMS = {
     r = U(r, vec2(sdRBox(p - vec3(0, 1.45, -.06), vec3(.07, 1.38, .07), .02), SHADE));
     return r;`, beam: [0, 2.9, -0.1, 1.2, 0, 14, -1.2], glow: [0, 2.6, 0.6, 0.5], bound: [0, 1.5, 0, 2.3, 1.6, 1.4] },
 
-  /* an amphitheatre of half rings round a mast */
-  callcoach: { alt: 'An amphitheatre of half rings round a mast.', body: `
+  /* two chairs across a low table, and the card with the right answer on it */
+  callcoach: { alt: 'Two chairs across a low table, and the card with the right answer on it.', body: `
     vec2 r = vec2(1e9, 0);
-    for (int i = 0; i < 4; i++) { float f = float(i);
-      float d = sdRingY(p - vec3(0, .12 + f * .14, 0), 1.0 + f * .62, .14, .12 + f * .14);
-      r = U(r, vec2(max(d, p.z - .1), STONE)); }
-    r = U(r, vec2(sdCylY(p - vec3(0, 1.9, 0), .05, 1.9), DARK));
-    r = U(r, vec2(sdSph(p - vec3(0, 3.9, 0), .14), GLOW));
-    return r;`, glow: [0, 3.9, 0, 1.2], cam: [-1.2, 3.2, 9.2], look: [-1.3, 1.0, 0] },
-
+    for (int i = 0; i < 2; i++) {
+      float sd = i == 0 ? -1. : 1.;
+      vec3 q = p - vec3(sd * 1.45, 0, 0); q.x *= sd; q.xz *= rot(.18 * sd);
+      float c = sdRBox(q - vec3(0, .48, 0), vec3(.48, .09, .46), .05);
+      c = min(c, sdRBox(q - vec3(.42, .98, 0), vec3(.07, .5, .46), .05));
+      c = min(c, sdCylY(q - vec3(0, .2, 0), .09, .2));
+      r = U(r, vec2(c, i == 0 ? DARK : STONE));
+    }
+    r = U(r, vec2(sdCylY(p - vec3(0, .36, 0), .42, .03), STONE));
+    r = U(r, vec2(sdCylY(p - vec3(0, .17, 0), .05, .17), STONE));
+    r = U(r, vec2(sdRBox(p - vec3(0, 1.42, 0), vec3(.4, .25, .008), .012), GLOW));
+    return r;`, glow: [0, 1.42, 0.3, 1.1], cam: [-1.1, 1.25, 9.3], look: [-1.3, 0.95, 0], bound: [0, 1.0, 0, 2.2, 1.1, 0.8] },
   /* three monoliths, and the beam that reads them */
   claims: { alt: 'Three monoliths, and the beam that reads them.', body: `
     vec2 r = vec2(sdRBox(p - vec3(-1.25, 1.7, 0), vec3(.42, 1.7, .32), .02), STONE);
@@ -373,16 +400,24 @@ export const FORMS = {
     r = U(r, vec2(sdRBox(p - vec3(1.25, 1.5, 0), vec3(.42, 1.5, .32), .02), STONE));
     r = U(r, vec2(sdBox(p - vec3(0, 2.0, .33), vec3(.03, 1.6, .01)), GLOW));
     return r;`, beam: [-3.2, 2.3, 0.5, 0.8, 3.2, 2.3, 0.5], glow: [0, 2.0, 0.6, 0.6] },
-  /* a floor plan floating mid-service, one table lit */
-  covers: { alt: 'A floor plan floating mid-service, one table lit.', body: `
-    vec2 r = vec2(sdRBox(p - vec3(0, .07, 0), vec3(2.7, .07, 1.9), .03), STONE);
-    for (int i = 0; i < 9; i++) { float f = float(i);
-      vec2 c = vec2(mod(f, 3.) - 1., floor(f / 3.) - 1.) * vec2(1.6, 1.1) + vec2(sin(f * 7.1) * .18, cos(f * 3.3) * .12);
-      float t = mod(f, 2.) < .5 ? sdCylY(p - vec3(c.x, .3, c.y), .27, .16) : sdRBox(p - vec3(c.x, .3, c.y), vec3(.42, .16, .26), .02);
-      r = U(r, vec2(t, i == 4 ? PAINT : SHADE)); }
-    r = U(r, vec2(sdSph(p - vec3(0, .58, 0), .06), GLOW));
-    return r;`, glow: [0, 0.75, 0, 0.9], cam: [-1.0, 3.6, 8.6], look: [-1.25, 0.25, 0], bound: [0, 0.6, 0, 3, 0.7, 2.2] },
-
+  /* a table for tonight, set mid-service, one chair pulled out */
+  covers: { alt: 'A table for tonight, set mid-service, with one chair pulled out.', accent: '#ffc98e', body: `
+    vec2 r = vec2(sdRBox(p - vec3(0, 1.05, 0), vec3(1.95, .05, .64), .02), STONE);
+    r = U(r, vec2(sdRBox(vec3(abs(p.x) - 1.78, p.y - .5, abs(p.z) - .48), vec3(.05, .5, .05), .01), STONE));
+    for (int i = 0; i < 6; i++) {
+      float sd = i < 3 ? 1. : -1., x = (mod(float(i), 3.) - 1.) * 1.2;
+      vec3 q = p - vec3(x, 0, sd * 1.0);
+      if (i == 2) { q -= vec3(.15, 0, .55); q.xz *= rot(-.55); }
+      q.z *= sd;
+      float c = sdRBox(q - vec3(0, .55, 0), vec3(.27, .03, .25), .015);
+      c = min(c, sdRBox(q - vec3(0, .98, .24), vec3(.27, .42, .025), .015));
+      c = min(c, sdCylY(q - vec3(0, .27, 0), .035, .27));
+      r = U(r, vec2(c, SHADE));
+      r = U(r, vec2(sdCylY(p - vec3(x, 1.107, sd * .36), .17, .006), METAL));
+    }
+    r = U(r, vec2(sdCylY(p - vec3(0, 1.2, 0), .035, .09), STONE));
+    r = U(r, vec2(sdSph(p - vec3(0, 1.33, 0), .025), GLOW));
+    return r;`, glow: [0, 1.36, 0, 1.6], cam: [-1.3, 1.9, 9.2], look: [-1.35, 0.85, 0], bound: [0.1, 1.0, 0.3, 2.3, 1.1, 2.2] },
   /* tokens, and the arcs one attention head learns to draw between them */
   attention: { alt: 'Tokens, and the arcs one attention head learns to draw between them.', body: `
     vec2 r = vec2(1e9, 0);
@@ -393,17 +428,20 @@ export const FORMS = {
     q = p - vec3(.0, 1.1, 0);         r = U(r, vec2(max(sdTorZ(q, vec2(2.4, .01)), -q.y), GLOW));
     return r;`, glow: [0, 2.2, 0.3, 0.5], bound: [0, 2.2, 0, 3, 1.4, 0.5] },
 
-  /* a word split along the seams a tokeniser sees */
-  tokens: { alt: 'A word split along the seams a tokeniser sees.', body: `
-    vec3 q = p - vec3(0, 1.0, 0);
-    vec2 r = vec2(sdRBox(q - vec3(-.5, 0, -.5), vec3(.45, .95, .45), .012), STONE);
-    r = U(r, vec2(sdRBox(q - vec3(.5, .06, -.52), vec3(.45, .95, .45), .012), STONE));
-    r = U(r, vec2(sdRBox(q - vec3(-.53, -.04, .5), vec3(.45, .95, .45), .012), STONE));
-    vec3 k = q - vec3(.66, .42, .62); k.xy *= rot(.22); k.yz *= rot(-.14);
-    r = U(r, vec2(sdRBox(k, vec3(.45, .95, .45), .012), STONE));
-    r = U(r, vec2(sdBox(q - vec3(0, -.02, -.5), vec3(.012, .9, .45)), GLOW));
-    return r;`, glow: [0, 1.2, 0.2, 0.6], bound: [0.1, 1.2, 0.1, 1.6, 1.4, 1.6] },
-
+  /* a word cut into the pieces a tokeniser sees */
+  tokens: { alt: 'A word cut into the pieces a tokeniser sees.', body: `
+    vec2 r = vec2(1e9, 0);
+    float W[5] = float[5](.3, .5, .22, .62, .36);
+    float x = -2.15;
+    for (int i = 0; i < 5; i++) {
+      x += W[i];
+      vec3 q = p - vec3(x, .82, 0);
+      if (i == 3) { q.y -= .42; q.xy *= rot(.1); }
+      r = U(r, vec2(sdRBox(q, vec3(W[i], .8, .5), .015), STONE));
+      x += W[i] + .09;
+      if (i < 4) r = U(r, vec2(sdBox(p - vec3(x - .045, .82, 0), vec3(.008, .74, .46)), GLOW));
+    }
+    return r;`, glow: [0, 1.2, 0.8, 0.5], bound: [0, 1.2, 0, 2.4, 1.3, 0.6] },
   /* a balance on a hill shaped like a bell curve */
   evals: { alt: 'A balance on a hill shaped like a bell curve.', body: `
     float hill = (p.y - (1.0 * exp(-dot(p.xz, p.xz) * .3) - .06)) * .55;
@@ -412,18 +450,24 @@ export const FORMS = {
     vec3 q = p - vec3(0, 1.86, 0); q.xy *= rot(.1);
     r = U(r, vec2(sdRBox(q, vec3(2.0, .035, .07), .02), STONE));
     r = U(r, vec2(sdSph(q - vec3(-1.82, .4, 0), .37), STONE));
-    r = U(r, vec2(sdSph(q - vec3(1.82, .31, 0), .28), PAINT));
+    r = U(r, vec2(sdSph(q - vec3(1.82, .31, 0), .28), BRASS));
     return r;`, bound: [0, 1.5, 0, 4.6, 1.6, 4.6] },
 
-  /* the agent's loop, its stations, and the agent on it */
-  agents: { alt: 'The agent’s loop, its stations, and the agent on it.', body: `
-    vec2 r = vec2(sdRingY(p - vec3(0, .04, 0), 2.1, .045, .04), DARK);
-    for (int i = 0; i < 8; i++) { float a = float(i) * .7854, h = .4 + .28 * mod(float(i), 2.);
-      vec2 c = vec2(cos(a), sin(a)) * 2.1;
-      r = U(r, vec2(sdRBox(p - vec3(c.x, h, c.y), vec3(.17, h, .17), .015), STONE)); }
+  /* the agent's loop: a different tool at every station, and the agent on its way round */
+  agents: { alt: 'The agent’s loop: a different tool at every station, and the agent on its way round.', body: `
+    vec2 r = vec2(sdRingY(p - vec3(0, .03, 0), 2.1, .04, .03), DARK);
+    for (int i = 0; i < 8; i++) {
+      float a = float(i) * .7854;
+      vec3 q = p - vec3(cos(a) * 2.1, 0, sin(a) * 2.1);
+      float k = mod(float(i), 4.), d;
+      if (k < .5) d = sdRBox(q - vec3(0, .32, 0), vec3(.22, .32, .22), .02);
+      else if (k < 1.5) d = sdCylY(q - vec3(0, .42, 0), .19, .42);
+      else if (k < 2.5) d = min(sdSph(q - vec3(0, .7, 0), .22), sdCylY(q - vec3(0, .25, 0), .06, .25));
+      else d = sdCone(q, .26, .8);
+      r = U(r, vec2(d, k > 2.5 ? BRASS : STONE));
+    }
     r = U(r, vec2(sdSph(p - vec3(cos(1.95) * 2.1, .2, sin(1.95) * 2.1), .16), GLOW));
-    return r;`, glow: [Math.cos(1.95) * 2.1, 0.45, Math.sin(1.95) * 2.1, 1.0], cam: [-1.2, 2.9, 9.4], look: [-1.3, 0.45, 0], bound: [0, 0.8, 0, 2.5, 0.9, 2.5] },
-
+    return r;`, glow: [Math.cos(1.95) * 2.1, 0.45, Math.sin(1.95) * 2.1, 1.1], cam: [-1.1, 2.5, 8.4], look: [-1.25, 0.4, 0], bound: [0, 0.8, 0, 2.5, 0.9, 2.5] },
   /* a lighthouse on its rock, the beam still turning */
   lamplighter: { alt: 'A lighthouse on its rock, the beam still turning.', body: `
     float rock = (sdSph(p - vec3(0, -.7, 0), 1.45) + (vn3(p * 2.1) - .5) * .4) * .7;
@@ -478,7 +522,7 @@ export const FORMS = {
     for (int i = 0; i < 8; i++) { float f = float(i), w = 1.15 - f * .085;
       r = U(r, vec2(sdRBox(p - vec3(sin(f * 1.7) * .1, .22 + f * .44, cos(f * 1.3) * .08), vec3(w, .2, w), .012), STONE)); }
     vec3 k = p - vec3(1.75, 2.3, .5); k.xy *= rot(.62); k.yz *= rot(.28);
-    r = U(r, vec2(sdRBox(k, vec3(.3, .2, .82), .012), PAINT));
+    r = U(r, vec2(sdRBox(k, vec3(.3, .2, .82), .012), GLASS));
     return r;`, bound: [0.3, 1.9, 0.1, 2.0, 2.0, 1.6] },
 
   /* a planet, an orbit, and a ship on a line about to let go */
@@ -488,7 +532,7 @@ export const FORMS = {
     vec3 o = p - c; o.yz *= rot(1.25); o.xy *= rot(.3);
     r = U(r, vec2(sdTorZ(o, vec2(1.85, .008)), GLOW));
     vec3 s = vec3(1.55, 3.25, .5);
-    r = U(r, vec2(sdSph(p - s, .09), PAINT));
+    r = U(r, vec2(sdSph(p - s, .09), BRASS));
     r = U(r, vec2(sdCap(p, c + normalize(s - c), s, .006), STONE));
     return r;`, glow: [1.55, 3.25, 0.5, 0.5], bound: [0, 2.4, 0, 2.2, 2.2, 2.2] },
 
@@ -514,22 +558,25 @@ export const FORMS = {
     return r;`, cam: [-1.0, 3.4, 8.8], look: [-1.3, 0.2, 0], bound: [0, 0.6, 0, 1.8, 0.7, 1.8] },
 
   /* a minefield, every square decided by logic, one flag */
-  sweeper: { alt: 'A minefield, every square decided by logic, one flag.', body: `
+  sweeper: { alt: 'A minefield where every square is decided by logic, and one flag.', body: `
     vec2 id = clamp(floor(p.xz / .56), vec2(-3), vec2(2));
     vec2 l = p.xz - (id + .5) * .56;
     float up = h12(id + 7.) > .38 ? 1. : 0.;
+    if (id == vec2(1, -2)) up = 0.;
     vec2 r = vec2(sdRBox(vec3(l.x, p.y - (.05 + up * .15), l.y), vec3(.23, .05 + up * .15, .23), .02), up > .5 ? STONE : SHADE);
-    r = U(r, vec2(sdSph(p - vec3(.84, .3, -.84), .13), PAINT));
-    return r;`, cam: [-1.0, 3.4, 8.8], look: [-1.3, 0.2, 0], bound: [0, 0.4, 0, 1.75, 0.45, 1.75] },
-
-  /* eighty-one columns, every height a digit */
-  sudoku: { alt: 'Eighty-one columns, every height a digit.', body: `
-    vec2 id = clamp(floor(p.xz / .32 + .5), vec2(-4), vec2(4));
-    vec2 l = p.xz - id * .32 - sign(id) * step(1.5, abs(id)) * .0;
+    r = U(r, vec2(sdCylY(p - vec3(.84, .42, -.84), .014, .34), DARK));
+    r = U(r, vec2(sdBox(p - vec3(.99, .66, -.84), vec3(.15, .09, .006)), PAINT));
+    return r;`, fog: 0.006, cam: [-0.7, 2.7, 6.6], look: [-0.85, 0.12, 0], bound: [0, 0.5, 0, 1.75, 0.5, 1.75] },
+  /* eighty-one columns in nine blocks, every height a digit */
+  sudoku: { alt: 'Eighty-one columns in nine blocks, every height a digit.', body: `
+    vec2 B = clamp(floor(p.xz / 1.04 + .5), vec2(-1), vec2(1));
+    vec2 lb = p.xz - B * 1.04;
+    vec2 c = clamp(floor(lb / .3 + .5), vec2(-1), vec2(1));
+    vec2 l = lb - c * .3;
+    vec2 id = B * 3. + c;
     float h = .1 + floor(h12(id + 3.) * 9.) * .07;
-    vec2 r = vec2(sdRBox(vec3(l.x, p.y - h, l.y), vec3(.13, h, .13), .012), (id.x == 1. && id.y == -2.) ? PAINT : STONE);
-    return r;`, cam: [-1.0, 3.2, 8.4], look: [-1.25, 0.3, 0], bound: [0, 0.7, 0, 1.5, 0.75, 1.5] },
-
+    vec2 r = vec2(sdRBox(vec3(l.x, p.y - h, l.y), vec3(.125, h, .125), .012), (id.x == 1. && id.y == -2.) ? BRASS : STONE);
+    return r;`, fog: 0.006, cam: [-0.6, 2.9, 6.8], look: [-0.9, 0.3, 0], bound: [0, 0.7, 0, 1.6, 0.75, 1.6] },
   /* a heap of sand, and the stream still pouring */
   sandbox: { alt: 'A heap of sand, and the stream still pouring.', body: `
     vec2 r = vec2(smin(sdCone(p, 2.0, 1.45), p.y + .02, .25), STONE);
@@ -552,12 +599,18 @@ export const FORMS = {
       if (mod(f, 3.) < .5 || i == 4) r = U(r, vec2(sdCylY(p - vec3(-2.1 + f * .6, 2. * h + .012, 0), .2, .012), GLOW)); }
     return r;`, glow: [0, 2.6, 0.5, 0.6], bound: [0, 1.2, 0, 2.5, 1.3, 0.4] },
 
-  /* a world made by pressing a button */
-  island: { alt: 'A world made by pressing a button.', body: `
-    float rr = length(p.xz * vec2(1., 1.35));
-    float h = (fbm(p.xz * .85 + 2.) * 1.9 - .45) * smoothstep(2.7, .3, rr) - .15 * smoothstep(1.8, 2.8, rr);
-    return vec2(max((p.y - h) * .45, rr - 3.0), STONE);`, bound: [0, 0.8, 0, 3.1, 0.9, 2.4] },
-
+  /* a world made by pressing a button: an island in a box of sea, and the button */
+  island: { alt: 'A world made by pressing a button: an island in a box of sea, and the button beside it.', body: `
+    vec2 r = vec2(sdRBox(p - vec3(0, .55, 0), vec3(1.6, .55, 1.2), .02), STONE);
+    vec3 q = p - vec3(0, 1.1, 0);
+    float rr = length(q.xz * vec2(1., 1.3));
+    float h = (fbm(q.xz * 1.6 + 2.) * 1.15 - .3) * smoothstep(1.35, .2, rr);
+    float land = max(max((q.y - h) * .45, rr - 1.4), -q.y - .02);
+    r = U(r, vec2(land, q.y > .3 ? STONE : MOSS));
+    r = U(r, vec2(sdBox(q - vec3(0, -.005, 0), vec3(1.5, .02, 1.1)), METAL));
+    r = U(r, vec2(sdCylY(p - vec3(2.35, .3, .6), .3, .3), SHADE));
+    r = U(r, vec2(sdCylY(p - vec3(2.35, .64, .6), .21, .05), PAINT));
+    return r;`, cam: [-1.0, 2.7, 9.0], look: [-1.25, 0.9, 0], bound: [0.4, 1.3, 0.2, 2.8, 1.3, 1.8] },
   /* a code you can scan, raised out of the water */
   qr: { alt: 'A code you can scan, raised out of the water.', body: `
     vec2 id = clamp(floor(p.xz / .3), vec2(-5), vec2(4));
@@ -569,13 +622,13 @@ export const FORMS = {
     vec2 r = vec2(sdRBox(vec3(l.x, p.y - h, l.y), vec3(.14, h, .14), .01), on ? STONE : DARK);
     return r;`, cam: [-1.0, 3.3, 8.6], look: [-1.25, 0.25, 0], bound: [0, 0.2, 0, 1.6, 0.25, 1.6] },
 
-  /* a sphere split exactly in two */
-  split: { alt: 'A sphere split exactly in two.', body: `
+  /* a sphere split exactly in two: stone, and glass */
+  split: { alt: 'A sphere split exactly in two: one half stone, one half glass.', body: `
     vec3 q = p - vec3(0, 1.32, 0);
     vec3 a = q + vec3(.16, 0, 0); a.xy *= rot(.08);
     vec3 b = q - vec3(.34, .06, 0); b.xy *= rot(-.24);
     vec2 r = vec2(max(sdSph(a, 1.2), a.x), STONE);
-    r = U(r, vec2(max(sdSph(b, 1.2), -b.x), PAINT));
+    r = U(r, vec2(max(sdSph(b, 1.2), -b.x), GLASS));
     return r;`, bound: [0, 1.4, 0, 1.8, 1.4, 1.4] },
 
   /* a tuning fork, still ringing */
@@ -586,15 +639,15 @@ export const FORMS = {
     float pr = min(sdCap(p, vec3(-.45, 2.0, 0), vec3(-.45, 4.3, 0), .085), sdCap(p, vec3(.45, 2.0, 0), vec3(.45, 4.3, 0), .085));
     return vec2(min(min(stem, bend), pr), METAL);`, ripple: [0, 0, 1.5, 0.45], bound: [0, 2.2, 0, 0.7, 2.3, 0.3] },
 
-  /* a funnel that lets only some of it through */
-  sift: { alt: 'A funnel that lets only some of it through.', body: `
+  /* a glass funnel that lets only some of it through */
+  sift: { alt: 'A glass funnel that lets only some of it through.', body: `
     vec3 q = p - vec3(0, 2.25, 0);
     float f = max((abs(length(q.xz) - (.12 + q.y * .78)) - .03) * .75, abs(q.y - .75) - .75);
-    vec2 r = vec2(f, STONE);
-    for (int i = 0; i < 6; i++) r = U(r, vec2(sdSph(p - vec3(0, 2.05 - float(i) * .36, 0), .065), PAINT));
-    for (int i = 0; i < 7; i++) { float k = float(i); r = U(r, vec2(sdSph(p - vec3(sin(k * 2.4) * .7, 3.3 + fract(k * .41) * .4, cos(k * 2.4) * .5), .11), SHADE)); }
+    vec2 r = vec2(f, GLASS);
+    r = U(r, vec2(sdRingY(p - vec3(0, 3.75, 0), 1.29, .05, .03), BRASS));
+    for (int i = 0; i < 6; i++) r = U(r, vec2(sdSph(p - vec3(0, 2.05 - float(i) * .36, 0), .065), BRASS));
+    for (int i = 0; i < 7; i++) { float k = float(i); r = U(r, vec2(sdSph(p - vec3(sin(k * 2.4) * .7, 3.3 + fract(k * .41) * .4, cos(k * 2.4) * .5), .11), STONE)); }
     return r;`, bound: [0, 2.0, 0, 1.6, 2.0, 1.6] },
-
   /* a pattern compiled into a machine of states */
   'regex-lab': { alt: 'A pattern compiled into a machine of states.', body: `
     vec2 r = vec2(1e9, 0);
@@ -607,7 +660,7 @@ export const FORMS = {
 
   /* a plan: the question at the top, the tables at the bottom */
   'query-planner': { alt: 'A plan: the question at the top, the tables at the bottom.', body: `
-    vec2 r = vec2(sdRBox(p - vec3(0, 3.1, 0), vec3(.45, .25, .45), .02), PAINT);
+    vec2 r = vec2(sdRBox(p - vec3(0, 3.1, 0), vec3(.45, .25, .45), .02), BRASS);
     r = U(r, vec2(sdRBox(p - vec3(-1.2, 1.95, 0), vec3(.38, .22, .38), .02), STONE));
     r = U(r, vec2(sdRBox(p - vec3(1.2, 1.95, 0), vec3(.38, .22, .38), .02), STONE));
     for (int i = 0; i < 4; i++) { float x = -1.8 + float(i) * 1.2;
@@ -622,7 +675,7 @@ export const FORMS = {
     vec2 r = vec2(1e9, 0);
     for (int i = 0; i < 5; i++) { float a = float(i) * 1.2566 + .3, h = i == 0 ? 1.7 : 1.1;
       vec2 c = vec2(cos(a), sin(a)) * 1.9;
-      r = U(r, vec2(sdRBox(p - vec3(c.x, h, c.y), vec3(.2, h, .2), .02), STONE));
+      r = U(r, vec2(sdRBox(p - vec3(c.x, h, c.y), vec3(.2, h, .2), .02), i == 0 ? BRASS : STONE));
       if (i > 0) r = U(r, vec2(sdCap(p, vec3(cos(.3) * 1.9, 3.4, sin(.3) * 1.9), vec3(c.x, 2. * h, c.y), .012), GLOW)); }
     r = U(r, vec2(sdSph(p - vec3(cos(.3) * 1.9, 3.55, sin(.3) * 1.9), .13), GLOW));
     return r;`, glow: [Math.cos(0.3) * 1.9, 3.55, Math.sin(0.3) * 1.9, 1.0], cam: [-1.2, 2.0, 9.6], look: [-1.3, 1.0, 0], bound: [0, 1.85, 0, 2.3, 1.9, 2.3] },
@@ -680,20 +733,20 @@ export const SCENES = {
 export function ids() { return [...Object.keys(SCENES), ...Object.keys(FORMS)]; }
 
 /** Everything needed to draw one picture: shader source and uniforms. */
-export function picture(id, { region, accent } = {}, view = 'wide') {
+export function picture(id, { region, accent } = {}, view = 'wide', shot = {}) {
   const s = SCENES[id] ?? FORMS[id];
   if (!s) throw new Error(`no scene ${id}`);
   const skyName = s.sky ?? region;
   const sk = SKIES[skyName];
   if (!sk) throw new Error(`no sky for ${id}`);
-  const v = { ...DEF, ...s, ...(s.views?.[view] ?? {}) };
+  const v = { ...DEF, ...s, ...(s.views?.[view] ?? {}), ...shot };
   const beam = s.beam ?? null;
   const alt = s.portal ? norm([0, 0.035, -1]) : [0, 1, 0];
   return {
     frag: `${COMMON}\nvec2 scene(vec3 p) {${s.body}\n}\n`,
     u: {
       uZen: sk.zen, uHor: sk.hor, uSun: sk.sun, uSunCol: sk.sunCol, uWater: sk.water, uStone: sk.stone,
-      uAccent: hex(s.accent ?? accent ?? '#ffffff'), uFog: sk.fog, uStars: sk.stars, uClouds: sk.clouds, uExpo: sk.expo, uDisc: sk.disc,
+      uAccent: hex(s.accent ?? accent ?? '#ffffff'), uFog: s.fog ?? sk.fog, uStars: sk.stars, uClouds: sk.clouds, uExpo: (s.expo ?? sk.expo) * (shot.lift ?? 1), uDisc: sk.disc, uTime: shot.time ?? 0,
       uCam: v.cam, uLook: v.look, uFov: v.fov,
       uBoundC: v.bound.slice(0, 3), uBoundH: v.bound.slice(3, 6),
       uGlow: s.glow ?? [0, 0, 0, 0],

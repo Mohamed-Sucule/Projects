@@ -1,15 +1,20 @@
 /* atlas/main.js — the Portal Atlas, once script arrives.
 
    The page works without any of this: the gallery is plain HTML (build.mjs),
-   every tile is a link to the project's own page, and the pictures are files.
-   On top of that, this adds:
+   every painting is a link to the project's own page, and the pictures are
+   files. On top of that, this adds:
+
+     the way in    the portal as a film that loops, and a flight through it
+                   into the gallery as you scroll
+     the walk      on a wide screen, the rooms as one long wall that scrolling
+                   carries you along
 
      the sheet     a project opened in place, at #world/<id>: the problem, the
                    evidence, how it was built, and the next world after it
      the theatre   "Run it here" opens the real app full screen, at
                    #world/<id>/live, so Back and Esc both step out of it
-     the rest      tiles arriving as they scroll into view, the corner turning
-                   solid past the portal, and Search opening the site's finder */
+     the rest      the corner turning solid past the portal, and Search
+                   opening the site's finder */
 
 import { KINDS } from '../shared/atlas.js';
 import { ISLANDS, REGIONS, TALLY_URL, islandById } from './worlds.js';
@@ -51,37 +56,198 @@ $('.search').addEventListener('click', () => {
   document.querySelector('[data-navigator]')?.shadowRoot?.querySelector('.pill')?.click();
 });
 
-/* the portal drifts a little slower than the page */
-const heroImg = $('.hero-art img');
-if (!reduced) {
-  let queued = false;
-  addEventListener('scroll', () => {
-    if (queued) return;
-    queued = true;
-    requestAnimationFrame(() => {
-      queued = false;
-      const y = scrollY;
-      if (y < innerHeight * 1.2) heroImg.style.translate = `0 ${(y * 0.22).toFixed(1)}px`;
-    });
-  }, { passive: true });
+/* ── the way through ─────────────────────────────────────────────────────
+   At rest, on a wide screen, the portal is a three-second film of itself that
+   loops (the sea drifts, the stars turn over); a phone keeps the still. Scroll, and the film gives way to frames of a
+   flight: the camera lines up with the ring, goes through it, and the evening
+   on the other side brightens until it is the light the gallery begins in.
+   Both are rendered offline (art/motion.mjs); here they are only played. */
+
+const saveData = navigator.connection?.saveData === true;
+const stage = $('.hero-stage');
+const tall = () => innerWidth / innerHeight < 0.8;
+const moving = !reduced && !saveData;
+let video = null;
+if (moving && !tall()) {
+  video = el('video', { class: 'hero-video', muted: '', loop: '', playsinline: '', autoplay: '', preload: 'auto', 'aria-hidden': 'true' });
+  video.muted = true;
+  for (const [type, ext] of [['video/webm', 'webm'], ['video/mp4', 'mp4']]) {
+    video.append(el('source', { type, src: `art/portal-loop.${ext}` }));
+  }
+  video.addEventListener('playing', () => video.classList.add('on'), { once: true });
+  $('.hero-art').after(video);
+  video.play?.().catch(() => {});
 }
 
-/* ── the gallery ─────────────────────────────────────────────────────── */
+const FLIGHT = 32;
+const flight = $('.flight');
+const fctx = flight.getContext('2d');
+let frames = null, frameSet = null, drawn = -1;
+if (moving) hero.classList.add('crossing');
+function loadFlight() {
+  const set = tall() ? 'tall' : 'wide';
+  if (frameSet === set) return;
+  frameSet = set;
+  frames = Array.from({ length: FLIGHT }, (_, i) => {
+    const im = new Image();
+    im.decoding = 'async';
+    im.src = `art/flight/${set}-${String(i).padStart(2, '0')}.webp`;
+    im.onload = () => { if (drawn === -2) paint(); };
+    return im;
+  });
+}
+function fitCanvas() {
+  const d = Math.min(devicePixelRatio || 1, 2);
+  flight.width = Math.round(stage.clientWidth * d);
+  flight.height = Math.round(stage.clientHeight * d);
+  drawn = -1;
+}
+/* the same cover fit and focal point as the picture underneath, so frame 0 is the still */
+function drawFrame(im, alpha = 1) {
+  const W = flight.width, H = flight.height, s = Math.max(W / im.naturalWidth, H / im.naturalHeight);
+  const w = im.naturalWidth * s, h = im.naturalHeight * s;
+  const [fx, fy] = tall() ? [0.5, 0.3] : [0.88, 0.5];
+  fctx.globalAlpha = alpha;
+  fctx.drawImage(im, (W - w) * fx, (H - h) * fy, w, h);
+  fctx.globalAlpha = 1;
+}
+const ready = (im) => im.complete && im.naturalWidth > 0;
+let fly = 0;
+/* between two frames, the second fades over the first, so 32 frames read as a flight */
+function paint() {
+  if (!frames) return;
+  const pos = fly * (FLIGHT - 1);
+  let i = Math.min(FLIGHT - 1, Math.floor(pos));
+  const t = pos - i;
+  /* the nearest frame that has arrived, so a slow connection still moves */
+  while (i > 0 && !ready(frames[i])) i--;
+  if (!ready(frames[i])) { drawn = -2; return; }
+  const key = i + Math.round(t * 16) / 16;
+  if (key === drawn) return;
+  drawFrame(frames[i]);
+  const next = frames[i + 1];
+  if (next && ready(next) && t > 0.01) drawFrame(next, t);
+  drawn = key;
+}
+function onFly() {
+  if (!moving) return;
+  const span = hero.offsetHeight - innerHeight;
+  fly = Math.max(0, Math.min(1, scrollY / Math.max(1, span)));
+  hero.style.setProperty('--fly', fly.toFixed(4));
+  const on = fly > 0.002;
+  if (on && !frames) loadFlight();
+  flight.classList.toggle('on', on);
+  if (on) { paint(); video?.pause(); } else if (video?.paused) video.play().catch(() => {});
+  /* past the bright middle of the flight the corner needs its own ground to stand on */
+  nav.classList.toggle('over-light', fly > 0.62);
+  /* when the scrolling stops, settle on a whole frame rather than a blend of two */
+  clearTimeout(settleTimer);
+  if (on) settleTimer = setTimeout(() => { fly = Math.round(fly * (FLIGHT - 1)) / (FLIGHT - 1); drawn = -1; paint(); }, 140);
+}
+let settleTimer = 0;
+if (moving) {
+  fitCanvas();
+  /* fetch the flight once the opening has settled, before anyone needs it */
+  addEventListener('load', () => setTimeout(loadFlight, 1200), { once: true });
+}
 
-const tiles = [...document.querySelectorAll('.tile')];
-if (reduced || !('IntersectionObserver' in window)) tiles.forEach((t) => t.classList.add('in'));
+/* "Enter the gallery" takes you through the ring rather than past it; a wheel,
+   a touch or a key hands the scroll straight back. */
+$('.hero .primary').addEventListener('click', (e) => {
+  const to = $('#work').getBoundingClientRect().top + scrollY;
+  if (!moving) return;
+  e.preventDefault();
+  const from = scrollY, t0 = performance.now(), dur = 2600;
+  let raf = 0;
+  const stop = () => { cancelAnimationFrame(raf); for (const ev of ['wheel', 'touchstart', 'keydown']) removeEventListener(ev, stop); };
+  for (const ev of ['wheel', 'touchstart', 'keydown']) addEventListener(ev, stop, { passive: true });
+  const step = (now) => {
+    const u = Math.min(1, (now - t0) / dur);
+    scrollTo(0, from + (to - from) * (u < 0.5 ? 4 * u * u * u : 1 - (-2 * u + 2) ** 3 / 2));
+    if (u < 1) raf = requestAnimationFrame(step); else { stop(); $('#work-title').focus?.({ preventScroll: true }); }
+  };
+  raf = requestAnimationFrame(step);
+});
+
+/* ── the gallery ───────────────────────────────────────────────────────── */
+
+const corridor = $('.corridor');
+const wallEl = $('.wall');
+const rooms = [...document.querySelectorAll('.room')];
+const paintings = [...document.querySelectorAll('.painting')];
+const whereRoom = $('.w-room');
+const whereBar = $('.w-bar i');
+let walk = false, extra = 0, cTop = 0;
+
+if (reduced || !('IntersectionObserver' in window)) paintings.forEach((t) => t.classList.add('in'));
 else {
   const io = new IntersectionObserver((entries) => {
     for (const e of entries) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
   }, { rootMargin: '0px 0px -8% 0px' });
-  tiles.forEach((t) => io.observe(t));
+  paintings.forEach((t) => io.observe(t));
 }
-document.querySelector('.regions').addEventListener('click', (e) => {
+
+/* on a wide screen the corridor is one long wall, and scrolling walks along it */
+const leftOf = (n) => n.getBoundingClientRect().left - wallEl.getBoundingClientRect().left;
+function layoutWalk() {
+  walk = !reduced && innerWidth >= 900 && innerWidth / innerHeight >= 1.05;
+  corridor.classList.toggle('walk', walk);
+  if (!walk) { corridor.style.height = ''; wallEl.style.transform = ''; return; }
+  extra = Math.max(0, wallEl.scrollWidth - innerWidth);
+  corridor.style.height = `${innerHeight + extra}px`;
+  cTop = corridor.getBoundingClientRect().top + scrollY;
+  onWalk();
+}
+function onWalk() {
+  if (!walk) return;
+  const x = Math.min(extra, Math.max(0, scrollY - cTop));
+  /* a focused link can scroll the stage itself where clip is not supported; only the walk moves it */
+  wallEl.parentElement.scrollLeft = 0;
+  wallEl.style.transform = `translate3d(${(-x).toFixed(1)}px, 0, 0)`;
+  let room = rooms[0];
+  for (const r of rooms) if (r.offsetLeft <= x + innerWidth * 0.5) room = r;
+  const n = rooms.indexOf(room);
+  const label = `Room ${ROMAN[n]} · ${REGIONS[n].name}`;
+  if (whereRoom.textContent !== label) whereRoom.textContent = label;
+  whereBar.style.width = `${(x / Math.max(1, extra)) * 100}%`;
+}
+/* bring a painting (or a room) to the middle of the screen, along the wall or down the page */
+function bringIntoView(node, { smooth = !reduced, start = false } = {}) {
+  if (!node) return;
+  if (!walk) { node.scrollIntoView({ block: start ? 'start' : 'center', behavior: smooth ? 'smooth' : 'auto' }); return; }
+  const left = leftOf(node);
+  const x = start ? left : left - (innerWidth - node.offsetWidth) / 2;
+  scrollTo({ top: cTop + Math.max(0, Math.min(extra, x)), behavior: smooth ? 'smooth' : 'auto' });
+}
+document.querySelectorAll('.contents a').forEach((a) => a.addEventListener('click', (e) => {
+  if (!walk) return;
+  e.preventDefault();
+  bringIntoView(document.querySelector(a.getAttribute('href')), { start: true });
+}));
+/* walking with Tab: whatever is focused is brought to where it can be seen */
+corridor.addEventListener('focusin', (e) => {
+  if (!walk) return;
+  const p = e.target.closest('.painting');
+  wallEl.parentElement.scrollLeft = 0;
+  if (p) bringIntoView(p, { smooth: false });
+});
+wallEl.addEventListener('click', (e) => {
   const a = e.target.closest('[data-open]');
   if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
   e.preventDefault();
   open(a.dataset.open, { push: true });
 });
+
+let queued = false;
+addEventListener('scroll', () => {
+  if (queued) return;
+  queued = true;
+  requestAnimationFrame(() => { queued = false; onFly(); onWalk(); });
+}, { passive: true });
+addEventListener('resize', () => { if (moving) { fitCanvas(); if (frames && frameSet !== (tall() ? 'tall' : 'wide')) { frames = null; frameSet = null; } } layoutWalk(); onFly(); });
+addEventListener('load', layoutWalk);
+layoutWalk();
+onFly();
 
 /* ── a project, opened ───────────────────────────────────────────────── */
 
@@ -89,7 +255,7 @@ const sheet = $('#sheet');
 const outside = [nav, $('main'), $('.foot')];
 let current = null;
 let pushed = false;
-let lastTile = null;
+let lastSeen = null;
 
 function fill(i) {
   const q = (s) => sheet.querySelector(s);
@@ -98,15 +264,15 @@ function fill(i) {
   q('.kind').textContent = kindLabel(i);
   q('#sh-title').textContent = i.title;
   q('.blurb').textContent = i.blurb;
-  const tile = document.querySelector(`.tile[data-id="${i.id}"]`);
+  const work = document.querySelector(`.painting[data-id="${i.id}"]`);
   const art = q('.sh-art');
-  const loaded = tile?.querySelector('.art')?.currentSrc;
+  const loaded = work?.querySelector('.art')?.currentSrc;
   art.removeAttribute('srcset');
   art.src = loaded || `art/${i.id}-900.webp`;
   art.sizes = '100vw';
   art.srcset = artSet(i.id);
   art.alt = '';
-  q('.sh-alt').textContent = tile?.dataset.alt ? `The picture: ${tile.dataset.alt.replace(/\.$/, '')}.` : '';
+  q('.sh-alt').textContent = work?.dataset.alt ? `The picture: ${work.dataset.alt.replace(/\.$/, '')}.` : '';
 
   const actions = q('.sh-actions');
   actions.replaceChildren();
@@ -134,7 +300,7 @@ function fill(i) {
 
   const shot = q('.sh-shot img');
   shot.src = `shots/${i.id}-960.webp`;
-  shot.srcset = tile?.querySelector('.shot')?.getAttribute('srcset') ?? '';
+  shot.srcset = work?.querySelector('.shot')?.getAttribute('srcset') ?? '';
   shot.sizes = '(min-width: 860px) 40vw, 100vw';
   shot.alt = `${i.title} as it first opens.`;
   q('.sh-shot figcaption').textContent = launch
@@ -157,7 +323,7 @@ function fill(i) {
   document.title = `${i.title} — Portal Atlas`;
 }
 
-/* Where the browser can, the tile's picture itself grows into the sheet. */
+/* Where the browser can, the painting itself grows into the sheet. */
 function transition(update, withArt) {
   if (reduced || !document.startViewTransition || !withArt) { update(); return; }
   withArt.style.viewTransitionName = 'art';
@@ -173,8 +339,8 @@ function open(id, { push = false } = {}) {
   const i = islandById.get(id);
   if (!i) return;
   const wasOpen = !sheet.hidden;
-  const tile = document.querySelector(`.tile[data-id="${id}"]`);
-  if (!wasOpen) lastTile = tile;
+  const work = document.querySelector(`.painting[data-id="${id}"]`);
+  if (!wasOpen) lastSeen = work;
   const show = () => {
     fill(i);
     current = id;
@@ -188,7 +354,7 @@ function open(id, { push = false } = {}) {
     show();
   } else {
     sheet.classList.remove('closing');
-    const art = tile?.querySelector('.art');
+    const art = work?.querySelector('.art');
     const visible = art && art.getBoundingClientRect().bottom > 0 && art.getBoundingClientRect().top < innerHeight;
     if (visible && document.startViewTransition && !reduced) transition(show, art);
     else { show(); if (!reduced) { sheet.classList.add('opening'); setTimeout(() => sheet.classList.remove('opening'), 600); } }
@@ -204,7 +370,7 @@ function close({ fromHistory = false } = {}) {
   if (sheet.hidden) return;
   closeTheatre({ quiet: true, fromHistory: true });
   const id = current;
-  const tile = document.querySelector(`.tile[data-id="${id}"]`) ?? lastTile;
+  const work = document.querySelector(`.painting[data-id="${id}"]`) ?? lastSeen;
   const hide = () => {
     sheet.hidden = true;
     sheet.classList.remove('closing');
@@ -212,11 +378,11 @@ function close({ fromHistory = false } = {}) {
     outside.forEach((n) => { n.inert = false; });
     current = null;
     document.title = 'Portal Atlas — Mohamed Sucule, AI product builder: ideas that escape the ordinary';
-    tile?.querySelector('h4 a')?.focus({ preventScroll: true });
+    work?.querySelector('h4 a')?.focus({ preventScroll: true });
   };
-  const art = tile?.querySelector('.art');
+  const art = work?.querySelector('.art');
   if (!reduced && document.startViewTransition && art && sheet.scrollTop < innerHeight * 0.5) {
-    tile.scrollIntoView({ block: 'center' });
+    bringIntoView(work, { smooth: false });
     sheet.querySelector('.sh-art').style.viewTransitionName = 'art';
     const vt = document.startViewTransition(() => {
       sheet.querySelector('.sh-art').style.viewTransitionName = '';
@@ -225,11 +391,11 @@ function close({ fromHistory = false } = {}) {
     });
     vt.finished.finally(() => { art.style.viewTransitionName = ''; });
   } else if (!reduced) {
-    tile?.scrollIntoView({ block: 'center' });
+    bringIntoView(work, { smooth: false });
     sheet.classList.add('closing');
     setTimeout(hide, 330);
   } else {
-    tile?.scrollIntoView({ block: 'center' });
+    bringIntoView(work, { smooth: false });
     hide();
   }
   if (!fromHistory) {
