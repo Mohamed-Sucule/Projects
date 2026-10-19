@@ -50,7 +50,9 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: your-place/package-lock.json
+          cache-dependency-path: |
+            your-place/package-lock.json
+            your-sky/package-lock.json
       - name: Build Your Place into /your-place/
         working-directory: your-place
         env:
@@ -59,11 +61,21 @@ jobs:
           npm ci
           npm test
           npm run build
-      - name: Serve the built app, not its source
+      - name: Build Your Sky into /your-sky/
+        working-directory: your-sky
+        env:
+          VITE_PORTFOLIO_URL: ../atlas/
         run: |
-          mv your-place/dist "$RUNNER_TEMP/your-place"
-          rm -rf your-place
-          mv "$RUNNER_TEMP/your-place" your-place
+          npm ci
+          npm test
+          npm run build
+      - name: Serve the built apps, not their source
+        run: |
+          for app in your-place your-sky; do
+            mv "$app/dist" "$RUNNER_TEMP/$app"
+            rm -rf "$app"
+            mv "$RUNNER_TEMP/$app" "$app"
+          done
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

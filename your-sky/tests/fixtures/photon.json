@@ -1,0 +1,57 @@
+{
+  "_note": "Test stand-in for photon.komoot.io, shaped like its GeoJSON responses. Places are in Zurich so their maps exist in the tile fixture.",
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [8.5410422, 47.3744489] },
+      "properties": {
+        "osm_type": "R",
+        "osm_id": 1682248,
+        "extent": [8.4480061, 47.4348553, 8.6254413, 47.3202184],
+        "country": "Switzerland",
+        "state": "Zurich",
+        "name": "Zürich",
+        "type": "city"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [8.5402, 47.3779] },
+      "properties": {
+        "osm_type": "W",
+        "osm_id": 1001,
+        "country": "Switzerland",
+        "city": "Zürich",
+        "district": "Kreis 1",
+        "name": "Zürich Hauptbahnhof",
+        "type": "house"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [8.5753, 47.3811] },
+      "properties": {
+        "osm_type": "N",
+        "osm_id": 1002,
+        "country": "Switzerland",
+        "city": "Zürich",
+        "name": "Zürichberg",
+        "type": "locality"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [8.5487, 47.3667] },
+      "properties": {
+        "osm_type": "W",
+        "osm_id": 1003,
+        "country": "Switzerland",
+        "city": "Zürich",
+        "district": "Seefeld",
+        "name": "Bellevueplatz",
+        "type": "street"
+      }
+    }
+  ]
+}

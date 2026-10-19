@@ -242,9 +242,16 @@
   .plate-body b { color: var(--ink); font-weight: 600; }
   .plate .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 26px; margin-top: 30px; }
   .plate-note { display: inline-block; margin: 26px 0 0; font-size: 26px; transform: rotate(-2deg); }
+  /* the second plate faces the first, the way facing plates sit in a book */
+  .plate + .plate { margin-top: clamp(72px, 9vw, 120px); }
+  .plate.facing { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+  .plate.facing .plate-art { order: 2; transform: rotate(1.2deg); }
+  .plate.facing .plate-art:hover { transform: rotate(0deg) scale(1.012); }
+  .plate.facing .plate-note { transform: rotate(1.5deg); }
   @media (max-width: 760px) {
-    .plate { grid-template-columns: minmax(0, 1fr); }
+    .plate, .plate.facing { grid-template-columns: minmax(0, 1fr); }
     .plate-art { max-width: 380px; }
+    .plate.facing .plate-art { order: 0; }
   }
   a.case { display: flex; flex-direction: column; text-decoration: none; color: inherit; background: #fbf9f3; outline: 1px solid var(--ink); transition: transform .25s cubic-bezier(.2,.7,.3,1), box-shadow .25s; }
   a.case:hover { transform: translateY(-4px); box-shadow: 0 26px 44px -26px rgba(40,28,10,.55); }
@@ -789,16 +796,16 @@
 
 <div class="page">
 
-  <!-- ── the plate ────────────────────────────────────────────────────────────
-       The flagship, tipped in on its own rather than being one more frame on
-       the contact sheet. tests/front.test.mjs keeps every flagship here. -->
+  <!-- ── the plates ───────────────────────────────────────────────────────────
+       The flagships, each tipped in on its own rather than being one more frame
+       on the contact sheet. tests/front.test.mjs keeps every flagship here. -->
   <aside class="plate reveal" aria-labelledby="plate-title">
     <a class="plate-art" href="your-place/index.html" tabindex="-1" aria-hidden="true">
       <img src="assets/your-place-poster.webp" width="680" height="962" loading="lazy" decoding="async"
         alt="" />
     </a>
     <div>
-      <p class="plate-no">Plate I &middot; the newest</p>
+      <p class="plate-no">Plate I &middot; the first of a pair</p>
       <h2 id="plate-title"><a href="your-place/index.html">Your Place</a></h2>
       <p class="plate-line">Any place on Earth, as a poster.</p>
       <p class="plate-body">
@@ -812,6 +819,30 @@
         <a class="quiet-link" href="atlas/projects/your-place/">how it is built, and the tests</a>
       </div>
       <p class="plate-note hand">your home town takes about a minute</p>
+    </div>
+  </aside>
+
+  <aside class="plate facing reveal" aria-labelledby="plate-two-title">
+    <a class="plate-art" href="your-sky/index.html" tabindex="-1" aria-hidden="true">
+      <img src="assets/your-sky-poster.webp" width="680" height="962" loading="lazy" decoding="async"
+        alt="" />
+    </a>
+    <div>
+      <p class="plate-no">Plate II &middot; the newest</p>
+      <h2 id="plate-two-title"><a href="your-sky/index.html">Your Sky</a></h2>
+      <p class="plate-line">The stars over any place, on any night.</p>
+      <p class="plate-body">
+        Pick a place and a moment &mdash; the night you met, the night someone was born &mdash; and
+        get a chart of exactly what was overhead: the constellations, the Milky Way, the planets
+        where they really were and the Moon in its real phase, like this one of Paris on
+        14 February 2025. <b>React and TypeScript</b> again, with real astronomy under it and
+        sixty tests that check the sky against facts.
+      </p>
+      <div class="actions">
+        <a class="stamp" href="your-sky/index.html"><span class="face">Make one</span></a>
+        <a class="quiet-link" href="atlas/projects/your-sky/">how it is built, and the tests</a>
+      </div>
+      <p class="plate-note hand">press play and watch the night turn</p>
     </div>
   </aside>
 
@@ -1271,9 +1302,9 @@
     <h4>Colophon</h4>
     <p>
       Set in Instrument Serif, Newsreader, JetBrains Mono and Caveat, served from this repository.
-      No frameworks, no build step, no dependencies — every page here but one is plain HTML, CSS and
-      JavaScript. The one is Your Place, which is React and TypeScript on purpose, with its own
-      unit and end-to-end tests. The engines behind Front Desk, Ask the Handbook, Call Coach, Claims Desk, Ace, Nightshift, The Room, Covers, the transformer, the
+      No frameworks, no build step, no dependencies — every page here but two is plain HTML, CSS and
+      JavaScript. The two are Your Place and Your Sky, which are React and TypeScript on purpose,
+      each with its own unit and end-to-end tests. The engines behind Front Desk, Ask the Handbook, Call Coach, Claims Desk, Ace, Nightshift, The Room, Covers, the transformer, the
       tokeniser, the QR encoder, the tuner, Minesweeper, Sudoku, Split and each of the tools
       are unit-tested, along with the four AI products: over 850 tests, run in CI
       before anything is published — including twenty gradient checks against finite differences,

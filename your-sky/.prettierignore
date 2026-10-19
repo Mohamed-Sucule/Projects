@@ -1,0 +1,8 @@
+dist
+node_modules
+tests/fixtures
+playwright-report
+test-results
+package-lock.json
+docs
+src/sky/data
