@@ -17,7 +17,7 @@
 
   :root {
     --paper: #f3efe5; --tile: #e4ddcc; --tile-hi: #efe9da; --tile-lo: #c9bfa9; --card: #fbf9f3;
-    --ink: #17140f; --ink-2: #4a4439; --ink-3: #857c6c; --rule-2: rgba(23,20,15,.3); --red: #cf2e1b; --green: #2c7a4b;
+    --ink: #17140f; --ink-2: #4a4439; --ink-3: #6a6356; --rule-2: rgba(23,20,15,.3); --red: #cf2e1b; --green: #2c7a4b;
     --display: "Instrument Serif", Georgia, serif; --text: "Newsreader", Georgia, serif;
     --mono: "JetBrains Mono Var", ui-monospace, Menlo, monospace;
     --cell: 34px;
@@ -58,6 +58,7 @@
      rather than dragging the page sideways with it. */
   .stage { display: flex; justify-content: safe center; overflow-x: auto; }
   .board-wrap { position: relative; padding: 10px; background: var(--tile-lo); box-shadow: 0 1px 0 rgba(0,0,0,.05), 0 26px 48px -26px rgba(60,45,20,.55); }
+  .board .row { display: contents; }
   .board { display: grid; gap: 2px; touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
   .cell {
     width: var(--cell); height: var(--cell); border: 0; padding: 0; cursor: pointer; position: relative;
@@ -68,7 +69,7 @@
   .cell:focus-visible { outline: 2px solid var(--red); outline-offset: -2px; z-index: 2; }
   .cell.open { background: var(--card); box-shadow: none; cursor: default; }
   .cell.n1 { color: #1f5fbf; } .cell.n2 { color: #2c7a4b; } .cell.n3 { color: #cf2e1b; } .cell.n4 { color: #23306e; }
-  .cell.n5 { color: #7a1f1f; } .cell.n6 { color: #1f7a7a; } .cell.n7 { color: #17140f; } .cell.n8 { color: #857c6c; }
+  .cell.n5 { color: #7a1f1f; } .cell.n6 { color: #1f7a7a; } .cell.n7 { color: #17140f; } .cell.n8 { color: #6a6356; }
   /* A flag is drawn, not an emoji: emoji flags are a different colour and
      size on every phone, and on some they are a country. */
   .cell.flag::before {
@@ -153,6 +154,7 @@ import { Game, LEVELS } from './engine.js';
 
 const $ = (id) => document.getElementById(id);
 const board = $('board');
+let cells = [];
 let level = 'medium', game, started = 0, timer = null, shown = null, flagMode = false, best = {};
 try { best = JSON.parse(localStorage.getItem('sweeper.best') || '{}'); } catch {}
 
@@ -190,19 +192,29 @@ function build() {
   const room = Math.min(innerWidth, 1140) - (narrow ? 24 : 40) - (narrow ? 12 : 20) - (game.w - 1) * (narrow ? 1 : 2);
   const cell = Math.max(16, Math.min(38, Math.floor(room / game.w)));
   document.documentElement.style.setProperty('--cell', `${cell}px`);
-  for (let i = 0; i < game.n; i++) {
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'cell';
-    b.dataset.i = i;
-    b.setAttribute('role', 'gridcell');
-    board.append(b);
+  /* rows exist for assistive technology, which reads a grid row by row; to the
+     layout they are invisible (display: contents), so the cells still sit in one CSS grid */
+  cells = [];
+  for (let y = 0; y < game.h; y++) {
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.setAttribute('role', 'row');
+    for (let x = 0; x < game.w; x++) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'cell';
+      b.dataset.i = y * game.w + x;
+      b.setAttribute('role', 'gridcell');
+      row.append(b);
+      cells.push(b);
+    }
+    board.append(row);
   }
 }
 
 function render() {
   const lost = game.status === 'lost';
-  for (const b of board.children) {
+  for (const b of cells) {
     const i = Number(b.dataset.i);
     const open = game.open[i] === 1, flag = game.flags[i] === 1;
     let cls = 'cell';
@@ -292,7 +304,7 @@ board.addEventListener('keydown', (e) => {
   if (move) {
     e.preventDefault();
     const nx = Math.max(0, Math.min(game.w - 1, x + move[0])), ny = Math.max(0, Math.min(game.h - 1, y + move[1]));
-    board.children[ny * game.w + nx].focus();
+    cells[ny * game.w + nx].focus();
   } else if (e.key === 'f' || e.key === 'F') { e.preventDefault(); act(i, true); }
 });
 

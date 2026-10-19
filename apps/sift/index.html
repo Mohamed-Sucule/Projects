@@ -13,8 +13,8 @@
   *, *::before, *::after { box-sizing: border-box; }
   :root {
     --bg: #0a0d16; --panel: #0f1422; --line: rgba(255,255,255,.09);
-    --line2: rgba(255,255,255,.16); --ink: #e9eefb; --dim: rgba(233,238,251,.52);
-    --dimmer: rgba(233,238,251,.33); --accent: #5fb8ff;
+    --line2: rgba(255,255,255,.16); --ink: #e9eefb; --dim: rgba(233,238,251,.62);
+    --dimmer: rgba(233,238,251,.54); --accent: #5fb8ff;
     --num: #7ee0b0; --date: #c9a6ff; --cat: #ffc46b; --txt: #9fb3d9; --bool: #ff9bb0;
   }
   html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink);
@@ -116,6 +116,7 @@
     .title small { display: none; }
     .col { width: 150px; }
   }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -255,13 +256,12 @@ function paintColumns() {
         `<div style="--w:${(t.count / max) * 100}%"><span>${esc(t.value)} · ${t.count.toLocaleString()}</span></div>`).join('')}</div>`;
     }
 
-    d.innerHTML = `<h3 title="${esc(c.name)}">${esc(c.name)}</h3>
+    d.innerHTML = `<h3 title="${esc(c.name)}"><span class="sr-only">Sort by </span>${esc(c.name)}</h3>
       <span class="type t-${c.type}">${c.type}</span>
       <div class="facts">${key || (c.distinct !== undefined ? `${c.distinct.toLocaleString()} distinct · ` : '')}${gaps}${odd}</div>
       ${body}`;
     d.tabIndex = 0;
     d.setAttribute('role', 'button');
-    d.setAttribute('aria-label', `Sort by ${c.name}`);
     d.addEventListener('click', () => sortBy(i));
     d.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); sortBy(i); }

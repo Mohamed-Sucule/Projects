@@ -130,15 +130,15 @@
         <div class="editors" style="flex:1">
           <div class="ed">
             <div class="lbl"><span class="pip" style="background:var(--fg-mute)"></span>base &mdash; the common ancestor</div>
-            <textarea id="base" spellcheck="false"></textarea>
+            <textarea id="base" spellcheck="false" aria-label="base: the common ancestor"></textarea>
           </div>
           <div class="ed">
             <div class="lbl"><span class="pip" style="background:var(--accent)"></span>ours &mdash; your branch</div>
-            <textarea id="ours" spellcheck="false"></textarea>
+            <textarea id="ours" spellcheck="false" aria-label="ours: your branch"></textarea>
           </div>
           <div class="ed">
             <div class="lbl"><span class="pip" style="background:var(--viol)"></span>theirs &mdash; the incoming branch</div>
-            <textarea id="theirs" spellcheck="false"></textarea>
+            <textarea id="theirs" spellcheck="false" aria-label="theirs: the incoming branch"></textarea>
           </div>
         </div>
       </div>
@@ -339,7 +339,7 @@ function renderRight() {
 
   box.append(h('h3', { class: 'sec' }, 'merged result'));
   const { text, unresolved } = resolve(chunks);
-  const pre = h('pre', { class: 'out' });
+  const pre = h('pre', { class: 'out', tabindex: 0, 'aria-label': 'merged result' });
   for (const line of text.split('\n')) {
     const marker = /^(<<<<<<<|=======|>>>>>>>)/.test(line);
     pre.append(h('span', { class: marker ? 'mk' : '' }, line + '\n'));

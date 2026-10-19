@@ -1,12 +1,17 @@
 {
-  "name": "design-engineering-lab",
+  "name": "mohamed-sucule-portfolio",
   "version": "1.0.0",
   "private": true,
-  "description": "Six interfaces for systems that refuse to be simple — each built from the algorithm up.",
+  "description": "The portfolio of Mohamed Sucule, frontend engineer: two React and TypeScript apps and thirty-four more pieces that run in the browser.",
   "type": "module",
   "scripts": {
     "test": "node tests/run.mjs",
+    "a11y": "node tests/a11y/scan.mjs",
     "dev": "npx --yes http-server -p 8080 -c-1 ."
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "playwright": "1.56.1"
   },
   "engines": { "node": ">=18" },
   "license": "MIT"
