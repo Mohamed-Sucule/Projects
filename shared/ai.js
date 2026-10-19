@@ -25,7 +25,9 @@
    ─────────────────────────────────────────────────────────────────────────── */
 
 /* Pinned, so a new release upstream can never change what these pages run.
-   The ONNX build is the one this Transformers.js release was built against. */
+   The ONNX build is a dev build, which looks like a mistake and is not: it is
+   exactly the version Transformers.js 4.3.0 names in its own package.json, so
+   these two are the pair upstream ships together. Upgrade them as a pair. */
 const TRANSFORMERS = 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.0/dist/transformers.min.js';
 const ORT_WASM = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.0-dev.20260914-8d85527a0/dist/';
 

@@ -255,6 +255,7 @@ function escape(s) {
 function CSS() {
   return `
   :host { all: initial; }
+  @media print { :host { display: none !important; } }
   * { box-sizing: border-box; font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
   kbd { font: 600 10px/1 ui-monospace, "SF Mono", Menlo, monospace; letter-spacing: .04em;
         border: 1px solid rgba(255,255,255,.2); border-radius: 4px; padding: 3px 5px;

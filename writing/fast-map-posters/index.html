@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>From 41.7 seconds to 0.39 — making a map poster fast, by Mohamed Sucule</title>
+<meta name="description" content="How the first poster in Your Place went from 41.7 seconds to 0.39: asking for a third of the tiles, a Chromium path call that slowed down as the path grew, and a Web Worker that keeps the map moving under your finger." />
+<link rel="icon" href="../../favicon.svg" />
+<meta name="theme-color" content="#f6f5f1" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0f1115" media="(prefers-color-scheme: dark)" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="From 41.7 seconds to 0.39: making a map poster fast" />
+<meta property="og:description" content="Fewer tiles, one browser call that slowed down as the path grew, and a Web Worker that keeps the map moving under your finger." />
+<meta property="og:url" content="https://mohamed-sucule.github.io/Projects/writing/fast-map-posters/" />
+<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/assets/og-card.png" />
+<link rel="canonical" href="https://mohamed-sucule.github.io/Projects/writing/fast-map-posters/" />
+<link rel="stylesheet" href="../writing.css" />
+</head>
+<body>
+<a class="skip" href="#article">Skip to the article</a>
+<header class="top">
+  <div class="in">
+    <a class="mark" href="../../">Mohamed Sucule</a>
+    <nav aria-label="Main">
+      <a href="../../#work">Work</a>
+      <a href="../../#writing">Writing</a>
+      <a href="../../cv/">CV</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<article id="article">
+  <p class="label">Performance · Your Place</p>
+  <h1>From 41.7 seconds to 0.39: making a map poster fast</h1>
+  <p class="standfirst">The map engine behind Your Place worked on the first try and was unusably slow. Two fixes, both found by measuring, took the first poster from 41.7 seconds to 0.39. A Web Worker then made what was left invisible.</p>
+  <p class="byline">Mohamed Sucule · <a href="../../your-place/index.html">Open Your Place</a> · <a href="https://github.com/Mohamed-Sucule/Projects/tree/main/your-place">Source</a></p>
+
+  <figure>
+    <img src="../../atlas/shots/your-place-1920.webp" width="1920" height="1200" alt="Your Place: a poster of Zürich, streets in gold on black, with the style, text and size controls beside it" />
+    <figcaption>Your Place draws a poster of anywhere on Earth from raw vector map data, in the browser, and exports it at up to 300 dpi.</figcaption>
+  </figure>
+
+  <h2>The problem</h2>
+  <p>
+    Your Place turns any place into a print-ready map poster. There are no map images involved: the app fetches
+    <a href="https://openmaptiles.org">OpenMapTiles</a> vector tiles, decodes each one into flat typed arrays of
+    streets, water, parks and buildings, and paints them itself, on a canvas for the preview and the PNG, and as
+    SVG for the vector download.
+  </p>
+  <p>
+    The first version that drew a correct poster of Zürich took <strong>41.7 seconds</strong> to do it, measured in
+    headless Chromium with software rendering. That's the slowest setup the app runs in, and it's also where the
+    end-to-end tests run, so it was the number to fix. A poster you can't see for 40 seconds isn't a product.
+  </p>
+  <p>
+    The work splits into stages: choose the tiles, fetch them, decode them, trace every shape into a path, then fill
+    and stroke. Timing those stages separately pointed at two of them.
+  </p>
+
+  <h2>Fix one: ask for a third of the tiles</h2>
+  <p>
+    The view was asking for <strong>88 tiles</strong> where <strong>30</strong> show the same streets. Tiles from a
+    deeper zoom level carry detail far too fine to see at poster scale, and every one of them has to be downloaded,
+    decoded and traced.
+  </p>
+  <p>
+    The fix was a rule rather than a tweak: at most five tiles across the map, so a tall poster needs about 50 at
+    most. Below that a city loses its side streets. Above it, a whole region turns into a grey blur of lanes and
+    takes ages to load. The tile zoom depends only on the view, never on the size of the output:
+  </p>
+<pre tabindex="0" aria-label="Code: choosing the tile zoom"><code><span class="c">// src/map/geo.ts</span>
+const TILES_ACROSS = 5;
+
+export function tileZoomFor(frame: Frame): number {
+  const z = Math.floor(frame.zoom + Math.log2((TILES_ACROSS * TILE_SIZE) / frame.rect.w));
+  return clamp(z, 0, MAX_TILE_ZOOM);
+}</code></pre>
+  <p>
+    The size independence turned out to matter as much as the speed. The 500-pixel preview, the 84-pixel style
+    thumbnails and the 7,000-pixel print all draw exactly the same streets, so what you see in the preview is what
+    gets printed.
+  </p>
+
+  <h2>Fix two: a call that slows down as the path grows</h2>
+  <p>
+    The bigger cost was in tracing. Each kind of shape (all the buildings, say) is traced into one <code>Path2D</code>
+    and filled once, which is the fast way to draw thousands of shapes. Each building is a ring, and each ring ended
+    with <code>closePath()</code>.
+  </p>
+  <p>
+    In Chromium, <code>Path2D.closePath()</code> takes time in proportion to the path built so far. With 100 shapes
+    you'd never notice. A city has about 90,000 building outlines, so the total cost grows with the square of
+    the count. Tracing them took <strong>85 seconds</strong> with the call and <strong>77 milliseconds</strong>
+    without it.
+  </p>
+  <p>
+    Canvas doesn't need the call: a fill closes every open ring by itself. SVG output does want it, and there a
+    <code>Z</code> in a string costs nothing. The code that walks the geometry draws through a small "pen"
+    interface, so the fix is one flag:
+  </p>
+<pre tabindex="0" aria-label="Code: tracing rings through a pen"><code><span class="c">// src/map/draw.ts: every ring or line of one kind, in output pixels</span>
+for (let r = 0; r + 1 &lt; starts.length; r++) {
+  const a = starts[r]!;
+  const b = starts[r + 1]!;
+  if (minSize &gt; 0 &amp;&amp; extentOf(coords, a, b) * k &lt; minSize) continue;
+  pen.moveTo(ox + coords[a * 2]! * k, oy + coords[a * 2 + 1]! * k);
+  for (let i = a + 1; i &lt; b; i++)
+    pen.lineTo(ox + coords[i * 2]! * k, oy + coords[i * 2 + 1]! * k);
+  <span class="c">// SVG: yes. Canvas: no, a fill closes its rings by itself</span>
+  if (close) pen.closePath();
+  count++;
+}</code></pre>
+  <p>
+    The <code>minSize</code> check in the same loop is the other quiet saving: a garden shed less than a pixel across
+    on a city-wide poster isn't drawn at all.
+  </p>
+
+  <ul class="numbers" aria-label="The numbers">
+    <li><b>41.7 s</b><span>first poster, before</span></li>
+    <li><b>0.39 s</b><span>first poster, after</span></li>
+    <li><b>88 → 30</b><span>tiles for the same streets</span></li>
+    <li><b>85 s → 77 ms</b><span>tracing 90,000 buildings</span></li>
+  </ul>
+
+  <h2>Then make the waiting invisible</h2>
+  <p>
+    A fast paint is still a paint. Dragging a map produces a new view on every pointer move, and if each one blocks the
+    main thread, typing a title stutters too. So painting happens off the main thread, in a Web Worker drawing on an
+    <code>OffscreenCanvas</code>, and three rules keep it responsive.
+  </p>
+  <p>
+    <strong>Newer requests cancel older ones.</strong> Each request names a channel: the poster, a download, the
+    thumbnails. A newer request on the same channel makes the older one pointless, and the engine checks between
+    stages whether its job is still wanted:
+  </p>
+<pre tabindex="0" aria-label="Code: the worker's message handler"><code><span class="c">// src/map/worker.ts</span>
+scope.onmessage = (event) =&gt; {
+  const msg = event.data;
+  if (msg.type === 'paint') {
+    latest.set(msg.channel, msg.id);
+    const stillWanted = () =&gt; latest.get(msg.channel) === msg.id;
+    engine.paint(msg.job, msg.priority, stillWanted).then(/* reply, transferring the bitmap */);
+  }
+};</code></pre>
+  <p>
+    <strong>Paints take turns by priority.</strong> The poster you're looking at goes first, then a download, then
+    the thumbnails.
+  </p>
+  <p>
+    <strong>The last picture follows your finger.</strong> Only one paint is in flight at a time, always for the
+    newest view. Until it arrives, the previous picture is moved and scaled to where it belongs. That's one scale and
+    one offset, worked out in Web Mercator. The map tracks the pointer at full frame rate while the title and the
+    frame stay where they are:
+  </p>
+<pre tabindex="0" aria-label="Code: placing an old picture in a new view"><code><span class="c">// src/poster/compose.ts</span>
+<span class="c">// where a picture painted for one view lands when drawn for another</span>
+const k = 2 ** (after.zoom - before.zoom);
+return {
+  x: (before.left - before.rect.x) * k + after.rect.x - after.left,
+  y: (before.top - before.rect.y) * k + after.rect.y - after.top,
+  w: shown.job.width * k,
+  h: shown.job.height * k,
+};</code></pre>
+  <p>
+    Browsers that can't draw in a worker get the same engine on the main thread, and its code is only downloaded for
+    them.
+  </p>
+
+  <h2>What I took from it</h2>
+  <ul>
+    <li><strong>Measure in the slowest place you support, with real data.</strong> Both problems only showed at the
+      size of a real city. With a few hundred test shapes, the quadratic call was invisible.</li>
+    <li><strong>The biggest wins were doing less.</strong> A third of the tiles and one call skipped. There was no
+      clever inner loop. The useful part was finding which work didn't need doing.</li>
+    <li><strong>Speed decisions can be product decisions.</strong> Making the tile choice independent of output size
+      fixed the speed and also gave a guarantee: the print matches the preview line for line.</li>
+    <li><strong>Responsiveness is a separate problem from speed.</strong> Even at 0.39 seconds, a blocked main thread
+      would make dragging feel broken. The worker and the re-projected picture fixed how it feels; the two fixes above
+      fixed how long it takes.</li>
+  </ul>
+
+  <aside class="next" aria-labelledby="next-title">
+    <h2 id="next-title">More on Your Place</h2>
+    <ul>
+      <li><a href="../../your-place/index.html">Make a poster</a>, of anywhere</li>
+      <li><a href="https://github.com/Mohamed-Sucule/Projects/tree/main/your-place#readme">The README</a>: script-aware text, undo that groups a whole drag, the accessible place search and the tests</li>
+      <li><a href="../turning-the-sky/">Turning the sky</a>, the companion piece on Your Sky</li>
+    </ul>
+  </aside>
+</article>
+</main>
+
+<footer>
+  <div class="in">
+    <p style="margin:0">Mohamed Sucule · Frontend engineer, Birmingham, UK</p>
+    <p style="margin:0"><a href="mailto:mohamedsucule@gmail.com">mohamedsucule@gmail.com</a> · <a href="../../cv/">CV</a></p>
+  </div>
+</footer>
+<script type="module" src="../../shared/navigator.js"></script>
+</body>
+</html>

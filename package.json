@@ -7,6 +7,8 @@
   "scripts": {
     "test": "node tests/run.mjs",
     "a11y": "node tests/a11y/scan.mjs",
+    "cv": "node cv/build.mjs",
+    "card": "node assets/build-card.mjs",
     "dev": "npx --yes http-server -p 8080 -c-1 ."
   },
   "devDependencies": {

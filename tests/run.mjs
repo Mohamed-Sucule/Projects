@@ -32,8 +32,8 @@ for (const f of files) {
   await import(pathToFileURL(join(here, f)).href);
 }
 
-/* The site says how many tests there are — on the front page twice and in
-   the README once. Those numbers went stale three times over before this
+/* The site says how many tests there are — on the front page, twice in the
+   playground and once in the README. Those numbers went stale three times over before this
    check existed, once in the embarrassing direction: five pieces were cut,
    their tests went with them, and the page went on saying "over 800" about a
    suite of 785. So when the whole suite has run, every claimed count is read
@@ -42,8 +42,9 @@ for (const f of files) {
 if (!filter) {
   const read = (f) => readFileSync(join(here, '..', f), 'utf8');
   const claims = [
-    ['the front page specification', read('index.html').match(/Tests, run before publishing<\/dt><dd>([\d,]+)\+<\/dd>/)?.[1]],
-    ['the front page colophon', read('index.html').match(/over ([\d,]+) tests, run in CI/)?.[1]],
+    ['the front page', read('index.html').match(/<b data-claim="tests">([\d,]+)<\/b>/)?.[1]],
+    ['the playground specification', read('playground.html').match(/Tests, run before publishing<\/dt><dd>([\d,]+)\+<\/dd>/)?.[1]],
+    ['the playground colophon', read('playground.html').match(/over ([\d,]+) tests, run in CI/)?.[1]],
     ['the README', read('README.md').match(/Over ([\d,]+) tests run in CI/)?.[1]],
     ['the Portal Atlas', read('atlas/index.html').match(/<b data-claim="tests">([\d,]+)\+<\/b>/)?.[1]],
   ];

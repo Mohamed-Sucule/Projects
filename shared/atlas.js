@@ -410,9 +410,9 @@ export const ATLAS = [
 ];
 
 export const HOME = {
-  id: 'home', title: 'Playground', href: 'index.html',
+  id: 'home', title: 'Playground', href: 'playground.html',
   kind: 'ml', depth: 'skim', minutes: 1,
-  blurb: 'The front page — everything, with a live preview on every card.',
+  blurb: 'The playground — everything on one page, with a live preview on every card.',
   hook: 'Start here if you want to browse rather than search.',
   tags: ['home', 'front', 'index', 'everything', 'all', 'start', 'back', 'browse', 'list'],
 };
