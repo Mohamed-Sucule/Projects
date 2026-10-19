@@ -52,6 +52,11 @@ export const REGIONS = [
 /* palette: [land, rock, light]; the third is the light in the project's picture */
 export const WORLDS = [
   /* ── products ─────────────────────────────────────────────────────────── */
+  { id: 'your-place', region: 'products', size: 'lg', palette: ['#5b4636', '#2b2f45', '#ffc98e'],
+    problem: 'A poster of a place that matters is a favourite gift, but the free tools are command-line scripts and the easy ones charge.',
+    tech: ['React 19 + TypeScript (strict)', 'Vite', 'Web Worker + OffscreenCanvas', 'OpenMapTiles vector tiles', 'Canvas + SVG from one geometry walk', 'Vitest + Playwright + axe'],
+    evidence: '55 unit tests and 12 end-to-end scenarios on a desktop and a phone, drawn from real OpenStreetMap tiles of Zürich. Measuring took the first poster from 41.7 s to 0.39 s.',
+    study: doc('your-place/README.md'), source: tree('your-place'), tests: tree('your-place/tests') },
   { id: 'tally', region: 'products', size: 'lg', palette: ['#2f5d55', '#24314f', '#9AE6D0'],
     problem: 'Supplier invoices get paid without anyone checking them against the contract, so overcharges go through.',
     tech: ['Python', 'FastAPI', 'Claude API: tools + structured outputs', 'SQLite FTS5', 'Read-only SQL sandbox', 'Docker'],
@@ -244,6 +249,12 @@ export const WORLDS = [
    README or source), how its world reacts when it is chosen (fx), the silhouette of
    its island (base), and extra words people use when asking the guide for it. */
 export const DETAILS = {
+  'your-place': {
+    features: ['Finds any city, street or address, and starts near you, guessed from your time zone',
+      'Seven styles, each previewed on your own place, framed by dragging, pinching or the keys',
+      'Downloads a print-ready PNG or an SVG with its fonts inside; the link is the poster'],
+    decision: ['Draw the map off the main thread, and never make a drag wait for it',
+      'A worker paints on an OffscreenCanvas while the page re-projects the last picture to wherever the map has moved, so the streets follow your finger at once and the fresh paint drops in behind. Measuring found the slow part: Chromium’s Path2D.closePath() grows with the path, and skipping it took 90,000 buildings from 85 s to 77 ms.'] },
   tally: {
     features: ['Answers questions from contracts and accounts, with every quote checked against its source',
       'Audits every invoice line against the contract terms in force on its date',

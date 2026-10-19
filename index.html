@@ -224,6 +224,28 @@
      it does in plain English and what was measured. A recruiter should get
      each of them from the brief and the picture alone. */
   .cases { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px; }
+  /* ── the plate ─────────────────────────────────────────────
+     A flagship is tipped in on its own, the way a colour plate is glued into
+     a book: a print in a white mount, a little askew, and the caption beside. */
+  .plate { margin-top: clamp(96px, 11vw, 150px); display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(32px, 5vw, 80px); align-items: center; }
+  .plate-art { display: block; background: var(--photo); padding: clamp(12px, 1.4vw, 20px); outline: 1px solid var(--ink);
+    box-shadow: 0 30px 46px -30px rgba(23,20,15,.55); transform: rotate(-1.4deg);
+    transition: transform .3s cubic-bezier(.2,.7,.3,1); }
+  .plate-art:hover { transform: rotate(0deg) scale(1.012); }
+  .plate-art img { display: block; width: 100%; height: auto; }
+  .plate-no { margin: 0 0 16px; font: 500 12px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--red); }
+  .plate h2 { margin: 0; font: 400 clamp(52px, 6.4vw, 92px)/.92 var(--display); letter-spacing: -.01em; }
+  .plate h2 a { text-decoration: none; }
+  .plate-line { margin: 12px 0 0; font: italic 400 clamp(23px, 2.3vw, 30px)/1.2 var(--display); color: var(--ink-2); }
+  .plate-body { margin: 22px 0 0; max-width: 54ch; color: var(--ink-2); }
+  .plate-body b { color: var(--ink); font-weight: 600; }
+  .plate .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 26px; margin-top: 30px; }
+  .plate-note { display: inline-block; margin: 26px 0 0; font-size: 26px; transform: rotate(-2deg); }
+  @media (max-width: 760px) {
+    .plate { grid-template-columns: minmax(0, 1fr); }
+    .plate-art { max-width: 380px; }
+  }
   a.case { display: flex; flex-direction: column; text-decoration: none; color: inherit; background: #fbf9f3; outline: 1px solid var(--ink); transition: transform .25s cubic-bezier(.2,.7,.3,1), box-shadow .25s; }
   a.case:hover { transform: translateY(-4px); box-shadow: 0 26px 44px -26px rgba(40,28,10,.55); }
   .case .brief { margin: 0; padding: 18px 22px 16px; font: italic 400 clamp(19px, 1.7vw, 23px)/1.3 var(--display); color: var(--ink-2); border-bottom: 1px solid var(--rule); }
@@ -751,7 +773,7 @@
           <div><dt>AI products, working</dt><dd data-ai-count>4</dd></div>
           <div><dt>More pieces, every one running</dt><dd data-atlas-count>30</dd></div>
           <div><dt>Tests, run before publishing</dt><dd>850+</dd></div>
-          <div><dt>Servers, API keys, frameworks</dt><dd>0</dd></div>
+          <div><dt>Servers, API keys, sign-ups</dt><dd>0</dd></div>
         </dl>
       </div>
       </div>
@@ -766,6 +788,32 @@
 </header>
 
 <div class="page">
+
+  <!-- ── the plate ────────────────────────────────────────────────────────────
+       The flagship, tipped in on its own rather than being one more frame on
+       the contact sheet. tests/front.test.mjs keeps every flagship here. -->
+  <aside class="plate reveal" aria-labelledby="plate-title">
+    <a class="plate-art" href="your-place/index.html" tabindex="-1" aria-hidden="true">
+      <img src="assets/your-place-poster.webp" width="680" height="962" loading="lazy" decoding="async"
+        alt="" />
+    </a>
+    <div>
+      <p class="plate-no">Plate I &middot; the newest</p>
+      <h2 id="plate-title"><a href="your-place/index.html">Your Place</a></h2>
+      <p class="plate-line">Any place on Earth, as a poster.</p>
+      <p class="plate-body">
+        Type a town, a street or an address, pick one of seven styles, and download a file ready to
+        print &mdash; drawn in your browser from OpenStreetMap, like this one of Zürich.
+        It is <b>React and TypeScript</b>, unlike everything else here, with its map engine written
+        from scratch and a worker that draws while you drag.
+      </p>
+      <div class="actions">
+        <a class="stamp" href="your-place/index.html"><span class="face">Make one</span></a>
+        <a class="quiet-link" href="atlas/projects/your-place/">how it is built, and the tests</a>
+      </div>
+      <p class="plate-note hand">your home town takes about a minute</p>
+    </div>
+  </aside>
 
   <!-- ── §1 for clients ──────────────────────────────────────────────────────
        The four products. Each one opens on the sentence a client would say,
@@ -1223,10 +1271,11 @@
     <h4>Colophon</h4>
     <p>
       Set in Instrument Serif, Newsreader, JetBrains Mono and Caveat, served from this repository.
-      No frameworks, no build step, no dependencies — every page here is plain HTML, CSS and
-      JavaScript, with the engines behind Front Desk, Ask the Handbook, Call Coach, Claims Desk, Ace, Nightshift, The Room, Covers, the transformer, the
+      No frameworks, no build step, no dependencies — every page here but one is plain HTML, CSS and
+      JavaScript. The one is Your Place, which is React and TypeScript on purpose, with its own
+      unit and end-to-end tests. The engines behind Front Desk, Ask the Handbook, Call Coach, Claims Desk, Ace, Nightshift, The Room, Covers, the transformer, the
       tokeniser, the QR encoder, the tuner, Minesweeper, Sudoku, Split and each of the tools
-      unit-tested, along with the four AI products: over 850 tests, run in CI
+      are unit-tested, along with the four AI products: over 850 tests, run in CI
       before anything is published — including twenty gradient checks against finite differences,
       and a check that a 95% confidence interval really does contain the truth 95% of the time.
       The commit history is the full record.

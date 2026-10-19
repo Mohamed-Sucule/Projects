@@ -21,13 +21,23 @@ project's own page ([`atlas/projects/`](atlas/projects/)) are plain HTML generat
 none of it needs script to read. [Tests](tests/atlas.test.mjs) check that every painting leads somewhere real.
 ([`atlas/`](atlas/))
 
-One project here is different: **[Tally](tally/)** is a full AI application with a Python backend. It ingests
+The newest is the flagship: **[Your Place](your-place/)**, any place on Earth as a poster. Type a town, a street
+or an address, pick a style and download a file ready to print, drawn in the browser from OpenStreetMap. It is
+the one project here built the way most teams build: React 19 and TypeScript in strict mode, with Vite, ESLint,
+Vitest and Playwright, and [its own CI](.github/workflows/your-place.yml). The map engine is written from
+scratch: vector tiles decoded into typed arrays, painted in a Web Worker on an `OffscreenCanvas`, and the same
+geometry written out as SVG for print. Its [README](your-place/README.md) has the decisions, including the two
+performance fixes that took the first poster from 41.7 s to 0.39 s.
+**[→ Make one](https://mohamed-sucule.github.io/Projects/your-place/)**
+
+Another project here is different in a second way: **[Tally](tally/)** is a full AI application with a Python backend. It ingests
 supplier contracts and an accounts export, answers questions with Claude using tools and checked citations, and
 audits every invoice against the contract. Claude drafts the dispute emails, and a person approves each one. Its
 evals grade answers against facts computed from the data. [More below](#-tally--an-ai-application-end-to-end).
 
 | | | |
 |---|---|---:|
+| **◆** | [**Your Place**](your-place/) — any place on Earth as a poster; React and TypeScript | 1 |
 | **★** | [**Four AI products**](#-four-ai-products) — a receptionist, a knowledge assistant, a sales coach, a claims desk | 4 |
 | **0** | [**Inside the models**](#0--inside-the-models) — how language models actually work | 4 |
 | **I** | [Fiction](#i--fiction) — things to read, and the two the site opens on | 3 |
@@ -36,7 +46,8 @@ evals grade answers against facts computed from the data. [More below](#-tally--
 | **IV** | [Things you would actually use](#iv--things-you-would-actually-use) — QR codes, splitting a bill, a tuner | 6 |
 | **V** | [The serious ones](#v--the-serious-ones) — Covers, and six tools for engineers | 7 |
 
-Plain HTML, CSS and JavaScript. No framework, no build step, no dependencies.
+Plain HTML, CSS and JavaScript, with no framework, no build step and no
+dependencies, except for Your Place, which is React and TypeScript on purpose.
 Over 850 tests run in CI before anything here is published — including twenty
 gradient checks against finite differences, a check that a 95% confidence
 interval really does contain the truth about 95% of the time, and one that no
@@ -605,11 +616,19 @@ and — deliberately — what it does **not** do.
 
 ## How it's built
 
-**No frameworks. No build step. No dependencies.** Every page here is plain
-HTML, CSS and JavaScript — including the transformer, which is trained by an
+**No frameworks. No build step. No dependencies.** Every page here but one is
+plain HTML, CSS and JavaScript — including the transformer, which is trained by an
 automatic differentiation engine written from nothing rather than by a library.
 The smallest toys are each a single self-contained file you can open by
 double-clicking. Clone this in five years and it still runs.
+
+The one exception is [Your Place](your-place/), which is React and TypeScript
+with a Vite build, because that is what most product teams use and it is worth
+showing the same care in that stack too. It keeps everything to itself: its own
+`package.json`, lint, types, unit tests (Vitest) and end-to-end tests
+(Playwright, against real OpenStreetMap tiles), run by
+[`your-place.yml`](.github/workflows/your-place.yml). The site's deploy builds it
+into `/your-place/`.
 
 Everything else loads ES
 modules, which browsers refuse to serve from a `file://` address — run

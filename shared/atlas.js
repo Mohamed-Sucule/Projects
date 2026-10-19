@@ -31,6 +31,22 @@ export const KINDS = {
      play  — worth a few minutes with your hands on it
      study — it rewards actually reading, and has a write-up */
 export const ATLAS = [
+  /* ── the flagship: built the way most teams build ─────────────────────────
+     React and TypeScript, with a toolchain and its own CI, unlike everything
+     else here. A flagship is featured on its own on the front page, so it is
+     not one of the frames on the contact sheet. */
+  {
+    id: 'your-place', title: 'Your Place', href: 'your-place/index.html',
+    kind: 'product', depth: 'play', minutes: 3, flagship: true,
+    blurb: 'Any place on Earth as a poster. Type a town, a street or an address, pick a style, '
+         + 'and download a file ready to print, drawn from OpenStreetMap.',
+    hook: 'Make a poster of your home town in a minute.',
+    tags: ['poster', 'posters', 'map', 'maps', 'map poster', 'city map', 'street map', 'print',
+           'wall art', 'gift', 'home town', 'hometown', 'where we met', 'wallpaper', 'openstreetmap',
+           'osm', 'react', 'typescript', 'frontend', 'front end', 'web worker', 'canvas', 'svg',
+           'personalised', 'personalized', 'new'],
+  },
+
   /* ── AI products: the things a client would ask for ────────────────────── */
   {
     id: 'frontdesk', title: 'Front Desk', href: 'apps/frontdesk/index.html',
