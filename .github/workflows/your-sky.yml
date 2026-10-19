@@ -1,0 +1,59 @@
+name: Your Sky
+
+# Your Sky is a React + TypeScript app with its own toolchain, like Your Place,
+# so it has its own checks. They run whenever its folder changes.
+
+on:
+  push:
+    branches: [main]
+    paths: ['your-sky/**', '.github/workflows/your-sky.yml']
+  pull_request:
+    paths: ['your-sky/**', '.github/workflows/your-sky.yml']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: your-sky-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: your-sky
+
+jobs:
+  check:
+    name: Format, lint, types, unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: your-sky/package-lock.json
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+
+  e2e:
+    name: End-to-end (desktop and phone)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: your-sky/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: your-sky-playwright-report
+          path: your-sky/playwright-report
+          retention-days: 7

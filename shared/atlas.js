@@ -31,7 +31,7 @@ export const KINDS = {
      play  — worth a few minutes with your hands on it
      study — it rewards actually reading, and has a write-up */
 export const ATLAS = [
-  /* ── the flagship: built the way most teams build ─────────────────────────
+  /* ── the flagships: built the way most teams build ────────────────────────
      React and TypeScript, with a toolchain and its own CI, unlike everything
      else here. A flagship is featured on its own on the front page, so it is
      not one of the frames on the contact sheet. */
@@ -45,6 +45,19 @@ export const ATLAS = [
            'wall art', 'gift', 'home town', 'hometown', 'where we met', 'wallpaper', 'openstreetmap',
            'osm', 'react', 'typescript', 'frontend', 'front end', 'web worker', 'canvas', 'svg',
            'personalised', 'personalized', 'new'],
+  },
+
+  {
+    id: 'your-sky', title: 'Your Sky', href: 'your-sky/index.html',
+    kind: 'product', depth: 'play', minutes: 3, flagship: true,
+    blurb: 'The night sky over any place, at any moment, as a poster: the stars, the Milky Way, '
+         + 'the planets where they were and the Moon in its real phase, ready to print.',
+    hook: 'See the stars over the night you were born.',
+    tags: ['sky', 'stars', 'star map', 'star chart', 'night sky', 'constellations', 'astronomy',
+           'moon', 'moon phase', 'planets', 'milky way', 'poster', 'posters', 'print', 'wall art',
+           'gift', 'birthday', 'anniversary', 'wedding', 'the night we met', 'where we met',
+           'personalised', 'personalized', 'react', 'typescript', 'frontend', 'front end', 'canvas',
+           'svg', 'time zones', 'new'],
   },
 
   /* ── AI products: the things a client would ask for ────────────────────── */

@@ -164,6 +164,14 @@ export function detectIntent(query) {
    function made it would be a small lie. */
 export const FEATURED = ['attention', 'covers', 'room', 'evals'];
 
+/* Words that ask for a recommendation rather than name a subject. They are never
+   typos to be corrected: "start" is one letter from "star", and reading it that way
+   sent "where do I start" to the star map. */
+const INTENT_TERMS = new Set(tokenise(
+  'start begin first best hardest impressive impress showcase proudest flagship standout wow '
+  + 'surprise random anything whatever lucky shuffle',
+));
+
 /* ── searching ──────────────────────────────────────────────────────────── */
 
 /**
@@ -193,7 +201,8 @@ export function search(query, index, { limit = 8, entries = null } = {}) {
 
   /* A term nobody has is usually a typo. One edit away from a term somebody
      DOES have is worth trying before giving up on the whole query. */
-  const resolved = terms.map((t) => (index.vocabulary.has(t) ? t : nearest(t, index.vocabulary) ?? t));
+  const resolved = terms.map((t) =>
+    index.vocabulary.has(t) || INTENT_TERMS.has(t) ? t : nearest(t, index.vocabulary) ?? t);
 
   const scored = source.map((doc) => {
     let score = 0;

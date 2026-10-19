@@ -390,6 +390,42 @@ export const FORMS = {
     r = U(r, vec2(sdSph(pin - vec3(0, 0, .26), .075), GLOW));
     return r;`, glow: [-0.1, 2.4, 1.3, 1.1], bound: [0, 1.9, 0, 1.5, 2.0, 1.2] },
 
+  /* a planisphere on a stand: the night sky in a brass horizon ring, tipped back to look up */
+  'your-sky': { alt: 'A star chart in a brass ring on a stand, its stars, one constellation and a crescent moon alight.', accent: '#cfdcff', body: `
+    vec2 r = vec2(1e9, 0);
+    r = U(r, vec2(sdCylY(p - vec3(0, .62, -.1), .07, .62), SHADE));
+    r = U(r, vec2(sdCylY(p - vec3(0, .07, -.1), .52, .07), SHADE));
+    vec3 c = p - vec3(0, 2.2, 0); c.yz *= rot(.3);
+    r = U(r, vec2(sdRingZ(c, 1.13, .075, .07, .02), BRASS));
+    r = U(r, vec2(sdCylY(vec3(c.x, c.z + .02, c.y), 1.07, .03), DARK));
+    /* a meridian of brass round the chart, turned away, as on an armillary */
+    vec3 mr = c; mr.xz *= rot(1.05);
+    r = U(r, vec2(sdTorZ(vec3(mr.z, mr.y, mr.x), vec2(1.3, .022)), BRASS));
+    /* stars, scattered and of every size, and crowded along the Milky Way */
+    float st = 1e9;
+    for (int k = 0; k < 28; k++) {
+      float f = float(k);
+      float a = h12(vec2(f, 1.7)) * 6.2832, d = sqrt(h12(vec2(f, 4.1))) * .96;
+      float s = .013 + .028 * pow(h12(vec2(f, 9.3)), 3.);
+      st = min(st, length(c - vec3(cos(a) * d, sin(a) * d, .035)) - s);
+    }
+    for (int k = 0; k < 44; k++) {
+      float f = float(k);
+      vec2 q = vec2(h12(vec2(f, 2.3)) * 1.9 - .95, (h12(vec2(f, 6.7)) - .5) * .26) * rot(-.62);
+      if (length(q) < .97) st = min(st, length(c - vec3(q, .035)) - (.008 + .012 * h12(vec2(f, 8.8))));
+    }
+    /* one constellation, drawn in: seven bright stars and the lines between them */
+    vec2 D[7] = vec2[7](vec2(-.66, .44), vec2(-.42, .37), vec2(-.2, .3), vec2(.03, .2), vec2(.1, -.07), vec2(.42, -.1), vec2(.46, .17));
+    for (int k = 0; k < 6; k++) st = min(st, sdCap(c, vec3(D[k], .035), vec3(D[k + 1], .035), .01));
+    st = min(st, sdCap(c, vec3(D[3], .035), vec3(D[6], .035), .01));
+    for (int k = 0; k < 7; k++) st = min(st, length(c - vec3(D[k], .035)) - .042);
+    /* and a crescent moon low on the chart */
+    vec2 mo = c.xy - vec2(-.42, -.52);
+    float cres = max(length(mo) - .12, -(length(mo - vec2(.07, .06)) - .108));
+    st = min(st, max(cres, abs(c.z - .035) - .014));
+    r = U(r, vec2(st, GLOW));
+    return r;`, glow: [0, 2.3, 1.3, 1.0], bound: [0, 1.75, 0, 1.5, 1.85, 1.5] },
+
   /* a ledger of slabs, and one invoice pulled out of it */
   tally: { alt: 'A ledger of slabs, and one invoice pulled out of it.', body: `
     vec2 r = vec2(1e9, 0);
