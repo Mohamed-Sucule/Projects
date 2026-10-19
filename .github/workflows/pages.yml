@@ -1,9 +1,9 @@
 name: Deploy to GitHub Pages
 
 # Publishes the whole repo as a static site. Almost everything is plain HTML
-# and is uploaded as it is. The one exception is Your Place (React and
-# TypeScript): its folder holds source, so the deploy builds it and puts the
-# built app in that folder's place before uploading.
+# and is uploaded as it is. The two exceptions are Your Place and Your Sky
+# (React and TypeScript): their folders hold source, so the deploy builds each
+# one and puts the built app in that folder's place before uploading.
 #
 # ONE-TIME SETUP (about ten seconds, and it cannot be scripted — GitHub
 # refuses to let a workflow token switch Pages on for the first time):
@@ -28,18 +28,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - name: Run the test suite
-        run: node tests/run.mjs
+  site:
+    name: Site checks
+    uses: ./.github/workflows/site.yml
 
   deploy:
-    needs: test
+    needs: site
     runs-on: ubuntu-latest
     environment:
       name: github-pages

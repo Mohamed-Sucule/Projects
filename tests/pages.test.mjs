@@ -18,8 +18,8 @@ import { test, assert } from './harness.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
-const pages = ['index.html', 'atlas/index.html'];
-for (const dir of ['apps', 'play', 'projects', 'atlas/projects']) {
+const pages = ['index.html', 'playground.html', 'cv/index.html', 'atlas/index.html'];
+for (const dir of ['apps', 'play', 'projects', 'atlas/projects', 'writing']) {
   for (const name of readdirSync(join(root, dir)).sort()) {
     const href = `${dir}/${name}/index.html`;
     if (existsSync(join(root, href))) pages.push(href);

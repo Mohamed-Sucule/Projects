@@ -377,7 +377,7 @@ function close({ fromHistory = false } = {}) {
     document.body.classList.remove('locked');
     outside.forEach((n) => { n.inert = false; });
     current = null;
-    document.title = 'Portal Atlas — Mohamed Sucule, AI product builder: ideas that escape the ordinary';
+    document.title = 'Portal Atlas — Mohamed Sucule, frontend engineer: ideas that escape the ordinary';
     work?.querySelector('h4 a')?.focus({ preventScroll: true });
   };
   const art = work?.querySelector('.art');

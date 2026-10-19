@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CV — Mohamed Sucule, Frontend Engineer</title>
+<meta name="description" content="CV of Mohamed Sucule, frontend engineer in Birmingham, UK: React, TypeScript, accessibility. 4+ years at Capgemini and SynchrTrade. SC cleared." />
+<link rel="icon" href="../favicon.svg" />
+<meta name="theme-color" content="#eceef2" />
+<meta property="og:type" content="profile" />
+<meta property="og:title" content="Mohamed Sucule — Frontend Engineer: CV" />
+<meta property="og:description" content="React, TypeScript and accessibility. 4+ years at Capgemini and SynchrTrade, SC cleared, Birmingham, UK." />
+<meta property="og:url" content="https://mohamed-sucule.github.io/Projects/cv/" />
+<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/assets/og-card.png" />
+<link rel="canonical" href="https://mohamed-sucule.github.io/Projects/cv/" />
+<style>
+  /* One column, real text, standard headings: it reads the same to a person, a screen
+     reader and the software that parses applications. The PDF is printed from this page
+     by cv/build.mjs, so the two never drift apart. */
+  @font-face { font-family: 'Outfit'; src: url(../assets/fonts/outfit.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+  @font-face { font-family: 'Fraunces'; src: url(../assets/fonts/fraunces.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+  :root {
+    --ink: #16181d; --soft: #3f4450; --mute: #5b6170; --rule: #d9dce3; --accent: #1f4fd1;
+    --paper: #ffffff; --desk: #eceef2;
+    --sans: 'Outfit', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --serif: 'Fraunces', Georgia, serif;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--desk); }
+  body { margin: 0; color: var(--ink); font: 400 9.8pt/1.37 var(--sans); }
+  a { color: inherit; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .bar { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; padding: 18px 16px 0; font: 500 14px/1 var(--sans); }
+  .bar a { padding: 10px 16px; border-radius: 8px; border: 1px solid #c6cad3; background: #fff; }
+  .bar a.primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+  .sheet { width: min(210mm, 100% - 32px); margin: 18px auto 48px; padding: 14mm 15mm; background: var(--paper);
+    box-shadow: 0 1px 2px rgba(20, 24, 40, .12), 0 18px 40px -18px rgba(20, 24, 40, .35); }
+
+  header h1 { margin: 0; font: 640 25pt/1 var(--serif); letter-spacing: .01em; }
+  header .role { margin: 4px 0 7px; font: 560 11.5pt/1.2 var(--sans); color: var(--accent); }
+  header .facts, header .links { margin: 0; display: flex; flex-wrap: wrap; gap: 2px 14px; color: var(--soft); font-size: 9.6pt; }
+  header .links { margin-top: 2px; }
+  header .facts a, header .links a { color: var(--ink); }
+
+  h2 { margin: 10px 0 5px; padding-bottom: 3px; border-bottom: 1.4px solid var(--ink);
+    font: 650 9.2pt/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; }
+  p { margin: 0; }
+  .job, .proj { margin: 0 0 5px; break-inside: avoid; }
+  .head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .head h3 { margin: 0; font: 620 10.6pt/1.3 var(--sans); }
+  .head h3 span { font-weight: 400; color: var(--soft); }
+  .head .when { flex: none; color: var(--mute); font-size: 9.4pt; font-variant-numeric: tabular-nums; }
+  .stack { margin: 1px 0 2px; color: var(--mute); font-size: 9.2pt; }
+  ul { margin: 3px 0 0; padding-left: 15px; }
+  li { margin: 1px 0; }
+  li::marker { color: var(--mute); }
+  .skills { display: grid; grid-template-columns: 9.5em 1fr; gap: 3px 10px; margin: 0; }
+  .skills dt { font-weight: 620; }
+  .skills dd { margin: 0; }
+  .row { display: flex; justify-content: space-between; gap: 12px; }
+
+  @media (max-width: 640px) {
+    .sheet { padding: 22px 18px; }
+    .head, .row { flex-direction: column; gap: 0; }
+    .skills { grid-template-columns: 1fr; }
+    .skills dd { margin-bottom: 6px; }
+  }
+  @page { size: A4; margin: 10mm 13mm; }
+  @media print {
+    html { background: #fff; }
+    .bar { display: none; }
+    .sheet { width: auto; margin: 0; padding: 0; box-shadow: none; }
+    a:hover { text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+<nav class="bar" aria-label="CV">
+  <a class="primary" href="Mohamed-Sucule-CV.pdf" download>Download the PDF</a>
+  <a href="../">Portfolio</a>
+  <a href="https://www.linkedin.com/in/mohamed-sucule-bb8747439">LinkedIn</a>
+</nav>
+
+<main class="sheet">
+  <header>
+    <h1>Mohamed Sucule</h1>
+    <p class="role">Frontend Engineer · React · TypeScript · Accessibility</p>
+    <p class="facts"><span>Birmingham, UK</span><span>SC Security Cleared</span><span>UK Right to Work</span>
+      <a href="mailto:mohamedsucule@gmail.com">mohamedsucule@gmail.com</a></p>
+    <p class="links">
+      <a href="https://www.linkedin.com/in/mohamed-sucule-bb8747439">linkedin.com/in/mohamed-sucule-bb8747439</a>
+      <a href="https://github.com/Mohamed-Sucule">github.com/Mohamed-Sucule</a>
+      <a href="https://mohamed-sucule.github.io/Projects/">mohamed-sucule.github.io/Projects</a>
+    </p>
+  </header>
+
+  <section aria-labelledby="h-profile">
+    <h2 id="h-profile">Profile</h2>
+    <p>
+      Frontend engineer with 4+ years' commercial experience shipping web applications for product and
+      consultancy teams, including SC-cleared public-sector programmes at Capgemini. I build in React and
+      TypeScript, treat accessibility and performance as requirements rather than polish, and test what I
+      ship: the two apps below each have strict types, unit and end-to-end tests, and their own CI.
+    </p>
+  </section>
+
+  <section aria-labelledby="h-experience">
+    <h2 id="h-experience">Experience</h2>
+    <div class="job">
+      <div class="head"><h3>Software Engineer &amp; Scrum Master <span>· Capgemini</span></h3><span class="when">July 2022 – Present</span></div>
+      <ul>
+        <li>Build and maintain production web applications and services in TypeScript, JavaScript and Python, connected to back ends through REST APIs, cloud infrastructure and CI/CD pipelines.</li>
+        <li>Turn business and user requirements into technical solutions with senior stakeholders and delivery teams.</li>
+        <li>Work across the whole delivery lifecycle: technical discovery, implementation, testing, deployment and live support.</li>
+        <li>As Scrum Master, facilitate sprint planning, refinement and delivery for Agile teams.</li>
+        <li>Deliver technology for major public- and private-sector clients, including programmes under SC security clearance.</li>
+      </ul>
+    </div>
+    <div class="job">
+      <div class="head"><h3>Web Developer <span>· SynchrTrade</span></h3><span class="when">2021 – 2022</span></div>
+      <ul>
+        <li>Built and refined responsive front-end features in React and JavaScript within agile sprints, working closely with backend engineers and designers.</li>
+        <li>Balanced usability, implementation constraints and delivery speed across a commercial product lifecycle.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-projects">
+    <h2 id="h-projects">Selected projects</h2>
+    <div class="proj">
+      <div class="head"><h3>Your Place <span>· any place on Earth as a print-ready map poster</span></h3><a class="when" href="https://mohamed-sucule.github.io/Projects/your-place/">Live</a></div>
+      <p class="stack">React 19, TypeScript (strict), Vite, Web Workers, OffscreenCanvas, Vitest, Playwright</p>
+      <ul>
+        <li>Wrote the vector-tile decoder and renderer from scratch; it paints in a Web Worker, so the interface never stutters.</li>
+        <li>Profiled and fixed two bottlenecks, taking the first poster from 41.7 s to 0.39 s; exports 300 dpi PNG and SVG from one geometry pass.</li>
+        <li>Accessible place search (WAI-ARIA combobox); 55 unit tests, 12 end-to-end scenarios and axe checks.</li>
+      </ul>
+    </div>
+    <div class="proj">
+      <div class="head"><h3>Your Sky <span>· the night sky over any place and moment, as a poster</span></h3><a class="when" href="https://mohamed-sucule.github.io/Projects/your-sky/">Live</a></div>
+      <p class="stack">React 19, TypeScript (strict), Canvas 2D, SVG, Intl time zones, Vitest, Playwright</p>
+      <ul>
+        <li>Turns 5,044 stars to any date with one rotation; the Moon in its real phase, the planets where they were.</li>
+        <li>Reads clock time at the chosen place, including daylight-saving gaps, doubled hours and historical offsets.</li>
+        <li>One scene renders to canvas and SVG; plays a whole night at about 11 ms of JavaScript per frame.</li>
+        <li>60 unit tests check it against astronomical facts; 12 end-to-end scenarios run on desktop and mobile.</li>
+      </ul>
+    </div>
+    <div class="proj">
+      <div class="head"><h3>Portfolio <span>· 36 projects that run in the browser</span></h3><a class="when" href="https://mohamed-sucule.github.io/Projects/">Live</a></div>
+      <p class="stack">JavaScript, Canvas, WebGL, Web Audio, GitHub Actions</p>
+      <ul>
+        <li>Engineering tools (a regex engine you can watch execute, an OKLCH palette builder with contrast checks, a Raft consensus simulator), games and in-browser machine-learning apps.</li>
+        <li>Over 1,000 tests run in CI before every deploy, with automated accessibility checks on every page.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-skills">
+    <h2 id="h-skills">Skills</h2>
+    <dl class="skills">
+      <dt>Frontend</dt><dd>React, TypeScript, JavaScript (ES2022+), HTML, CSS, responsive design, accessibility (WCAG 2.1 AA, WAI-ARIA), Canvas 2D, SVG, WebGL, Web Workers, Web Audio</dd>
+      <dt>Testing &amp; tooling</dt><dd>Vitest, Playwright, axe-core, ESLint, Prettier, Vite, Git, GitHub Actions, GitLab CI/CD</dd>
+      <dt>Back end &amp; cloud</dt><dd>REST APIs, Python, FastAPI, AWS, Azure</dd>
+      <dt>Delivery</dt><dd>Agile, Scrum (Scrum Master), technical discovery, stakeholder management</dd>
+    </dl>
+  </section>
+
+  <section aria-labelledby="h-certs">
+    <h2 id="h-certs">Certifications</h2>
+    <p>AWS Certified Cloud Practitioner · Microsoft Azure AI Fundamentals (AI-900) · GitLab Certified</p>
+  </section>
+
+  <section aria-labelledby="h-education">
+    <h2 id="h-education">Education</h2>
+    <div class="row"><p><b>BEng Mechanical Engineering</b> · Aston University, Birmingham</p><span class="when">2021</span></div>
+  </section>
+</main>
+<script type="module" src="../shared/navigator.js"></script>
+</body>
+</html>

@@ -44,7 +44,7 @@
   }
   .sw:hover { transform: translateY(-2px); }
   .sw.sel { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .sw span { font: 500 9px/1 var(--mono); opacity: .8; }
+  .sw span { font: 500 9px/1 var(--mono); }
   .sw .clip {
     position: absolute; top: 3px; right: 4px; width: 5px; height: 5px; border-radius: 50%;
     background: rgba(0,0,0,.45); box-shadow: 0 0 0 1px rgba(255,255,255,.35);
@@ -56,7 +56,7 @@
   .mx { border-collapse: separate; border-spacing: 2px; font: 400 10px/1 var(--mono); }
   .mx th { font: 500 9.5px/1 var(--mono); color: var(--fg-mute); padding: 2px; font-weight: 400; }
   .mx td { width: 34px; height: 24px; text-align: center; border-radius: 3px; font-variant-numeric: tabular-nums; cursor: default; }
-  .mx td.r5 { background: color-mix(in oklab, var(--ok) 55%, transparent); color: var(--ink-900); }
+  .mx td.r5 { background: color-mix(in oklab, var(--ok) 74%, transparent); color: var(--ink-900); }
   .mx td.r4 { background: color-mix(in oklab, var(--ok) 34%, transparent); color: var(--fg); }
   .mx td.r3 { background: color-mix(in oklab, var(--ok) 18%, transparent); color: var(--fg-dim); }
   .mx td.r2 { background: color-mix(in oklab, var(--warn) 22%, transparent); color: var(--fg-dim); }
@@ -125,7 +125,7 @@
             <button data-m="wcag">WCAG 2.1</button>
           </span>
         </div>
-        <div class="body" id="matrix"></div>
+        <div class="body" id="matrix" tabindex="0" aria-label="contrast matrix"></div>
       </div>
     </section>
 
@@ -151,11 +151,19 @@ let metric = 'apca';
 let sel = { fam: 1, step: 6 };
 let pal = [];
 
+/* black or white, whichever reads better on a swatch: the label must pass on every step */
+function inkOn(hex) {
+  const lin = (c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+  const [r, g, b] = [1, 3, 5].map((i) => lin(parseInt(hex.slice(i, i + 2), 16) / 255));
+  const y = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  return (1.05 / (y + 0.05)) >= ((y + 0.05) / 0.05) ? '#ffffff' : '#000000';
+}
+
 const slider = (key, label, min, max, step, obj, fmtv = (v) => v.toFixed(2), after) =>
   h('div', { class: 'sl' },
     h('span', { class: 'k' }, label),
     h('input', {
-      type: 'range', min, max, step, value: obj[key],
+      type: 'range', min, max, step, value: obj[key], 'aria-label': label,
       oninput: (e) => { obj[key] = +e.target.value; after?.(); rebuild(); },
     }),
     h('span', { class: 'v' }, fmtv(obj[key])));
@@ -185,7 +193,7 @@ function renderFamilies() {
       h('div', { class: 'top' },
         h('span', { class: 'chip', style: { background: mid?.hex || '#888' } }),
         h('span', { class: 'nm' }, h('input', {
-          value: f.name, spellcheck: 'false',
+          value: f.name, spellcheck: 'false', 'aria-label': 'colour family name',
           oninput: (e) => { f.name = e.target.value.replace(/\s+/g, '-') || 'colour'; rebuild(false); },
         })),
         families.length > 1 ? h('button', { class: 'rm ghost', onclick: () => { families.splice(i, 1); sel.fam = 0; rebuild(); } }, '✕') : null),
@@ -221,10 +229,9 @@ function renderGrid() {
   pal.forEach((f, fi) => {
     const row = h('div', { class: 'grow' }, h('span', { class: 'lbl' }, f.name));
     f.swatches.forEach((s, si) => {
-      const dark = s.L < 0.62;
       row.append(h('div', {
         class: 'sw' + (sel.fam === fi && sel.step === si ? ' sel' : ''),
-        style: { background: s.hex, color: dark ? 'rgba(255,255,255,.9)' : 'rgba(0,0,0,.75)' },
+        style: { background: s.hex, color: inkOn(s.hex) },
         title: `${s.name} · ${s.hex} · ${s.css}`,
         onclick: () => { sel = { fam: fi, step: si }; render(); },
       },
@@ -315,7 +322,12 @@ function renderRight() {
   for (const dark of [false, true]) {
     const surface = dark ? at(n, last) : at(n, 0);
     const text = dark ? at(n, 1) : at(n, last);
-    const muted = dark ? at(n, 4) : at(n, 6);
+    // the quietest neutral that still reads: walk from the preferred step towards the text end
+    // until it clears 4.5:1 on this surface, so the demo never shows a pairing the audit would fail
+    const passes = (i) => wcagRatio(fromHex(at(n, i)), fromHex(surface)) >= 4.5;
+    let mi = dark ? 4 : 6;
+    while (!passes(mi) && (dark ? mi > 0 : mi < last)) mi += dark ? -1 : 1;
+    const muted = at(n, mi);
     box.append(h('div', {
       class: 'preview',
       style: { background: surface, borderColor: dark ? at(n, last - 2) : at(n, 2), marginBottom: '9px' },
@@ -344,7 +356,7 @@ function renderRight() {
   const css = toCss(pal);
   const json = toJson(pal);
   let showing = 'css';
-  const pre = h('pre', { class: 'code' }, css);
+  const pre = h('pre', { class: 'code', tabindex: 0, 'aria-label': 'palette as code' }, css);
   const swap = (which) => { showing = which; pre.textContent = which === 'css' ? css : json; };
   box.append(h('div', { style: { display: 'flex', gap: '6px', marginBottom: '7px' } },
     h('button', { onclick: () => swap('css') }, 'CSS variables'),

@@ -1,4 +1,8 @@
-/* tests/front.test.mjs — the promises the front page makes in large type.
+/* tests/front.test.mjs — the promises the playground makes in large type, and
+   the counts the front page and the CV quote.
+
+   (The playground was the front page until the site was turned towards
+   hiring; its comments below still call it that.)
 
    The headline says thirty, with twenty-nine struck out above it, and the
    contact sheet under it is meant to be all of them. Every one of those is a
@@ -8,7 +12,7 @@
    looks complete. So the counts are checked against the atlas, which is the
    one list the navigator and the search already trust. */
 
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test, assert } from './harness.mjs';
@@ -21,16 +25,17 @@ const ATLAS = EVERYTHING.filter((e) => e.kind !== 'ai' && !e.flagship);
 const FLAGSHIPS = EVERYTHING.filter((e) => e.flagship);
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const html = readFileSync(join(root, 'index.html'), 'utf8');
+const html = readFileSync(join(root, 'playground.html'), 'utf8');
 
 const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
   'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen',
   'twenty', 'twenty-one', 'twenty-two', 'twenty-three', 'twenty-four', 'twenty-five', 'twenty-six',
-  'twenty-seven', 'twenty-eight', 'twenty-nine', 'thirty', 'thirty-one', 'thirty-two', 'thirty-three'];
+  'twenty-seven', 'twenty-eight', 'twenty-nine', 'thirty', 'thirty-one', 'thirty-two', 'thirty-three',
+  'thirty-four', 'thirty-five', 'thirty-six', 'thirty-seven', 'thirty-eight', 'thirty-nine', 'forty'];
 
 const listIn = (name) => {
   const block = html.match(new RegExp(`const ${name} = \\[([\\s\\S]*?)\\];`));
-  assert.ok(block, `could not find ${name} in index.html`);
+  assert.ok(block, `could not find ${name} in playground.html`);
   return [...block[1].matchAll(/'([a-z0-9-]+)'/g)].map((m) => m[1]);
 };
 
@@ -131,4 +136,38 @@ test('each product’s "measured" line is what the product measures', () => {
   const total = sets.reduce((n, r) => n + r.total, 0);
   const unans = sets.reduce((n, r) => n + r.unanswerable, 0);
   assert.equal(proof('handbook').replace(/&middot;/g, '·').split(' · ')[0], `made up ${made} answers in ${total} test questions, ${unans} of them unanswerable on purpose`);
+});
+
+/* The front page and the CV quote counts too. The front page is short and
+   hand-written, and the CV is the one document most likely to be read
+   without the site beside it to check it against. */
+const home = readFileSync(join(root, 'index.html'), 'utf8');
+const cv = readFileSync(join(root, 'cv/index.html'), 'utf8');
+const capital = (w) => w[0].toUpperCase() + w.slice(1);
+
+test('the front page and the CV count the projects that run here', () => {
+  const running = EVERYTHING.length;
+  const said = home.match(/<span data-count="atlas">([^<]*)<\/span>/)?.[1];
+  assert.equal(said, capital(WORDS[running]), `the front page says "${said}"; ${running} run on the site`);
+  const cvSaid = Number(cv.match(/Portfolio <span>· (\d+) projects that run in the browser/)?.[1]);
+  assert.equal(cvSaid, running, `the CV says ${cvSaid}; ${running} run on the site`);
+});
+
+test('the front page features every flagship, and every tile is a real project', () => {
+  for (const e of FLAGSHIPS) {
+    assert.ok(home.includes(`<a class="go" href="${e.href}">`), `${e.title} has no case study on the front page`);
+  }
+  const hrefs = new Set(EVERYTHING.map((e) => e.href));
+  const tiles = [...home.matchAll(/<a class="tile" href="([^"]+)"/g)].map((m) => m[1]);
+  assert.ok(tiles.length >= 3, `only ${tiles.length} tiles under "More of my work"`);
+  for (const t of tiles) assert.ok(hrefs.has(t), `the tile for ${t} is not in the atlas`);
+});
+
+test('the CV is offered as a PDF wherever it is linked', () => {
+  /* The PDF is printed from cv/index.html by cv/build.mjs. A link to a file
+     that was never built is the worst possible broken link on this site. */
+  const pdf = 'cv/Mohamed-Sucule-CV.pdf';
+  assert.ok(home.includes(`href="${pdf}"`), 'the front page does not link the CV PDF');
+  assert.ok(cv.includes('href="Mohamed-Sucule-CV.pdf"'), 'the CV page does not link its PDF');
+  assert.ok(existsSync(join(root, pdf)), `${pdf} has not been built: run node cv/build.mjs`);
 });

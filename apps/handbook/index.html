@@ -16,7 +16,7 @@
   @font-face { font-family: "JetBrains Mono Var"; src: url("../../assets/fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 100 800; font-display: swap; }
 
   :root {
-    --paper: #f3efe5; --card: #fbf9f3; --ink: #17140f; --ink-2: #4a4439; --ink-3: #857c6c;
+    --paper: #f3efe5; --card: #fbf9f3; --ink: #17140f; --ink-2: #4a4439; --ink-3: #6a6356;
     --rule: rgba(23,20,15,.14); --rule-2: rgba(23,20,15,.3); --red: #cf2e1b; --green: #2c7a4b; --amber: #b06a10;
     --display: "Instrument Serif", Georgia, serif; --text: "Newsreader", Georgia, serif;
     --mono: "JetBrains Mono Var", ui-monospace, Menlo, monospace;
@@ -220,7 +220,7 @@
 
     <aside class="panel source" aria-label="The source">
       <div class="head"><h3 id="docTitle">The handbook</h3><p id="docMeta">Pick an answer to see where it came from</p></div>
-      <div class="doc" id="doc"></div>
+      <div class="doc" id="doc" tabindex="0" aria-label="the document"></div>
       <div class="lib" id="lib"></div>
     </aside>
   </section>
@@ -233,7 +233,7 @@
         <textarea id="paste" placeholder="# Our office guide&#10;&#10;Parking&#10;There are twelve spaces behind the building, booked through reception…"></textarea>
         <div class="row">
           <button class="btn" type="button" id="addPaste">Add to the library</button>
-          <span class="btn ghost file">Choose a file<input type="file" id="file" accept=".txt,.md,.markdown,text/plain,text/markdown" /></span>
+          <span class="btn ghost file">Choose a file<input type="file" id="file" accept=".txt,.md,.markdown,text/plain,text/markdown" aria-label="Choose a file to add to the handbook" /></span>
           <span id="addMsg" class="ai-chip"></span>
         </div>
         <ul class="mine" id="mine"></ul>

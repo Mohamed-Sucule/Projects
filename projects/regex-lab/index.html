@@ -94,6 +94,7 @@
   .ast .row { display: flex; gap: 6px; white-space: nowrap; border-radius: 3px; padding: 0 3px; cursor: default; }
   .ast .row:hover { background: var(--ink-750); }
   .ast .row.hi { background: color-mix(in oklab, var(--accent) 16%, transparent); }
+  .ast .row.hi .g { color: var(--fg-dim); }
   .ast .t { color: var(--accent); }
   .ast .v { color: var(--fg); }
   .ast .g { color: var(--fg-ghost); }
@@ -149,11 +150,11 @@
   <div>
     <div class="compose">
       <div class="slot">
-        <span class="lab">pattern</span>
+        <label class="lab" for="pat">pattern</label>
         <input id="pat" type="text" spellcheck="false" autocomplete="off" value="(a|b)*abb" />
       </div>
       <div class="slot">
-        <span class="lab">subject</span>
+        <label class="lab" for="inp">subject</label>
         <input id="inp" type="text" spellcheck="false" autocomplete="off" value="aababb" />
       </div>
     </div>
@@ -204,7 +205,7 @@
           <button data-tab="dfa">dfa table</button>
         </div>
       </div>
-      <div class="body" id="side"></div>
+      <div class="body" id="side" tabindex="0" aria-label="the parsed pattern"></div>
     </section>
   </main>
 

@@ -1,0 +1,38 @@
+name: Site
+
+# The checks for the site itself: the unit and page tests (node tests/run.mjs),
+# and axe on every page in a real browser, in light and dark mode. They run on
+# every pull request, and Deploy to GitHub Pages calls this same workflow
+# before it publishes, so nothing reaches the site without passing both.
+
+on:
+  pull_request:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Unit and page tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node tests/run.mjs
+
+  a11y:
+    name: Accessibility (axe, every page)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: node tests/a11y/scan.mjs

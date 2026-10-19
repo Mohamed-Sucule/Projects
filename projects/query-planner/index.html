@@ -111,7 +111,7 @@
       <div class="panel">
         <div class="head">query</div>
         <div class="body sqlbox">
-          <textarea id="sql" spellcheck="false"></textarea>
+          <textarea id="sql" spellcheck="false" aria-label="SQL query"></textarea>
           <div class="sqlerr" id="sqlerr" hidden></div>
           <div class="examples" id="examples"></div>
         </div>
@@ -129,7 +129,7 @@
 
     <section class="panel third">
       <div class="head" id="whyhead">why</div>
-      <div class="body" id="why"></div>
+      <div class="body" id="why" tabindex="0" aria-label="why this plan"></div>
     </section>
   </main>
 
@@ -188,7 +188,7 @@ function renderCatalog() {
     const rowsLabel = h('span', { class: 'rows' }, fmt.n(t.rows) + ' rows');
     wrap.append(h('div', { class: 'name' }, name, rowsLabel));
     const slider = h('input', {
-      type: 'range', min: 2, max: 8, step: 0.02,
+      type: 'range', min: 2, max: 8, step: 0.02, 'aria-label': `rows in ${name}`,
       value: Math.log10(Math.max(100, t.rows)),
       oninput: (e) => {
         const rows = Math.round(10 ** +e.target.value);

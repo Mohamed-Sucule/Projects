@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Turning the sky — one rotation, 5,044 stars and the clocks of every country, by Mohamed Sucule</title>
+<meta name="description" content="How Your Sky draws the real sky over any place and moment: the stars turned by one rotation, a projection that keeps shapes, the Moon lit from the right side, clock time at the place, and a whole night played at about 11 ms a frame." />
+<link rel="icon" href="../../favicon.svg" />
+<meta name="theme-color" content="#f6f5f1" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0f1115" media="(prefers-color-scheme: dark)" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Turning the sky: one rotation, 5,044 stars and the clocks of every country" />
+<meta property="og:description" content="How a star chart stays correct for any place and moment, and why “21:30 in Paris” is harder than it looks." />
+<meta property="og:url" content="https://mohamed-sucule.github.io/Projects/writing/turning-the-sky/" />
+<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/assets/og-card.png" />
+<link rel="canonical" href="https://mohamed-sucule.github.io/Projects/writing/turning-the-sky/" />
+<link rel="stylesheet" href="../writing.css" />
+</head>
+<body>
+<a class="skip" href="#article">Skip to the article</a>
+<header class="top">
+  <div class="in">
+    <a class="mark" href="../../">Mohamed Sucule</a>
+    <nav aria-label="Main">
+      <a href="../../#work">Work</a>
+      <a href="../../#writing">Writing</a>
+      <a href="../../cv/">CV</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<article id="article">
+  <p class="label">Rendering · Time · Your Sky</p>
+  <h1>Turning the sky: one rotation, 5,044 stars and the clocks of every country</h1>
+  <p class="standfirst">Your Sky draws what was overhead at any place and moment between 1800 and 2200. Getting the sky right turned out to be the easy half. The hard half was the clock.</p>
+  <p class="byline">Mohamed Sucule · <a href="../../your-sky/index.html">Open Your Sky</a> · <a href="https://github.com/Mohamed-Sucule/Projects/tree/main/your-sky">Source</a></p>
+
+  <figure class="pair">
+    <img src="../../assets/your-sky-poster.webp" width="680" height="962" alt="A star chart poster: the sky over Paris on 14 February 2025, titled The night we met" />
+    <img src="../../atlas/shots/your-sky-960.webp" width="960" height="600" alt="Your Sky: the chart beside its controls for place, date, time, style and size" />
+    <figcaption>The sky over Paris at 22:00 on 14 February 2025, and the app that drew it.</figcaption>
+  </figure>
+
+  <h2>The sky is one rotation</h2>
+  <p>
+    The 5,044 stars you can see with the naked eye (down to magnitude 6) barely move against each other in a
+    lifetime. So they're stored once, as unit vectors in the J2000 equatorial frame, with their brightness and colour.
+    What changes from one night to the next is how that frame sits over the person looking up.
+  </p>
+  <p>
+    <a href="https://github.com/cosinekitty/astronomy">Astronomy Engine</a> gives that as a single 3 × 3 rotation.
+    The matrix folds together the Earth's spin, its slow wobble (precession and nutation) and where the observer
+    stands. Turning the whole sky to a new moment is one matrix and 5,044 multiplications. There was one trap: the
+    library's matrices are indexed column first.
+  </p>
+<pre tabindex="0" aria-label="Code: building the rotation for a place and moment"><code><span class="c">// src/sky/astro.ts: horizon directions are x north, y west, z up</span>
+const rot = Rotation_EQJ_HOR(MakeTime(at), new Observer(lat, lon, 0)).rot;
+<span class="c">// Astronomy Engine's matrices are indexed [column][row]</span>
+const rotation: Matrix = [
+  rot[0]![0]!, rot[1]![0]!, rot[2]![0]!,
+  rot[0]![1]!, rot[1]![1]!, rot[2]![1]!,
+  rot[0]![2]!, rot[1]![2]!, rot[2]![2]!,
+];</code></pre>
+  <p>
+    The Sun, the Moon and the five naked-eye planets do move, so each gets its own position. They're computed from
+    where the observer stands rather than from the centre of the Earth, which matters for the Moon: it's close enough
+    to shift against the stars depending on where you look from.
+  </p>
+
+  <h2>Flattening the dome</h2>
+  <p>
+    The chart is a stereographic projection centred straight overhead, with the horizon as its edge. It keeps
+    shapes, so Orion looks like Orion, and it maps every circle on the sky to a circle on paper, which is why
+    planispheres use it. Star charts are drawn as seen looking up, so east is on the left, the mirror of a map of the
+    ground. The whole projection is three lines, and so is its inverse:
+  </p>
+<pre tabindex="0" aria-label="Code: the stereographic projection and its inverse"><code><span class="c">// src/sky/project.ts</span>
+export function project(h: Vec3): [number, number] {
+  const k = 1 / Math.max(1e-9, 1 + h[2]);
+  return [h[1] * k, -h[0] * k];
+}
+
+export function unproject(x: number, y: number): Vec3 {
+  const r2 = x * x + y * y;
+  const k = 2 / (1 + r2);
+  return [-y * k, x * k, (1 - r2) / (1 + r2)];
+}</code></pre>
+  <p>
+    Constellation lines are great-circle arcs, cut into two-degree steps so they curve as they should near the
+    horizon, and stopped just short of their stars.
+  </p>
+
+  <h2>The Moon, lit from the right side</h2>
+  <p>
+    The phase is just the Sun–Moon–Earth angle. The hard part is which way the lit side faces. On the sky it faces the
+    Sun, but on a stereographic chart "towards the Sun" is a direction that depends on where both bodies are, and it
+    curves. So the code doesn't try to compute it in chart space. It takes a tiny step on the sphere from the Moon
+    towards the Sun, projects both points, and reads the angle off the chart:
+  </p>
+<pre tabindex="0" aria-label="Code: which way the Moon's lit side faces"><code><span class="c">// src/sky/scene.ts</span>
+<span class="c">// the way to the Sun, starting from the Moon: the Sun's direction less its part along the Moon's</span>
+const d = s[0] * mo[0] + s[1] * mo[1] + s[2] * mo[2];
+const toward = normalize([s[0] - d * mo[0], s[1] - d * mo[1], s[2] - d * mo[2]]);
+const step = normalize([
+  mo[0] + toward[0] * 0.01,
+  mo[1] + toward[1] * 0.01,
+  mo[2] + toward[2] * 0.01,
+]);
+const [x, y] = at(mo);
+const [x2, y2] = at(step);
+const toSun = Math.atan2(y2 - y, x2 - x);</code></pre>
+  <p>A test holds it to the sky: a first-quarter Moon in the afternoon must turn its lit side towards the Sun.</p>
+
+  <h2>The Milky Way, as a glow</h2>
+  <p>
+    The Milky Way's outline comes as five nested levels of brightness, and the outermost wraps right round the sky,
+    which makes it awkward to fill on a sphere. So a build script fills the outlines once, column by column, on a
+    1024 × 512 map of the whole sky, blurs it, and writes a 34 KB greyscale PNG with a small encoder of its own.
+  </p>
+  <p>
+    Drawing it runs the projection backwards. Each pixel of the chart is unprojected to a direction, unrotated back
+    into the star frame (a rotation's inverse is its transpose, so that's free), and looked up in the map. This is
+    the slowest part of a chart, so it's computed at a few hundred pixels across and scaled up smoothly. It's
+    coarser while the night is playing, and kept until the sky or the style changes.
+  </p>
+
+  <h2>Why "21:30 in Paris" is harder than it looks</h2>
+  <p>
+    A poster of the night you met is about 21:30 on a clock in Paris, not on the clock of whoever opens the link. So
+    the time zone comes from the coordinates (<a href="https://github.com/photostructure/tz-lookup">tz-lookup</a>),
+    and the offset comes from the browser's own copy of the time zone database, through <code>Intl</code>. That gets
+    history right for free: Britain kept summer time all year from 1968 to 1971, and a test checks it.
+  </p>
+  <p>
+    Then, twice a year, a clock time stops being one answer. When the clocks jump forward, 02:30 never happens. When
+    they fall back, 02:30 happens twice. The converter tries the offsets from a day either side, keeps those that
+    give back the time it was asked for, and takes the earliest. If none does, the time was skipped, and it's read as
+    the same distance past the jump, 03:30. That's what a person would mean, and it's Temporal's
+    <code>"compatible"</code> rule:
+  </p>
+<pre tabindex="0" aria-label="Code: turning a clock time at a place into an instant"><code><span class="c">// src/sky/time.ts</span>
+<span class="c">// no zone changes its offset twice in two days, so the offsets either side are all</span>
+const before = offsetAt(naive - DAY, zone);
+const after = offsetAt(naive + DAY, zone);
+const fits = [before, after]
+  .map((o) =&gt; naive - o)
+  .filter((ms) =&gt; offsetAt(ms, zone) === naive - ms)
+  .sort((a, b) =&gt; a - b);
+<span class="c">// a doubled hour: take the first</span>
+if (fits.length) return new Date(fits[0]!);
+<span class="c">// a skipped hour: keep the offset from before the jump</span>
+return new Date(naive - before);</code></pre>
+  <p>
+    The unit tests cover skipped and doubled times, Nepal's +5:45 and the Chatham Islands' +13:45. An end-to-end test
+    checks that the time on the poster is the time at the place.
+  </p>
+
+  <h2>Fast enough to play a whole night</h2>
+  <p>
+    A slider runs from noon to noon, shaded with the real daylight and twilight at the place, and a play button turns
+    the sky through the night. That only feels right if a frame costs well under 16 ms. Measured in headless
+    Chromium, it costs about 11:
+  </p>
+  <table class="timing">
+    <caption class="label" style="text-align:left;padding-bottom:6px">JavaScript per frame while the night plays</caption>
+    <thead><tr><th scope="col">Step</th><th scope="col">Time</th></tr></thead>
+    <tbody>
+      <tr><td>Build the scene: stars, lines, Moon, planets, labels</td><td>1.2 ms</td></tr>
+      <tr><td>The Milky Way, at 220 pixels across</td><td>4.1 ms</td></tr>
+      <tr><td>Draw the chart</td><td>4.8 ms</td></tr>
+      <tr><td>Set the words</td><td>0.8 ms</td></tr>
+    </tbody>
+    <tfoot><tr><td>Total</td><td>about 11 ms</td></tr></tfoot>
+  </table>
+  <p>
+    Drawing is cheap because it's batched. Stars come in a handful of colours, so they're traced into one path per
+    colour, and the faintest share one alpha. That makes 2,500 stars a handful of fills. The preview draws at most
+    once per animation frame however fast the state changes, and the five style thumbnails wait until the sky stops
+    moving.
+  </p>
+
+  <h2>One scene, two outputs</h2>
+  <p>
+    One pass turns the sky into a scene in pixels: where each star is and how big it is, the lines, the Moon, the
+    planets, and which labels fit. Labels go on in order of importance (planets first, then the famous
+    constellations, the bright stars, then the rest), each only if it's inside the horizon and clear of every label
+    already placed. The canvas and the SVG are both drawn from that scene, so the PNG and the vector file always
+    agree.
+  </p>
+
+  <h2>Checked against the sky</h2>
+  <p>Sixty unit tests hold the output to astronomical facts rather than to snapshots of itself:</p>
+  <ul>
+    <li>Polaris stands as high as the observer is far north, at four latitudes.</li>
+    <li>The noon Sun at the June solstice in London is at 90° − latitude + 23.4°.</li>
+    <li>The stars come back to the same place after a sidereal day, not a solar one.</li>
+    <li>The full moon of 25 January 2024 is full, and the new moon of 9 February 2024 is new.</li>
+    <li>Jupiter was beside Aldebaran in February 2025.</li>
+  </ul>
+  <p>
+    Twelve end-to-end scenarios then run against the production build on a desktop and a phone. They cover the
+    slider by keyboard with a single undo, playing and pausing the night, the PNG's pixel size, the SVG's contents,
+    place search going down, and axe for accessibility.
+  </p>
+
+  <aside class="next" aria-labelledby="next-title">
+    <h2 id="next-title">More on Your Sky</h2>
+    <ul>
+      <li><a href="../../your-sky/index.html">Make a star chart</a> of a night that matters to you</li>
+      <li><a href="https://github.com/Mohamed-Sucule/Projects/tree/main/your-sky#readme">The README</a>: the full design, the data pipeline and how to run the tests</li>
+      <li><a href="../fast-map-posters/">From 41.7 seconds to 0.39</a>, the companion piece on Your Place</li>
+    </ul>
+  </aside>
+</article>
+</main>
+
+<footer>
+  <div class="in">
+    <p style="margin:0">Mohamed Sucule · Frontend engineer, Birmingham, UK</p>
+    <p style="margin:0"><a href="mailto:mohamedsucule@gmail.com">mohamedsucule@gmail.com</a> · <a href="../../cv/">CV</a></p>
+  </div>
+</footer>
+<script type="module" src="../../shared/navigator.js"></script>
+</body>
+</html>
