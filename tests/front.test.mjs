@@ -14,9 +14,11 @@ import { fileURLToPath } from 'node:url';
 import { test, assert } from './harness.mjs';
 import { ATLAS as EVERYTHING, byId } from '../shared/atlas.js';
 
-/* The AI products are presented on their own at the top of the page; the
-   contact sheet and its counts are everything else. */
-const ATLAS = EVERYTHING.filter((e) => e.kind !== 'ai');
+/* The AI products are presented on their own at the top of the page, and so
+   is a flagship, tipped in as a plate; the contact sheet and its counts are
+   everything else. */
+const ATLAS = EVERYTHING.filter((e) => e.kind !== 'ai' && !e.flagship);
+const FLAGSHIPS = EVERYTHING.filter((e) => e.flagship);
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const html = readFileSync(join(root, 'index.html'), 'utf8');
@@ -40,6 +42,16 @@ test('the contact sheet carries every project in the atlas, exactly once', () =>
     seen.add(id);
   }
   for (const e of ATLAS) assert.ok(seen.has(e.id), `${e.title} is in the atlas but not on the contact sheet`);
+});
+
+test('every flagship is tipped in as a plate of its own, and is not also a frame', () => {
+  assert.ok(FLAGSHIPS.length > 0, 'there is no flagship to feature');
+  const sheet = new Set(listIn('SHEET'));
+  for (const e of FLAGSHIPS) {
+    assert.ok(html.includes(`<a class="plate-art" href="${e.href}"`), `${e.title} has no plate on the front page`);
+    assert.ok(html.includes(`<a class="stamp" href="${e.href}"`), `${e.title}'s plate cannot be opened`);
+    assert.ok(!sheet.has(e.id), `${e.title} is a plate and a frame on the sheet`);
+  }
 });
 
 test('every strip of the contact sheet is full, at every width', () => {

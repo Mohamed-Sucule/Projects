@@ -28,8 +28,8 @@ test('every project in the catalogue is in the atlas, and everything in the atla
 });
 
 test('the page counts its projects correctly', () => {
-  assert.equal(ISLANDS.length, 35, `the page says thirty-five; there are ${ISLANDS.length}`);
-  assert.ok(html.includes('Thirty-five worlds, in six rooms') && html.includes('Thirty-five of them') && html.includes('<b>35</b>'), 'the counts on the page have drifted');
+  assert.equal(ISLANDS.length, 36, `the page says thirty-six; there are ${ISLANDS.length}`);
+  assert.ok(html.includes('Thirty-six worlds, in six rooms') && html.includes('Thirty-six of them') && html.includes('<b>36</b>'), 'the counts on the page have drifted');
   for (const r of REGIONS) {
     const n = ISLANDS.filter((i) => i.region === r.id).length;
     assert.ok(html.includes(`<span class="t">${r.name}</span><span class="c">${n}</span>`), `the contents miscount ${r.name}`);

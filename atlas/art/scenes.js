@@ -347,6 +347,49 @@ void main() {
 const DEF = { cam: [-1.1, 0.42, 10.5], look: [-1.35, 1.55, 0], fov: 0.62, bound: [0, 2, 0, 4, 4.2, 4] };
 
 export const FORMS = {
+  /* an easel holding the poster of a city, its streets and river lit, and a pin where you are */
+  'your-place': { alt: 'An easel holding the poster of a city, its streets lit, with a pin where you are.', accent: '#ffc98e', body: `
+    vec2 r = vec2(1e9, 0);
+    for (int i = 0; i < 2; i++) {
+      float sd = i == 0 ? -1. : 1.;
+      vec3 q = p - vec3(sd * .8, 1.75, .3); q.xy *= rot(sd * .09); q.yz *= rot(.16);
+      r = U(r, vec2(sdRBox(q, vec3(.045, 1.8, .045), .012), SHADE));
+    }
+    vec3 b = p - vec3(0, 1.75, -.6); b.yz *= rot(-.34);
+    r = U(r, vec2(sdRBox(b, vec3(.04, 1.85, .04), .012), SHADE));
+    r = U(r, vec2(sdRBox(p - vec3(0, .62, .46), vec3(1.18, .035, .11), .012), SHADE));
+    /* the poster leans back with the legs: a brass frame, and the paper inside it */
+    vec3 f = p - vec3(0, 2.08, .4); f.yz *= rot(.16);
+    r = U(r, vec2(sdRBox(f, vec3(1.0, 1.42, .04), .012), BRASS));
+    vec3 m = f - vec3(0, 0, .034);
+    r = U(r, vec2(sdBox(m, vec3(.9, 1.32, .012)), STONE));
+    /* streets, as lines of light on the paper, kept to the map above the title */
+    float A[7] = float[7](.04, -.03, 1.6, 1.52, .66, -.5, 1.18);
+    vec2 O[7] = vec2[7](vec2(0, .62), vec2(0, -.08), vec2(-.38, 0), vec2(.42, 0), vec2(-.1, .3), vec2(.22, .66), vec2(.55, .18));
+    float st = 1e9;
+    for (int k = 0; k < 7; k++) {
+      vec2 g = m.xy - O[k]; g *= rot(A[k]);
+      st = min(st, sdBox(vec3(g, m.z - .016), vec3(1.7, k < 4 ? .013 : .009, .004)));
+    }
+    /* and the fine grid of an old town, turned a little, in a ring round the pin */
+    vec2 t = (m.xy - vec2(-.1, .3)) * rot(.3);
+    vec2 gg = abs(fract(t * 7.5 + .5) - .5) / 7.5;
+    float town = max(min(gg.x, gg.y) - .0035, length(t) - .5);
+    st = min(st, length(vec2(max(town, 0.), m.z - .016)) - .002);
+    float map = sdBox(vec3(m.xy - vec2(0, .3), m.z - .016), vec3(.84, .98, .02));
+    r = U(r, vec2(max(st, map), GLOW));
+    /* the river, a long bend across the map */
+    vec3 rv = vec3(m.xy - vec2(1.3, -.42), m.z - .015);
+    r = U(r, vec2(max(sdTorZ(rv, vec2(1.2, .045)), map), GLASS));
+    /* the name, and the rule under it */
+    r = U(r, vec2(sdBox(vec3(m.xy - vec2(0, -.96), m.z - .016), vec3(.44, .05, .004)), GLOW));
+    r = U(r, vec2(sdBox(vec3(m.xy - vec2(0, -1.1), m.z - .016), vec3(.12, .008, .004)), GLOW));
+    /* a pin standing out of the paper, where you are */
+    vec3 pin = m - vec3(-.1, .3, 0);
+    r = U(r, vec2(sdCylY(vec3(pin.x, pin.z - .12, pin.y), .012, .12), METAL));
+    r = U(r, vec2(sdSph(pin - vec3(0, 0, .26), .075), GLOW));
+    return r;`, glow: [-0.1, 2.4, 1.3, 1.1], bound: [0, 1.9, 0, 1.5, 2.0, 1.2] },
+
   /* a ledger of slabs, and one invoice pulled out of it */
   tally: { alt: 'A ledger of slabs, and one invoice pulled out of it.', body: `
     vec2 r = vec2(1e9, 0);

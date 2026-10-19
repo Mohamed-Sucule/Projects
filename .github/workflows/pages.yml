@@ -1,7 +1,9 @@
 name: Deploy to GitHub Pages
 
-# Publishes the whole repo as a static site. There is no build step — these
-# are plain HTML files — so this just uploads them.
+# Publishes the whole repo as a static site. Almost everything is plain HTML
+# and is uploaded as it is. The one exception is Your Place (React and
+# TypeScript): its folder holds source, so the deploy builds it and puts the
+# built app in that folder's place before uploading.
 #
 # ONE-TIME SETUP (about ten seconds, and it cannot be scripted — GitHub
 # refuses to let a workflow token switch Pages on for the first time):
@@ -44,6 +46,24 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: your-place/package-lock.json
+      - name: Build Your Place into /your-place/
+        working-directory: your-place
+        env:
+          VITE_PORTFOLIO_URL: ../atlas/
+        run: |
+          npm ci
+          npm test
+          npm run build
+      - name: Serve the built app, not its source
+        run: |
+          mv your-place/dist "$RUNNER_TEMP/your-place"
+          rm -rf your-place
+          mv "$RUNNER_TEMP/your-place" your-place
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
