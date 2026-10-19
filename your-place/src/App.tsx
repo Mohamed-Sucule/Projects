@@ -1,15 +1,16 @@
 import { useCallback, useEffect, useReducer, useState } from 'react';
 import { Downloads } from './components/Downloads';
 import { SizeFields, WordsFields } from './components/Fields';
-import { Icon } from './components/Icon';
-import { PlaceSearch } from './components/PlaceSearch';
+import { Icon } from 'poster-kit/Icon';
+import { PlaceSearch } from 'poster-kit/PlaceSearch';
 import { PosterPreview } from './components/PosterPreview';
 import { StylePicker } from './components/StylePicker';
 import { mapClient } from './map/client';
 import type { View } from './map/geo';
 import type { ThemeId } from './map/themes';
-import { cityFromTimeZone, searchPlaces, viewForPlace, type Place } from './places/photon';
-import { canRedo, canUndo, initHistory, withHistory, type HistoryAction } from './state/history';
+import { cityFromTimeZone, searchPlaces, type Place } from 'poster-kit/photon';
+import { hereOnTheMap, viewForPlace } from './places/view';
+import { canRedo, canUndo, initHistory, withHistory, type HistoryAction } from 'poster-kit/history';
 import {
   DEFAULT_POSTER,
   groupKey,
@@ -186,6 +187,8 @@ export function App() {
               current={poster.title}
               near={poster.view}
               onPick={(p) => pickPlace(p, aspect)}
+              placeholder="A city, a street, an address…"
+              here={hereOnTheMap}
             />
           </section>
           <section className="step">

@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { download, fileName, renderPng, renderSvg } from '../poster/export';
+import { download } from 'poster-kit/files';
+import { fileName, renderPng, renderSvg } from '../poster/export';
 import type { SkyMap } from '../sky/milkyway';
-import { SIZES, exportSize, pixelBudget } from '../poster/sizes';
+import { SIZES, exportSize, pixelBudget } from 'poster-kit/sizes';
 import type { Poster } from '../state/poster';
-import { Icon } from './Icon';
+import { Icon } from 'poster-kit/Icon';
 
 type Job = 'png' | 'svg' | 'share' | null;
 

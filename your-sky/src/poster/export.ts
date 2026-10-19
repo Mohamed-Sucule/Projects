@@ -1,18 +1,15 @@
 /* Downloads: a print-ready PNG, and an SVG for anyone who wants to take it further. */
 
-import outfitUrl from '@fontsource-variable/outfit/files/outfit-latin-wght-normal.woff2?url';
-import frauncesUrl from '@fontsource-variable/fraunces/files/fraunces-latin-wght-normal.woff2?url';
-import plexUrl from '@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2?url';
-import plexMediumUrl from '@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-500-normal.woff2?url';
 import type { AnyCanvas } from '../sky/canvas';
 import type { SkyMap } from '../sky/milkyway';
 import { chartSvg, colourAttrs, escapeXml } from '../sky/svg';
 import { THEMES } from '../sky/themes';
 import type { Poster } from '../state/poster';
 import { compose, milkyWayImage, momentOf, sceneFor, wordsOf } from './compose';
-import { FONTS, fontsReady, type FontId } from './fonts';
+import { blobToDataUrl } from 'poster-kit/files';
+import { FONTS, embeddedFonts, fontsReady } from 'poster-kit/fonts';
 import { layoutPoster } from './layout';
-import { SIZES, exportSize, pixelBudget } from './sizes';
+import { SIZES, exportSize, pixelBudget } from 'poster-kit/sizes';
 import { canvasMeasure, wordsSvg } from './words';
 
 export function fileName(p: Poster, ext: 'png' | 'svg'): string {
@@ -124,41 +121,4 @@ async function canvasToDataUrl(canvas: AnyCanvas): Promise<string> {
           canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('No image'))), 'image/png'),
         );
   return blobToDataUrl(blob, 'image/png');
-}
-
-/** The poster's fonts, inlined, so the SVG looks right on a machine that does not have them. */
-async function embeddedFonts(font: FontId): Promise<string> {
-  const faces: [string, string, string][] = [['IBM Plex Mono', '400', plexUrl]];
-  if (font === 'sans') faces.push(['Outfit Variable', '100 900', outfitUrl]);
-  if (font === 'serif') faces.push(['Fraunces Variable', '100 900', frauncesUrl]);
-  if (font === 'mono') faces.push(['IBM Plex Mono', '500', plexMediumUrl]);
-  const css = await Promise.all(
-    faces.map(async ([family, weight, url]) => {
-      const res = await fetch(url);
-      const data = await blobToDataUrl(await res.blob(), 'font/woff2');
-      return `@font-face{font-family:"${family}";font-weight:${weight};src:url(${data}) format("woff2")}`;
-    }),
-  );
-  return css.join('');
-}
-
-function blobToDataUrl(blob: Blob, type: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () =>
-      typeof reader.result === 'string'
-        ? resolve(reader.result.replace(/^data:[^;]*;/, `data:${type};`))
-        : reject(new Error('Could not read a file'));
-    reader.onerror = () => reject(reader.error ?? new Error('Could not read a file'));
-    reader.readAsDataURL(blob);
-  });
-}
-
-export function download(blob: Blob, name: string) {
-  const url = URL.createObjectURL(blob);
-  const a = Object.assign(document.createElement('a'), { href: url, download: name });
-  document.body.append(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 30_000);
 }

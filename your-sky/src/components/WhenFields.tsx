@@ -12,7 +12,7 @@ import {
   type LocalTime,
 } from '../sky/time';
 import type { Action, Spot } from '../state/poster';
-import { Icon } from './Icon';
+import { Icon } from 'poster-kit/Icon';
 
 interface Props {
   when: LocalTime;

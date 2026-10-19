@@ -1,0 +1,28 @@
+name: Poster kit
+
+# The code Your Place and Your Sky share (packages/poster-kit): formatting,
+# lint, types and its unit tests. Both apps' own workflows also run when it
+# changes, so a change here is checked against both of them.
+
+on:
+  push:
+    branches: [main]
+    paths: ['packages/**', 'package.json', 'package-lock.json', '.github/workflows/poster-kit.yml']
+  pull_request:
+    paths: ['packages/**', 'package.json', 'package-lock.json', '.github/workflows/poster-kit.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Format, lint, types, unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check -w poster-kit

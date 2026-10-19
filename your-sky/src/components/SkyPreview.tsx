@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { compose, wordsOf } from '../poster/compose';
-import { fontsReady } from '../poster/fonts';
+import { fontsReady } from 'poster-kit/fonts';
 import { layoutPoster } from '../poster/layout';
 import type { Sky } from '../sky/astro';
 import type { SkyMap } from '../sky/milkyway';

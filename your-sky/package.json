@@ -20,11 +20,9 @@
     "data": "node scripts/data.mjs"
   },
   "dependencies": {
-    "@fontsource-variable/fraunces": "5.3.0",
-    "@fontsource-variable/outfit": "5.3.0",
-    "@fontsource/ibm-plex-mono": "5.3.0",
     "@photostructure/tz-lookup": "11.7.0",
     "astronomy-engine": "2.1.19",
+    "poster-kit": "1.0.0",
     "react": "19.3.1",
     "react-dom": "19.3.1"
   },

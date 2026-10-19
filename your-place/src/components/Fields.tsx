@@ -1,5 +1,5 @@
 import { memo, useId } from 'react';
-import { FONTS, FONT_IDS, type FontId } from '../poster/fonts';
+import { FONTS, FONT_IDS, type FontId } from 'poster-kit/fonts';
 import { LAYOUT_IDS, type LayoutId } from '../poster/layout';
 import {
   SIZES,
@@ -8,7 +8,7 @@ import {
   hasOrientation,
   type Orientation,
   type SizeId,
-} from '../poster/sizes';
+} from 'poster-kit/sizes';
 import { MAX_SUBTITLE, MAX_TITLE, type Action, type Poster } from '../state/poster';
 
 type Dispatch = (action: Action) => void;

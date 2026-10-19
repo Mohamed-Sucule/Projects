@@ -7,7 +7,7 @@ import { paintFade, paintGrain } from '../map/draw';
 import type { MapJob, Picture } from '../map/engine';
 import { frameFor, type View } from '../map/geo';
 import type { Theme } from '../map/themes';
-import type { FontId } from './fonts';
+import type { FontId } from 'poster-kit/fonts';
 import { layoutPoster, type PosterLayout } from './layout';
 import { drawWords, type Words } from './words';
 

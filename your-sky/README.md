@@ -49,7 +49,7 @@ TypeScript in strict mode, React 19 and Vite, with no UI or state libraries. The
 
 **Drawing fast enough to play.** While the night plays, each frame costs about 11 ms of JavaScript, measured in headless Chromium: 1.2 ms for the scene, 4.1 ms for the Milky Way at 220 pixels, 4.8 ms to draw the chart and 0.8 ms for the words. Stars are drawn as one path per colour, and the faintest ones share one alpha, so 2,500 stars take a handful of fills. The preview draws at most once a frame however fast the poster changes, and the style thumbnails wait until the sky stops moving.
 
-**State you can trust.** One reducer describes a poster, and undo/redo wraps it ([`history.ts`](src/state/history.ts)). A sweep of the slider, by finger or by arrow keys, is one undo step. Moving the sky to a new place moves the place's name and country with it, but never a title you wrote yourself. The URL is validated on the way in ([`url.ts`](src/state/url.ts)).
+**State you can trust.** One reducer describes a poster, and undo/redo wraps it ([`history.ts`](../packages/poster-kit/src/history.ts)). A sweep of the slider, by finger or by arrow keys, is one undo step. Moving the sky to a new place moves the place's name and country with it, but never a title you wrote yourself. The URL is validated on the way in ([`url.ts`](src/state/url.ts)).
 
 **Accessible by construction.** Place search follows the WAI-ARIA combobox pattern. Styles, typefaces and layouts are real radio buttons. The slider says the time and day it stands for ("01:30, Saturday 15 February"). The chart's text alternative is worked out from the sky. Playing the night moves in steps when you ask for reduced motion. axe runs on every build.
 
@@ -60,7 +60,7 @@ npm run check   # formatting, lint (type-aware), types, unit tests
 npm run e2e
 ```
 
-- **60 unit tests** (Vitest) check the sky against facts:
+- **69 unit tests** (Vitest), 17 of them in [poster-kit](../packages/poster-kit/), the code it shares with Your Place, check the sky against facts:
   - Polaris stands as high as the observer is far north, at four latitudes;
   - the noon Sun at the June solstice in London is at 90° − latitude + 23.4°;
   - the stars come back to the same place after a sidereal day, not a solar one;
@@ -75,24 +75,24 @@ npm run e2e
 ## Run it
 
 ```sh
-cd your-sky
-npm ci
-npm run dev        # http://localhost:5173
-npm run data       # only to rebuild src/sky/data from d3-celestial
+npm ci                     # at the root of the repository: one lockfile for both apps
+npm run dev -w your-sky    # http://localhost:5173
+npm run data -w your-sky   # only to rebuild src/sky/data from d3-celestial
 ```
 
-Node 22.13 or newer. CI ([`your-sky.yml`](../.github/workflows/your-sky.yml)) runs the checks and the end-to-end suite on every change to this folder. The site's deploy builds it into `/your-sky/`.
+Node 22.13 or newer. Your Sky and Your Place are npm workspaces, with the code they share in [`packages/poster-kit`](../packages/poster-kit/). CI ([`your-sky.yml`](../.github/workflows/your-sky.yml)) runs the checks and the end-to-end suite whenever this folder, the shared package or the dependencies change. The site's deploy builds it into `/your-sky/`.
 
 ## Layout
 
 ```
 src/sky/        the sky: positions, time zones, projection, scene, Milky Way, canvas and SVG
 src/sky/data/   the stars, constellations and Milky Way, built by scripts/data.mjs
-src/poster/     sizes, layout, words, putting a poster together, downloads
-src/places/     place search (Photon)
-src/state/      the poster, undo/redo, links
+src/poster/     layout, words, putting a poster together, downloads
+src/state/      the poster and its links
 src/components/ the React interface
 tests/          unit tests, end-to-end tests, fixtures
+
+../packages/poster-kit/   shared with Your Place: undo/redo, sizes, fonts, place search, icons
 ```
 
 ## Credits

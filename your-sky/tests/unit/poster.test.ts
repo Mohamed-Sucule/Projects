@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { RING } from '../../src/sky/paint';
 import { layoutPoster } from '../../src/poster/layout';
-import { SIZE_IDS, aspectOf, exportSize } from '../../src/poster/sizes';
+import { SIZE_IDS, aspectOf } from 'poster-kit/sizes';
 import { canSpace, graphemes, setWords, spacedWidth } from '../../src/poster/words';
 import { THEMES } from '../../src/sky/themes';
 import { fileName } from '../../src/poster/export';
@@ -12,18 +12,6 @@ const measure = (font: string, text: string) => {
   const size = Number(/(\d+(?:\.\d+)?)px/.exec(font)?.[1] ?? 10);
   return graphemes(text).length * size * 0.6;
 };
-
-describe('sizes', () => {
-  it('prints at 300 dpi when the budget allows, and never beyond it', () => {
-    expect(exportSize('a4', 'portrait', 16e6)).toEqual({ width: 2480, height: 3508, dpi: 300 });
-    for (const id of SIZE_IDS) {
-      for (const o of ['portrait', 'landscape'] as const) {
-        const out = exportSize(id, o, 16e6);
-        expect(out.width * out.height).toBeLessThanOrEqual(16e6 * 1.001);
-      }
-    }
-  });
-});
 
 describe('layout', () => {
   it('keeps the chart, its compass and the words on the poster, apart', () => {

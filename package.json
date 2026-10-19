@@ -4,6 +4,11 @@
   "private": true,
   "description": "The portfolio of Mohamed Sucule, frontend engineer: two React and TypeScript apps and thirty-four more pieces that run in the browser.",
   "type": "module",
+  "workspaces": [
+    "packages/poster-kit",
+    "your-place",
+    "your-sky"
+  ],
   "scripts": {
     "test": "node tests/run.mjs",
     "a11y": "node tests/a11y/scan.mjs",
@@ -13,7 +18,8 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "4.14.0",
-    "playwright": "1.56.1"
+    "playwright": "1.56.1",
+    "playwright-core": "1.56.1"
   },
   "engines": { "node": ">=18" },
   "license": "MIT"

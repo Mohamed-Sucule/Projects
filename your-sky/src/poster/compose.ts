@@ -9,7 +9,7 @@ import { buildScene, type Measure, type Scene } from '../sky/scene';
 import { THEMES, hexRgb, type Theme } from '../sky/themes';
 import { toInstant, zoneAt, type LocalTime } from '../sky/time';
 import { coordsLine, whenLine, type Poster } from '../state/poster';
-import { FONTS } from './fonts';
+import { FONTS } from 'poster-kit/fonts';
 import { layoutPoster, type PosterLayout } from './layout';
 import { canvasMeasure, drawWords, type Words } from './words';
 

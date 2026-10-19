@@ -27,7 +27,7 @@ same geometry written out as SVG for print. Two performance fixes took the first
 of exactly what was overhead, with the Milky Way, the planets where they really were and the Moon in its real
 phase. One rotation from [Astronomy Engine](https://github.com/cosinekitty/astronomy) turns all 5,044
 naked-eye stars to any moment, in the clock time of the place, with summer time and the history of every
-zone. A slider plays the whole night at about 11 ms of JavaScript a frame. Sixty unit tests check the sky
+zone. A slider plays the whole night at about 11 ms of JavaScript a frame. Sixty-nine unit tests check the sky
 against facts, from Polaris standing as high as the latitude to real full and new moons.
 **[Make one](https://mohamed-sucule.github.io/Projects/your-sky/)** ·
 [how the sky is worked out](https://mohamed-sucule.github.io/Projects/writing/turning-the-sky/) ·
@@ -44,6 +44,9 @@ against facts, from Polaris standing as high as the latitude to real full and ne
   ([`tests/run.mjs`](tests/run.mjs), [`tests/front.test.mjs`](tests/front.test.mjs)).
 - **Every page meets the same baseline** of doctype, language, charset, viewport, description, social card,
   working internal links and unique ids ([`tests/pages.test.mjs`](tests/pages.test.mjs)).
+- **The two apps share code instead of copying it.** Your Place and Your Sky are npm workspaces beside
+  [`packages/poster-kit`](packages/poster-kit/): undo and redo, poster sizes, typefaces, place search and the
+  search box are written and tested once, and CI checks both apps whenever any of it changes.
 - **The CV is built from a web page** ([`cv/`](cv/)), so the PDF and the page never disagree, and its text is
   real text that screening software can read.
 

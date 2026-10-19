@@ -1,8 +1,6 @@
 /* Finding places with Photon, Komoot's open geocoder built on OpenStreetMap. It is made for
    search-as-you-type, which OpenStreetMap's own Nominatim asks people not to use it for. */
 
-import { MAX_ZOOM, clamp, fitZoom, type View } from '../map/geo';
-
 export const PHOTON_URL: string =
   (import.meta.env?.VITE_PHOTON as string | undefined) ?? 'https://photon.komoot.io';
 
@@ -16,8 +14,8 @@ export interface Place {
   subtitle: string;
   lon: number;
   lat: number;
-  /** west, south, east, north */
-  bbox: [number, number, number, number] | null;
+  /** west, south, east, north, where Photon knows the place's extent */
+  bbox?: [number, number, number, number] | null;
   /** "city", "street", "house"... */
   kind: string;
 }
@@ -141,17 +139,6 @@ async function request(url: string, signal?: AbortSignal): Promise<Place[]> {
   const res = await fetch(url, signal ? { signal } : {});
   if (!res.ok) throw new Error(`Place search is unavailable right now (${res.status})`);
   return parsePhoton(await res.json());
-}
-
-/* A city's own boundary can take in its whole hinterland (Greater London, or Tokyo's islands),
-   which makes a poster of fields. So a poster starts at most about 11 km across (at mid
-   latitudes), and a single building or address gets its neighbourhood around it. */
-const WIDEST = 13.2;
-const CLOSEST = 15.2;
-
-export function viewForPlace(place: Place, aspect: number): View {
-  const zoom = place.bbox ? fitZoom(place.bbox, aspect) : CLOSEST;
-  return { lon: place.lon, lat: place.lat, zoom: clamp(zoom, WIDEST, Math.min(CLOSEST, MAX_ZOOM)) };
 }
 
 /** A starting place from the time zone, so the first poster is somewhere near home. */

@@ -4,7 +4,7 @@
 
 import { escapeXml, round } from '../map/svg';
 import type { Theme } from '../map/themes';
-import { COORDS_FAMILY, FONTS, type FontId } from './fonts';
+import { COORDS_FAMILY, FONTS, type FontId } from 'poster-kit/fonts';
 import type { PosterLayout, TextSlot } from './layout';
 
 export const CREDIT = '© OpenStreetMap contributors';

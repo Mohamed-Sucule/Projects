@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canRedo, canUndo, initHistory, withHistory } from '../../src/state/history';
+import { canRedo, canUndo, initHistory, withHistory } from 'poster-kit/history';
 import {
   DEFAULT_POSTER,
   groupKey,
