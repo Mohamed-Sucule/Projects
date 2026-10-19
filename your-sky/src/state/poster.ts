@@ -1,8 +1,8 @@
 /* Everything that makes one poster, and every way it can change. */
 
-import type { FontId } from '../poster/fonts';
+import type { FontId } from 'poster-kit/fonts';
 import type { LayoutId } from '../poster/layout';
-import { aspectOf, hasOrientation, type Orientation, type SizeId } from '../poster/sizes';
+import { aspectOf, hasOrientation, type Orientation, type SizeId } from 'poster-kit/sizes';
 import type { ThemeId } from '../sky/themes';
 import { clampYear, formatWhen, parseLocal, type LocalTime } from '../sky/time';
 

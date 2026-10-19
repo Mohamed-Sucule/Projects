@@ -50,11 +50,11 @@ TypeScript in strict mode, React 19 and Vite, with no UI or state libraries. The
 - The view was asking for 88 tiles where 30 show the same streets.
 - In Chromium, `Path2D.closePath()` costs time in proportion to the path built so far. Tracing 90,000 building outlines took 85 s with it and 77 ms without. A fill closes its rings anyway, so canvas output skips it, and the SVG keeps it.
 
-**Printing honestly.** Print sizes aim for 300 dpi but stay within 16 million pixels, Safari's canvas ceiling, or 12 million on phones. When that lowers the dpi, the download button says so ([`sizes.ts`](src/poster/sizes.ts)).
+**Printing honestly.** Print sizes aim for 300 dpi but stay within 16 million pixels, Safari's canvas ceiling, or 12 million on phones. When that lowers the dpi, the download button says so ([`sizes.ts`](../packages/poster-kit/src/sizes.ts)).
 
 **Words in every script.** Titles are letter-spaced by grapheme, using `Intl.Segmenter`, so "Zürich" written with a combining umlaut, or a flag emoji, counts as the letters you see. But spacing letters out only suits some scripts: drawn one letter at a time, Arabic loses its joins and comes out backwards, and Hindi drops its vowel signs. So only Latin, Greek, Cyrillic and East Asian titles are spaced. Everything else is set as one run, which the browser shapes and orders itself. Each line shrinks to fit, and the same measured layout feeds the canvas and the SVG ([`words.ts`](src/poster/words.ts)). Place names are asked for in your browser's language where Photon has it, so "Cairo" reads as Cairo to an English reader; the title stays editable for anyone who wants القاهرة.
 
-**State you can trust.** One reducer describes a poster, and undo/redo wraps it ([`history.ts`](src/state/history.ts)).
+**State you can trust.** One reducer describes a poster, and undo/redo wraps it ([`history.ts`](../packages/poster-kit/src/history.ts)).
 
 - A whole drag is one undo step.
 - Typing in one field merges into one step, but not across fields.
@@ -63,7 +63,7 @@ TypeScript in strict mode, React 19 and Vite, with no UI or state libraries. The
 
 **Accessible by construction.**
 
-- Place search follows the WAI-ARIA combobox pattern, with suggestions you can arrow through and results announced ([`PlaceSearch.tsx`](src/components/PlaceSearch.tsx)).
+- Place search follows the WAI-ARIA combobox pattern, with suggestions you can arrow through and results announced ([`PlaceSearch.tsx`](../packages/poster-kit/src/PlaceSearch.tsx)).
 - Styles, typefaces and layouts are real radio buttons laid over their visuals.
 - The poster is a labelled image that also works from the keyboard.
 - Motion is reduced when you ask for it.
@@ -78,7 +78,7 @@ npm run check              # formatting, lint (type-aware), types, unit tests
 npm run fixtures && npm run e2e
 ```
 
-- **55 unit tests** (Vitest) cover:
+- **62 unit tests** (Vitest), 17 of them in [poster-kit](../packages/poster-kit/), the code it shares with Your Sky, cover:
   - the Mercator maths;
   - decoding a real Zurich tile;
   - undo and redo;
@@ -100,22 +100,23 @@ The tests have already caught real bugs:
 ## Run it
 
 ```sh
-cd your-place
-npm ci
-npm run dev        # http://localhost:5173
+npm ci                      # at the root of the repository: one lockfile for both apps
+npm run dev -w your-place   # http://localhost:5173
 ```
 
-Node 22.13 or newer. CI ([`your-place.yml`](../.github/workflows/your-place.yml)) runs the checks and the end-to-end suite on every change to this folder. The site's deploy builds it into `/your-place/`.
+Node 22.13 or newer. Your Place and Your Sky are npm workspaces, with the code they share in [`packages/poster-kit`](../packages/poster-kit/). CI ([`your-place.yml`](../.github/workflows/your-place.yml)) runs the checks and the end-to-end suite whenever this folder, the shared package or the dependencies change. The site's deploy builds it into `/your-place/`.
 
 ## Layout
 
 ```
 src/map/        the engine: Mercator maths, tiles, decoding, drawing, SVG, the worker
-src/poster/     sizes, layout, words, putting a poster together, downloads
-src/places/     place search (Photon)
-src/state/      the poster, undo/redo, links
+src/poster/     layout, words, putting a poster together, downloads
+src/places/     where a poster of a place starts
+src/state/      the poster and its links
 src/components/ the React interface
 tests/          unit tests, end-to-end tests, fixtures
+
+../packages/poster-kit/   shared with Your Sky: undo/redo, sizes, fonts, place search, icons
 ```
 
 ## Credits

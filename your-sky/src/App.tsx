@@ -1,18 +1,18 @@
 import { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
 import { Downloads } from './components/Downloads';
 import { ChartFields, SizeFields, WordsFields } from './components/Fields';
-import { Icon } from './components/Icon';
-import { PlaceSearch } from './components/PlaceSearch';
+import { Icon } from 'poster-kit/Icon';
+import { PlaceSearch } from 'poster-kit/PlaceSearch';
 import { SkyPreview } from './components/SkyPreview';
 import { StylePicker } from './components/StylePicker';
 import { WhenFields } from './components/WhenFields';
-import { cityFromTimeZone, searchPlaces, type Place } from './places/photon';
+import { cityFromTimeZone, searchPlaces, type Place } from 'poster-kit/photon';
 import { momentAt } from './poster/compose';
 import { describeSky } from './sky/describe';
 import { loadSkyMap, type SkyMap } from './sky/milkyway';
 import type { ThemeId } from './sky/themes';
 import { formatWhen, toLocal, zoneAt, type LocalTime } from './sky/time';
-import { canRedo, canUndo, initHistory, withHistory, type HistoryAction } from './state/history';
+import { canRedo, canUndo, initHistory, withHistory, type HistoryAction } from 'poster-kit/history';
 import {
   DEFAULT_POSTER,
   groupKey,
@@ -211,7 +211,12 @@ export function App() {
             <h2>
               <span className="step-n">1</span> Where
             </h2>
-            <PlaceSearch current={poster.place.name} near={poster.place} onPick={pickPlace} />
+            <PlaceSearch
+              current={poster.place.name}
+              near={poster.place}
+              onPick={pickPlace}
+              placeholder="A city, a town, an address…"
+            />
           </section>
           <section className="step">
             <h2>

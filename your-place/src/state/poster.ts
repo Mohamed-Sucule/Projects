@@ -2,9 +2,9 @@
 
 import { MAX_ZOOM, MIN_ZOOM, clamp, formatCoords, wrapLon, type View } from '../map/geo';
 import type { ThemeId } from '../map/themes';
-import type { FontId } from '../poster/fonts';
+import type { FontId } from 'poster-kit/fonts';
 import type { LayoutId } from '../poster/layout';
-import { aspectOf, hasOrientation, type Orientation, type SizeId } from '../poster/sizes';
+import { aspectOf, hasOrientation, type Orientation, type SizeId } from 'poster-kit/sizes';
 
 export interface Poster {
   view: View;

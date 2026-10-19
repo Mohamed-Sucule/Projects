@@ -1,0 +1,61 @@
+name: Poster app
+
+# The checks for one of the two React + TypeScript poster apps, Your Place or
+# Your Sky. Both live in one npm workspace with the code they share
+# (packages/poster-kit), so dependencies are installed once at the root from
+# one lockfile, and each step runs in the app's own workspace. Called by
+# your-place.yml and your-sky.yml.
+
+on:
+  workflow_call:
+    inputs:
+      app:
+        description: The app's folder, which is also its workspace name
+        type: string
+        required: true
+      fixtures:
+        description: Whether the end-to-end tests need the map tile fixtures first
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Format, lint, types, unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check -w ${{ inputs.app }}
+
+  e2e:
+    name: End-to-end (desktop and phone)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - if: inputs.fixtures
+        uses: actions/cache@v4
+        with:
+          path: ${{ inputs.app }}/.cache
+          key: ${{ inputs.app }}-map-fixtures-tileserver-gl-1.3.0
+      - if: inputs.fixtures
+        run: npm run fixtures -w ${{ inputs.app }}
+      - run: npm run e2e -w ${{ inputs.app }}
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: ${{ inputs.app }}-playwright-report
+          path: ${{ inputs.app }}/playwright-report
+          retention-days: 7

@@ -6,7 +6,7 @@ import { panView, zoomViewAt, type View } from '../map/geo';
 import { THEMES } from '../map/themes';
 import { compose, type Shown } from '../poster/compose';
 import { wordsOf } from '../poster/export';
-import { fontsReady } from '../poster/fonts';
+import { fontsReady } from 'poster-kit/fonts';
 import { layoutPoster } from '../poster/layout';
 import { posterAspect, type Poster } from '../state/poster';
 

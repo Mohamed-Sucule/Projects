@@ -4,7 +4,7 @@
 
 import { colourAttrs, escapeXml, round } from '../sky/svg';
 import type { Theme } from '../sky/themes';
-import { COORDS_FAMILY, FONTS, type FontId } from './fonts';
+import { COORDS_FAMILY, FONTS, type FontId } from 'poster-kit/fonts';
 import type { PosterLayout, TextSlot } from './layout';
 
 export interface Words {

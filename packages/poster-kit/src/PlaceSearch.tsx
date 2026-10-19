@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { placeAt, searchPlaces, type Place } from '../places/photon';
+import { placeAt, searchPlaces, type Place } from './photon';
 import { Icon } from './Icon';
 
 interface Props {
@@ -7,7 +7,20 @@ interface Props {
   current: string;
   near: { lon: number; lat: number };
   onPick: (place: Place) => void;
+  /** what to suggest typing, in the app's own words */
+  placeholder: string;
+  /**
+   * The place to use for "where I am": the town found there, moved to the exact spot. An app
+   * can change more (a map wants the street, not the middle of the town).
+   */
+  here?: (town: Place, coords: { lon: number; lat: number }) => Place;
 }
+
+const atCoords = (town: Place, { lon, lat }: { lon: number; lat: number }): Place => ({
+  ...town,
+  lon,
+  lat,
+});
 
 type Status =
   | { kind: 'idle' }
@@ -16,7 +29,7 @@ type Status =
   | { kind: 'error'; message: string };
 
 /** A combobox in the WAI-ARIA pattern: type, arrow through suggestions, Enter to choose. */
-export function PlaceSearch({ current, near, onPick }: Props) {
+export function PlaceSearch({ current, near, onPick, placeholder, here = atCoords }: Props) {
   const id = useId();
   const listId = `${id}-list`;
   const [query, setQuery] = useState('');
@@ -112,8 +125,7 @@ export function PlaceSearch({ current, near, onPick }: Props) {
         placeAt(coords.longitude, coords.latitude)
           .then((place) => {
             if (!place) throw new Error('Nothing found at your location');
-            // the sky from where you are, named after the town you are in
-            choose({ ...place, lon: coords.longitude, lat: coords.latitude });
+            choose(here(place, { lon: coords.longitude, lat: coords.latitude }));
             setStatus({ kind: 'idle' });
           })
           .catch((err: unknown) =>
@@ -170,7 +182,7 @@ export function PlaceSearch({ current, near, onPick }: Props) {
           aria-activedescendant={expanded && active >= 0 ? `${id}-opt-${active}` : undefined}
           autoComplete="off"
           spellCheck={false}
-          placeholder="A city, a town, an address…"
+          placeholder={placeholder}
           value={editing ? query : current}
           onFocus={(e) => {
             if (!editing) {

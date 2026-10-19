@@ -2,9 +2,9 @@
    Anything missing or malformed in a link falls back to the default instead of breaking. */
 
 import { isThemeId } from '../map/themes';
-import { isFontId } from '../poster/fonts';
+import { isFontId } from 'poster-kit/fonts';
 import { isLayoutId } from '../poster/layout';
-import { isSizeId } from '../poster/sizes';
+import { isSizeId } from 'poster-kit/sizes';
 import { MAX_SUBTITLE, MAX_TITLE, cleanView, type Poster } from './poster';
 
 export function toSearch(p: Poster): string {

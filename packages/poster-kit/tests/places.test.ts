@@ -1,9 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { cityFromTimeZone, parsePhoton, photonLanguage } from '../../src/places/photon';
+import { cityFromTimeZone, parsePhoton, photonLanguage } from '../src/photon';
 
 const fixture = JSON.parse(
-  readFileSync(new URL('../fixtures/photon.json', import.meta.url), 'utf8'),
+  readFileSync(new URL('./fixtures/photon.json', import.meta.url), 'utf8'),
 ) as unknown;
 
 describe('reading Photon results', () => {
@@ -27,6 +27,10 @@ describe('reading Photon results', () => {
       context: 'Zürich, Switzerland',
       subtitle: 'Zürich, Switzerland',
     });
+  });
+
+  it('turns Photon extents into west, south, east, north', () => {
+    expect(places[0]!.bbox).toEqual([8.4480061, 47.3202184, 8.6254413, 47.4348553]);
   });
 
   it('drops duplicates and features it cannot use', () => {

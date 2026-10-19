@@ -1,9 +1,9 @@
 /* A poster lives in its address, so a link is the whole poster: no account, no server.
    Anything missing or malformed in a link falls back to the default instead of breaking. */
 
-import { isFontId } from '../poster/fonts';
+import { isFontId } from 'poster-kit/fonts';
 import { isLayoutId } from '../poster/layout';
-import { isSizeId } from '../poster/sizes';
+import { isSizeId } from 'poster-kit/sizes';
 import { isThemeId } from '../sky/themes';
 import { clampYear, parseLocal } from '../sky/time';
 import { MAX_SUBTITLE, MAX_TITLE, cleanSpot, type Poster, type Show } from './poster';
