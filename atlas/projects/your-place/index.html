@@ -42,7 +42,7 @@
   <section class="row"><h2>The most interesting decision</h2><div><p class="dtitle">Draw the map off the main thread, and never make a drag wait for it</p><p>A worker paints on an OffscreenCanvas while the page re-projects the last picture to wherever the map has moved, so the streets follow your finger at once and the fresh paint drops in behind. Measuring found the slow part: Chromium’s Path2D.closePath() grows with the path, and skipping it took 90,000 buildings from 85 s to 77 ms.</p></div></section>
   <section class="row"><h2>Built with</h2><ul class="chips"><li>React 19 + TypeScript (strict)</li><li>Vite</li><li>Web Worker + OffscreenCanvas</li><li>OpenMapTiles vector tiles</li><li>Canvas + SVG from one geometry walk</li><li>Vitest + Playwright + axe</li></ul></section>
   <nav class="pn" aria-label="Other projects">
-    <a href="../oklch-studio/"><span>Previous</span>OKLCH Studio</a>
+    <a href="../cells/"><span>Previous</span>Cells</a>
     <a href="../your-sky/"><span>Next</span>Your Sky</a>
   </nav>
 </main>

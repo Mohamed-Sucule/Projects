@@ -10,10 +10,21 @@ This repository is my portfolio, and everything in it runs in the browser.
 **[LinkedIn](https://www.linkedin.com/in/mohamed-sucule-bb8747439)** ·
 **[mohamedsucule@gmail.com](mailto:mohamedsucule@gmail.com)**
 
-## Start here: two apps built the way teams build
+## Start here: apps built the way teams build
 
-Both are React 19 and TypeScript in strict mode, with Vite, ESLint, Vitest and Playwright, and each has its own
+Each is React 19 and TypeScript in strict mode, with Vite, ESLint, Vitest and Playwright, and each has its own
 CI. The end-to-end tests run on a desktop and a phone against the production build, with axe.
+
+**[Cells](cells/)** is a spreadsheet, written from scratch. Its formula engine is a hand-written lexer and Pratt
+parser with 116 functions and Excel's rules for blanks, text, errors and dates. A dependency index and Tarjan's
+algorithm recalculate only what a change touches and catch circular references. The grid holds 1,048,576 rows,
+scrolls past the browser's height limit, takes Excel's keyboard, lets you point at cells while typing a formula,
+and is an ARIA grid a screen reader can follow to the last row. Two tabs edit the same sheet live. Profiling took
+a 200,001-cell recalculation from 681 ms to 133, and a property test checks every cell against a plain evaluator
+after any sequence of edits.
+**[Open it](https://mohamed-sucule.github.io/Projects/cells/)** ·
+[how it was made fast](https://mohamed-sucule.github.io/Projects/writing/recalculating-a-spreadsheet/) ·
+[README](cells/README.md)
 
 **[Your Place](your-place/)** is any place on Earth as a poster. Type a town, a street or an address, pick a
 style and download a file ready to print, drawn in the browser from OpenStreetMap. The map engine is written
@@ -44,7 +55,7 @@ against facts, from Polaris standing as high as the latitude to real full and ne
   ([`tests/run.mjs`](tests/run.mjs), [`tests/front.test.mjs`](tests/front.test.mjs)).
 - **Every page meets the same baseline** of doctype, language, charset, viewport, description, social card,
   working internal links and unique ids ([`tests/pages.test.mjs`](tests/pages.test.mjs)).
-- **The two apps share code instead of copying it.** Your Place and Your Sky are npm workspaces beside
+- **The poster apps share code instead of copying it.** Your Place and Your Sky are npm workspaces beside
   [`packages/poster-kit`](packages/poster-kit/): undo and redo, poster sizes, typefaces, place search and the
   search box are written and tested once, and CI checks both apps whenever any of it changes.
 - **The CV is built from a web page** ([`cv/`](cv/)), so the PDF and the page never disagree, and its text is
@@ -72,7 +83,7 @@ calls a paid API, so it isn't hosted publicly; it runs locally or in Docker with
 
 | | | |
 |---|---|---:|
-| **◆** | [**Your Place**](your-place/) and [**Your Sky**](your-sky/) — any place on Earth, and the stars over it, as posters; React and TypeScript | 2 |
+| **◆** | [**Cells**](cells/), [**Your Place**](your-place/) and [**Your Sky**](your-sky/) — a spreadsheet, and any place on Earth and the stars over it as posters; React and TypeScript | 3 |
 | **★** | [**Four AI products**](#-four-ai-products) — a receptionist, a knowledge assistant, a sales coach, a claims desk | 4 |
 | **0** | [**Inside the models**](#0--inside-the-models) — how language models actually work | 4 |
 | **I** | [Fiction](#i--fiction) — things to read, and the two the site opens on | 3 |
@@ -82,7 +93,7 @@ calls a paid API, so it isn't hosted publicly; it runs locally or in Docker with
 | **V** | [The serious ones](#v--the-serious-ones) — Covers, and six tools for engineers | 7 |
 
 Plain HTML, CSS and JavaScript, with no framework, no build step and no
-dependencies, except for Your Place and Your Sky, which are React and TypeScript on purpose.
+dependencies, except for Cells, Your Place and Your Sky, which are React and TypeScript on purpose.
 Over 850 tests run in CI before anything here is published — including twenty
 gradient checks against finite differences, a check that a 95% confidence
 interval really does contain the truth about 95% of the time, and one that no
@@ -650,20 +661,21 @@ and — deliberately — what it does **not** do.
 
 ## How it's built
 
-**No frameworks. No build step. No dependencies.** Every page here but two is
+**No frameworks. No build step. No dependencies.** Every page here but three is
 plain HTML, CSS and JavaScript — including the transformer, which is trained by an
 automatic differentiation engine written from nothing rather than by a library.
 The smallest toys are each a single self-contained file you can open by
 double-clicking. Clone this in five years and it still runs.
 
-The two exceptions are [Your Place](your-place/) and [Your Sky](your-sky/), which
-are React and TypeScript with a Vite build, because that is what most product
-teams use and it is worth showing the same care in that stack too. Each keeps
-everything to itself: its own `package.json`, lint, types, unit tests (Vitest) and
-end-to-end tests (Playwright), run by
+The three exceptions are [Cells](cells/), [Your Place](your-place/) and
+[Your Sky](your-sky/), which are React and TypeScript with a Vite build, because
+that is what most product teams use and it is worth showing the same care in that
+stack too. Each keeps everything to itself: its own `package.json`, lint, types,
+unit tests (Vitest) and end-to-end tests (Playwright), run by
+[`cells.yml`](.github/workflows/cells.yml),
 [`your-place.yml`](.github/workflows/your-place.yml) and
 [`your-sky.yml`](.github/workflows/your-sky.yml). The site's deploy builds them
-into `/your-place/` and `/your-sky/`.
+into `/cells/`, `/your-place/` and `/your-sky/`.
 
 Everything else loads ES
 modules, which browsers refuse to serve from a `file://` address — run

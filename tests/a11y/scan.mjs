@@ -8,8 +8,8 @@
 
    The site is served from this checkout by a small static server, so the scan
    needs nothing but Playwright and axe (installed at the root by npm ci). Your
-   Place and Your Sky are left out: they are built at deploy time and their own
-   end-to-end suites run axe against the production build. */
+   Place, Your Sky and Cells are left out: they are built at deploy time and their
+   own end-to-end suites run axe against the production build. */
 
 import { createServer } from 'node:http';
 import { readFile, readdir, stat } from 'node:fs/promises';
@@ -20,7 +20,7 @@ import AxeBuilder from '@axe-core/playwright';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const only = process.argv[2];
-const SKIP = new Set(['node_modules', '.git', 'tally', 'your-place', 'your-sky', 'packages', 'tests', 'dist']);
+const SKIP = new Set(['node_modules', '.git', 'tally', 'your-place', 'your-sky', 'cells', 'packages', 'tests', 'dist']);
 const TYPES = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript',
   '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png',

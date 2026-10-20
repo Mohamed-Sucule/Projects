@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>From 681 ms to 133 — recalculating 200,000 formulas, by Mohamed Sucule</title>
+<meta name="description" content="How Cells, a spreadsheet written from scratch, went from 681 ms to 133 to recalculate a chain of 100,000 formulas: the formulas were the cheap part, and the cost was in maps keyed by numbers too big for V8's small integers." />
+<link rel="icon" href="../../favicon.svg" />
+<meta name="theme-color" content="#f6f5f1" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0f1115" media="(prefers-color-scheme: dark)" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="From 681 ms to 133: recalculating 200,000 formulas" />
+<meta property="og:description" content="The formulas were the cheap part. The cost was in maps keyed by numbers too big for V8's small integers." />
+<meta property="og:url" content="https://mohamed-sucule.github.io/Projects/writing/recalculating-a-spreadsheet/" />
+<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/assets/og-card.png" />
+<link rel="canonical" href="https://mohamed-sucule.github.io/Projects/writing/recalculating-a-spreadsheet/" />
+<link rel="stylesheet" href="../writing.css" />
+</head>
+<body>
+<a class="skip" href="#article">Skip to the article</a>
+<header class="top">
+  <div class="in">
+    <a class="mark" href="../../">Mohamed Sucule</a>
+    <nav aria-label="Main">
+      <a href="../../#work">Work</a>
+      <a href="../../#writing">Writing</a>
+      <a href="../../cv/">CV</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<article id="article">
+  <p class="label">Performance · Cells</p>
+  <h1>From 681 ms to 133: recalculating 200,000 formulas</h1>
+  <p class="standfirst">Cells recalculates only what a change touches. When a change touches everything, a chain of 100,000 formulas, the first version took 681 milliseconds. Profiling showed the formulas were the cheap part. The time went on the bookkeeping around them, because of how a JavaScript engine stores large numbers.</p>
+  <p class="byline">Mohamed Sucule · <a href="../../cells/index.html">Open Cells</a> · <a href="https://github.com/Mohamed-Sucule/Projects/tree/main/cells">Source</a></p>
+
+  <figure>
+    <img src="../../atlas/shots/cells-1920.webp" width="1920" height="1200" alt="Cells: a year of shop orders, with a SUMIFS formula being typed in Q4 and each of its references outlined on the grid in its own colour" />
+    <figcaption>Cells is a spreadsheet written from scratch in React and TypeScript: a formula engine, a dependency graph and a grid of 1,048,576 rows.</figcaption>
+  </figure>
+
+  <h2>What a recalculation does</h2>
+  <p>
+    When a cell changes, three things have to happen before anything is drawn. Find every formula downstream of it,
+    however indirectly. Put them in an order where each one comes after everything it reads. And notice formulas
+    that read their own result, which can't be put in any order and have to show <code>#CYCLE!</code>.
+  </p>
+  <p>
+    The first needs an index from cells to the formulas that read them. Cells keeps three: formulas that read one
+    cell, by column and then row; formulas that read a tall range, by the columns it covers; and wide ranges by their
+    rows. So <code>=SUM(B:B)</code> is one entry, not a million. A breadth-first walk of that index finds everything
+    downstream. The second and third are one job: in Tarjan's algorithm, a group of formulas that read each other is
+    a strongly connected component, and the order it finishes components in, reversed, is an order to calculate them
+    in. Both are written without recursion, because a chain of 100,000 formulas would overflow the call stack.
+  </p>
+  <p>
+    The stress example is the worst case for that: 100,000 numbers in column A, each one plus one on the cell above,
+    100,000 formulas in B reading them, and a <code>SUM</code> and a <code>COUNT</code> of B. Change A1 and all
+    200,001 formulas have to be worked out again, in order. It took <strong>681 ms</strong> in Node, and the status
+    bar in headless Chromium said <strong>857 ms</strong>. For one keystroke, that's a freeze.
+  </p>
+
+  <h2>Where the time went</h2>
+  <p>
+    The obvious suspect was the evaluator: walking a formula tree for each of 200,001 cells. A CPU profile of the
+    benchmark said otherwise. The recalculation's own bookkeeping and Tarjan's algorithm took over 40% of the time,
+    the garbage collector another 15%, and the evaluator's own code under one percent.
+  </p>
+  <p>
+    The bookkeeping was a handful of <code>Map</code>s and <code>Set</code>s keyed by cell: which cells have been
+    seen, which are dirty, each one's edges, and Tarjan's index and low-link for each. That's a dozen or so map
+    operations per cell, and each was slow for a reason that only shows up at this size. A cell key is one number:
+  </p>
+<pre tabindex="0" aria-label="Code: the cell key"><code><span class="c">// src/engine/address.ts</span>
+export const cellKey = (row: number, col: number) =&gt; row * MAX_COLS + col; <span class="c">// MAX_COLS is 16,384</span></code></pre>
+  <p>
+    V8 keeps small integers inside the pointer itself, with no allocation. On a 64-bit Chrome that's up to about a
+    billion. Past row 65,536, a cell key is bigger than that, so it lives on the heap as a boxed number. Every map
+    lookup has to hash it as a number rather than an integer, and passing it around makes garbage. The bottom
+    two-thirds of the stress sheet is past row 65,536.
+  </p>
+
+  <h2>Fix one: number the cells, then use typed arrays</h2>
+  <p>
+    The graph only exists for the length of one recalculation, so its cells don't need their real addresses inside
+    it. As the walk finds each cell, it gets the next small number, 0, 1, 2 and so on, and its edges go into one flat
+    list. Tarjan's algorithm then runs on <code>Int32Array</code>s indexed by those numbers, with no maps at all:
+  </p>
+<pre tabindex="0" aria-label="Code: Tarjan's algorithm on typed arrays"><code><span class="c">// src/engine/sheet.ts</span>
+<span class="c">// edges[first[v]] up to edges[first[v + 1]]: the formulas that read cell v</span>
+while (depth &gt;= 0) {
+  const v = work[depth]!;
+  const e = at[depth]!;
+  if (e &lt; first[v + 1]!) {
+    at[depth] = e + 1;
+    const w = edges[e]!;
+    if (w === v) cyclic[v] = 1; <span class="c">// a formula that reads itself</span>
+    if (index[w] === -1) {
+      index[w] = low[w] = counter++;
+      stack[top++] = w;
+      onStack[w] = 1;
+      depth++;
+      work[depth] = w;
+      at[depth] = first[w]!;
+    } else if (onStack[w] &amp;&amp; index[w]! &lt; low[v]!) low[v] = index[w]!;
+    continue;
+  }
+  <span class="c">// v is done: pass its low-link up, and emit its group if it heads one</span>
+}</code></pre>
+  <p>That took the chain from 681 ms to <strong>393 ms</strong>.</p>
+
+  <h2>Fix two: keep the marks on the formulas</h2>
+  <p>
+    One map was left: the one that numbers the cells as the walk finds them, looked up once for every edge to ask
+    "have I seen this one?" Formulas are objects, so the answer can live on the formula. Each recalculation has a pass
+    number, and a formula stamped with the current one has been reached already:
+  </p>
+<pre tabindex="0" aria-label="Code: reaching a formula in a pass"><code><span class="c">// src/engine/sheet.ts</span>
+const reach = (cell: Cell): number =&gt; {
+  const f = cell.formula!;
+  if (f.mark === pass) return f.slot;   <span class="c">// already reached in this recalculation</span>
+  f.mark = pass;
+  f.slot = keys.length;
+  keys.push(f.key);
+  cells.push(cell);
+  return f.slot;
+};</code></pre>
+  <p>
+    That still needed the formula's cell, and finding it meant two more lookups by column and row. So the dependency
+    index stopped holding the keys of the formulas that read a cell and started holding the cells themselves.
+    Following an edge became reading a field. Together these took it from 393 ms to <strong>133 ms</strong>.
+  </p>
+  <p>
+    The same idea fixed the sums. <code>SUM(B:B)</code> walked column B's rows in order and looked each cell up in a
+    map, 100,000 lookups per sum. Each column now keeps its cells in an array in row order, beside the sorted rows
+    it already had, rebuilt only when rows are added in bulk. A change at the end of the chain, which recalculates
+    only the formula beside it, the <code>SUM</code> and the <code>COUNT</code>, went from 31 ms to <strong>7 ms</strong>.
+  </p>
+
+  <ul class="numbers" aria-label="The numbers">
+    <li><b>681 → 133 ms</b><span>200,001 cells recalculated, in Node</span></li>
+    <li><b>857 → 94 ms</b><span>the same, in headless Chromium</span></li>
+    <li><b>31 → 7 ms</b><span>a change at the end of the chain</span></li>
+    <li><b>209</b><span>unit tests, passing after every step</span></li>
+  </ul>
+
+  <h2>Changing the engine without breaking it</h2>
+  <p>
+    Rewriting the heart of a recalculation engine three times in an afternoon is only safe with a test that would
+    catch a wrong answer anywhere. Cells has one. <a href="https://fast-check.dev">fast-check</a> makes up random
+    sequences of edits on a small sheet: numbers, blanks, and formulas with arithmetic, <code>SUM</code>,
+    <code>COUNT</code>, <code>IF</code> and <code>IFERROR</code> over random references, cycles included. After every
+    edit, every cell must equal what a deliberately naive evaluator says: one that recurses from scratch with no graph,
+    no order and no caching. It was checked by breaking the engine on purpose to see it fail. It and the other 208
+    tests passed after each change above.
+  </p>
+
+  <h2>What is left</h2>
+  <p>
+    At 133 ms, finding the 200,001 cells takes about 80 and calculating them about 50. What remains in the walk is one
+    map lookup per cell, for the cells that read it. Each costs around 200 nanoseconds on maps of 100,000 entries,
+    because each one misses the processor's cache. Getting past that means storing the sheet differently, in typed
+    columns rather than maps, which a spreadsheet of this size doesn't yet need. Opening the stress sheet (0.93 s) and
+    inserting a row at its top (1.26 s) are now the slow parts, and both are parsing: every formula's text is read
+    again.
+  </p>
+
+  <h2>What I took from it</h2>
+  <ul>
+    <li><strong>Profile before guessing.</strong> The evaluator was the obvious culprit and it was under one percent.
+      The cost was in code that looked too simple to be slow.</li>
+    <li><strong>Know what the runtime does with your data.</strong> Nothing in the source says "past row 65,536 this
+      gets slower". The same <code>Map</code> with smaller keys would have been fine, which is why the problem only
+      showed at full size.</li>
+    <li><strong>Temporary structures don't need permanent names.</strong> Numbering the cells of one pass 0, 1, 2…
+      turned every lookup into an array index.</li>
+    <li><strong>A good oracle makes bold changes cheap.</strong> The property test is what let the engine be rewritten
+      three times without fear.</li>
+  </ul>
+
+  <aside class="next" aria-labelledby="next-title">
+    <h2 id="next-title">More on Cells</h2>
+    <ul>
+      <li><a href="../../cells/index.html">Open Cells</a>, and change a price in column J</li>
+      <li><a href="https://github.com/Mohamed-Sucule/Projects/tree/main/cells#readme">The README</a>: the formula language, a grid taller than the browser allows, the screen reader, touch, and two tabs editing at once</li>
+      <li><a href="../fast-map-posters/">From 41.7 seconds to 0.39</a>, the same kind of hunt in Your Place</li>
+    </ul>
+  </aside>
+</article>
+</main>
+
+<footer>
+  <div class="in">
+    <p style="margin:0">Mohamed Sucule · Frontend engineer, Birmingham, UK</p>
+    <p style="margin:0"><a href="mailto:mohamedsucule@gmail.com">mohamedsucule@gmail.com</a> · <a href="../../cv/">CV</a></p>
+  </div>
+</footer>
+<script type="module" src="../../shared/navigator.js"></script>
+</body>
+</html>
