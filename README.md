@@ -1,7 +1,7 @@
 # Mohamed Sucule, frontend engineer
 
 React, TypeScript, accessibility and performance. Four years shipping web applications at Capgemini
-(Software Engineer and Scrum Master, SC cleared) and SynchrTrade. Birmingham, UK.
+(Software Engineer, SC cleared) and SynchrTrade. Birmingham, UK.
 
 This repository is my portfolio, and everything in it runs in the browser.
 
