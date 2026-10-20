@@ -806,7 +806,7 @@
         alt="" />
     </a>
     <div>
-      <p class="plate-no">Plate I &middot; the first of a pair</p>
+      <p class="plate-no">Plate I &middot; the first</p>
       <h2 id="plate-title"><a href="your-place/index.html">Your Place</a></h2>
       <p class="plate-line">Any place on Earth, as a poster.</p>
       <p class="plate-body">
@@ -829,7 +829,7 @@
         alt="" />
     </a>
     <div>
-      <p class="plate-no">Plate II &middot; the newest</p>
+      <p class="plate-no">Plate II &middot; its partner</p>
       <h2 id="plate-two-title"><a href="your-sky/index.html">Your Sky</a></h2>
       <p class="plate-line">The stars over any place, on any night.</p>
       <p class="plate-body">
@@ -844,6 +844,30 @@
         <a class="quiet-link" href="atlas/projects/your-sky/">how it is built, and the tests</a>
       </div>
       <p class="plate-note hand">press play and watch the night turn</p>
+    </div>
+  </aside>
+
+  <aside class="plate reveal" aria-labelledby="plate-three-title">
+    <a class="plate-art" href="cells/index.html" tabindex="-1" aria-hidden="true">
+      <img src="atlas/shots/cells-960.webp" srcset="atlas/shots/cells-960.webp 960w, atlas/shots/cells-1920.webp 1920w"
+        sizes="(min-width: 900px) 40vw, 380px" width="960" height="600" loading="lazy" decoding="async" alt="" />
+    </a>
+    <div>
+      <p class="plate-no">Plate III &middot; the newest</p>
+      <h2 id="plate-three-title"><a href="cells/index.html">Cells</a></h2>
+      <p class="plate-line">A spreadsheet, written from scratch.</p>
+      <p class="plate-body">
+        A hundred and sixteen functions, formulas that recalculate only what changed, a grid of
+        1,048,576 rows that a screen reader can follow, and the keys your hands already know from
+        Excel &mdash; like the SUMIFS being typed here, each reference in its own colour.
+        <b>React and TypeScript</b>, with the formula engine, the dependency graph and the grid all
+        written here, and a property test that checks every cell after any sequence of edits.
+      </p>
+      <div class="actions">
+        <a class="stamp" href="cells/index.html"><span class="face">Open it</span></a>
+        <a class="quiet-link" href="atlas/projects/cells/">how it is built, and the tests</a>
+      </div>
+      <p class="plate-note hand">change a price in column J</p>
     </div>
   </aside>
 
@@ -1303,9 +1327,9 @@
     <h4>Colophon</h4>
     <p>
       Set in Instrument Serif, Newsreader, JetBrains Mono and Caveat, served from this repository.
-      No frameworks, no build step, no dependencies — every page here but two is plain HTML, CSS and
-      JavaScript. The two are Your Place and Your Sky, which are React and TypeScript on purpose,
-      each with its own unit and end-to-end tests. The engines behind Front Desk, Ask the Handbook, Call Coach, Claims Desk, Ace, Nightshift, The Room, Covers, the transformer, the
+      No frameworks, no build step, no dependencies — every page here but three is plain HTML, CSS and
+      JavaScript. The three are Your Place, Your Sky and Cells, which are React and TypeScript on
+      purpose, each with its own unit and end-to-end tests. The engines behind Front Desk, Ask the Handbook, Call Coach, Claims Desk, Ace, Nightshift, The Room, Covers, the transformer, the
       tokeniser, the QR encoder, the tuner, Minesweeper, Sudoku, Split and each of the tools
       are unit-tested, along with the four AI products: over 850 tests, run in CI
       before anything is published — including twenty gradient checks against finite differences,

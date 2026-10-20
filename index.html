@@ -10,7 +10,7 @@
 <meta name="theme-color" content="#0f1115" media="(prefers-color-scheme: dark)" />
 <meta property="og:type" content="profile" />
 <meta property="og:title" content="Mohamed Sucule — Frontend Engineer" />
-<meta property="og:description" content="React and TypeScript, accessibility and performance. Two apps built end to end: a map poster renderer and an astronomically accurate star chart." />
+<meta property="og:description" content="React and TypeScript, accessibility and performance. Two apps built end to end: a spreadsheet written from scratch, and a map poster renderer." />
 <meta property="og:url" content="https://mohamed-sucule.github.io/Projects/" />
 <meta property="og:image" content="https://mohamed-sucule.github.io/Projects/assets/og-card.png" />
 <meta property="og:image:width" content="1200" />
@@ -110,8 +110,8 @@
   .posters { position: relative; height: clamp(360px, 42vw, 540px); }
   .posters a { position: absolute; top: 0; width: 62%; box-shadow: var(--shadow); border-radius: 3px; overflow: hidden; transition: transform .35s cubic-bezier(.2, .7, .3, 1); }
   .posters a img { width: 100%; }
-  .posters .p1 { left: 0; transform: rotate(-4deg) translateY(6%); }
-  .posters .p2 { right: 0; transform: rotate(3.5deg) translateY(0); }
+  .posters .p1 { left: -6%; top: 30%; width: 40%; z-index: 1; transform: rotate(-4deg); }
+  .posters .p2 { right: -4%; top: 6%; width: 100%; transform: rotate(2deg); }
   .posters a:hover, .posters a:focus-visible { transform: rotate(0) translateY(-2%) scale(1.03); z-index: 2; }
   .posters figcaption { position: absolute; left: 0; right: 0; bottom: -6px; text-align: center; }
 
@@ -150,7 +150,7 @@
   .more a { font-weight: 560; text-underline-offset: 4px; }
 
   /* ── writing ─────────────────────────────────────────────── */
-  .posts { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); gap: 22px; }
+  .posts { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 22px; }
   .post { display: block; padding: 24px 26px; border-radius: 12px; border: 1px solid var(--rule); background: var(--card); text-decoration: none; transition: border-color .2s ease; }
   .post:hover { border-color: var(--ink); }
   .post h3 { margin: 8px 0 8px; font: 580 24px/1.2 var(--display); }
@@ -188,7 +188,7 @@
   @media (max-width: 900px) {
     .hero .wrap, .case, .case.flip { grid-template-columns: minmax(0, 1fr); }
     .case.flip .shot { order: 0; }
-    .posters { height: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; max-width: 520px; }
+    .posters { height: auto; display: grid; grid-template-columns: 1.7fr 1fr; align-items: center; gap: 14px; max-width: 560px; }
     .posters a { position: static; width: auto; }
     .posters .p1, .posters .p2 { transform: none; }
     .role { grid-template-columns: minmax(0, 1fr); }
@@ -258,9 +258,9 @@
           <li>UK right to work</li>
         </ul>
       </div>
-      <figure class="posters" aria-label="Posters made with the two apps">
+      <figure class="posters" aria-label="The two apps">
+        <a class="p2" href="cells/index.html"><img src="atlas/shots/cells-960.webp" srcset="atlas/shots/cells-960.webp 960w, atlas/shots/cells-1920.webp 1920w" sizes="(min-width: 900px) 440px, 60vw" width="960" height="600" alt="Cells, the spreadsheet: a year of shop orders, with a SUMIFS formula being typed and each of its references outlined on the grid in its own colour" /></a>
         <a class="p1" href="your-place/index.html"><img src="assets/your-place-poster.webp" width="680" height="962" alt="A map poster of Zürich made with Your Place: streets in gold on black, the city's name below" /></a>
-        <a class="p2" href="your-sky/index.html"><img src="assets/your-sky-poster.webp" width="680" height="962" alt="A star chart poster made with Your Sky: the sky over Paris on 14 February 2025, titled The night we met" /></a>
       </figure>
     </div>
   </section>
@@ -271,7 +271,31 @@
       <h2 id="work-title">Two apps, built end to end</h2>
       <p class="intro">Both are React 19 and TypeScript in strict mode, with unit tests, end-to-end tests on a desktop and a phone, automated accessibility checks and their own CI. Each solves a hard problem a user never has to think about.</p>
 
-      <article class="case" aria-labelledby="yp-title">
+      <article class="case" aria-labelledby="cells-title">
+        <a class="shot" href="cells/index.html" tabindex="-1" aria-hidden="true"><img src="atlas/shots/cells-960.webp" srcset="atlas/shots/cells-960.webp 960w, atlas/shots/cells-1920.webp 1920w" sizes="(min-width: 900px) 460px, 92vw" width="960" height="600" alt="" loading="lazy" decoding="async" /></a>
+        <div>
+          <p class="label">React 19 · TypeScript · Virtualised ARIA grid · Property tests</p>
+          <h3 id="cells-title">Cells</h3>
+          <p class="line">A spreadsheet, written from scratch.</p>
+          <ul class="hard">
+            <li>A formula engine of my own: a Pratt parser, 116 functions with Excel's rules, and a dependency graph that recalculates only what changed and catches circular references.</li>
+            <li>A grid of 1,048,576 rows that scrolls past the browser's height limit, works the way Excel does from the keyboard, and that a screen reader can follow to the last row.</li>
+            <li>Profiling took a 100,000-formula recalculation from 681 ms to 133: the cost was in maps keyed by numbers too big for V8's small integers, not in the formulas.</li>
+          </ul>
+          <div class="proof">
+            <div><b>133 ms</b><span>200,001 cells recalculated, down from 681</span></div>
+            <div><b>209</b><span>unit tests, one checking every cell against a plain evaluator</span></div>
+            <div><b>16</b><span>end-to-end tests, desktop and phone, with axe</span></div>
+          </div>
+          <div class="links">
+            <a class="go" href="cells/index.html">Open Cells</a>
+            <a href="writing/recalculating-a-spreadsheet/">How I made it fast</a>
+            <a href="https://github.com/Mohamed-Sucule/Projects/tree/main/cells">Source</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="case flip" aria-labelledby="yp-title">
         <a class="shot" href="your-place/index.html" tabindex="-1" aria-hidden="true"><img src="atlas/shots/your-place-960.webp" srcset="atlas/shots/your-place-960.webp 960w, atlas/shots/your-place-1920.webp 1920w" sizes="(min-width: 900px) 460px, 92vw" width="960" height="600" alt="" loading="lazy" decoding="async" /></a>
         <div>
           <p class="label">React 19 · TypeScript · Web Workers · Canvas &amp; SVG</p>
@@ -294,30 +318,6 @@
           </div>
         </div>
       </article>
-
-      <article class="case flip" aria-labelledby="ys-title">
-        <a class="shot" href="your-sky/index.html" tabindex="-1" aria-hidden="true"><img src="atlas/shots/your-sky-960.webp" srcset="atlas/shots/your-sky-960.webp 960w, atlas/shots/your-sky-1920.webp 1920w" sizes="(min-width: 900px) 460px, 92vw" width="960" height="600" alt="" loading="lazy" decoding="async" /></a>
-        <div>
-          <p class="label">React 19 · TypeScript · Canvas &amp; SVG · Intl time zones</p>
-          <h3 id="ys-title">Your Sky</h3>
-          <p class="line">The night sky over any place and moment, as a poster.</p>
-          <ul class="hard">
-            <li>5,044 stars turned to any date by a single rotation, with the Moon in its real phase and the planets where they really were.</li>
-            <li>Clock time at the place, not on the visitor's computer: daylight-saving gaps, doubled hours and historical offsets are all handled and tested.</li>
-            <li>A slider plays a whole night at about 11 ms of JavaScript a frame, and one scene renders to both canvas and SVG.</li>
-          </ul>
-          <div class="proof">
-            <div><b>5,044</b><span>stars, one rotation</span></div>
-            <div><b>69</b><span>unit tests, checked against astronomical facts</span></div>
-            <div><b>~11 ms</b><span>of JavaScript per animation frame</span></div>
-          </div>
-          <div class="links">
-            <a class="go" href="your-sky/index.html">Open Your Sky</a>
-            <a href="writing/turning-the-sky/">How the sky is worked out</a>
-            <a href="https://github.com/Mohamed-Sucule/Projects/tree/main/your-sky">Source</a>
-          </div>
-        </div>
-      </article>
     </div>
   </section>
 
@@ -325,15 +325,15 @@
     <div class="wrap">
       <p class="label">More of my work</p>
       <h2 id="more-title">Interfaces for hard problems</h2>
-      <p class="intro"><span data-count="atlas">Thirty-six</span> projects run on this site, every one in the browser with nothing to install. These six show the range: tools, products, games and sound.</p>
+      <p class="intro"><span data-count="atlas">Thirty-seven</span> projects run on this site, every one in the browser with nothing to install. These six show the range: tools, products, games and sound.</p>
       <div class="grid">
         <a class="tile" href="projects/oklch-studio/index.html">
           <img src="atlas/shots/oklch-studio-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
           <div><h3>OKLCH Studio</h3><p>A colour-palette builder that checks every step for contrast, so the palette still passes an accessibility audit.</p><span class="label">Colour science · Canvas</span></div>
         </a>
-        <a class="tile" href="projects/regex-lab/index.html">
-          <img src="atlas/shots/regex-lab-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
-          <div><h3>Regex Lab</h3><p>A regular expression compiled into a state machine you can watch run, one character at a time.</p><span class="label">Developer tooling</span></div>
+        <a class="tile" href="your-sky/index.html">
+          <img src="atlas/shots/your-sky-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
+          <div><h3>Your Sky</h3><p>The night sky over any place and moment as a poster, with the Moon in its real phase. React and TypeScript.</p><span class="label">Rendering · Time zones</span></div>
         </a>
         <a class="tile" href="apps/covers/index.html">
           <img src="atlas/shots/covers-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
@@ -360,8 +360,13 @@
     <div class="wrap">
       <p class="label">Writing</p>
       <h2 id="writing-title">How the hard parts were solved</h2>
-      <p class="intro">Two write-ups of problems from the flagship apps, with the measurements and the dead ends.</p>
+      <p class="intro">Three write-ups of problems from the apps, with the measurements and the dead ends.</p>
       <div class="posts">
+        <a class="post" href="writing/recalculating-a-spreadsheet/">
+          <span class="label">Performance · Cells</span>
+          <h3>From 681 ms to 133: recalculating 200,000 formulas</h3>
+          <p>Why the formulas were the cheap part, and what a JavaScript engine does with numbers past a billion.</p>
+        </a>
         <a class="post" href="writing/fast-map-posters/">
           <span class="label">Performance · Your Place</span>
           <h3>From 41.7 seconds to 0.39: making a map poster fast</h3>

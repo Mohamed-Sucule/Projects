@@ -3,15 +3,15 @@ name: Your Place
 # Your Place's checks: formatting, lint, types and unit tests, then end-to-end
 # tests against real Zurich map tiles on a desktop and a phone. They run
 # whenever the app, the code it shares with its partner (packages/poster-kit)
-# or the dependencies change. The steps are in poster-app.yml, which both apps
-# use.
+# or the dependencies change. The steps are in react-app.yml, which all the
+# React apps use.
 
 on:
   push:
     branches: [main]
-    paths: ['your-place/**', 'packages/**', 'package.json', 'package-lock.json', '.github/workflows/your-place.yml', '.github/workflows/poster-app.yml']
+    paths: ['your-place/**', 'packages/**', 'package.json', 'package-lock.json', '.github/workflows/your-place.yml', '.github/workflows/react-app.yml']
   pull_request:
-    paths: ['your-place/**', 'packages/**', 'package.json', 'package-lock.json', '.github/workflows/your-place.yml', '.github/workflows/poster-app.yml']
+    paths: ['your-place/**', 'packages/**', 'package.json', 'package-lock.json', '.github/workflows/your-place.yml', '.github/workflows/react-app.yml']
 
 permissions:
   contents: read
@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
   app:
-    uses: ./.github/workflows/poster-app.yml
+    uses: ./.github/workflows/react-app.yml
     with:
       app: your-place
       fixtures: true

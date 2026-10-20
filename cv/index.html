@@ -131,6 +131,15 @@
   <section aria-labelledby="h-projects">
     <h2 id="h-projects">Selected projects</h2>
     <div class="proj">
+      <div class="head"><h3>Cells <span>· a spreadsheet written from scratch</span></h3><a class="when" href="https://mohamed-sucule.github.io/Projects/cells/">Live</a></div>
+      <p class="stack">React 19, TypeScript (strict), Vite, Vitest, fast-check, Playwright</p>
+      <ul>
+        <li>Wrote the formula engine (a Pratt parser and 116 Excel-compatible functions) and a dependency graph that recalculates only what changed.</li>
+        <li>Profiled a 200,001-cell recalculation from 681 ms to 133 ms by moving the graph work onto typed arrays.</li>
+        <li>Virtualised ARIA grid of 1,048,576 rows with Excel&rsquo;s keyboard and touch editing; 209 unit tests, including a property test against a reference evaluator, and 16 end-to-end tests.</li>
+      </ul>
+    </div>
+    <div class="proj">
       <div class="head"><h3>Your Place <span>· any place on Earth as a print-ready map poster</span></h3><a class="when" href="https://mohamed-sucule.github.io/Projects/your-place/">Live</a></div>
       <p class="stack">React 19, TypeScript (strict), Vite, Web Workers, OffscreenCanvas, Vitest, Playwright</p>
       <ul>
@@ -140,17 +149,7 @@
       </ul>
     </div>
     <div class="proj">
-      <div class="head"><h3>Your Sky <span>· the night sky over any place and moment, as a poster</span></h3><a class="when" href="https://mohamed-sucule.github.io/Projects/your-sky/">Live</a></div>
-      <p class="stack">React 19, TypeScript (strict), Canvas 2D, SVG, Intl time zones, Vitest, Playwright</p>
-      <ul>
-        <li>Turns 5,044 stars to any date with one rotation; the Moon in its real phase, the planets where they were.</li>
-        <li>Reads clock time at the chosen place, including daylight-saving gaps, doubled hours and historical offsets.</li>
-        <li>One scene renders to canvas and SVG; plays a whole night at about 11 ms of JavaScript per frame.</li>
-        <li>69 unit tests check it against astronomical facts; 12 end-to-end scenarios run on desktop and mobile.</li>
-      </ul>
-    </div>
-    <div class="proj">
-      <div class="head"><h3>Portfolio <span>· 36 projects that run in the browser</span></h3><a class="when" href="https://mohamed-sucule.github.io/Projects/">Live</a></div>
+      <div class="head"><h3>Portfolio <span>· 37 projects that run in the browser</span></h3><a class="when" href="https://mohamed-sucule.github.io/Projects/">Live</a></div>
       <p class="stack">JavaScript, Canvas, WebGL, Web Audio, GitHub Actions</p>
       <ul>
         <li>Engineering tools (a regex engine you can watch execute, an OKLCH palette builder with contrast checks, a Raft consensus simulator), games and in-browser machine-learning apps.</li>

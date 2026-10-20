@@ -52,6 +52,11 @@ export const REGIONS = [
 /* palette: [land, rock, light]; the third is the light in the project's picture */
 export const WORLDS = [
   /* ── products ─────────────────────────────────────────────────────────── */
+  { id: 'cells', region: 'products', size: 'lg', palette: ['#2f4a3c', '#24302c', '#9ff0c4'],
+    problem: 'A spreadsheet is the most used app in any office, and the hardest kind of interface to build: a million rows, a formula language, and keys that hands already know.',
+    tech: ['React 19 + TypeScript (strict)', 'Vite', 'Pratt parser and evaluator for Excel formulas', 'Dependency index + Tarjan ordering', 'Virtualised ARIA grid', 'BroadcastChannel + IndexedDB', 'Vitest + fast-check + Playwright + axe'],
+    evidence: '209 unit tests, among them a property test that every cell equals a plain evaluator after any sequence of edits; 16 end-to-end tests on a desktop and a phone. A 100,000-formula chain recalculates in 133 ms, down from 681.',
+    study: doc('cells/README.md'), source: tree('cells'), tests: tree('cells/tests') },
   { id: 'your-place', region: 'products', size: 'lg', palette: ['#5b4636', '#2b2f45', '#ffc98e'],
     problem: 'A poster of a place that matters is a favourite gift, but the free tools are command-line scripts and the easy ones charge.',
     tech: ['React 19 + TypeScript (strict)', 'Vite', 'Web Worker + OffscreenCanvas', 'OpenMapTiles vector tiles', 'Canvas + SVG from one geometry walk', 'Vitest + Playwright + axe'],
@@ -254,6 +259,12 @@ export const WORLDS = [
    README or source), how its world reacts when it is chosen (fx), the silhouette of
    its island (base), and extra words people use when asking the guide for it. */
 export const DETAILS = {
+  cells: {
+    features: ['116 functions with Excel\'s rules, from SUMIFS and XLOOKUP to dates and text',
+      'Point at cells while typing a formula; every reference gets its own colour on the grid',
+      'Fill, sort, insert rows, cut and paste, and every formula follows; edit in two tabs at once'],
+    decision: ['Recalculate only what changed, and do the graph work on typed arrays',
+      'Every formula\'s references are indexed, so a change finds what is downstream in one walk, and Tarjan\'s algorithm orders it and finds circular references in the same pass. Profiling showed maps keyed by cell were most of the cost, because a key past row 65,536 is too big for V8\'s small integers: moving the walk onto typed arrays and onto the formulas themselves took a 100,000-formula chain from 681 ms to 133.'] },
   'your-place': {
     features: ['Finds any city, street or address, and starts near you, guessed from your time zone',
       'Seven styles, each previewed on your own place, framed by dragging, pinching or the keys',

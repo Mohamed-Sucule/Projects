@@ -36,6 +36,17 @@ export const ATLAS = [
      else here. A flagship is featured on its own on the front page, so it is
      not one of the frames on the contact sheet. */
   {
+    id: 'cells', title: 'Cells', href: 'cells/index.html',
+    kind: 'product', depth: 'play', minutes: 4, flagship: true,
+    blurb: 'A spreadsheet written from scratch: 116 functions, formulas that recalculate only '
+         + 'what changed, a grid of 1,048,576 rows, Excel\'s keyboard, and live editing across tabs.',
+    hook: 'Change one price and watch 6,000 cells follow it.',
+    tags: ['spreadsheet', 'spreadsheets', 'excel', 'google sheets', 'sheet', 'sheets', 'formula',
+           'formulas', 'table', 'tables', 'grid', 'data grid', 'csv', 'budget', 'sums', 'vlookup',
+           'sumifs', 'calculator', 'react', 'typescript', 'frontend', 'front end', 'virtualisation',
+           'virtualization', 'accessibility', 'aria', 'keyboard', 'collaboration', 'new'],
+  },
+  {
     id: 'your-place', title: 'Your Place', href: 'your-place/index.html',
     kind: 'product', depth: 'play', minutes: 3, flagship: true,
     blurb: 'Any place on Earth as a poster. Type a town, a street or an address, pick a style, '

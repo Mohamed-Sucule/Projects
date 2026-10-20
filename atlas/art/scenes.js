@@ -390,6 +390,30 @@ export const FORMS = {
     r = U(r, vec2(sdSph(pin - vec3(0, 0, .26), .075), GLOW));
     return r;`, glow: [-0.1, 2.4, 1.3, 1.1], bound: [0, 1.9, 0, 1.5, 2.0, 1.2] },
 
+  /* a sheet of stone cells leaning on its stand: the active cell framed in brass, and the
+     column of formulas that read it lit, with the thread between them */
+  cells: { alt: 'A sheet of stone cells on a stand, one framed in brass, and the column of cells that depend on it lit.', accent: '#9ff0c4', body: `
+    vec2 r = vec2(1e9, 0);
+    r = U(r, vec2(sdCylY(p - vec3(0, .62, -.1), .07, .62), SHADE));
+    r = U(r, vec2(sdCylY(p - vec3(0, .07, -.1), .52, .07), SHADE));
+    vec3 s = p - vec3(0, 2.25, 0); s.yz *= rot(.22);
+    r = U(r, vec2(sdRBox(s - vec3(0, 0, -.06), vec3(1.16, 1.02, .05), .02), DARK));
+    r = U(r, vec2(sdRBox(s - vec3(0, 0, -.06), vec3(1.2, 1.06, .035), .02), BRASS));
+    /* five columns by five rows: some cells filled and standing proud, some empty */
+    vec2 C = vec2(.44, .4);
+    vec2 id = clamp(floor(s.xy / C + .5), vec2(-2), vec2(2));
+    vec2 l = s.xy - id * C;
+    bool lit = id.x == 1. && id.y < 2.;
+    bool full = lit || id.y == 2. || h12(id + 3.) > .4;
+    float up = lit ? .05 : .03;
+    if (full) r = U(r, vec2(sdRBox(vec3(l, s.z - up), vec3(.185, .155, up), .012), lit ? GLOW : STONE));
+    /* the active cell, framed in brass and standing out */
+    vec3 a = s - vec3(-C.x, C.y, .07);
+    r = U(r, vec2(max(sdBox(a, vec3(.235, .205, .045)), -sdBox(a, vec3(.19, .16, .07))), BRASS));
+    /* and the thread of light from it to the formulas that read it */
+    r = U(r, vec2(sdCap(s, vec3(-C.x + .24, C.y, .11), vec3(C.x - .19, .1, .11), .016), GLOW));
+    return r;`, glow: [0.4, 2.1, 1.0, 1.0], bound: [0, 1.75, 0, 1.5, 1.85, 1.3] },
+
   /* a planisphere on a stand: the night sky in a brass horizon ring, tipped back to look up */
   'your-sky': { alt: 'A star chart in a brass ring on a stand, its stars, one constellation and a crescent moon alight.', accent: '#cfdcff', body: `
     vec2 r = vec2(1e9, 0);

@@ -1,10 +1,10 @@
 name: Deploy to GitHub Pages
 
 # Publishes the whole repo as a static site. Almost everything is plain HTML
-# and is uploaded as it is. The two exceptions are Your Place and Your Sky
-# (React and TypeScript, in one npm workspace with the code they share): their
-# folders hold source, so the deploy builds each one and puts the built app in
-# that folder's place before uploading.
+# and is uploaded as it is. The exceptions are Your Place, Your Sky and Cells
+# (React and TypeScript, in one npm workspace): their folders hold source, so
+# the deploy builds each one and puts the built app in that folder's place
+# before uploading.
 #
 # ONE-TIME SETUP (about ten seconds, and it cannot be scripted — GitHub
 # refuses to let a workflow token switch Pages on for the first time):
@@ -60,9 +60,15 @@ jobs:
         run: |
           npm test -w your-sky
           npm run build -w your-sky
+      - name: Build Cells into /cells/
+        env:
+          VITE_PORTFOLIO_URL: ../
+        run: |
+          npm test -w cells
+          npm run build -w cells
       - name: Serve the built apps, not their source or dependencies
         run: |
-          for app in your-place your-sky; do
+          for app in your-place your-sky cells; do
             mv "$app/dist" "$RUNNER_TEMP/$app"
             rm -rf "$app"
             mv "$RUNNER_TEMP/$app" "$app"

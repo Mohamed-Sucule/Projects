@@ -154,11 +154,15 @@ test('the front page and the CV count the projects that run here', () => {
 });
 
 test('the front page features every flagship, and every tile is a real project', () => {
+  /* Two flagships get a case study each; any others are tiles under "More of my work". */
+  const cases = [...home.matchAll(/<a class="go" href="([^"]+)">/g)].map((m) => m[1]);
+  const tiles = [...home.matchAll(/<a class="tile" href="([^"]+)"/g)].map((m) => m[1]);
+  assert.equal(cases.length, 2, `the front page has ${cases.length} case studies`);
+  for (const href of cases) assert.ok(FLAGSHIPS.some((e) => e.href === href), `the case study for ${href} is not a flagship`);
   for (const e of FLAGSHIPS) {
-    assert.ok(home.includes(`<a class="go" href="${e.href}">`), `${e.title} has no case study on the front page`);
+    assert.ok(cases.includes(e.href) || tiles.includes(e.href), `${e.title} is not on the front page`);
   }
   const hrefs = new Set(EVERYTHING.map((e) => e.href));
-  const tiles = [...home.matchAll(/<a class="tile" href="([^"]+)"/g)].map((m) => m[1]);
   assert.ok(tiles.length >= 3, `only ${tiles.length} tiles under "More of my work"`);
   for (const t of tiles) assert.ok(hrefs.has(t), `the tile for ${t} is not in the atlas`);
 });

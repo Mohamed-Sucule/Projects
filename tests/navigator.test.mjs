@@ -44,9 +44,9 @@ test('every page on disk is in the catalogue', () => {
       if (existsSync(join(root, href))) onDisk.push(href);
     }
   }
-  /* Your Place and Your Sky have folders of their own at the top, because each has a
-     toolchain of its own. */
-  for (const href of ['your-place/index.html', 'your-sky/index.html']) if (existsSync(join(root, href))) onDisk.push(href);
+  /* Your Place, Your Sky and Cells have folders of their own at the top, because each
+     has a toolchain of its own. */
+  for (const href of ['your-place/index.html', 'your-sky/index.html', 'cells/index.html']) if (existsSync(join(root, href))) onDisk.push(href);
   const listed = new Set(ATLAS.map((e) => e.href));
   for (const href of onDisk) assert.ok(listed.has(href), `${href} is not in the atlas`);
   assert.equal(listed.size, onDisk.length);
@@ -262,6 +262,9 @@ const EXPECTED = [
   ['star map', ['your-sky']],
   ['the night sky on our wedding day', ['your-sky']],
   ['map of my home town', ['your-place']],
+  ['spreadsheet', ['cells']],
+  ['like excel in the browser', ['cells']],
+  ['vlookup', ['cells']],
 ];
 
 for (const [query, acceptable] of EXPECTED) {

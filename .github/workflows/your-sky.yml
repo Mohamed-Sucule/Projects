@@ -3,14 +3,14 @@ name: Your Sky
 # Your Sky's checks: formatting, lint, types and unit tests, then end-to-end tests
 # on a desktop and a phone. They run whenever the app, the code it shares with
 # its partner (packages/poster-kit) or the dependencies change. The steps are in
-# poster-app.yml, which both apps use.
+# react-app.yml, which both apps use.
 
 on:
   push:
     branches: [main]
-    paths: ['your-sky/**', 'packages/**', 'package.json', 'package-lock.json', '.github/workflows/your-sky.yml', '.github/workflows/poster-app.yml']
+    paths: ['your-sky/**', 'packages/**', 'package.json', 'package-lock.json', '.github/workflows/your-sky.yml', '.github/workflows/react-app.yml']
   pull_request:
-    paths: ['your-sky/**', 'packages/**', 'package.json', 'package-lock.json', '.github/workflows/your-sky.yml', '.github/workflows/poster-app.yml']
+    paths: ['your-sky/**', 'packages/**', 'package.json', 'package-lock.json', '.github/workflows/your-sky.yml', '.github/workflows/react-app.yml']
 
 permissions:
   contents: read
@@ -21,6 +21,6 @@ concurrency:
 
 jobs:
   app:
-    uses: ./.github/workflows/poster-app.yml
+    uses: ./.github/workflows/react-app.yml
     with:
       app: your-sky

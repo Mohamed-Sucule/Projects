@@ -1,0 +1,26 @@
+name: Cells
+
+# Cells' checks: formatting, lint, types and unit tests (the formula engine,
+# with property tests against a plain evaluator), then end-to-end tests on a
+# desktop and a phone, with axe. They run whenever the app or the dependencies
+# change. The steps are in react-app.yml, which all the React apps use.
+
+on:
+  push:
+    branches: [main]
+    paths: ['cells/**', 'package.json', 'package-lock.json', '.github/workflows/cells.yml', '.github/workflows/react-app.yml']
+  pull_request:
+    paths: ['cells/**', 'package.json', 'package-lock.json', '.github/workflows/cells.yml', '.github/workflows/react-app.yml']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cells-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  app:
+    uses: ./.github/workflows/react-app.yml
+    with:
+      app: cells

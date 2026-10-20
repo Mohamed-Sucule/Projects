@@ -1,10 +1,10 @@
-name: Poster app
+name: React app
 
-# The checks for one of the two React + TypeScript poster apps, Your Place or
-# Your Sky. Both live in one npm workspace with the code they share
-# (packages/poster-kit), so dependencies are installed once at the root from
+# The checks for one of the React + TypeScript apps: Your Place, Your Sky or
+# Cells. They live in one npm workspace (with packages/poster-kit, the code the
+# two poster apps share), so dependencies are installed once at the root from
 # one lockfile, and each step runs in the app's own workspace. Called by
-# your-place.yml and your-sky.yml.
+# your-place.yml, your-sky.yml and cells.yml.
 
 on:
   workflow_call:
