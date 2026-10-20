@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Cells</title>
+    <meta
+      name="description"
+      content="A spreadsheet written from scratch: a formula engine with over a hundred functions that recalculates only what changed, on a grid of 1,048,576 rows you can drive from the keyboard. Free, no sign-up, nothing leaves your browser."
+    />
+    <meta name="theme-color" content="#fbfbf9" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#161a18" media="(prefers-color-scheme: dark)" />
+    <meta property="og:title" content="Cells" />
+    <meta property="og:description" content="A spreadsheet written from scratch, in the browser." />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript
+      ><p class="noscript">
+        Cells works out its formulas in the browser, so it needs JavaScript turned on.
+      </p></noscript
+    >
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
