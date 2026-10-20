@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Not here — Mohamed Sucule</title>
+<meta name="description" content="This page has moved or no longer exists. The portfolio of Mohamed Sucule, frontend engineer, is one page away." />
+<link rel="icon" href="/Projects/favicon.svg" />
+<meta name="theme-color" content="#f6f5f1" />
+<meta property="og:title" content="Mohamed Sucule — Frontend Engineer" />
+<meta property="og:description" content="This page has moved. The portfolio is one page away." />
+<meta name="robots" content="noindex" />
+<style>
+  /* GitHub Pages serves this file for any missing path, so every address in it
+     has to be absolute: a relative one would resolve against the missing path. */
+  :root { --paper: #f6f5f1; --ink: #15171c; --soft: #444955; --accent: #1f4fd1; color-scheme: light; }
+  @media (prefers-color-scheme: dark) { :root { --paper: #0f1115; --ink: #eceef3; --soft: #b8bdc8; --accent: #8fabff; color-scheme: dark; } }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: var(--paper); color: var(--ink); font: 400 18px/1.6 'Segoe UI', system-ui, -apple-system, sans-serif; }
+  main { max-width: 34rem; padding: 32px 20px; }
+  h1 { margin: 0 0 10px; font: 600 clamp(30px, 5vw, 42px)/1.1 Georgia, serif; }
+  p { margin: 0 0 18px; color: var(--soft); }
+  a { color: var(--accent); font-weight: 600; text-underline-offset: 4px; }
+</style>
+</head>
+<body>
+<main>
+  <h1 id="title">This page is not here</h1>
+  <p id="why">It may have moved when the site was reorganised into one portfolio.</p>
+  <p><a id="go" href="/Projects/">Go to the portfolio</a></p>
+</main>
+<script type="module">
+  /* The playground and the gallery were folded into the front page, and each
+     project the gallery showed now has a case study at work/<id>/. Old links
+     to any of them are sent to where that content lives now. */
+  const root = location.pathname.startsWith('/Projects/') ? '/Projects/' : '/';
+  const path = location.pathname.slice(root.length);
+  const { ATLAS } = await import(`${root}shared/atlas.js`);
+  const project = path.match(/^atlas\/projects\/([a-z0-9-]+)/)?.[1];
+  let to = null;
+  if (project) to = ATLAS.some((e) => e.id === project) ? `${root}work/${project}/` : root;
+  else if (/^(playground\.html|atlas\/?)/.test(path)) to = `${root}#work`;
+  if (to) {
+    document.getElementById('title').textContent = 'This page has moved';
+    document.getElementById('why').textContent = 'The playground and the gallery are now part of the portfolio. Taking you there…';
+    document.getElementById('go').href = to;
+    location.replace(to);
+  } else {
+    document.getElementById('go').href = root;
+  }
+</script>
+<script type="module" src="/Projects/shared/navigator.js"></script>
+</body>
+</html>

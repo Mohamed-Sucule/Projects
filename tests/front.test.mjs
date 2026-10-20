@@ -1,187 +1,97 @@
-/* tests/front.test.mjs — the promises the playground makes in large type, and
-   the counts the front page and the CV quote.
+/* tests/front.test.mjs — the front page, the case studies and the CV agree
+   with the lineup.
 
-   (The playground was the front page until the site was turned towards
-   hiring; its comments below still call it that.)
-
-   The headline says thirty, with twenty-nine struck out above it, and the
-   contact sheet under it is meant to be all of them. Every one of those is a
-   hand-written list or number in a page that gets edited often, and the day a
-   thirty-first piece is added to the atlas is exactly the day one of them will
-   be forgotten — and a contact sheet that silently leaves a frame off still
-   looks complete. So the counts are checked against the atlas, which is the
-   one list the navigator and the search already trust. */
+   The site shows twelve projects (SECTIONS in shared/atlas.js), and says so in
+   three places a person reads without anything beside it to check against:
+   the front page, each project's own page, and the CV. Each of those is
+   hand-written or generated from a list that gets edited, and the day a
+   project joins or leaves the lineup is exactly the day one of them will be
+   forgotten. So they are checked against the lineup, which is the one list
+   the navigator and the search already trust. */
 
 import { readFileSync, existsSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test, assert } from './harness.mjs';
-import { ATLAS as EVERYTHING, byId } from '../shared/atlas.js';
-
-/* The AI products are presented on their own at the top of the page, and so
-   is a flagship, tipped in as a plate; the contact sheet and its counts are
-   everything else. */
-const ATLAS = EVERYTHING.filter((e) => e.kind !== 'ai' && !e.flagship);
-const FLAGSHIPS = EVERYTHING.filter((e) => e.flagship);
+import { ATLAS, EVERYTHING, SECTIONS } from '../shared/atlas.js';
+import { PROJECTS } from '../work/projects.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const html = readFileSync(join(root, 'playground.html'), 'utf8');
+const read = (f) => readFileSync(join(root, f), 'utf8');
+const home = read('index.html');
+const cv = read('cv/index.html');
 
 const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
-  'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen',
-  'twenty', 'twenty-one', 'twenty-two', 'twenty-three', 'twenty-four', 'twenty-five', 'twenty-six',
-  'twenty-seven', 'twenty-eight', 'twenty-nine', 'thirty', 'thirty-one', 'thirty-two', 'thirty-three',
-  'thirty-four', 'thirty-five', 'thirty-six', 'thirty-seven', 'thirty-eight', 'thirty-nine', 'forty'];
-
-const capital = (w) => w[0].toUpperCase() + w.slice(1);
-
-const listIn = (name) => {
-  const block = html.match(new RegExp(`const ${name} = \\[([\\s\\S]*?)\\];`));
-  assert.ok(block, `could not find ${name} in playground.html`);
-  return [...block[1].matchAll(/'([a-z0-9-]+)'/g)].map((m) => m[1]);
-};
-
-test('the contact sheet carries every project in the atlas, exactly once', () => {
-  const seen = new Set();
-  for (const id of listIn('SHEET')) {
-    assert.ok(byId.has(id), `the sheet lists "${id}", which is not in the atlas`);
-    assert.ok(!seen.has(id), `the sheet lists "${id}" twice`);
-    seen.add(id);
-  }
-  for (const e of ATLAS) assert.ok(seen.has(e.id), `${e.title} is in the atlas but not on the contact sheet`);
-});
-
-test('every flagship is tipped in as a plate of its own, and is not also a frame', () => {
-  assert.ok(FLAGSHIPS.length > 0, 'there is no flagship to feature');
-  const sheet = new Set(listIn('SHEET'));
-  for (const e of FLAGSHIPS) {
-    assert.ok(html.includes(`<a class="plate-art" href="${e.href}"`), `${e.title} has no plate on the front page`);
-    assert.ok(html.includes(`<a class="stamp" href="${e.href}"`), `${e.title}'s plate cannot be opened`);
-    assert.ok(!sheet.has(e.id), `${e.title} is a plate and a frame on the sheet`);
-  }
-});
-
-test('every strip of the contact sheet is full, at every width', () => {
-  /* Six to a strip on a desk, five on a tablet, three on a phone. A count
-     that does not divide leaves a short strip at the bottom, with frames of
-     black film where pieces should be. */
-  const n = listIn('SHEET').length;
-  for (const cols of [6, 5, 3]) assert.equal(n % cols, 0, `${n} frames do not fill strips of ${cols}`);
-});
-
-test('every grease-pencil pick is a frame on the sheet', () => {
-  const block = html.match(/const PICKS = \{([\s\S]*?)\};/);
-  assert.ok(block, 'could not find PICKS');
-  const sheet = new Set(listIn('SHEET'));
-  for (const [, id] of block[1].matchAll(/(?:^|[\s,{])([a-z][a-z0-9-]*|'[a-z0-9-]+'):/g)) {
-    const key = id.replace(/'/g, '');
-    assert.ok(sheet.has(key), `"${key}" is marked in grease pencil but has no frame`);
-  }
-});
-
-test('the headline counts the AI products, and corrects "demos" to "products"', () => {
-  const n = EVERYTHING.filter((e) => e.kind === 'ai').length;
-  const said = html.match(/<h1 class="headline">\s*<span class="sr">([^<]*)<\/span>/)?.[1] ?? '';
-  assert.ok(said.toLowerCase().startsWith(`${WORDS[n]} ai products`),
-    `screen readers hear "${said}", but the atlas has ${n} AI products`);
-  const struck = html.match(/<span data-pen="strike"[^>]*>([^<]*)<\/span>/)?.[1] ?? '';
-  const written = html.match(/<span class="ins[^"]*"[^>]*>([^<]*)<\/span>/)?.[1] ?? '';
-  assert.equal(struck, 'demos');
-  assert.equal(written, 'products');
-  const cases = (html.match(/<a class="case\b/g) ?? []).length;
-  assert.equal(cases, n, `§1 shows ${cases} products; the atlas has ${n}`);
-  for (const e of EVERYTHING.filter((x) => x.kind === 'ai')) {
-    assert.ok(html.includes(`<a class="case reveal" href="${e.href}"`), `${e.title} has no case on the front page`);
-  }
-});
-
-test('the specification and the way down agree with the atlas', () => {
-  const claimed = Number(html.match(/<dd data-atlas-count>(\d+)<\/dd>/)?.[1]);
-  assert.equal(claimed, ATLAS.length, `the specification says ${claimed}; the atlas has ${ATLAS.length}`);
-  const ai = EVERYTHING.filter((e) => e.kind === 'ai').length;
-  assert.equal(Number(html.match(/<dd data-ai-count>(\d+)<\/dd>/)?.[1]), ai);
-  const cue = (html.match(/<a class="cue"[^>]*>([^<]*)</)?.[1] ?? '').replace(/&mdash;/g, '—').replace(/\s*&darr;\s*$/, '').trim();
-  assert.equal(cue, `${capital(WORDS[ATLAS.length])} pieces to play with, and the ${WORDS[ai]} products`, `the cue says "${cue}"`);
-});
-
-test('each running head counts what is under it', () => {
-  const head = (id) => html.match(new RegExp(`<section class="section" id="${id}"[\\s\\S]*?<span class="nm">([^<]*)</span>`))?.[1];
-  const errata = html.match(/<ol class="errata">([\s\S]*?)<\/ol>/)?.[1] ?? '';
-  const corrections = (errata.match(/<li\b/g) ?? []).length;
-  assert.equal(head('errata'), `${WORDS[corrections]} corrections`);
-  const toys = (html.match(/const TOYS = \[([\s\S]*?)\n\];/)?.[1].match(/^\s{2}\{$/gm) ?? []).length;
-  assert.equal(head('run'), `${WORDS[toys]} figures`);
-  const ml = (html.match(/<section class="section" id="ml"[\s\S]*?<\/section>/)?.[0].match(/<a class="fig\b/g) ?? []).length;
-  assert.equal(head('ml'), `${WORDS[ml]} figures`);
-  const cases = (html.match(/<a class="case\b/g) ?? []).length;
-  assert.equal(head('work'), `${WORDS[cases]} products`);
-});
-
-/* The "measured" line under each product is a claim in large-ish type on
-   the page most people see first, so it is checked against the product's own
-   numbers — the same numbers its page computes and its tests hold it to. */
-import { HELD_OUT_FIRST_RUN as FD_FIRST } from '../apps/frontdesk/eval.js';
-import { RANDOM_CALLERS } from '../apps/frontdesk/calls.js';
-import { HELD_OUT_FIRST_RUN as CC_FIRST } from '../apps/callcoach/labels.js';
-import { DOCS } from '../apps/handbook/corpus.js';
-import { buildIndex, ask } from '../apps/handbook/search.js';
-import { TUNING, HELD_OUT, ROUND_TWO, report } from '../apps/handbook/questions.js';
-
-test('each product’s "measured" line is what the product measures', () => {
-  const proof = (id) => html.match(new RegExp(`data-proof="${id}">([^<]*)<`))?.[1] ?? '';
-  assert.ok(proof('frontdesk').startsWith(`${FD_FIRST.right} of ${FD_FIRST.cases} phrasings`), proof('frontdesk'));
-  assert.ok(proof('frontdesk').includes(`${RANDOM_CALLERS} random callers`), proof('frontdesk'));
-  assert.ok(proof('callcoach').startsWith(`${CC_FIRST.exact} of ${CC_FIRST.lines} new lines`), proof('callcoach'));
-  const idx = buildIndex(DOCS);
-  const sets = [TUNING, HELD_OUT, ROUND_TWO].map((set) => report((q) => ask(idx, q), set));
-  const made = sets.reduce((n, r) => n + r.madeUp, 0);
-  const total = sets.reduce((n, r) => n + r.total, 0);
-  const unans = sets.reduce((n, r) => n + r.unanswerable, 0);
-  assert.equal(proof('handbook').replace(/&middot;/g, '·').split(' · ')[0], `made up ${made} answers in ${total} test questions, ${unans} of them unanswerable on purpose`);
-});
-
-/* The front page and the CV quote counts too. The front page is short and
-   hand-written, and the CV is the one document most likely to be read
-   without the site beside it to check it against. */
-const home = readFileSync(join(root, 'index.html'), 'utf8');
-const cv = readFileSync(join(root, 'cv/index.html'), 'utf8');
-
-test('the front page and the CV count the projects that run here', () => {
-  const running = EVERYTHING.length;
-  const said = home.match(/<span data-count="atlas">([^<]*)<\/span>/)?.[1];
-  assert.equal(said, capital(WORDS[running]), `the front page says "${said}"; ${running} run on the site`);
-  const cvSaid = Number(cv.match(/Portfolio <span>· (\d+) projects that run in the browser/)?.[1]);
-  assert.equal(cvSaid, running, `the CV says ${cvSaid}; ${running} run on the site`);
-});
+  'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty'];
 
 const sectionOf = (id) => home.match(new RegExp(`<section id="${id}"[\\s\\S]*?</section>`))?.[0] ?? '';
 
-test('the front page features every flagship, and every tile is a real project', () => {
-  /* Two flagships get a case study each under "Selected work"; any others are
-     tiles under "More of my work". */
-  const cases = [...sectionOf('work').matchAll(/<a class="go" href="([^"]+)">/g)].map((m) => m[1]);
-  const tiles = [...home.matchAll(/<a class="tile" href="([^"]+)"/g)].map((m) => m[1]);
-  assert.equal(cases.length, 2, `the front page has ${cases.length} case studies`);
-  for (const href of cases) assert.ok(FLAGSHIPS.some((e) => e.href === href), `the case study for ${href} is not a flagship`);
-  for (const e of FLAGSHIPS) {
-    assert.ok(cases.includes(e.href) || tiles.includes(e.href), `${e.title} is not on the front page`);
+test('the front page shows the lineup, section by section, in order', () => {
+  const order = [...home.matchAll(/<section id="([a-z-]+)"/g)].map((m) => m[1]);
+  assert.deep(order.slice(0, SECTIONS.length), SECTIONS.map((s) => s.id), `the sections run ${order.join(', ')}`);
+  for (const s of SECTIONS) {
+    const html = sectionOf(s.id);
+    /* A case study's first link opens the project; a card's goes to its case study. */
+    const shown = [...html.matchAll(/<a class="go" href="([^"]+)"|<a class="card" href="work\/([a-z0-9-]+)\/"/g)]
+      .map((m) => (m[1] ? ATLAS.find((e) => e.href === m[1])?.id : m[2]));
+    assert.deep(shown, s.ids, `the ${s.id} section shows ${shown.join(', ')}`);
   }
-  const hrefs = new Set(EVERYTHING.map((e) => e.href));
-  assert.ok(tiles.length >= 3, `only ${tiles.length} tiles under "More of my work"`);
-  for (const t of tiles) assert.ok(hrefs.has(t), `the tile for ${t} is not in the atlas`);
 });
 
-test('the games come straight after the work, led by Ember, and count every game', () => {
-  const order = [...home.matchAll(/<section id="([a-z-]+)"/g)].map((m) => m[1]);
-  assert.equal(order[order.indexOf('work') + 1], 'games', `the section after the work is "${order[order.indexOf('work') + 1]}"`);
-  const games = sectionOf('games');
-  const all = EVERYTHING.filter((e) => e.kind === 'game');
-  const linked = [...games.matchAll(/<a class="(?:go|tile)" href="([^"]+)"/g)].map((m) => m[1]);
-  assert.equal(linked[0], byId.get('ember').href, 'the games section does not lead with Ember');
-  for (const href of linked) assert.ok(all.some((e) => e.href === href), `the games section links ${href}, which is not a game`);
-  const said = games.match(/<p class="intro">(\S+) games/)?.[1];
-  assert.equal(said, capital(WORDS[all.length]), `the games section says "${said}"; the atlas has ${all.length} games`);
-  assert.ok(games.includes(`See all ${WORDS[all.length]} games`), 'the link to the rest of the games miscounts them');
+test('every project in the lineup has its case study and its screenshot', () => {
+  for (const e of ATLAS) {
+    assert.ok(PROJECTS[e.id], `work/projects.js has nothing on ${e.title}`);
+    assert.ok(existsSync(join(root, 'work', e.id, 'index.html')), `${e.title} has no case study`);
+    for (const w of [960, 1920]) assert.ok(existsSync(join(root, `assets/shots/${e.id}-${w}.webp`)), `${e.title} has no ${w}px screenshot`);
+    assert.ok(home.includes(`href="work/${e.id}/"`), `the front page does not link ${e.title}'s case study`);
+  }
+  assert.equal(Object.keys(PROJECTS).length, ATLAS.length, 'work/projects.js describes a project that is not in the lineup');
+});
+
+test('the case studies and the front page are built from the current data', () => {
+  /* They are generated by work/build.mjs and committed. If the data changed and
+     nobody ran it, the pages are saying something the data no longer says. */
+  execFileSync(process.execPath, [join(root, 'work/build.mjs'), '--check'], { stdio: 'pipe' });
+});
+
+test('nothing left off the site is linked from it', () => {
+  /* A project outside the lineup still runs at its address, but the site does
+     not point at it. */
+  const shown = new Set(ATLAS.map((e) => e.href));
+  const hidden = EVERYTHING.filter((e) => !shown.has(e.href));
+  const pages = ['index.html', 'cv/index.html', ...ATLAS.map((e) => `work/${e.id}/index.html`)];
+  for (const page of pages) {
+    const html = read(page);
+    for (const e of hidden) {
+      const path = e.href.replace(/index\.html$/, '');
+      assert.ok(!new RegExp(`href="(?:\\.\\./)*${path.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')}`).test(html), `${page} links ${e.title}, which is not in the lineup`);
+    }
+  }
+});
+
+test('the front page and the CV count the projects the site shows', () => {
+  const said = home.match(/<span data-count="lineup">([^<]*)<\/span>/)?.[1];
+  assert.equal(said, WORDS[ATLAS.length], `the front page says "${said}"; the lineup has ${ATLAS.length}`);
+  const cvSaid = Number(cv.match(/Portfolio <span>· (\d+) projects/)?.[1]);
+  assert.equal(cvSaid, ATLAS.length, `the CV says ${cvSaid}; the lineup has ${ATLAS.length}`);
+});
+
+/* The measured lines are claims in large type on the pages most people see
+   first, so they are checked against the products' own numbers: the same
+   numbers each product's page computes and its tests hold it to. */
+import { HELD_OUT_FIRST_RUN as FD_FIRST } from '../apps/frontdesk/eval.js';
+import { RANDOM_CALLERS } from '../apps/frontdesk/calls.js';
+import { HELD_OUT_FIRST_RUN as CC_FIRST } from '../apps/callcoach/labels.js';
+
+test('each measured line is what the product measures', () => {
+  const fd = PROJECTS.frontdesk;
+  assert.equal(fd.proof[0][0], `${FD_FIRST.right} / ${FD_FIRST.cases}`);
+  assert.equal(fd.proof[1][0], String(RANDOM_CALLERS));
+  assert.ok(fd.card.measure.startsWith(`${FD_FIRST.right} of ${FD_FIRST.cases} `), fd.card.measure);
+  const cc = PROJECTS.callcoach;
+  assert.equal(cc.proof[0][0], `${CC_FIRST.exact} / ${CC_FIRST.lines}`);
+  assert.ok(cc.card.measure.startsWith(`${CC_FIRST.exact} of ${CC_FIRST.lines} `), cc.card.measure);
 });
 
 test('the CV is offered as a PDF wherever it is linked', () => {

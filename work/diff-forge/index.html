@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Diff Forge: The merge conflict, rebuilt as a choice you can read — Mohamed Sucule</title>
+<meta name="description" content="Merge conflicts are the most hated screen in software because, at the moment you most need context, the tool gives you the least: markers, no base, and no idea why this region conflicted when the…" />
+<link rel="icon" href="../../favicon.svg" />
+<meta name="theme-color" content="#f6f5f1" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Diff Forge — The merge conflict, rebuilt as a choice you can read" />
+<meta property="og:description" content="Merge conflicts are the most hated screen in software because, at the moment you most need context, the tool gives you the least: markers, no base, and no idea why this region conflicted when the…" />
+<meta property="og:url" content="https://mohamed-sucule.github.io/Projects/work/diff-forge/" />
+<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/assets/og-card.png" />
+<link rel="canonical" href="https://mohamed-sucule.github.io/Projects/work/diff-forge/" />
+<link rel="preload" href="../../assets/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="../../assets/fonts/outfit.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="../../assets/site.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to the project</a>
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="../../">Mohamed Sucule</a>
+    <nav aria-label="Main">
+      <a href="../../#work">Work</a>
+      <a href="../../#writing">Writing</a>
+      <a href="../../#experience">Experience</a>
+      <a href="../../#contact">Contact</a>
+      <a class="cv" href="../../cv/">CV</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="study-head" aria-labelledby="title">
+    <div class="wrap">
+      <p class="crumbs"><a href="../../#tools">Tools for engineers</a> · 10 of 12</p>
+      <p class="label">Myers diff · Patience diff · Three-way merge · Word-level highlighting</p>
+      <h1 id="title">Diff Forge</h1>
+      <p class="line">The merge conflict, rebuilt as a choice you can read.</p>
+      <p class="lede">Merge conflicts are the most hated screen in software because, at the moment you most need context, the tool gives you the least: markers, no base, and no idea why this region conflicted when the one above merged silently. Diff Forge rebuilds that moment, with Myers diff, patience diff and a three-way merge written from scratch.</p>
+      <div class="links">
+        <a class="go" href="../../projects/diff-forge/index.html">Open Diff Forge</a>
+        <a href="https://github.com/Mohamed-Sucule/Projects/blob/main/projects/diff-forge/README.md">How it works</a>
+        <a href="https://github.com/Mohamed-Sucule/Projects/tree/main/projects/diff-forge">Source</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="study-shot" aria-label="Screenshot">
+    <div class="wrap">
+      <a href="../../projects/diff-forge/index.html"><img src="../../assets/shots/diff-forge-960.webp" srcset="../../assets/shots/diff-forge-960.webp 960w, ../../assets/shots/diff-forge-1920.webp 1920w" sizes="(min-width: 1200px) 1120px, 94vw" width="960" height="600" alt="Diff Forge resolving a merge: the base and both branches on the left, a conflict shown side by side in the middle, and the merged result on the right" /></a>
+    </div>
+  </section>
+
+  <section class="study-body" aria-label="How it works">
+    <div class="wrap">
+      <div>
+        <h2>What’s hard about it</h2>
+        <ul class="hard">
+          <li>Auto-merged regions are shown, not hidden, each labelled with whose change it took, because a merge can be clean and still wrong.</li>
+          <li>A conflict is a choice, not a text format: both intents side by side with the changed words highlighted, the base quoted underneath, and ours, theirs, both or revert as buttons.</li>
+          <li>Myers and patience diff run side by side on every keystroke, and a moved block shows how differently the two read the same change.</li>
+        </ul>
+        <div class="decision">
+          <h2>A decision worth explaining</h2>
+          <h3>Show the merge that went right</h3>
+          <p>Git resolves most regions silently, and silent success is still a decision. Every region it would have merged on its own gets a band saying which side it came from, so reviewing a merge means reviewing all of it, not just the conflicts.</p>
+        </div>
+      </div>
+      <div>
+        <h2>In numbers</h2>
+        <div class="proof">
+          <div><b>400 × 2</b><span>random file pairs: each algorithm’s edit script rebuilds both sides</span></div>
+          <div><b>2</b><span>diff algorithms, compared on every keystroke</span></div>
+          <div><b>15</b><span>tests</span></div>
+        </div>
+        <h2>Built with</h2>
+        <ul class="built">
+          <li>Myers diff</li>
+          <li>Patience diff</li>
+          <li>Three-way merge</li>
+          <li>Word-level highlighting</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <nav class="pager" aria-label="More projects">
+    <div class="wrap">
+      <a class="prev" href="../trace-explorer/"><span class="label">Previous</span><b>Trace Explorer</b></a>
+      <a class="next" href="../oklch-studio/"><span class="label">Next</span><b>OKLCH Studio</b></a>
+    </div>
+  </nav>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>© 2026 Mohamed Sucule · Birmingham, UK</p>
+    <p><a href="../../">All work</a> · <a href="../../cv/">CV</a> · <a href="https://github.com/Mohamed-Sucule/Projects">Source on GitHub</a></p>
+  </div>
+</footer>
+<script type="module" src="../../shared/navigator.js"></script>
+</body>
+</html>

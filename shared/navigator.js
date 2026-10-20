@@ -1,20 +1,17 @@
 /* shared/navigator.js — one way to get anywhere, from anywhere.
 
-   Thirty-one pages, each of which used to offer exactly one route out: a
-   "← PLAYGROUND" link back to the front, where you scrolled until you found the
-   next thing. That is a chore, and a chore repeated thirty-one times is the
-   whole experience of a site.
+   Every page on the site carries the same small control: press ⌘K (or / , or
+   tap the pill) and ask for what you want in whatever words you have. "the ai
+   products". "something creative". "i have two minutes". "surprise me". The
+   ranking behind it is BM25 with an intent layer — see search.js, which is
+   tested separately. It offers only the twelve projects the site shows, and
+   the previous and next project in that lineup.
 
-   This installs a single control on every page: press ⌘K (or / , or tap the
-   pill) and ask for what you want in whatever words you have. "the ai stuff".
-   "something fun". "i have two minutes". "surprise me". The ranking behind it
-   is BM25 with an intent layer — see search.js, which is tested separately.
-
-   SHADOW DOM, and not for fashion. This markup lands inside thirty-one
-   different stylesheets written months apart, several of which style bare
-   `button`, `input` and `kbd` elements. A shadow root is the only way to be
-   certain none of them reaches in, and equally that nothing here leaks out and
-   quietly restyles somebody's page.
+   SHADOW DOM, and not for fashion. This markup lands inside many different
+   stylesheets written months apart, several of which style bare `button`,
+   `input` and `kbd` elements. A shadow root is the only way to be certain none
+   of them reaches in, and equally that nothing here leaks out and quietly
+   restyles somebody's page.
 
    Everything is lazy: nothing is built until the first open, so a page that is
    never navigated from pays for one event listener and an eighty-byte pill. */
@@ -32,9 +29,9 @@ const previous = position > 0 ? ATLAS[position - 1] : null;
 const next = position !== -1 && position < ATLAS.length - 1 ? ATLAS[position + 1] : null;
 
 const SUGGESTIONS = [
-  'the AI work',
-  'something fun',
-  'I have 2 minutes',
+  'the AI products',
+  'something creative',
+  'tools for engineers',
   'what should I look at first',
   'surprise me',
 ];
@@ -205,8 +202,8 @@ function render(query) {
   ui.results.innerHTML = rows +
     `<a class="row all" data-i="${ui.hits.length}" data-href="${link(HOME.href)}" role="option">
        <span class="bar" style="--a:154,165,184"></span>
-       <span class="text"><span class="top"><b>See everything</b></span>
-       <span class="blurb">${ATLAS.length} pieces on one page, each with a live preview.</span></span>
+       <span class="text"><span class="top"><b>Back to the front page</b></span>
+       <span class="blurb">All ${ATLAS.length} projects, the writing, the CV and how to get in touch.</span></span>
        <span class="go">↵</span>
      </a>`;
   paintActive();

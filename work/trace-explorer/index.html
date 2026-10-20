@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Trace Explorer: Where a slow web request actually spent its time, in sentences — Mohamed Sucule</title>
+<meta name="description" content="Tracing tools are built for the person who already knows what they are looking for: forty coloured bars and a wall of attributes, and the skill is recognising the shape of the problem. Trace…" />
+<link rel="icon" href="../../favicon.svg" />
+<meta name="theme-color" content="#f6f5f1" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Trace Explorer — Where a slow web request actually spent its time, in sentences" />
+<meta property="og:description" content="Tracing tools are built for the person who already knows what they are looking for: forty coloured bars and a wall of attributes, and the skill is recognising the shape of the problem. Trace…" />
+<meta property="og:url" content="https://mohamed-sucule.github.io/Projects/work/trace-explorer/" />
+<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/assets/og-card.png" />
+<link rel="canonical" href="https://mohamed-sucule.github.io/Projects/work/trace-explorer/" />
+<link rel="preload" href="../../assets/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="../../assets/fonts/outfit.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="../../assets/site.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to the project</a>
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="../../">Mohamed Sucule</a>
+    <nav aria-label="Main">
+      <a href="../../#work">Work</a>
+      <a href="../../#writing">Writing</a>
+      <a href="../../#experience">Experience</a>
+      <a href="../../#contact">Contact</a>
+      <a class="cv" href="../../cv/">CV</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="study-head" aria-labelledby="title">
+    <div class="wrap">
+      <p class="crumbs"><a href="../../#tools">Tools for engineers</a> · 9 of 12</p>
+      <p class="label">Span waterfall · Critical-path analysis · Log-scaled histogram · Seeded telemetry</p>
+      <h1 id="title">Trace Explorer</h1>
+      <p class="line">Where a slow web request actually spent its time, in sentences.</p>
+      <p class="lede">Tracing tools are built for the person who already knows what they are looking for: forty coloured bars and a wall of attributes, and the skill is recognising the shape of the problem. Trace Explorer puts that skill in the product. It opens on the worst trace in a sample of 260 across ten services, and says what is wrong in words.</p>
+      <div class="links">
+        <a class="go" href="../../projects/trace-explorer/index.html">Open Trace Explorer</a>
+        <a href="https://github.com/Mohamed-Sucule/Projects/blob/main/projects/trace-explorer/README.md">How it works</a>
+        <a href="https://github.com/Mohamed-Sucule/Projects/tree/main/projects/trace-explorer">Source</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="study-shot" aria-label="Screenshot">
+    <div class="wrap">
+      <a href="../../projects/trace-explorer/index.html"><img src="../../assets/shots/trace-explorer-960.webp" srcset="../../assets/shots/trace-explorer-960.webp 960w, ../../assets/shots/trace-explorer-1920.webp 1920w" sizes="(min-width: 1200px) 1120px, 94vw" width="960" height="600" alt="Trace Explorer: a latency histogram, the span waterfall of a slow checkout request, and its findings written in sentences" /></a>
+    </div>
+  </section>
+
+  <section class="study-body" aria-label="How it works">
+    <div class="wrap">
+      <div>
+        <h2>What’s hard about it</h2>
+        <ul class="hard">
+          <li>Findings in prose, with a denominator: “30 sequential calls to postgres.SELECT stock, totalling 129.9 ms, 22% of the trace. A single batched query would collapse this to roughly one round trip.”</li>
+          <li>The critical path is a first-class object: the spans that set the total are outlined, and the path is broken down by service, which is routinely not the service with the biggest bar.</li>
+          <li>A log-scaled latency histogram you drag across to filter the traces to a band, because a linear axis renders the interesting tail as one pixel.</li>
+        </ul>
+        <div class="decision">
+          <h2>A decision worth explaining</h2>
+          <h3>The analyser never sees the answer</h3>
+          <p>The generator injects problems at random, but the analyser only ever sees spans, exactly as it would with real telemetry. A test asserts the property that makes the critical path correct: its segments tile the trace exactly, with no gaps and nothing counted twice.</p>
+        </div>
+      </div>
+      <div>
+        <h2>In numbers</h2>
+        <div class="proof">
+          <div><b>260</b><span>traces across ten services</span></div>
+          <div><b>6</b><span>kinds of finding, from N+1 queries to retries</span></div>
+          <div><b>13</b><span>tests</span></div>
+        </div>
+        <h2>Built with</h2>
+        <ul class="built">
+          <li>Span waterfall</li>
+          <li>Critical-path analysis</li>
+          <li>Log-scaled histogram</li>
+          <li>Seeded telemetry</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <nav class="pager" aria-label="More projects">
+    <div class="wrap">
+      <a class="prev" href="../callcoach/"><span class="label">Previous</span><b>Call Coach</b></a>
+      <a class="next" href="../diff-forge/"><span class="label">Next</span><b>Diff Forge</b></a>
+    </div>
+  </nav>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>© 2026 Mohamed Sucule · Birmingham, UK</p>
+    <p><a href="../../">All work</a> · <a href="../../cv/">CV</a> · <a href="https://github.com/Mohamed-Sucule/Projects">Source on GitHub</a></p>
+  </div>
+</footer>
+<script type="module" src="../../shared/navigator.js"></script>
+</body>
+</html>

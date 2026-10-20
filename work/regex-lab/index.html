@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Regex Lab: A search pattern compiled into a machine you can watch run — Mohamed Sucule</title>
+<meta name="description" content="A regular expression is a program people write without ever seeing it run, and its most expensive failure has no symptom while you write it: (a+)+b looks tidy and takes exponential time on a…" />
+<link rel="icon" href="../../favicon.svg" />
+<meta name="theme-color" content="#f6f5f1" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Regex Lab — A search pattern compiled into a machine you can watch run" />
+<meta property="og:description" content="A regular expression is a program people write without ever seeing it run, and its most expensive failure has no symptom while you write it: (a+)+b looks tidy and takes exponential time on a…" />
+<meta property="og:url" content="https://mohamed-sucule.github.io/Projects/work/regex-lab/" />
+<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/assets/og-card.png" />
+<link rel="canonical" href="https://mohamed-sucule.github.io/Projects/work/regex-lab/" />
+<link rel="preload" href="../../assets/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="../../assets/fonts/outfit.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="../../assets/site.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to the project</a>
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="../../">Mohamed Sucule</a>
+    <nav aria-label="Main">
+      <a href="../../#work">Work</a>
+      <a href="../../#writing">Writing</a>
+      <a href="../../#experience">Experience</a>
+      <a href="../../#contact">Contact</a>
+      <a class="cv" href="../../cv/">CV</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="study-head" aria-labelledby="title">
+    <div class="wrap">
+      <p class="crumbs"><a href="../../#tools">Tools for engineers</a> · 12 of 12</p>
+      <p class="label">Recursive-descent parser · Thompson NFA · Backtracking matcher · Subset construction</p>
+      <h1 id="title">Regex Lab</h1>
+      <p class="line">A search pattern compiled into a machine you can watch run.</p>
+      <p class="lede">A regular expression is a program people write without ever seeing it run, and its most expensive failure has no symptom while you write it: (a+)+b looks tidy and takes exponential time on a string of a’s. Regex Lab compiles the pattern into an automaton you can watch, and runs it with two engines side by side.</p>
+      <div class="links">
+        <a class="go" href="../../projects/regex-lab/index.html">Open Regex Lab</a>
+        <a href="https://github.com/Mohamed-Sucule/Projects/blob/main/projects/regex-lab/README.md">How it works</a>
+        <a href="https://github.com/Mohamed-Sucule/Projects/tree/main/projects/regex-lab">Source</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="study-shot" aria-label="Screenshot">
+    <div class="wrap">
+      <a href="../../projects/regex-lab/index.html"><img src="../../assets/shots/regex-lab-960.webp" srcset="../../assets/shots/regex-lab-960.webp 960w, ../../assets/shots/regex-lab-1920.webp 1920w" sizes="(min-width: 1200px) 1120px, 94vw" width="960" height="600" alt="Regex Lab running (a|b)*abb: the pattern’s syntax tree, its automaton drawn as a graph, and the backtracker’s log of decisions" /></a>
+    </div>
+  </section>
+
+  <section class="study-body" aria-label="How it works">
+    <div class="wrap">
+      <div>
+        <h2>What’s hard about it</h2>
+        <ul class="hard">
+          <li>The pattern drawn as a Thompson NFA; scrub the text and the live states light up, so you can point at the exact character where a match died.</li>
+          <li>A linear-time simulation and a backtracker, the kind JavaScript actually ships, run side by side; on a nested quantifier the backtracker hits its 200,000-step cap while the other barely moves.</li>
+          <li>Every decision the backtracker made, in order, tied to the slice of pattern responsible, and errors with a caret under the offending character.</li>
+        </ul>
+        <div class="decision">
+          <h2>A decision worth explaining</h2>
+          <h3>Every piece keeps its place in the pattern</h3>
+          <p>Each node of the parsed pattern records where it came from in the source, which is what lets the trace point back at a substring and an error put a caret under the right character. Without it, the most useful thing on screen would be impossible.</p>
+        </div>
+      </div>
+      <div>
+        <h2>In numbers</h2>
+        <div class="proof">
+          <div><b>2</b><span>matching engines, side by side</span></div>
+          <div><b>200,000</b><span>steps before the backtracker is stopped</span></div>
+          <div><b>9</b><span>tests, checked against the browser’s own RegExp</span></div>
+        </div>
+        <h2>Built with</h2>
+        <ul class="built">
+          <li>Recursive-descent parser</li>
+          <li>Thompson NFA</li>
+          <li>Backtracking matcher</li>
+          <li>Subset construction</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <nav class="pager" aria-label="More projects">
+    <div class="wrap">
+      <a class="prev" href="../oklch-studio/"><span class="label">Previous</span><b>OKLCH Studio</b></a>
+    </div>
+  </nav>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>© 2026 Mohamed Sucule · Birmingham, UK</p>
+    <p><a href="../../">All work</a> · <a href="../../cv/">CV</a> · <a href="https://github.com/Mohamed-Sucule/Projects">Source on GitHub</a></p>
+  </div>
+</footer>
+<script type="module" src="../../shared/navigator.js"></script>
+</body>
+</html>

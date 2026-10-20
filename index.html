@@ -4,20 +4,20 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Mohamed Sucule — Frontend Engineer (React, TypeScript)</title>
-<meta name="description" content="Mohamed Sucule, frontend engineer in Birmingham, UK. React and TypeScript, accessibility and performance. Two apps built end to end, live and tested, plus 4+ years at Capgemini and SynchrTrade." />
+<meta name="description" content="Mohamed Sucule, frontend engineer in Birmingham, UK. React and TypeScript, accessibility and performance. Twelve projects built end to end, from a spreadsheet written from scratch to products for real businesses, plus 4+ years at Capgemini and SynchrTrade." />
 <link rel="icon" href="favicon.svg" />
 <meta name="theme-color" content="#f6f5f1" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#0f1115" media="(prefers-color-scheme: dark)" />
 <meta property="og:type" content="profile" />
 <meta property="og:title" content="Mohamed Sucule — Frontend Engineer" />
-<meta property="og:description" content="React and TypeScript, accessibility and performance. Two apps built end to end: a spreadsheet written from scratch, and a map poster renderer." />
+<meta property="og:description" content="React and TypeScript, accessibility and performance. Twelve projects built end to end: a spreadsheet and a map renderer written from scratch, products for real businesses, a game and tools for engineers." />
 <meta property="og:url" content="https://mohamed-sucule.github.io/Projects/" />
 <meta property="og:image" content="https://mohamed-sucule.github.io/Projects/assets/og-card.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Mohamed Sucule — Frontend Engineer" />
-<meta name="twitter:description" content="React and TypeScript, accessibility and performance. Two apps built end to end, live and tested." />
+<meta name="twitter:description" content="React and TypeScript, accessibility and performance. Twelve projects built end to end, live and tested." />
 <meta name="twitter:image" content="https://mohamed-sucule.github.io/Projects/assets/og-card.png" />
 <link rel="canonical" href="https://mohamed-sucule.github.io/Projects/" />
 <link rel="me" href="https://www.linkedin.com/in/mohamed-sucule-bb8747439" />
@@ -38,189 +38,7 @@
   "sameAs": ["https://www.linkedin.com/in/mohamed-sucule-bb8747439", "https://github.com/Mohamed-Sucule"]
 }
 </script>
-<style>
-  /* A frontend engineer's front page: the work first, the proof beside it, nothing in the way.
-     Set in the same faces as the two flagship apps, so the page and the work read as one hand. */
-  @font-face { font-family: 'Fraunces'; src: url(assets/fonts/fraunces.woff2) format('woff2'); font-weight: 100 900; font-style: normal; font-display: swap; }
-  @font-face { font-family: 'Fraunces'; src: url(assets/fonts/fraunces-italic.woff2) format('woff2'); font-weight: 100 900; font-style: italic; font-display: swap; }
-  @font-face { font-family: 'Outfit'; src: url(assets/fonts/outfit.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
-  @font-face { font-family: 'Plex Mono'; src: url(assets/fonts/plex-mono.woff2) format('woff2'); font-weight: 400; font-display: swap; }
-
-  :root {
-    --paper: #f6f5f1; --card: #ffffff; --ink: #15171c; --soft: #444955; --mute: #5a606d;
-    --rule: #dcdcd6; --rule-strong: #b9b9b2; --accent: #1f4fd1; --accent-ink: #ffffff; --wash: #eceae3;
-    --night: #101a31; --gold: #d6b06a;
-    --display: 'Fraunces', Georgia, 'Times New Roman', serif;
-    --sans: 'Outfit', 'Segoe UI', system-ui, -apple-system, sans-serif;
-    --mono: 'Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-    --shadow: 0 1px 2px rgba(21, 23, 28, .1), 0 24px 48px -24px rgba(21, 23, 28, .45);
-    color-scheme: light;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --paper: #0f1115; --card: #171a21; --ink: #eceef3; --soft: #b8bdc8; --mute: #9aa0ad;
-      --rule: #2a2e37; --rule-strong: #3d424d; --accent: #8fabff; --accent-ink: #0b1430; --wash: #1a1d24;
-      --shadow: 0 1px 2px rgba(0, 0, 0, .5), 0 28px 56px -26px rgba(0, 0, 0, .9);
-      color-scheme: dark;
-    }
-  }
-
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body { margin: 0; background: var(--paper); color: var(--ink); font: 400 17px/1.6 var(--sans); -webkit-font-smoothing: antialiased; }
-  img { max-width: 100%; height: auto; display: block; }
-  a { color: inherit; }
-  :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
-  .wrap { width: 100%; max-width: 1160px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
-  .skip { position: absolute; left: 12px; top: -60px; z-index: 20; padding: 10px 14px; background: var(--ink); color: var(--paper); border-radius: 8px; text-decoration: none; }
-  .skip:focus { top: 12px; }
-  .label { font: 400 12.5px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mute); }
-  h1, h2, h3 { text-wrap: balance; }
-  h2 { margin: 0 0 8px; font: 560 clamp(30px, 4vw, 44px)/1.08 var(--display); letter-spacing: -.01em; }
-  .intro { margin: 0 0 36px; max-width: 62ch; color: var(--soft); }
-  section { padding-block: clamp(64px, 9vw, 112px); }
-  section + section { border-top: 1px solid var(--rule); }
-
-  /* ── top ─────────────────────────────────────────────────── */
-  .top { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--paper) 88%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--rule); }
-  .top .wrap { display: flex; align-items: center; gap: 24px; min-height: 60px; }
-  .mark { font: 600 19px/1 var(--display); text-decoration: none; letter-spacing: .005em; white-space: nowrap; }
-  .top nav { margin-left: auto; display: flex; gap: 4px; flex-wrap: wrap; }
-  .top nav a { padding: 8px 11px; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 15px; color: var(--soft); }
-  .top nav a:hover { color: var(--ink); background: var(--wash); }
-  .top nav a.cv { color: var(--accent-ink); background: var(--accent); }
-  .top nav a.cv:hover { background: color-mix(in srgb, var(--accent) 85%, var(--ink)); color: var(--accent-ink); }
-
-  /* ── hero ────────────────────────────────────────────────── */
-  .hero { padding-block: clamp(48px, 7vw, 96px) clamp(56px, 8vw, 104px); border-top: 0; }
-  .hero .wrap { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: clamp(32px, 5vw, 72px); align-items: center; }
-  .hero h1 { margin: 14px 0 20px; font: 580 clamp(40px, 6vw, 72px)/1.02 var(--display); letter-spacing: -.02em; }
-  .hero h1 em { font-style: italic; font-weight: 480; color: var(--accent); }
-  .lede { margin: 0 0 28px; max-width: 54ch; font-size: clamp(17px, 1.6vw, 19px); color: var(--soft); }
-  .ctas { display: flex; flex-wrap: wrap; gap: 10px; }
-  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px; border-radius: 10px; border: 1px solid var(--rule-strong); background: var(--card); text-decoration: none; font-weight: 560; font-size: 16px; line-height: 1.1; cursor: pointer; color: var(--ink); font-family: inherit; }
-  .btn:hover { border-color: var(--ink); }
-  .btn.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-  .btn.primary:hover { background: color-mix(in srgb, var(--ink) 86%, var(--accent)); }
-  .btn svg { width: 18px; height: 18px; flex: none; }
-  .facts { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 28px 0 0; padding: 0; list-style: none; color: var(--soft); font-size: 15px; }
-  .facts li { display: flex; align-items: center; gap: 8px; }
-  .facts li::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex: none; }
-
-  .posters { position: relative; height: clamp(360px, 42vw, 540px); }
-  .posters a { position: absolute; top: 0; width: 62%; box-shadow: var(--shadow); border-radius: 3px; overflow: hidden; transition: transform .35s cubic-bezier(.2, .7, .3, 1); }
-  .posters a img { width: 100%; }
-  .posters .p1 { left: -6%; top: 30%; width: 40%; z-index: 1; transform: rotate(-4deg); }
-  .posters .p2 { right: -4%; top: 6%; width: 100%; transform: rotate(2deg); }
-  .posters a:hover, .posters a:focus-visible { transform: rotate(0) translateY(-2%) scale(1.03); z-index: 2; }
-  .posters figcaption { position: absolute; left: 0; right: 0; bottom: -6px; text-align: center; }
-
-  /* ── featured ────────────────────────────────────────────── */
-  .case { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(28px, 5vw, 64px); align-items: start; }
-  .case + .case { margin-top: clamp(56px, 8vw, 96px); }
-  .case.flip { grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); }
-  .case.flip .shot { order: 2; }
-  .shot { display: block; border-radius: 4px; overflow: hidden; box-shadow: var(--shadow); text-decoration: none; }
-  .case h3 { margin: 6px 0 4px; font: 580 clamp(28px, 3.2vw, 38px)/1.1 var(--display); }
-  .case .line { margin: 0 0 18px; font: italic 400 20px/1.35 var(--display); color: var(--soft); }
-  .case ul.hard { margin: 0 0 22px; padding: 0; list-style: none; display: grid; gap: 12px; }
-  .case ul.hard li { padding-left: 26px; position: relative; }
-  .case ul.hard li::before { content: ""; position: absolute; left: 2px; top: .62em; width: 12px; height: 2px; background: var(--accent); }
-  .proof { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0 0 24px; }
-  .proof div { padding: 14px 14px 12px; border-radius: 10px; background: var(--wash); }
-  .proof b { display: block; font: 600 24px/1.05 var(--display); font-variant-numeric: tabular-nums; }
-  .proof span { display: block; margin-top: 4px; font-size: 13.5px; line-height: 1.35; color: var(--soft); }
-  .stack { margin: 0 0 22px; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
-  .stack li { padding: 4px 10px; border-radius: 999px; border: 1px solid var(--rule-strong); font: 400 13px/1.4 var(--mono); color: var(--soft); }
-  .links { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; }
-  .links a { font-weight: 560; text-underline-offset: 4px; text-decoration-thickness: 1.5px; }
-  .links a.go { text-decoration: none; padding: 11px 17px; border-radius: 10px; background: var(--accent); color: var(--accent-ink); }
-  .links a.go:hover { background: color-mix(in srgb, var(--accent) 85%, var(--ink)); }
-
-  /* ── more work ───────────────────────────────────────────── */
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 22px; }
-  .tile { display: flex; flex-direction: column; border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; background: var(--card); text-decoration: none; transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
-  .tile:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: var(--rule-strong); }
-  .tile img { aspect-ratio: 16 / 10; object-fit: cover; object-position: top left; border-bottom: 1px solid var(--rule); }
-  .tile div { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
-  .tile h3 { margin: 0; font: 600 20px/1.2 var(--display); }
-  .tile p { margin: 0; color: var(--soft); font-size: 15.5px; line-height: 1.5; }
-  .tile .label { margin-top: auto; padding-top: 6px; }
-  .more { margin: 30px 0 0; display: flex; flex-wrap: wrap; gap: 10px 26px; }
-  .more a { font-weight: 560; text-underline-offset: 4px; }
-  /* ── games ───────────────────────────────────────────────── */
-  /* Lit like Ember: the page goes dark here, and the one warm colour is the flame. */
-  .games {
-    --paper: #0e0b09; --card: #17120f; --ink: #f3ebe1; --soft: #cdbfae; --mute: #a8998a;
-    --rule: #2d2620; --rule-strong: #4a4037; --wash: #1e1814; --accent: #f2a65a; --accent-ink: #1b1007;
-    --shadow: 0 1px 2px rgba(0, 0, 0, .6), 0 30px 70px -28px rgba(242, 166, 90, .28);
-    background: radial-gradient(120% 70% at 22% 0%, #1f1610 0%, var(--paper) 60%); color: var(--ink);
-    border-top: 0; color-scheme: dark;
-  }
-  .games + section { border-top: 0; }
-  .games .shot { box-shadow: 0 0 0 1px var(--rule), var(--shadow); }
-  .games .grid { margin-top: clamp(48px, 7vw, 80px); }
-
-  /* ── writing ─────────────────────────────────────────────── */
-  .posts { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 22px; }
-  .post { display: block; padding: 24px 26px; border-radius: 12px; border: 1px solid var(--rule); background: var(--card); text-decoration: none; transition: border-color .2s ease; }
-  .post:hover { border-color: var(--ink); }
-  .post h3 { margin: 8px 0 8px; font: 580 24px/1.2 var(--display); }
-  .post p { margin: 0; color: var(--soft); }
-
-  /* ── experience ──────────────────────────────────────────── */
-  .roles { display: grid; gap: 0; border-top: 1px solid var(--rule); }
-  .role { display: grid; grid-template-columns: minmax(0, 13em) minmax(0, 1fr); gap: 8px 32px; padding: 22px 0; border-bottom: 1px solid var(--rule); }
-  .role .when { font: 400 14px/1.5 var(--mono); color: var(--mute); padding-top: 4px; font-variant-numeric: tabular-nums; }
-  .role h3 { margin: 0; font: 600 20px/1.3 var(--sans); }
-  .role h3 span { font-weight: 400; color: var(--soft); }
-  .role p { margin: 6px 0 0; color: var(--soft); max-width: 68ch; }
-  .creds { margin: 24px 0 0; color: var(--soft); }
-
-  /* ── how I work ──────────────────────────────────────────── */
-  .ways { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 28px; margin: 0; padding: 0; list-style: none; }
-  .ways li { border-top: 2px solid var(--ink); padding-top: 14px; }
-  .ways h3 { margin: 0 0 6px; font: 600 19px/1.3 var(--sans); }
-  .ways p { margin: 0; color: var(--soft); font-size: 16px; }
-
-  /* ── contact ─────────────────────────────────────────────── */
-  .contact { background: var(--night); color: #eef1f8; border-top: 0; }
-  .contact h2 { color: #fff; }
-  .contact .intro { color: #c5ccdc; }
-  .contact .mail { display: inline-block; margin: 0 0 26px; font: 540 clamp(26px, 4.4vw, 46px)/1.1 var(--display); color: var(--gold); text-decoration-thickness: 2px; text-underline-offset: 8px; overflow-wrap: anywhere; }
-  .contact .btn { background: transparent; color: #eef1f8; border-color: rgba(238, 241, 248, .4); }
-  .contact .btn:hover { border-color: #fff; }
-  .contact .btn.primary { background: var(--gold); color: #17140f; border-color: var(--gold); }
-  .contact .note { min-height: 1.6em; margin: 14px 0 0; color: #c5ccdc; font-size: 15px; }
-  .contact :focus-visible { outline-color: var(--gold); }
-  footer { background: var(--night); color: #b9c1d3; border-top: 1px solid rgba(238, 241, 248, .14); }
-  footer .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; padding-block: 22px 28px; font-size: 14.5px; }
-  footer a { color: #eef1f8; }
-
-  @media (max-width: 900px) {
-    .hero .wrap, .case, .case.flip { grid-template-columns: minmax(0, 1fr); }
-    .case.flip .shot { order: 0; }
-    .posters { height: auto; display: grid; grid-template-columns: 1.7fr 1fr; align-items: center; gap: 14px; max-width: 560px; }
-    .posters a { position: static; width: auto; }
-    .posters .p1, .posters .p2 { transform: none; }
-    .role { grid-template-columns: minmax(0, 1fr); }
-  }
-  @media (max-width: 640px) {
-    body { font-size: 16px; }
-    .top .wrap { flex-wrap: wrap; gap: 6px 16px; padding-block: 10px; }
-    .top nav { margin-left: -8px; width: 100%; gap: 0; }
-    .top nav a { padding: 8px; font-size: 14.5px; }
-    .top { position: static; }
-    .proof { grid-template-columns: minmax(0, 1fr); }
-    .proof div { display: flex; align-items: baseline; gap: 12px; }
-    .proof b { flex: none; min-width: 3.6em; white-space: nowrap; }
-    .proof span { margin: 0; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    html { scroll-behavior: auto; }
-    *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
-  }
-</style>
+<link rel="stylesheet" href="assets/site.css" />
 </head>
 <body>
 <a class="skip" href="#main">Skip to the work</a>
@@ -230,7 +48,6 @@
     <a class="mark" href="./">Mohamed Sucule</a>
     <nav aria-label="Main">
       <a href="#work">Work</a>
-      <a href="#games">Games</a>
       <a href="#writing">Writing</a>
       <a href="#experience">Experience</a>
       <a href="#contact">Contact</a>
@@ -247,8 +64,9 @@
         <h1 id="hero-title">I build fast, accessible web apps in <em>React and TypeScript.</em></h1>
         <p class="lede">
           Four years shipping web applications at Capgemini and SynchrTrade, for product teams and for
-          public-sector clients under SC clearance. Below are two apps I designed and built end to end.
-          Both are live, tested and written up.
+          public-sector clients under SC clearance. Below are <span data-count="lineup">twelve</span> things I designed and
+          built end to end: two full apps, two creative pieces, four products for real businesses and four tools for
+          engineers. Every one runs in your browser.
         </p>
         <div class="ctas">
           <a class="btn primary" href="cv/Mohamed-Sucule-CV.pdf">
@@ -271,8 +89,8 @@
           <li>UK right to work</li>
         </ul>
       </div>
-      <figure class="posters" aria-label="The two apps">
-        <a class="p2" href="cells/index.html"><img src="atlas/shots/cells-960.webp" srcset="atlas/shots/cells-960.webp 960w, atlas/shots/cells-1920.webp 1920w" sizes="(min-width: 900px) 440px, 60vw" width="960" height="600" alt="Cells, the spreadsheet: a year of shop orders, with a SUMIFS formula being typed and each of its references outlined on the grid in its own colour" /></a>
+      <figure class="posters" aria-label="Two of the apps">
+        <a class="p2" href="cells/index.html"><img src="assets/shots/cells-960.webp" srcset="assets/shots/cells-960.webp 960w, assets/shots/cells-1920.webp 1920w" sizes="(min-width: 900px) 440px, 60vw" width="960" height="600" alt="Cells, the spreadsheet: a year of shop orders, with a SUMIFS formula being typed and each of its references outlined on the grid in its own colour" /></a>
         <a class="p1" href="your-place/index.html"><img src="assets/your-place-poster.webp" width="680" height="962" alt="A map poster of Zürich made with Your Place: streets in gold on black, the city's name below" /></a>
       </figure>
     </div>
@@ -284,16 +102,17 @@
       <h2 id="work-title">Two apps, built end to end</h2>
       <p class="intro">Both are React 19 and TypeScript in strict mode, with unit tests, end-to-end tests on a desktop and a phone, automated accessibility checks and their own CI. Each solves a hard problem a user never has to think about.</p>
 
+      <!-- build:work -->
       <article class="case" aria-labelledby="cells-title">
-        <a class="shot" href="cells/index.html" tabindex="-1" aria-hidden="true"><img src="atlas/shots/cells-960.webp" srcset="atlas/shots/cells-960.webp 960w, atlas/shots/cells-1920.webp 1920w" sizes="(min-width: 900px) 460px, 92vw" width="960" height="600" alt="" loading="lazy" decoding="async" /></a>
+        <a class="shot" href="cells/index.html" tabindex="-1" aria-hidden="true"><img src="assets/shots/cells-960.webp" srcset="assets/shots/cells-960.webp 960w, assets/shots/cells-1920.webp 1920w" sizes="(min-width: 900px) 460px, 92vw" width="960" height="600" alt="" loading="lazy" decoding="async" /></a>
         <div>
-          <p class="label">React 19 · TypeScript · Virtualised ARIA grid · Property tests</p>
+          <p class="label">React 19 · TypeScript (strict) · Vite · Virtualised ARIA grid</p>
           <h3 id="cells-title">Cells</h3>
           <p class="line">A spreadsheet, written from scratch.</p>
           <ul class="hard">
-            <li>A formula engine of my own: a Pratt parser, 116 functions with Excel's rules, and a dependency graph that recalculates only what changed and catches circular references.</li>
-            <li>A grid of 1,048,576 rows that scrolls past the browser's height limit, works the way Excel does from the keyboard, and that a screen reader can follow to the last row.</li>
-            <li>Profiling took a 100,000-formula recalculation from 681 ms to 133: the cost was in maps keyed by numbers too big for V8's small integers, not in the formulas.</li>
+            <li>A formula engine of my own: a Pratt parser, 116 functions with Excel’s rules for blanks, text, errors and dates, and a dependency graph that recalculates only what changed and catches circular references.</li>
+            <li>A grid of 1,048,576 rows that scrolls past the browser’s height limit, works the way Excel does from the keyboard, lets you point at cells while typing a formula, and that a screen reader can follow to the last row.</li>
+            <li>Profiling took a 100,000-formula recalculation from 681 ms to 133: the cost was in maps keyed by numbers too big for V8’s small integers, not in the formulas.</li>
           </ul>
           <div class="proof">
             <div><b>133 ms</b><span>200,001 cells recalculated, down from 681</span></div>
@@ -302,17 +121,18 @@
           </div>
           <div class="links">
             <a class="go" href="cells/index.html">Open Cells</a>
+            <a href="work/cells/">Case study</a>
             <a href="writing/recalculating-a-spreadsheet/">How I made it fast</a>
             <a href="https://github.com/Mohamed-Sucule/Projects/tree/main/cells">Source</a>
           </div>
         </div>
       </article>
 
-      <article class="case flip" aria-labelledby="yp-title">
-        <a class="shot" href="your-place/index.html" tabindex="-1" aria-hidden="true"><img src="atlas/shots/your-place-960.webp" srcset="atlas/shots/your-place-960.webp 960w, atlas/shots/your-place-1920.webp 1920w" sizes="(min-width: 900px) 460px, 92vw" width="960" height="600" alt="" loading="lazy" decoding="async" /></a>
+      <article class="case flip" aria-labelledby="your-place-title">
+        <a class="shot" href="your-place/index.html" tabindex="-1" aria-hidden="true"><img src="assets/shots/your-place-960.webp" srcset="assets/shots/your-place-960.webp 960w, assets/shots/your-place-1920.webp 1920w" sizes="(min-width: 900px) 460px, 92vw" width="960" height="600" alt="" loading="lazy" decoding="async" /></a>
         <div>
-          <p class="label">React 19 · TypeScript · Web Workers · Canvas &amp; SVG</p>
-          <h3 id="yp-title">Your Place</h3>
+          <p class="label">React 19 · TypeScript (strict) · Web Workers · OffscreenCanvas</p>
+          <h3 id="your-place-title">Your Place</h3>
           <p class="line">Any place on Earth, as a print-ready map poster.</p>
           <ul class="hard">
             <li>A map engine written from scratch: vector tiles are decoded into typed arrays and painted in a Web Worker on an OffscreenCanvas, so dragging the map never waits for drawing.</li>
@@ -326,24 +146,27 @@
           </div>
           <div class="links">
             <a class="go" href="your-place/index.html">Open Your Place</a>
+            <a href="work/your-place/">Case study</a>
             <a href="writing/fast-map-posters/">How I made it fast</a>
             <a href="https://github.com/Mohamed-Sucule/Projects/tree/main/your-place">Source</a>
           </div>
         </div>
       </article>
+      <!-- /build:work -->
     </div>
   </section>
 
-  <section id="games" class="games" aria-labelledby="games-title">
+  <section id="creative" class="night" aria-labelledby="creative-title">
     <div class="wrap">
-      <p class="label">Games</p>
-      <h2 id="games-title">Games made of nothing but code</h2>
-      <p class="intro">Eight games run on this site with no engine, no image files and no sound files. Every sprite, shadow and note is made in the browser as you play. Each game has its own tests, and the hardest are played to the end by a program before you see them.</p>
+      <p class="label">Creative work</p>
+      <h2 id="creative-title">Light, sound and story, all in code</h2>
+      <p class="intro">Two pieces where the interface is the experience. Neither has an image or a sound file: every shadow, sky and note is drawn or synthesised in the browser as you go.</p>
 
+      <!-- build:creative -->
       <article class="case" aria-labelledby="ember-title">
-        <a class="shot" href="play/ember/index.html" tabindex="-1" aria-hidden="true"><img src="atlas/shots/ember-960.webp" srcset="atlas/shots/ember-960.webp 960w, atlas/shots/ember-1920.webp 1920w" sizes="(min-width: 900px) 460px, 92vw" width="960" height="600" alt="" loading="lazy" decoding="async" /></a>
+        <a class="shot" href="play/ember/index.html" tabindex="-1" aria-hidden="true"><img src="assets/shots/ember-960.webp" srcset="assets/shots/ember-960.webp 960w, assets/shots/ember-1920.webp 1920w" sizes="(min-width: 900px) 460px, 92vw" width="960" height="600" alt="" loading="lazy" decoding="async" /></a>
         <div>
-          <p class="label">Canvas 2D · Web Audio · Generator functions · Gamepad &amp; touch</p>
+          <p class="label">Canvas 2D · Web Audio · Generator functions · Gamepad API</p>
           <h3 id="ember-title">Ember</h3>
           <p class="line">An action game in the dark, where your flame is your light and your life.</p>
           <ul class="hard">
@@ -358,62 +181,134 @@
           </div>
           <div class="links">
             <a class="go" href="play/ember/index.html">Play Ember</a>
-            <a href="https://github.com/Mohamed-Sucule/Projects/tree/main/play/ember#readme">How it works</a>
+            <a href="work/ember/">Case study</a>
             <a href="https://github.com/Mohamed-Sucule/Projects/tree/main/play/ember">Source</a>
           </div>
         </div>
       </article>
 
-      <div class="grid">
-        <a class="tile" href="play/sweeper/index.html">
-          <img src="atlas/shots/sweeper-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
-          <div><h3>Minesweeper</h3><p>Every board is played by a solver before you see it and thrown away if it needs a guess. A hint rings the square it can prove safe, and says why.</p><span class="label">Constraint solving · Keyboard play</span></div>
-        </a>
-        <a class="tile" href="play/sudoku/index.html">
-          <img src="atlas/shots/sudoku-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
-          <div><h3>Sudoku</h3><p>A daily puzzle with exactly one answer and a path to it without guessing. The hint names the technique and shows where it applies.</p><span class="label">Bitmask search · Daily seed</span></div>
-        </a>
-        <a class="tile" href="play/tether/index.html">
-          <img src="atlas/shots/tether-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
-          <div><h3>Tether</h3><p>Swing round a planet and tap to let go. You fly off along the tangent, exactly as fast as you were going.</p><span class="label">Orbital physics · One button</span></div>
-        </a>
-      </div>
-      <p class="more"><a href="atlas/#r-games">See all eight games</a></p>
+      <article class="case flip" aria-labelledby="lamplighter-title">
+        <a class="shot" href="apps/lamplighter/index.html" tabindex="-1" aria-hidden="true"><img src="assets/shots/lamplighter-960.webp" srcset="assets/shots/lamplighter-960.webp 960w, assets/shots/lamplighter-1920.webp 1920w" sizes="(min-width: 900px) 460px, 92vw" width="960" height="600" alt="" loading="lazy" decoding="async" /></a>
+        <div>
+          <p class="label">Canvas 2D · Scroll-linked animation · Web Audio · No image files</p>
+          <h3 id="lamplighter-title">The Lamplighter</h3>
+          <p class="line">One night at a lighthouse, told by scrolling and drawn as you read.</p>
+          <ul class="hard">
+            <li>Scrolling is time, not travel: the scroll position is the hour of the night, and the sun’s height, the colour of the sky, the wind, the rain and the sea are all functions of that one number.</li>
+            <li>Two clocks, kept apart: the reader’s is the scroll bar, the lighthouse’s is wall time. The beam turns every 11.2 seconds whether or not anybody is reading, so the place goes on existing when you stop.</li>
+            <li>The words are pinned to the middle of the frame and cross-fade, with opacities that always add up to one, so the view stays where it is while the night changes around it.</li>
+          </ul>
+          <div class="proof">
+            <div><b>0</b><span>image or sound files: all of it is drawn or synthesised</span></div>
+            <div><b>11.2 s</b><span>one turn of the beam, on wall time, not scroll</span></div>
+            <div><b>21</b><span>tests, from the path of the sun to one chapter readable at a time</span></div>
+          </div>
+          <div class="links">
+            <a class="go" href="apps/lamplighter/index.html">Read The Lamplighter</a>
+            <a href="work/lamplighter/">Case study</a>
+            <a href="https://github.com/Mohamed-Sucule/Projects/tree/main/apps/lamplighter">Source</a>
+          </div>
+        </div>
+      </article>
+      <!-- /build:creative -->
     </div>
   </section>
 
-  <section aria-labelledby="more-title">
+  <section id="products" aria-labelledby="products-title">
     <div class="wrap">
-      <p class="label">More of my work</p>
-      <h2 id="more-title">Interfaces for hard problems</h2>
-      <p class="intro"><span data-count="atlas">Thirty-seven</span> projects run on this site, every one in the browser with nothing to install. These six show the range: tools, products, machine learning and sound.</p>
-      <div class="grid">
-        <a class="tile" href="projects/oklch-studio/index.html">
-          <img src="atlas/shots/oklch-studio-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
-          <div><h3>OKLCH Studio</h3><p>A colour-palette builder that checks every step for contrast, so the palette still passes an accessibility audit.</p><span class="label">Colour science · Canvas</span></div>
-        </a>
-        <a class="tile" href="your-sky/index.html">
-          <img src="atlas/shots/your-sky-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
-          <div><h3>Your Sky</h3><p>The night sky over any place and moment as a poster, with the Moon in its real phase. React and TypeScript.</p><span class="label">Rendering · Time zones</span></div>
-        </a>
-        <a class="tile" href="apps/covers/index.html">
-          <img src="atlas/shots/covers-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
-          <div><h3>Covers</h3><p>A restaurant's floor plan and booking system, opened mid-service on a Saturday night with a double booking to sort out.</p><span class="label">Product UI</span></div>
-        </a>
-        <a class="tile" href="apps/frontdesk/index.html">
-          <img src="atlas/shots/frontdesk-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
-          <div><h3>Front Desk</h3><p>A phone receptionist that books real tables, with speech recognition running on the visitor's own device.</p><span class="label">In-browser machine learning</span></div>
-        </a>
-        <a class="tile" href="projects/diff-forge/index.html">
-          <img src="atlas/shots/diff-forge-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
-          <div><h3>Diff Forge</h3><p>The merge conflict, software's most hated screen, rebuilt as a choice you can actually read.</p><span class="label">Interaction design · Diffing</span></div>
-        </a>
-        <a class="tile" href="apps/tuner/index.html">
-          <img src="atlas/shots/tuner-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
-          <div><h3>Tuner</h3><p>Play a note into the microphone and see how sharp or flat it is, to the cent.</p><span class="label">Web Audio · Signal processing</span></div>
-        </a>
-      </div>
-      <p class="more"><a href="atlas/">See every project in the gallery</a><a href="playground.html">Or browse the playground</a></p>
+      <p class="label">Products</p>
+      <h2 id="products-title">Software a business would pay for</h2>
+      <p class="intro">A restaurant’s floor and booking system, and three AI tools of the kind companies are buying now: a receptionist that books into it, a claims desk and a sales-call coach. Everything runs on your device, and nothing you type or say leaves the page.</p>
+
+      <!-- build:products -->
+      <ul class="cards two">
+        <li><a class="card" href="work/covers/">
+          <img src="assets/shots/covers-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
+          <div>
+            <h3>Covers</h3>
+            <p>A restaurant’s floor plan and bookings, opened mid-service on a Saturday with a double booking to sort out.</p>
+            <p class="measure">Explains every refusal in a sentence a head waiter could say</p>
+            <span class="label">Product UI · Drag and drop</span>
+          </div>
+        </a></li>
+        <li><a class="card" href="work/frontdesk/">
+          <img src="assets/shots/frontdesk-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
+          <div>
+            <h3>Front Desk</h3>
+            <p>A phone receptionist that books real tables, with speech recognition on the caller’s own device.</p>
+            <p class="measure">75 of 82 new phrasings understood first time</p>
+            <span class="label">AI product · Speech</span>
+          </div>
+        </a></li>
+        <li><a class="card" href="work/claims/">
+          <img src="assets/shots/claims-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
+          <div>
+            <h3>Claims Desk</h3>
+            <p>Reads an insurance claim with OCR in the browser and recommends a decision, with the evidence for each line.</p>
+            <p class="measure">A misread only ever sends a claim to a person</p>
+            <span class="label">AI product · OCR</span>
+          </div>
+        </a></li>
+        <li><a class="card" href="work/callcoach/">
+          <img src="assets/shots/callcoach-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
+          <div>
+            <h3>Call Coach</h3>
+            <p>The answer on screen the moment a prospect objects, and the notes and follow-up written when the call ends.</p>
+            <p class="measure">27 of 28 new lines tagged right first time</p>
+            <span class="label">AI product · Sales</span>
+          </div>
+        </a></li>
+      </ul>
+      <!-- /build:products -->
+    </div>
+  </section>
+
+  <section id="tools" aria-labelledby="tools-title">
+    <div class="wrap">
+      <p class="label">Tools for engineers</p>
+      <h2 id="tools-title">The screens engineers fight with, rebuilt</h2>
+      <p class="intro">A trace waterfall, a merge conflict, a colour palette and a regular expression: four interfaces that usually leave you on your own at the hard moment, rebuilt around it. Each opens with a plain-English briefing of what it is and why it matters.</p>
+
+      <!-- build:tools -->
+      <ul class="cards four">
+        <li><a class="card" href="work/trace-explorer/">
+          <img src="assets/shots/trace-explorer-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
+          <div>
+            <h3>Trace Explorer</h3>
+            <p>A slow request’s spans as a waterfall, with the critical path marked and the findings in sentences.</p>
+            <p class="measure">Opens on the worst of 260 traces, and says why</p>
+            <span class="label">Observability</span>
+          </div>
+        </a></li>
+        <li><a class="card" href="work/diff-forge/">
+          <img src="assets/shots/diff-forge-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
+          <div>
+            <h3>Diff Forge</h3>
+            <p>The merge-conflict screen rebuilt around the decision, with two diff algorithms written from scratch.</p>
+            <p class="measure">Myers and patience diff, written from scratch</p>
+            <span class="label">Interaction design</span>
+          </div>
+        </a></li>
+        <li><a class="card" href="work/oklch-studio/">
+          <img src="assets/shots/oklch-studio-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
+          <div>
+            <h3>OKLCH Studio</h3>
+            <p>A palette builder that works in a perceptual colour space and checks every pair for contrast.</p>
+            <p class="measure">Every pair checked against WCAG 2.1 and APCA</p>
+            <span class="label">Design systems · Accessibility</span>
+          </div>
+        </a></li>
+        <li><a class="card" href="work/regex-lab/">
+          <img src="assets/shots/regex-lab-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
+          <div>
+            <h3>Regex Lab</h3>
+            <p>A regular expression as an automaton you can watch run, including the kind that takes a website down.</p>
+            <p class="measure">Catastrophic backtracking, made visible</p>
+            <span class="label">Visualisation</span>
+          </div>
+        </a></li>
+      </ul>
+      <!-- /build:tools -->
     </div>
   </section>
 
@@ -421,7 +316,7 @@
     <div class="wrap">
       <p class="label">Writing</p>
       <h2 id="writing-title">How the hard parts were solved</h2>
-      <p class="intro">Three write-ups of problems from the apps, with the measurements and the dead ends.</p>
+      <p class="intro">Two write-ups of problems from the apps, with the measurements and the dead ends.</p>
       <div class="posts">
         <a class="post" href="writing/recalculating-a-spreadsheet/">
           <span class="label">Performance · Cells</span>
@@ -432,11 +327,6 @@
           <span class="label">Performance · Your Place</span>
           <h3>From 41.7 seconds to 0.39: making a map poster fast</h3>
           <p>Profiling a canvas renderer, finding a cost that grows with every shape drawn, and moving the work off the main thread.</p>
-        </a>
-        <a class="post" href="writing/turning-the-sky/">
-          <span class="label">Rendering · Time · Your Sky</span>
-          <h3>Turning the sky: one rotation, 5,044 stars and the clocks of every country</h3>
-          <p>How a star chart stays correct for any place and moment, and why "21:30 in Paris" is harder than it looks.</p>
         </a>
       </div>
     </div>
@@ -483,7 +373,7 @@
 
   <section class="contact" id="contact" aria-labelledby="contact-title">
     <div class="wrap">
-      <p class="label" style="color:#c5ccdc">Contact</p>
+      <p class="label">Contact</p>
       <h2 id="contact-title">Let's talk</h2>
       <p class="intro">If you're hiring for a frontend role, or have an interface problem nobody has solved yet, I'd like to hear about it.</p>
       <a class="mail" href="mailto:mohamedsucule@gmail.com">mohamedsucule@gmail.com</a>
@@ -499,8 +389,8 @@
 
 <footer>
   <div class="wrap">
-    <p style="margin:0">© 2026 Mohamed Sucule · Birmingham, UK</p>
-    <p style="margin:0"><a href="https://github.com/Mohamed-Sucule/Projects">Source on GitHub</a> · <a href="atlas/">Gallery</a> · <a href="playground.html">Playground</a></p>
+    <p>© 2026 Mohamed Sucule · Birmingham, UK</p>
+    <p><a href="cv/">CV</a> · <a href="https://github.com/Mohamed-Sucule/Projects">Source on GitHub</a></p>
   </div>
 </footer>
 

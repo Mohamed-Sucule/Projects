@@ -49,14 +49,14 @@ jobs:
         run: npm ci
       - name: Build Your Place into /your-place/
         env:
-          VITE_PORTFOLIO_URL: ../atlas/
+          VITE_PORTFOLIO_URL: ../
         run: |
           npm test -w poster-kit
           npm test -w your-place
           npm run build -w your-place
       - name: Build Your Sky into /your-sky/
         env:
-          VITE_PORTFOLIO_URL: ../atlas/
+          VITE_PORTFOLIO_URL: ../
         run: |
           npm test -w your-sky
           npm run build -w your-sky

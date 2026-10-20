@@ -1,18 +1,20 @@
-/* shared/atlas.js — everything in this repo, in one list.
+/* shared/atlas.js — everything in this repo, and the part of it the site shows.
 
-   Thirty-one pages accumulated one at a time, each knowing only about itself.
-   That is fine until somebody lands on the Attention page and wants to know
-   what else is here, at which point the only answer is "go back to the front
-   and scroll" — which is not an answer, it is a chore.
+   One catalogue, because pages that each know only about themselves leave a
+   visitor nowhere to go next. The navigator reads it, the search ranks it, the
+   front page and the case-study pages are checked against it, and the previous
+   and next links between projects come out of its order.
 
-   So: one catalogue. The navigator reads it, the search engine ranks it, and
-   the previous/next links between pieces come out of its order. Adding
-   something to the site means adding a row here and nothing else.
+   Two lists. EVERYTHING is every page in the repository, so a test can check
+   that nothing on disk has been forgotten. SECTIONS is the lineup: the twelve
+   projects the site actually puts in front of people, in the order it puts
+   them there. Anything in the first list and not the second still runs at its
+   address, but nothing on the site links to it and the search does not offer
+   it.
 
    `tags` are for retrieval, not for display. They deliberately include the
-   words somebody would actually type — "ai", "llm", "chatgpt", "fun",
-   "shortest" — rather than the words I would use writing about it, because the
-   whole job of a search box is to meet people where their vocabulary is. */
+   words somebody would actually type, because the whole job of a search box is
+   to meet people where their vocabulary is. */
 
 export const KINDS = {
   ai:         { label: 'AI product',       accent: '255,106,82'  },
@@ -30,14 +32,13 @@ export const KINDS = {
      skim  — you will understand it in ten seconds and can leave happy
      play  — worth a few minutes with your hands on it
      study — it rewards actually reading, and has a write-up */
-export const ATLAS = [
+export const EVERYTHING = [
   /* ── the flagships: built the way most teams build ────────────────────────
      React and TypeScript, with a toolchain and its own CI, unlike everything
-     else here. A flagship is featured on its own on the front page, so it is
-     not one of the frames on the contact sheet. */
+     else here. */
   {
     id: 'cells', title: 'Cells', href: 'cells/index.html',
-    kind: 'product', depth: 'play', minutes: 4, flagship: true,
+    kind: 'product', depth: 'play', minutes: 4,
     blurb: 'A spreadsheet written from scratch: 116 functions, formulas that recalculate only '
          + 'what changed, a grid of 1,048,576 rows, Excel\'s keyboard, and live editing across tabs.',
     hook: 'Change one price and watch 6,000 cells follow it.',
@@ -48,7 +49,7 @@ export const ATLAS = [
   },
   {
     id: 'your-place', title: 'Your Place', href: 'your-place/index.html',
-    kind: 'product', depth: 'play', minutes: 3, flagship: true,
+    kind: 'product', depth: 'play', minutes: 3,
     blurb: 'Any place on Earth as a poster. Type a town, a street or an address, pick a style, '
          + 'and download a file ready to print, drawn from OpenStreetMap.',
     hook: 'Make a poster of your home town in a minute.',
@@ -60,7 +61,7 @@ export const ATLAS = [
 
   {
     id: 'your-sky', title: 'Your Sky', href: 'your-sky/index.html',
-    kind: 'product', depth: 'play', minutes: 3, flagship: true,
+    kind: 'product', depth: 'play', minutes: 3,
     blurb: 'The night sky over any place, at any moment, as a poster: the stars, the Milky Way, '
          + 'the planets where they were and the Moon in its real phase, ready to print.',
     hook: 'See the stars over the night you were born.',
@@ -169,7 +170,8 @@ export const ATLAS = [
     blurb: 'One night, and a keeper about to be replaced by a machine. Scroll and the '
          + 'sun goes down, the gale gets up, and the light keeps turning.',
     hook: 'Not a photograph in it — the sea and the sky are drawn from scratch.',
-    tags: ['story', 'fiction', 'read', 'reading', 'lighthouse', 'sea', 'storm', 'atmospheric',
+    tags: ['creative', 'art', 'storytelling', 'scrollytelling', 'scroll', 'animation',
+           'story', 'fiction', 'read', 'reading', 'lighthouse', 'sea', 'storm', 'atmospheric',
            'beautiful', 'scroll', 'scrollytelling', 'canvas', 'generative', 'art', 'pretty',
            'calm', 'quiet', 'alone', 'sad', 'night'],
   },
@@ -213,7 +215,8 @@ export const ATLAS = [
     blurb: 'An action game in the dark. Your flame is your life and your light: three acts, '
          + 'three bosses, nine ash-stones, and one question — who put out the Beacon?',
     hook: 'Every room, every shadow and every note of the score is made in your browser.',
-    tags: ['game', 'play', 'epic', 'action', 'adventure', 'rpg', 'roguelike', 'dungeon', 'boss',
+    tags: ['creative', 'art', 'lighting', 'shadows', 'animation',
+           'game', 'play', 'epic', 'action', 'adventure', 'rpg', 'roguelike', 'dungeon', 'boss',
            'bosses', 'fight', 'sword', 'dark', 'fantasy', 'story', 'mystery', 'soulslike', 'zelda',
            'lighting', 'shadows', 'soundtrack', 'longest game', 'biggest', 'impressive', 'best game'],
   },
@@ -420,12 +423,25 @@ export const ATLAS = [
   },
 ];
 
+/* The lineup, section by section, in the order the front page shows it. */
+export const SECTIONS = [
+  { id: 'work', title: 'Selected work', ids: ['cells', 'your-place'] },
+  { id: 'creative', title: 'Creative work', ids: ['ember', 'lamplighter'] },
+  { id: 'products', title: 'Products', ids: ['covers', 'frontdesk', 'claims', 'callcoach'] },
+  { id: 'tools', title: 'Tools for engineers', ids: ['trace-explorer', 'diff-forge', 'oklch-studio', 'regex-lab'] },
+];
+
+const everything = new Map(EVERYTHING.map((e) => [e.id, e]));
+
+/** The projects the site shows, in lineup order, each knowing its section. */
+export const ATLAS = SECTIONS.flatMap((s) => s.ids.map((id) => ({ ...everything.get(id), section: s.id })));
+
 export const HOME = {
-  id: 'home', title: 'Playground', href: 'playground.html',
-  kind: 'ml', depth: 'skim', minutes: 1,
-  blurb: 'The playground — everything on one page, with a live preview on every card.',
-  hook: 'Start here if you want to browse rather than search.',
-  tags: ['home', 'front', 'index', 'everything', 'all', 'start', 'back', 'browse', 'list'],
+  id: 'home', title: 'Front page', href: 'index.html',
+  kind: 'product', depth: 'skim', minutes: 1,
+  blurb: 'The front page: the twelve projects, the writing, the experience and how to get in touch.',
+  hook: 'Start here.',
+  tags: ['home', 'front', 'index', 'everything', 'all', 'start', 'back', 'browse', 'list', 'cv', 'contact'],
 };
 
 export const byId = new Map(ATLAS.map((e) => [e.id, e]));
@@ -447,5 +463,6 @@ export function resolveHref(href, base) {
 /** Which entry, if any, is the page we are currently on. */
 export function currentEntry(pathname = location.pathname) {
   const clean = pathname.replace(/index\.html?$/, '').replace(/\/$/, '');
-  return ATLAS.find((e) => clean.endsWith(e.href.replace(/\/index\.html$/, ''))) ?? null;
+  /* A project's case study at work/<id>/ is that project too. */
+  return ATLAS.find((e) => clean.endsWith(e.href.replace(/\/index\.html$/, '')) || clean.endsWith(`/work/${e.id}`)) ?? null;
 }

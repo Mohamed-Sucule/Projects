@@ -4,7 +4,7 @@
 
 **[Open Your Sky →](https://mohamed-sucule.github.io/Projects/your-sky/)**
 
-It hangs in the [gallery of my work](https://mohamed-sucule.github.io/Projects/atlas/) beside its partner, [Your Place](../your-place/), which makes posters of maps. Both are React and TypeScript.
+It sits in [the portfolio's repository](https://github.com/Mohamed-Sucule/Projects) beside its partner, [Your Place](../your-place/), which makes posters of maps. Both are React and TypeScript.
 
 ![Your Sky: the sky over Paris at 22:00 on 14 February 2025, in the Midnight style, with the controls beside it](docs/app.jpg)
 

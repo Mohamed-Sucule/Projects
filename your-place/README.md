@@ -4,7 +4,7 @@
 
 **[Open Your Place →](https://mohamed-sucule.github.io/Projects/your-place/)**
 
-It hangs in the [gallery of my work](https://mohamed-sucule.github.io/Projects/atlas/) with everything else. Everything else there is plain JavaScript with no build step; this one is React and TypeScript on purpose, because that is what most teams build with.
+It is one of the twelve projects in [my portfolio](https://mohamed-sucule.github.io/Projects/), with a [case study](https://mohamed-sucule.github.io/Projects/work/your-place/). Most of the others are plain JavaScript with no build step; this one is React and TypeScript on purpose, because that is what most teams build with.
 
 ![Your Place: a poster of Zürich in the Noir & gold style, with the controls beside it](docs/app.jpg)
 
