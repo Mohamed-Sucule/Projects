@@ -9,220 +9,135 @@
 <meta name="description" content="Listen in on three sales calls while an assistant spots objections, competitors, pains and buying signals as they are said, puts the right answer on screen, and writes the notes, CRM record and follow-up email when the call ends." />
 <meta property="og:title" content="Call Coach — a live assistant for sales calls" />
 <meta property="og:description" content="The right card the moment a prospect objects, a nudge when the rep talks too much, and honest notes afterwards — including for the call that went nowhere." />
+<link rel="stylesheet" href="../../shared/studio.css" />
 <style>
-  @font-face { font-family: "Instrument Serif"; src: url("../../assets/fonts/instrument-serif.woff2") format("woff2"); font-display: swap; }
-  @font-face { font-family: "Instrument Serif"; src: url("../../assets/fonts/instrument-serif-italic.woff2") format("woff2"); font-style: italic; font-display: swap; }
-  @font-face { font-family: "Newsreader"; src: url("../../assets/fonts/newsreader.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
-  @font-face { font-family: "JetBrains Mono Var"; src: url("../../assets/fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 100 800; font-display: swap; }
-
+  /* Call Coach: a sales tool, cool and bright. The call on the left, the coach beside it, the notes after. */
   :root {
-    --paper: #f3efe5; --card: #fbf9f3; --ink: #17140f; --ink-2: #4a4439; --ink-3: #6a6356;
-    --rule: rgba(23,20,15,.14); --rule-2: rgba(23,20,15,.3); --red: #cf2e1b; --green: #2c7a4b; --amber: #b06a10; --blue: #2f5d9c;
-    --display: "Instrument Serif", Georgia, serif; --text: "Newsreader", Georgia, serif;
-    --mono: "JetBrains Mono Var", ui-monospace, Menlo, monospace;
+    --wall: #eceef6; --wall-deep: #dce0ee; --rail: #fbfbfe; --field: #ffffff;
+    --ink: #171a2b; --muted: #535a73; --line: #d9dcea;
+    --accent: #5b3fd9; --accent-ink: #ffffff;
+    --good: #16803c; --bad: #c0312a; --warn: #995500; --info: #2457c5;
   }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; background: var(--paper); color: var(--ink); }
-  body { font: 400 17px/1.5 var(--text); -webkit-font-smoothing: antialiased; }
-  [hidden] { display: none !important; }
-  button, input, textarea { font: inherit; color: inherit; }
-  .back { position: fixed; top: 14px; left: 14px; z-index: 10; text-decoration: none; font: 600 11px/1 var(--mono); letter-spacing: .1em; color: var(--ink-2); border: 1px solid var(--rule-2); padding: 8px 11px; background: var(--paper); }
-  .back:hover { color: var(--red); border-color: var(--red); }
-  main { max-width: 1240px; margin: 0 auto; padding: 76px 24px 100px; }
 
-  .kicker { margin: 0 0 14px; font: 600 11px/1.4 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--red); }
-  h1 { margin: 0; font: 400 clamp(52px, 8vw, 96px)/.92 var(--display); letter-spacing: -.02em; }
-  h1 em { color: var(--red); }
-  .lead { margin: 18px 0 0; max-width: 35em; font-size: clamp(19px, 2.2vw, 23px); line-height: 1.42; }
-  .facts { list-style: none; padding: 0; margin: 30px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--ink); }
-  .facts li { padding: 14px 18px 4px 0; border-right: 1px solid var(--rule); margin-right: 18px; }
-  .facts li:last-child { border-right: 0; margin-right: 0; }
-  .facts b { display: block; font: 400 24px/1.1 var(--display); }
-  .facts span { display: block; margin-top: 6px; color: var(--ink-2); font-size: 15.5px; line-height: 1.45; }
-  h2 { margin: 0 0 16px; font: 600 11px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); display: flex; align-items: center; gap: 12px; }
-  h2::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
-  section.band { margin-top: 84px; }
-
-  .calls { margin-top: 54px; }
-  .picker { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
-  .pick { text-align: left; cursor: pointer; background: var(--card); border: 1px solid var(--rule-2); padding: 13px 14px 14px; display: grid; gap: 5px; align-content: start; transition: border-color .15s, transform .15s; }
-  .pick:hover { border-color: var(--ink); transform: translateY(-1px); }
-  .pick b { font: 400 21px/1.1 var(--display); display: flex; align-items: center; gap: 8px; }
-  .pick b::before { content: '▶'; font: 600 10px/1 var(--mono); color: var(--red); }
-  .pick span { font-size: 14.5px; line-height: 1.4; color: var(--ink-2); }
-  .pick.on { border-color: var(--red); box-shadow: inset 0 0 0 1px var(--red); }
-  .pick.you { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-  .pick.you b::before { content: '✎'; font-size: 13px; color: #ff8a73; }
-  .pick.you span { color: rgba(243,239,229,.75); }
-
-  /* ── the console ── */
-  .console { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 18px; margin-top: 18px; align-items: start; }
-  .call { background: var(--card); border: 1px solid var(--rule-2); box-shadow: 0 24px 50px -34px rgba(60,45,20,.55); display: flex; flex-direction: column; }
-  .callbar { display: flex; align-items: center; gap: 12px; padding: 11px 16px; background: var(--ink); color: var(--paper); font: 600 11px/1.2 var(--mono); letter-spacing: .06em; }
-  .callbar .dot { width: 8px; height: 8px; border-radius: 50%; background: #6d665a; flex: none; }
-  .callbar.live .dot { background: #ff5a3d; animation: blip 1.4s infinite; }
-  .callbar .who { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: rgba(243,239,229,.75); }
-  .callbar .clock { font-variant-numeric: tabular-nums; }
-  @keyframes blip { 50% { opacity: .35; } }
-  .ratio { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--rule); font: 600 10.5px/1 var(--mono); letter-spacing: .06em; color: var(--ink-3); }
-  .ratio .track { height: 8px; background: rgba(47,93,156,.25); position: relative; overflow: hidden; }
-  .ratio .fill { position: absolute; inset: 0 auto 0 0; background: var(--ink); transition: width .4s; }
-  .ratio .mid { position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: var(--red); }
-  .lines { list-style: none; margin: 0; padding: 12px 16px 8px; min-height: 420px; max-height: 600px; overflow-y: auto; }
-  .ln { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 12px; padding: 8px 0; border-bottom: 1px dashed var(--rule); animation: rise .3s ease-out; }
+  .stage-tabs { display: inline-flex; align-self: flex-start; gap: 4px; margin: 0 0 12px; padding: 4px; border-radius: 12px; background: color-mix(in srgb, var(--ink) 7%, transparent); }
+  .stage-tabs button { border: 0; border-radius: 9px; padding: 8px 16px; background: transparent; font-weight: 600; font-size: .92rem; color: var(--muted); cursor: pointer; }
+  .stage-tabs button[aria-selected="true"] { background: var(--field); color: var(--ink); box-shadow: 0 1px 3px rgb(23 26 43 / .14); }
+  .stage-tabs button:disabled { opacity: .5; cursor: default; }
+  .call, .notes { flex: 1; min-height: 0; }
+  .call .who { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ratio { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--line); font-size: .8rem; font-weight: 600; color: var(--muted); }
+  .ratio .track { height: 8px; border-radius: 99px; background: rgb(36 87 197 / .2); position: relative; overflow: hidden; }
+  .ratio .fill { position: absolute; inset: 0 auto 0 0; background: var(--accent); transition: width .4s; }
+  .ratio .mid { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: var(--ink); opacity: .5; }
+  .lines { flex: 1; min-height: 0; overflow-y: auto; list-style: none; margin: 0; padding: 12px 20px 8px; }
+  .ln { display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--line); animation: rise .3s ease-out; }
   .ln:last-child { border-bottom: 0; }
-  .ln .who { font: 600 10px/1.9 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--blue); }
-  .ln.rep .who { color: var(--ink-3); }
-  .ln .t { font-size: 17.5px; line-height: 1.5; }
-  .ln.rep .t { color: var(--ink-2); }
+  .ln .who { font-size: .76rem; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; line-height: 1.9; color: var(--info); }
+  .ln.rep .who { color: var(--muted); }
+  .ln .t { font-size: 1.05rem; line-height: 1.55; }
+  .ln.rep .t { color: var(--muted); }
   .ln .w { opacity: 0; transition: opacity .1s; } .ln .w.on { opacity: 1; }
-  .ln .ts { display: block; font: 500 10px/1 var(--mono); color: var(--ink-3); margin-top: 4px; }
+  .ln .ts { display: block; margin-top: 4px; font-family: var(--mono); font-size: .7rem; color: var(--muted); }
   .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
-  .tg { font: 600 9.5px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; padding: 4px 6px; border: 1px solid; animation: rise .3s ease-out; }
-  .tg.objection { color: var(--red); } .tg.signal { color: var(--green); } .tg.pain { color: var(--amber); }
-  @keyframes rise { from { opacity: 0; transform: translateY(4px); } }
-  .empty { color: var(--ink-3); font-style: italic; padding: 60px 10px; text-align: center; list-style: none; }
-  .empty b { display: block; font: 400 30px/1.1 var(--display); color: var(--ink); font-style: normal; margin-bottom: 8px; }
-  .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--rule); }
-  .controls .grow { flex: 1; }
-  .btn { font: 700 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; padding: 11px 14px; border: 1.5px solid var(--ink); background: var(--ink); color: var(--paper); white-space: nowrap; }
-  .btn.ghost { background: transparent; color: var(--ink); }
-  .btn:hover:not(:disabled) { background: var(--red); border-color: var(--red); color: #fff; }
-  .btn.small { padding: 8px 10px; font-size: 10px; }
-  .toggle { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; font: 600 10.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); }
-  .toggle input { accent-color: var(--red); width: 15px; height: 15px; margin: 0; }
-  .live-in { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--rule); }
-  .live-in input { flex: 1 1 260px; min-width: 0; font: 400 17px/1.3 var(--text); background: #fff; border: 1px solid var(--rule-2); padding: 11px 12px; outline: none; }
-  .live-in input:focus { border-color: var(--ink); }
-  .seg { display: inline-flex; border: 1.5px solid var(--ink); }
-  .seg button { border: 0; background: transparent; padding: 9px 11px; cursor: pointer; font: 700 10.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; }
-  .seg button.on { background: var(--ink); color: var(--paper); }
+  .tg { padding: 2px 8px; border-radius: 99px; border: 1px solid; font-size: .74rem; font-weight: 600; animation: rise .3s ease-out; }
+  .tg.objection { color: var(--bad); } .tg.signal { color: var(--good); } .tg.pain { color: var(--warn); }
+  .controls, .live-in { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px 16px; border-top: 1px solid var(--line); }
+  .live-in .field { flex: 1 1 240px; }
+  .seg { display: inline-flex; padding: 3px; gap: 3px; border-radius: 10px; background: color-mix(in srgb, var(--ink) 7%, transparent); }
+  .seg button { border: 0; border-radius: 8px; padding: 8px 12px; background: transparent; font-weight: 600; font-size: .88rem; cursor: pointer; color: var(--muted); }
+  .seg button.on { background: var(--field); color: var(--ink); box-shadow: 0 1px 3px rgb(23 26 43 / .14); }
 
-  /* coach side */
-  .coach { display: grid; gap: 14px; }
-  .panel { background: var(--card); border: 1px solid var(--rule-2); padding: 14px 16px 15px; }
-  .panel h3 { margin: 0 0 11px; font: 600 10.5px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); display: flex; justify-content: space-between; gap: 10px; }
-  .check { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 14px; font-size: 15px; }
-  .check li { display: flex; align-items: center; gap: 8px; color: var(--ink-3); }
-  .check li::before { content: ''; width: 13px; height: 13px; border: 1.5px solid var(--rule-2); flex: none; }
+  .check { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px 14px; font-size: .92rem; }
+  .check li { display: flex; align-items: center; gap: 8px; color: var(--muted); }
+  .check li::before { content: ''; width: 15px; height: 15px; border-radius: 4px; border: 1.5px solid var(--line); flex: none; }
   .check li.on { color: var(--ink); }
-  .check li.on::before { background: var(--green); border-color: var(--green); box-shadow: inset 0 0 0 2px var(--card); }
-  .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--rule); }
-  .stats b { display: block; font: 400 28px/1 var(--display); }
-  .stats span { font: 600 9.5px/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+  .check li.on::before { background: var(--good); border-color: var(--good); box-shadow: inset 0 0 0 2px var(--field); }
+  .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .stats b { display: block; font-size: 1.6rem; font-weight: 650; line-height: 1; }
+  .stats span { font-size: .74rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
   .stats svg { width: 100%; height: 30px; display: block; }
-  .feed { display: grid; gap: 10px; max-height: 560px; overflow-y: auto; }
-  .card { border: 1px solid var(--rule-2); background: #fff; padding: 12px 14px; animation: rise .35s ease-out; }
-  .card .k { font: 600 9.5px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--red); }
-  .card.comp .k { color: var(--blue); }
-  .card h4 { margin: 5px 0 6px; font: 400 23px/1.1 var(--display); }
-  .card .q { margin: 0 0 8px; font-size: 14.5px; color: var(--ink-3); font-style: italic; }
+  .feed { display: grid; gap: 10px; }
+  .card { border: 1px solid var(--line); border-left: 4px solid var(--bad); border-radius: 10px; background: var(--field); padding: 12px 14px; animation: rise .35s ease-out; }
+  .card.comp { border-left-color: var(--info); }
+  .card .k { font-size: .72rem; font-weight: 650; letter-spacing: .1em; text-transform: uppercase; color: var(--bad); }
+  .card.comp .k { color: var(--info); }
+  .card h4 { margin: 4px 0 6px; font-size: 1.12rem; font-weight: 650; }
+  .card .q { margin: 0 0 8px; font-size: .88rem; color: var(--muted); font-style: italic; }
   .card dl { margin: 0; display: grid; gap: 6px; }
-  .card dt { font: 600 9.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
-  .card dd { margin: 2px 0 0; font-size: 15.5px; line-height: 1.45; }
-  .card ul { margin: 4px 0 0; padding-left: 18px; font-size: 15px; line-height: 1.45; }
-  .nudge { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 8px; font-size: 15.5px; line-height: 1.4; padding: 9px 12px; border-left: 3px solid var(--amber); background: rgba(176,106,16,.07); animation: rise .35s ease-out; }
-  .nudge i { font-style: normal; font: 700 12px/1.3 var(--mono); color: var(--amber); }
-  .nudge.good { border-color: var(--green); background: rgba(44,122,75,.07); } .nudge.good i { color: var(--green); }
-  .nudge.go { border-color: var(--green); background: rgba(44,122,75,.1); } .nudge.go i { color: var(--green); }
-  .nudge.ask { border-color: var(--blue); background: rgba(47,93,156,.07); } .nudge.ask i { color: var(--blue); }
-  .feed .none { font-style: italic; color: var(--ink-3); font-size: 15px; }
+  .card dt { font-size: .72rem; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .card dd { margin: 2px 0 0; font-size: .93rem; }
+  .card ul { margin: 4px 0 0; padding-left: 18px; font-size: .9rem; }
+  .nudge { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 8px; padding: 9px 12px; border-radius: 10px; font-size: .93rem; background: rgb(153 85 0 / .09); animation: rise .35s ease-out; }
+  .nudge i { font-style: normal; font-weight: 700; color: var(--warn); }
+  .nudge.good, .nudge.go { background: rgb(22 128 60 / .09); } .nudge.good i, .nudge.go i { color: var(--good); }
+  .nudge.ask { background: rgb(36 87 197 / .08); } .nudge.ask i { color: var(--info); }
+  .feed .none { margin: 0; color: var(--muted); font-size: .93rem; }
 
-  /* after the call */
-  .after { margin-top: 26px; }
-  .verdict { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px; align-items: center; padding: 18px 20px; background: var(--ink); color: var(--paper); }
-  .verdict .stage { font: 700 11px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; padding: 8px 10px; border: 1.5px solid currentColor; }
-  .verdict.Qualified .stage, .verdict.Proposal .stage { color: #7ee2a8; }
-  .verdict.Nurture .stage { color: #ffb86b; }
-  .verdict p { margin: 0; font: 400 22px/1.3 var(--display); }
-  .after-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; margin-top: 18px; align-items: start; }
-  .meddicc { width: 100%; border-collapse: collapse; font-size: 15.5px; }
-  .meddicc th { text-align: left; vertical-align: top; width: 150px; padding: 9px 12px 9px 0; font: 600 10.5px/1.4 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); border-bottom: 1px solid var(--rule); }
-  .meddicc th small { display: block; text-transform: none; letter-spacing: 0; color: var(--ink-3); font-weight: 500; }
-  .meddicc td { padding: 9px 0; border-bottom: 1px solid var(--rule); line-height: 1.45; }
+  .notes .scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 18px 20px 24px; }
+  .verdict { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; align-items: center; padding: 16px 18px; border-radius: 12px; background: var(--ink); color: var(--rail); }
+  .verdict .stage-tag { padding: 6px 12px; border-radius: 99px; border: 1.5px solid currentColor; font-size: .8rem; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; }
+  .verdict.Qualified .stage-tag, .verdict.Proposal .stage-tag { color: #8ee8b0; }
+  .verdict.Nurture .stage-tag { color: #ffc27a; }
+  .verdict p { margin: 0; font-size: 1.1rem; }
+  .after-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 16px; margin-top: 16px; align-items: start; }
+  .box { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; background: var(--rail); }
+  .box h3 { margin: 0 0 10px; font-size: .78rem; font-weight: 650; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .box h3 small { font-weight: 500; letter-spacing: 0; text-transform: none; }
+  .meddicc { width: 100%; border-collapse: collapse; font-size: .93rem; }
+  .meddicc th { text-align: left; vertical-align: top; width: 140px; padding: 8px 12px 8px 0; font-size: .8rem; font-weight: 650; border-bottom: 1px solid var(--line); }
+  .meddicc th small { display: block; font-weight: 400; color: var(--muted); }
+  .meddicc td { padding: 8px 0; border-bottom: 1px solid var(--line); }
   .meddicc td q { display: block; quotes: '“' '”'; }
   .meddicc td q + q { margin-top: 4px; }
-  .meddicc td.gap { color: var(--red); }
-  .meddicc td.gap::before { content: 'Missing — ask: '; font: 600 10px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; }
-  .crm { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 7px 14px; margin: 0; font-size: 15.5px; }
-  .crm dt { font: 600 10px/1.6 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+  .meddicc td.gap { color: var(--bad); }
+  .meddicc td.gap::before { content: 'Missing. Ask: '; font-weight: 650; }
+  .crm { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 14px; margin: 0; font-size: .93rem; }
+  .crm dt { font-size: .78rem; font-weight: 650; color: var(--muted); padding-top: 2px; }
   .crm dd { margin: 0; }
-  .email { white-space: pre-wrap; font: 400 15.5px/1.55 var(--text); background: #fff; border: 1px solid var(--rule); padding: 14px 16px; margin: 0; max-height: 420px; overflow-y: auto; }
-  .email-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }
-  .email-head b { font: 400 19px/1.2 var(--display); }
-  .obj { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 15px; }
+  .obj { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: .92rem; }
   .obj li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 6px; }
-  .obj li i { font-style: normal; font: 700 12px/1.4 var(--mono); color: var(--green); }
-  .obj li.open i { color: var(--red); }
+  .obj li i { font-style: normal; font-weight: 700; color: var(--good); }
+  .obj li.open i { color: var(--bad); }
+  .email-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .email-head b { font-weight: 650; }
+  .email { white-space: pre-wrap; font: inherit; font-size: .92rem; line-height: 1.55; background: var(--field); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin: 0; max-height: 360px; overflow-y: auto; }
+  .salt { max-width: 62ch; margin: 16px 0 0; color: var(--muted); }
 
-  .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); counter-reset: s; border-top: 1px solid var(--ink); }
-  .steps li { padding: 16px 16px 4px 0; margin-right: 16px; border-right: 1px solid var(--rule); counter-increment: s; }
-  .steps li:last-child { border-right: 0; margin-right: 0; }
-  .steps li::before { content: counter(s, decimal-leading-zero); display: block; font: 600 11px/1 var(--mono); color: var(--red); letter-spacing: .1em; margin-bottom: 10px; }
-  .steps b { display: block; font: 400 24px/1.1 var(--display); margin-bottom: 6px; }
-  .steps p { margin: 0; font-size: 15.5px; line-height: 1.5; color: var(--ink-2); }
-  .scores { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
-  .score { border-top: 2px solid var(--ink); padding-top: 12px; }
-  .score .big { font: 400 clamp(42px, 5vw, 62px)/1 var(--display); letter-spacing: -.02em; }
-  .score .big small { font-size: .45em; color: var(--ink-3); }
-  .score p { margin: 8px 0 0; font-size: 15px; color: var(--ink-2); line-height: 1.5; }
-  .ship { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 40px; }
-  .ship div { border-top: 1px solid var(--rule-2); padding-top: 12px; }
-  .ship b { display: block; font: 400 22px/1.15 var(--display); margin-bottom: 6px; }
-  .ship p { margin: 0; color: var(--ink-2); font-size: 16px; line-height: 1.55; }
-  .ship .state { font: 600 9.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; margin-left: 8px; vertical-align: 3px; }
-  .state.done { color: var(--green); } .state.todo { color: var(--ink-3); }
-  footer { margin-top: 80px; padding-top: 18px; border-top: 1px solid var(--ink); display: flex; flex-wrap: wrap; gap: 10px 24px; justify-content: space-between; font-size: 15px; color: var(--ink-2); }
-  footer a { color: var(--ink); }
-
-  @media (max-width: 1000px) {
-    .picker { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .console, .after-grid { grid-template-columns: minmax(0, 1fr); }
-    .steps { grid-template-columns: minmax(0, 1fr); }
-    .steps li { border-right: 0; margin-right: 0; border-bottom: 1px solid var(--rule); padding-bottom: 14px; }
-    .scores, .ship { grid-template-columns: minmax(0, 1fr); }
-  }
-  @media (max-width: 640px) {
-    main { padding: 70px 16px 80px; }
-    .facts { grid-template-columns: minmax(0, 1fr); }
-    .facts li { border-right: 0; margin-right: 0; border-bottom: 1px solid var(--rule); padding-bottom: 12px; }
-    .picker { grid-template-columns: minmax(0, 1fr); }
-    .pick span { display: none; }
+  @media (max-width: 1180px) { .after-grid { grid-template-columns: minmax(0, 1fr); } }
+  @media (max-width: 960px) {
+    .call, .notes { height: 72dvh; flex: none; }
     .ln { grid-template-columns: minmax(0, 1fr); gap: 2px; }
-    .lines { min-height: 300px; max-height: 460px; }
     .verdict { grid-template-columns: minmax(0, 1fr); }
-    .verdict p { font-size: 19px; }
-    .meddicc th { width: 100px; }
   }
-  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
 </head>
 <body>
-<a class="back" href="../../index.html">← INDEX</a>
-<main>
-  <header>
-    <p class="kicker">Case study · Sales AI · Revenue teams</p>
-    <h1>Call <em>Coach</em></h1>
-    <p class="lead">A live assistant for sales calls. It puts the right answer on screen the moment a prospect objects, tells the rep when they're talking too much — and when the call ends, writes the notes, fills in the CRM and drafts the follow-up.</p>
-    <ul class="facts">
-      <li><b>The right card, right then</b><span>Price, a competitor, "I'd need to ask my boss" — each brings up what it usually means, the question to ask back and one way to answer.</span></li>
-      <li><b>Notes from what was said</b><span>Every line in the notes is a quote from the call or a number read off one. Anything the call didn't cover is marked as the question to ask next time.</span></li>
-      <li><b>Honest about bad calls</b><span>A polite "just send me an email" is written up as a polite no, with the one thing still worth doing.</span></li>
-    </ul>
-  </header>
+<a class="skip" href="#app">Skip to the call</a>
+<header class="top">
+  <h1 class="brand">
+    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3a8 8 0 0 0-8 8v5a3 3 0 0 0 3 3h1v-7H6v-1a6 6 0 0 1 12 0v1h-2v7h2v.5a1.5 1.5 0 0 1-1.5 1.5H13v2h3.5a3.5 3.5 0 0 0 3.5-3.5V11a8 8 0 0 0-8-8Z"/></svg>
+    Call Coach
+  </h1>
+  <p class="tagline">A live assistant for sales calls, and honest notes afterwards.</p>
+  <nav class="top-actions" aria-label="About Call Coach">
+    <a class="top-link wide" href="#about">How it works</a>
+    <a class="top-link" href="../../index.html">Portfolio</a>
+    <a class="icon-button" href="https://github.com/Mohamed-Sucule/Projects/tree/main/apps/callcoach" aria-label="Source code on GitHub"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/></svg></a>
+  </nav>
+</header>
 
-  <section class="calls" aria-labelledby="callsHead">
-    <h2 id="callsHead">Listen in on a call</h2>
-    <div class="picker" id="picker"></div>
-  </section>
-
-  <section class="console" aria-label="The call">
-    <div class="call">
-      <div class="callbar" id="callbar"><span class="dot"></span><span id="state">READY</span><span class="who" id="callWho">Pick a call</span><span class="clock" id="clock">00:00</span></div>
+<main class="studio">
+  <section class="stage" id="app" aria-label="The call" tabindex="-1">
+    <div class="stage-tabs" role="tablist" aria-label="The call and its notes">
+      <button type="button" role="tab" id="tabCall" aria-selected="true" aria-controls="callPanel">The call</button>
+      <button type="button" role="tab" id="tabNotes" aria-selected="false" aria-controls="after" disabled>The notes</button>
+    </div>
+    <div class="sheet call" id="callPanel" role="tabpanel" aria-labelledby="tabCall">
+      <div class="sheet-bar" id="callbar"><span class="live-dot"></span><b id="state">READY</b><span class="who" id="callWho">Pick a call</span><span class="clock" id="clock">00:00</span></div>
       <div class="ratio"><span id="repLbl">REP</span><div class="track"><div class="fill" id="fill" style="width:0%"></div><div class="mid"></div></div><span id="shareLbl">talk time</span></div>
-      <ol class="lines" id="lines" aria-live="polite"><li class="empty"><b>Pick a call to listen in.</b>The words are scripted; every card, nudge and note is worked out from them as they are said.</li></ol>
+      <ol class="lines" id="lines" aria-live="polite" tabindex="0" aria-label="What was said"></ol>
       <div class="controls" id="controls">
-        <button class="btn" id="playBtn" type="button">▶ Play</button>
+        <button class="btn accent" id="playBtn" type="button">▶ Play the call</button>
         <button class="btn ghost small" id="skipBtn" type="button">Skip to the notes</button>
         <span class="grow"></span>
         <label class="toggle"><input type="checkbox" id="fast" /> Faster</label>
@@ -230,82 +145,101 @@
       </div>
       <form class="live-in" id="liveForm" hidden autocomplete="off">
         <div class="seg" role="group" aria-label="Who is speaking"><button type="button" data-who="rep" class="on">Rep</button><button type="button" data-who="prospect">Prospect</button></div>
-        <input id="liveInput" placeholder="Type a line of the call…" aria-label="A line of the call" />
-        <button class="btn" type="submit">Add</button>
+        <input class="field" id="liveInput" placeholder="Type a line of the call…" aria-label="A line of the call" />
+        <button class="btn accent" type="submit">Add</button>
         <button class="btn ghost" type="button" id="endLive">End call</button>
       </form>
     </div>
-
-    <aside class="coach">
-      <section class="panel">
-        <h3>Discovery checklist</h3>
-        <ul class="check" id="check"></ul>
-        <div class="stats">
-          <div><b id="stQ">0</b><span>questions<br /><em id="stOpen" style="font-style:normal">0 open</em></span></div>
-          <div><b id="stSig">0</b><span>buying<br />signals</span></div>
-          <div><svg id="mood" viewBox="0 0 100 30" preserveAspectRatio="none" aria-label="How the prospect sounded"></svg><span>how they<br />sounded</span></div>
-        </div>
-      </section>
-      <section class="panel">
-        <h3>Coach <small id="feedCount"></small></h3>
-        <div class="feed" id="feed"><p class="none">Cards and nudges appear here as the call goes.</p></div>
-      </section>
-    </aside>
-  </section>
-
-  <section class="after" id="after" hidden aria-label="After the call">
-    <div class="verdict" id="verdict"><span class="stage" id="stage"></span><p id="verdictText"></p></div>
-    <div class="after-grid">
-      <div class="panel">
-        <h3>The notes <small>MEDDICC — the qualification fields sales teams use</small></h3>
-        <table class="meddicc"><tbody id="meddicc"></tbody></table>
-      </div>
-      <div style="display:grid;gap:14px">
-        <div class="panel"><h3>CRM record</h3><dl class="crm" id="crm"></dl></div>
-        <div class="panel"><h3>Objections</h3><ul class="obj" id="objs"></ul></div>
-        <div class="panel">
-          <div class="email-head"><b id="emailSubject"></b><button class="btn ghost small" type="button" id="copyEmail">Copy</button></div>
-          <pre class="email" id="email"></pre>
+    <div class="sheet notes" id="after" role="tabpanel" aria-labelledby="tabNotes" hidden>
+      <div class="scroll" tabindex="0" aria-label="The notes from the call">
+        <div class="verdict" id="verdict"><span class="stage-tag" id="stage"></span><p id="verdictText"></p></div>
+        <div class="after-grid">
+          <div class="box">
+            <h3>The notes <small>MEDDICC, the qualification fields sales teams use</small></h3>
+            <table class="meddicc"><tbody id="meddicc"></tbody></table>
+          </div>
+          <div style="display:grid;gap:14px">
+            <div class="box"><h3>CRM record</h3><dl class="crm" id="crm"></dl></div>
+            <div class="box"><h3>Objections</h3><ul class="obj" id="objs"></ul></div>
+            <div class="box">
+              <div class="email-head"><b id="emailSubject"></b><button class="btn ghost small" type="button" id="copyEmail">Copy</button></div>
+              <pre class="email" id="email" tabindex="0" aria-label="The follow-up email"></pre>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="band" aria-labelledby="howHead">
-    <h2 id="howHead">How it works</h2>
-    <ol class="steps">
-      <li><b>Hears each line</b><p>On a real call, speech-to-text turns each speaker's audio into lines as they finish speaking. Here the lines are written out, and the same code reads them.</p></li>
-      <li><b>Tags the moment</b><p>Seventeen kinds of moment — eight objections, five buying signals, four pains — each a set of patterns a sales manager would recognise, checked against labelled examples.</p></li>
-      <li><b>Coaches, once</b><p>Each card appears the first time its moment comes up, never twice. Nudges watch talk time, questions asked, and whether a buying signal was followed by a next step.</p></li>
-      <li><b>Writes it up</b><p>The notes, the CRM record and the email are built only from what was said: quotes, numbers read off quotes, and the gaps as questions.</p></li>
-    </ol>
-  </section>
-
-  <section class="band" aria-labelledby="scoreHead">
-    <h2 id="scoreHead">How well it hears</h2>
-    <div class="scores">
-      <div class="score"><div class="big" id="sTune">–</div><p>lines tagged exactly right in the set it was built against.</p></div>
-      <div class="score"><div class="big" id="sHeld">–</div><p id="sHeldText">lines tagged exactly right, first time, in a set written afterwards.</p></div>
-      <div class="score"><div class="big" id="sPR">–</div><p>precision and recall on the held-out set: how often a card was right, and how many moments it caught.</p></div>
-    </div>
-    <p style="max-width:48em;color:var(--ink-2);font-size:16px;margin:18px 0 0">Read the held-out number with a pinch of salt: the rules and the test lines were written by the same person, and people are bad at writing tests that surprise their own rules. The real test for a tagger like this is a week of a client's own call transcripts — the first thing I would ask for.</p>
-  </section>
-
-  <section class="band" aria-labelledby="shipHead">
-    <h2 id="shipHead">Taking it to a real sales team</h2>
-    <div class="ship">
-      <div><b>The call audio <span class="state todo">next step</span></b><p>Zoom, Teams and dialler recordings stream to a speech-to-text service with speaker labels. Everything on this page already works one line at a time.</p></div>
-      <div><b>Their playbook <span class="state done">designed for</span></b><p>The cards, competitors and price are one file their best rep can edit. The tagger's patterns grow from their own transcripts, with every change scored against the labelled set.</p></div>
-      <div><b>Their CRM <span class="state todo">next step</span></b><p>The record and the notes map straight onto Salesforce or HubSpot fields, written as a draft the rep approves — never updated behind their back.</p></div>
-      <div><b>Coaching the coach <span class="state done">built</span></b><p>Each tag is scored on its own for precision and recall, so "the price card fires too often" is a number that can be watched, not a feeling.</p></div>
-    </div>
-  </section>
-
-  <footer>
-    <span>The people, the companies and the competitors are fictional. The product being sold is <a href="../covers/index.html">Covers</a>.</span>
-    <span><a href="README.md">How it's built</a> · <a href="../../index.html">Everything else</a></span>
-  </footer>
+  <aside class="rail" aria-label="The coach">
+    <section class="step" aria-labelledby="s1">
+      <h2 id="s1"><span class="step-n">1</span>Choose a call</h2>
+      <div class="choices compact" id="picker"></div>
+      <p class="choice-about" id="pickAbout"></p>
+    </section>
+    <section class="step" aria-labelledby="s2">
+      <h2 id="s2"><span class="step-n">2</span>The coach <small id="feedCount"></small></h2>
+      <div class="feed" id="feed"><p class="none">Cards and nudges appear here as the call goes.</p></div>
+    </section>
+    <section class="step" aria-labelledby="s3">
+      <h2 id="s3"><span class="step-n">3</span>Discovery checklist</h2>
+      <ul class="check" id="check"></ul>
+      <div class="stats">
+        <div><b id="stQ">0</b><span>questions<br /><em id="stOpen" style="font-style:normal">0 open</em></span></div>
+        <div><b id="stSig">0</b><span>buying<br />signals</span></div>
+        <div><svg id="mood" viewBox="0 0 100 30" preserveAspectRatio="none" role="img" aria-label="How the prospect sounded"></svg><span>how they<br />sounded</span></div>
+      </div>
+    </section>
+  </aside>
 </main>
+
+<section class="about" id="about" aria-labelledby="aboutHead">
+  <div class="about-in">
+    <p class="kicker">Sales AI · Revenue teams</p>
+    <h2 id="aboutHead">The right answer on screen the moment a prospect objects.</h2>
+    <p class="lead">A live assistant for sales calls. It tells the rep when they're talking too much, and when the call ends it writes the notes, fills in the CRM and drafts the follow-up.</p>
+    <ul class="facts">
+      <li><b>The right card, right then</b><span>Price, a competitor, "I'd need to ask my boss": each brings up what it usually means, the question to ask back and one way to answer.</span></li>
+      <li><b>Notes from what was said</b><span>Every line in the notes is a quote from the call or a number read off one. Anything the call didn't cover is marked as the question to ask next time.</span></li>
+      <li><b>Honest about bad calls</b><span>A polite "just send me an email" is written up as a polite no, with the one thing still worth doing.</span></li>
+    </ul>
+
+    <section class="band" aria-labelledby="howHead">
+      <h3 id="howHead">How it works</h3>
+      <ol class="steps">
+        <li><b>Hears each line</b><p>On a real call, speech-to-text turns each speaker's audio into lines as they finish speaking. Here the lines are written out, and the same code reads them.</p></li>
+        <li><b>Tags the moment</b><p>Seventeen kinds of moment (eight objections, five buying signals, four pains), each a set of patterns a sales manager would recognise, checked against labelled examples.</p></li>
+        <li><b>Coaches, once</b><p>Each card appears the first time its moment comes up, never twice. Nudges watch talk time, questions asked, and whether a buying signal was followed by a next step.</p></li>
+        <li><b>Writes it up</b><p>The notes, the CRM record and the email are built only from what was said: quotes, numbers read off quotes, and the gaps as questions.</p></li>
+      </ol>
+    </section>
+
+    <section class="band" aria-labelledby="scoreHead">
+      <h3 id="scoreHead">How well it hears</h3>
+      <div class="scores">
+        <div class="score"><div class="big" id="sTune">–</div><p>lines tagged exactly right in the set it was built against.</p></div>
+        <div class="score"><div class="big" id="sHeld">–</div><p id="sHeldText">lines tagged exactly right, first time, in a set written afterwards.</p></div>
+        <div class="score"><div class="big" id="sPR">–</div><p>precision and recall on the held-out set: how often a card was right, and how many moments it caught.</p></div>
+      </div>
+      <p class="salt">Read the held-out number with a pinch of salt: the rules and the test lines were written by the same person, and people are bad at writing tests that surprise their own rules. The real test for a tagger like this is a week of a client's own call transcripts, the first thing I would ask for.</p>
+    </section>
+
+    <section class="band" aria-labelledby="shipHead">
+      <h3 id="shipHead">Taking it to a real sales team</h3>
+      <div class="ship">
+        <div><b>The call audio <span class="state todo">next step</span></b><p>Zoom, Teams and dialler recordings stream to a speech-to-text service with speaker labels. Everything on this page already works one line at a time.</p></div>
+        <div><b>Their playbook <span class="state done">designed for</span></b><p>The cards, competitors and price are one file their best rep can edit. The tagger's patterns grow from their own transcripts, with every change scored against the labelled set.</p></div>
+        <div><b>Their CRM <span class="state todo">next step</span></b><p>The record and the notes map straight onto Salesforce or HubSpot fields, written as a draft the rep approves, never updated behind their back.</p></div>
+        <div><b>Coaching the coach <span class="state done">built</span></b><p>Each tag is scored on its own for precision and recall, so "the price card fires too often" is a number that can be watched, not a feeling.</p></div>
+      </div>
+    </section>
+
+    <footer>
+      <span>The people, the companies and the competitors are fictional. The product being sold is <a href="../covers/index.html">Covers</a>.</span>
+      <span><a href="README.md">How it's built</a> · <a href="../../index.html">Everything else</a></span>
+    </footer>
+  </div>
+</section>
 
 <script type="module">
 import { CALLS, timeline } from './calls.js';
@@ -340,7 +274,24 @@ for (const c of CALLS) {
   b.addEventListener('click', startLive);
   $('picker').append(b);
 }
-const mark = (id) => { for (const b of $('picker').children) b.classList.toggle('on', b.dataset.id === id); };
+const mark = (id) => {
+  for (const b of $('picker').children) {
+    b.classList.toggle('on', b.dataset.id === id);
+    b.setAttribute('aria-pressed', String(b.dataset.id === id));
+    if (b.dataset.id === id) $('pickAbout').textContent = b.querySelector('span')?.textContent ?? '';
+  }
+};
+
+/* ── the stage: the call, then its notes ── */
+function showTab(which) {
+  const notes = which === 'notes';
+  $('callPanel').hidden = notes;
+  $('after').hidden = !notes;
+  $('tabCall').setAttribute('aria-selected', String(!notes));
+  $('tabNotes').setAttribute('aria-selected', String(notes));
+}
+$('tabCall').addEventListener('click', () => showTab('call'));
+$('tabNotes').addEventListener('click', () => showTab('notes'));
 
 /* ── pacing ── */
 async function wait(ms, token) {
@@ -380,7 +331,8 @@ function reset(m) {
   $('lines').replaceChildren();
   $('feed').replaceChildren(el('p', 'none', 'Cards and nudges appear here as the call goes.'));
   $('feedCount').textContent = '';
-  $('after').hidden = true;
+  $('tabNotes').disabled = true;
+  showTab('call');
   $('callWho').textContent = `${m.rep.company} × ${m.prospect.company} · ${m.prospect.name}, ${m.prospect.role}`;
   $('repLbl').textContent = (m.rep.name || 'REP').toUpperCase();
   drawMetrics();
@@ -473,7 +425,7 @@ function drawMetrics(m = null) {
 
 function showSummary() {
   const s = summarise(state);
-  $('after').hidden = false;
+  $('tabNotes').disabled = false;
   $('verdict').className = `verdict ${s.stage}`;
   $('stage').textContent = s.stage;
   $('verdictText').textContent = s.verdict;
@@ -505,7 +457,7 @@ function showSummary() {
   }
   $('emailSubject').textContent = s.email.subject;
   $('email').textContent = s.email.body;
-  $('after').scrollIntoView({ behavior: skipping ? 'instant' : 'smooth', block: 'start' });
+  showTab('notes');
 }
 $('copyEmail').addEventListener('click', async () => {
   try { await navigator.clipboard.writeText(`${$('emailSubject').textContent}\n\n${$('email').textContent}`); $('copyEmail').textContent = 'Copied'; }
@@ -545,7 +497,7 @@ async function play(call) {
     setLive(false, 'CALL ENDED');
     clearInterval(clockTimer);
     $('clock').textContent = mmss(lines[lines.length - 1].at + lines[lines.length - 1].dur);
-    $('playBtn').textContent = '↺ Play again';
+    $('playBtn').textContent = '↺ Play it again';
     mode = 'ended';
     showSummary();
     skipping = false;
@@ -604,6 +556,13 @@ $('endLive').addEventListener('click', () => {
 }
 drawMetrics();
 current = CALLS[0];
+mark(current.id);
+$('callWho').textContent = `${current.rep.company} × ${current.prospect.company} · ${current.prospect.name}, ${current.prospect.role}`;
+{
+  const li = el('li', 'empty');
+  li.append(el('b', null, `Press play to listen in on “${current.title}”.`), 'The words are scripted. Every card, nudge and note is worked out from them as they are said.');
+  $('lines').append(li);
+}
 window.callcoach = { get state() { return state; }, play, CALLS };
 </script>
 <script type="module" src="../../shared/navigator.js"></script>

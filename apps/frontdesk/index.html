@@ -9,342 +9,215 @@
 <meta name="description" content="An AI phone receptionist for a busy restaurant. It understands what the caller wants, checks the real table plan, offers the nearest free times, takes allergies and occasions, and books straight into the restaurant's system — running entirely in your browser." />
 <meta property="og:title" content="Front Desk — an AI receptionist that books straight into the table plan" />
 <meta property="og:description" content="Listen in on calls to a busy restaurant, or ring it yourself. It checks the real floor plan, never double-books, and hands over to a person when it should." />
+<link rel="stylesheet" href="../../shared/studio.css" />
 <style>
-  @font-face { font-family: "Instrument Serif"; src: url("../../assets/fonts/instrument-serif.woff2") format("woff2"); font-display: swap; }
-  @font-face { font-family: "Instrument Serif"; src: url("../../assets/fonts/instrument-serif-italic.woff2") format("woff2"); font-style: italic; font-display: swap; }
-  @font-face { font-family: "Newsreader"; src: url("../../assets/fonts/newsreader.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
-  @font-face { font-family: "JetBrains Mono Var"; src: url("../../assets/fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 100 800; font-display: swap; }
-
+  /* Front Desk: a restaurant at night. The call on the left, what it understood and the room on the right. */
   :root {
-    --paper: #f3efe5; --card: #fbf9f3; --ink: #17140f; --ink-2: #4a4439; --ink-3: #6a6356;
-    --rule: rgba(23,20,15,.14); --rule-2: rgba(23,20,15,.3); --red: #cf2e1b; --green: #2c7a4b;
-    --display: "Instrument Serif", Georgia, serif; --text: "Newsreader", Georgia, serif;
-    --mono: "JetBrains Mono Var", ui-monospace, Menlo, monospace;
-    --c-party: #2f5d9c; --c-date: #2c7a4b; --c-time: #b06a10; --c-name: #7a3e9d; --c-phone: #1f6f78; --c-notes: #cf2e1b; --c-late: #b06a10;
+    --wall: #17110e; --wall-deep: #0c0907; --rail: #1d1714; --field: #261e1a;
+    --ink: #f6ece2; --muted: #c0ad9c; --line: #3d322b;
+    --accent: #f2a65a; --accent-ink: #1b1109;
+    --good: #7ad7a1; --bad: #ff8e7e; --warn: #ffc56e; --info: #96b9ff;
+    --shadow: 0 1px 2px rgb(0 0 0 / .5), 0 28px 56px -22px rgb(0 0 0 / .9);
+    --c-party: #96b9ff; --c-date: #7ad7a1; --c-time: #ffc56e; --c-name: #d4a8ff; --c-phone: #72d8e2; --c-notes: #ff9a86; --c-late: #ffc56e;
+    color-scheme: dark;
   }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; background: var(--paper); color: var(--ink); }
-  body { font: 400 17px/1.5 var(--text); -webkit-font-smoothing: antialiased; }
-  [hidden] { display: none !important; }
-  button, input { font: inherit; color: inherit; }
-  a { color: inherit; }
-  .back {
-    position: fixed; top: 14px; left: 14px; z-index: 10; text-decoration: none;
-    font: 600 11px/1 var(--mono); letter-spacing: .1em; color: var(--ink-2);
-    border: 1px solid var(--rule-2); padding: 8px 11px; background: var(--paper);
-  }
-  .back:hover { color: var(--red); border-color: var(--red); }
-  main { max-width: 1200px; margin: 0 auto; padding: 76px 24px 100px; }
 
-  /* ── the top ─────────────────────────────────────────────────────────── */
-  .kicker { margin: 0 0 14px; font: 600 11px/1.4 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--red); }
-  h1 { margin: 0; font: 400 clamp(52px, 8vw, 96px)/.92 var(--display); letter-spacing: -.02em; }
-  h1 em { color: var(--red); }
-  .lead { margin: 18px 0 0; max-width: 34em; font-size: clamp(19px, 2.2vw, 23px); line-height: 1.42; color: var(--ink); }
-  .facts { list-style: none; padding: 0; margin: 30px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--ink); }
-  .facts li { padding: 14px 18px 4px 0; border-right: 1px solid var(--rule); margin-right: 18px; }
-  .facts li:last-child { border-right: 0; margin-right: 0; }
-  .facts b { display: block; font: 400 24px/1.1 var(--display); }
-  .facts span { display: block; margin-top: 6px; color: var(--ink-2); font-size: 15.5px; line-height: 1.45; }
-
-  h2 { margin: 0 0 16px; font: 600 11px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); display: flex; align-items: center; gap: 12px; }
-  h2::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
-
-  /* ── choosing a call ─────────────────────────────────────────────────── */
-  .calls { margin-top: 54px; }
-  .picker { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
-  .pick {
-    text-align: left; cursor: pointer; background: var(--card); border: 1px solid var(--rule-2); padding: 13px 14px 14px;
-    display: grid; gap: 5px; align-content: start; transition: border-color .15s, transform .15s, box-shadow .15s;
-  }
-  .pick:hover { border-color: var(--ink); transform: translateY(-1px); box-shadow: 0 10px 22px -18px rgba(40,30,10,.6); }
-  .pick b { font: 400 21px/1.1 var(--display); display: flex; align-items: center; gap: 8px; }
-  .pick b::before { content: '▶'; font: 600 10px/1 var(--mono); color: var(--red); }
-  .pick span { font-size: 14.5px; line-height: 1.4; color: var(--ink-2); }
-  .pick.on { border-color: var(--red); box-shadow: inset 0 0 0 1px var(--red); }
-  .pick.you { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-  .pick.you b::before { content: '☎'; font-size: 14px; color: #ff8a73; }
-  .pick.you span { color: rgba(243,239,229,.75); }
-  .pick.you.on { box-shadow: inset 0 0 0 2px var(--red); }
-
-  /* ── the console ─────────────────────────────────────────────────────── */
-  .console { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; margin-top: 18px; align-items: start; }
-  .handset { background: var(--card); border: 1px solid var(--rule-2); box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 24px 50px -34px rgba(60,45,20,.55); display: flex; flex-direction: column; min-height: 560px; }
-  .handset-bar { display: flex; align-items: center; gap: 12px; padding: 11px 16px; background: var(--ink); color: var(--paper); font: 600 11px/1.2 var(--mono); letter-spacing: .08em; }
-  .handset-bar .dot { width: 8px; height: 8px; border-radius: 50%; background: #6d665a; flex: none; }
-  .handset-bar.live .dot { background: #ff5a3d; animation: blip 1.4s ease-in-out infinite; }
-  .handset-bar .who { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: rgba(243,239,229,.8); letter-spacing: .04em; }
-  .handset-bar .who i { font-style: normal; color: rgba(243,239,229,.5); }
-  .handset-bar .clock { font-variant-numeric: tabular-nums; }
-  @keyframes blip { 50% { opacity: .35; } }
-
-  .transcript { list-style: none; margin: 0; padding: 18px 18px 8px; flex: 1; overflow-y: auto; max-height: 560px; min-height: 380px; }
-  .turn { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 12px; padding: 9px 0; border-bottom: 1px dashed var(--rule); }
+  .handset { height: 100%; max-width: 860px; width: 100%; margin: 0 auto; }
+  .handset .who { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .transcript { flex: 1; min-height: 0; overflow-y: auto; margin: 0; padding: 14px 20px 8px; list-style: none; }
+  .turn { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--line); }
   .turn:last-child { border-bottom: 0; }
-  .turn .who { font: 600 10px/1.9 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
-  .turn.desk .who { color: var(--red); }
-  .turn .words { font-size: 18px; line-height: 1.5; }
-  .turn.caller .words { color: var(--ink-2); }
-  .turn.desk .words { color: var(--ink); }
+  .turn .who { font-size: .78rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; line-height: 1.9; color: var(--muted); }
+  .turn.desk .who { color: var(--accent); }
+  .turn .words { font-size: 1.08rem; line-height: 1.55; }
+  .turn.caller .words { color: var(--muted); }
   .turn .words .w { opacity: 0; transition: opacity .12s; }
   .turn .words .w.on { opacity: 1; }
   .turn .typing { display: inline-flex; gap: 4px; padding-top: 10px; }
-  .turn .typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--ink-3); animation: dots 1s infinite; }
+  .turn .typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: dots 1s infinite; }
   .turn .typing i:nth-child(2) { animation-delay: .15s; } .turn .typing i:nth-child(3) { animation-delay: .3s; }
   @keyframes dots { 0%, 60%, 100% { opacity: .25; } 30% { opacity: 1; } }
-  .turn .model { display: inline-block; margin-left: 8px; font: 600 9.5px/1 var(--mono); letter-spacing: .08em; color: var(--ink-3); border: 1px solid var(--rule-2); padding: 3px 5px; vertical-align: 2px; }
+  .turn .model { display: inline-block; margin-left: 8px; padding: 2px 7px; border: 1px solid var(--line); border-radius: 99px; font-size: .72rem; color: var(--muted); vertical-align: 2px; }
 
-  mark { background: none; color: inherit; border-bottom: 2px solid; padding: 0 1px; transition: background .3s; }
-  mark.party { border-color: var(--c-party); background: rgba(47,93,156,.09); }
-  mark.date { border-color: var(--c-date); background: rgba(44,122,75,.09); }
-  mark.time { border-color: var(--c-time); background: rgba(176,106,16,.1); }
-  mark.name { border-color: var(--c-name); background: rgba(122,62,157,.09); }
-  mark.phone { border-color: var(--c-phone); background: rgba(31,111,120,.09); }
-  mark.notes { border-color: var(--c-notes); background: rgba(207,46,27,.08); }
-  mark.late { border-color: var(--c-late); background: rgba(176,106,16,.1); }
+  mark { background: none; color: inherit; border-bottom: 2px solid; padding: 0 1px; }
+  mark.party { border-color: var(--c-party); background: rgb(150 185 255 / .14); }
+  mark.date { border-color: var(--c-date); background: rgb(122 215 161 / .14); }
+  mark.time, mark.late { border-color: var(--c-time); background: rgb(255 197 110 / .14); }
+  mark.name { border-color: var(--c-name); background: rgb(212 168 255 / .14); }
+  mark.phone { border-color: var(--c-phone); background: rgb(114 216 226 / .14); }
+  mark.notes { border-color: var(--c-notes); background: rgb(255 154 134 / .14); }
 
-  .empty { color: var(--ink-3); font-style: italic; padding: 40px 0; text-align: center; }
-  .empty b { display: block; font: 400 30px/1.1 var(--display); font-style: normal; color: var(--ink); margin-bottom: 6px; }
+  .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px 16px; border-top: 1px solid var(--line); }
+  .say { display: flex; gap: 8px; padding: 12px 16px 6px; border-top: 1px solid var(--line); }
+  .say .field { flex: 1; }
+  .mic.rec { background: var(--bad); border-color: var(--bad); animation: blip 1.2s infinite; }
+  .suggest { padding: 4px 16px 12px; }
+  .models { display: grid; gap: 6px; padding: 0 16px 14px; font-size: .88rem; color: var(--muted); }
 
-  .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--rule); }
-  .btn {
-    font: 700 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer;
-    padding: 11px 14px; border: 1.5px solid var(--ink); background: var(--ink); color: var(--paper); white-space: nowrap;
-  }
-  .btn.ghost { background: transparent; color: var(--ink); }
-  .btn:hover:not(:disabled) { background: var(--red); border-color: var(--red); color: #fff; }
-  .btn:disabled { opacity: .4; cursor: default; }
-  .btn.small { padding: 8px 10px; font-size: 10px; }
-  .controls .grow { flex: 1; }
-  .toggle { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; font: 600 10.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); user-select: none; }
-  .toggle input { accent-color: var(--red); width: 15px; height: 15px; margin: 0; }
-
-  .say { display: flex; gap: 8px; padding: 12px 16px 6px; border-top: 1px solid var(--rule); }
-  .say input { flex: 1; min-width: 0; font: 400 18px/1.3 var(--text); background: #fff; border: 1px solid var(--rule-2); padding: 11px 12px; outline: none; }
-  .say input:focus { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(207,46,27,.14); }
-  .mic { position: relative; }
-  .mic.rec { background: var(--red); border-color: var(--red); animation: blip 1.2s infinite; }
-  .suggest { display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 16px 12px; }
-  .suggest button { cursor: pointer; border: 1px solid var(--rule-2); background: transparent; padding: 6px 9px; font-size: 14px; color: var(--ink-2); }
-  .suggest button:hover { border-color: var(--ink); color: var(--ink); }
-  .models { padding: 0 16px 14px; font-size: 14px; color: var(--ink-2); display: grid; gap: 6px; }
-  .models .row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-  .ai-chip { font: 600 10px/1.3 var(--mono); letter-spacing: .04em; color: var(--ink-3); }
-  .ai-chip.ai-ready { color: var(--green); }
-  .ai-chip.ai-loading { color: var(--c-time); }
-  .ai-chip.ai-unavailable { color: var(--red); }
-
-  /* ── the side panels ─────────────────────────────────────────────────── */
-  .side { display: grid; gap: 14px; }
-  .card { background: var(--card); border: 1px solid var(--rule-2); padding: 14px 16px 15px; }
-  .card h3 { margin: 0 0 12px; font: 600 10.5px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); display: flex; justify-content: space-between; gap: 10px; }
-  .card h3 small { font: inherit; letter-spacing: .06em; text-transform: none; color: var(--ink-3); }
   .slots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 14px; margin: 0; }
-  .slot dt { font: 600 9.5px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); display: flex; align-items: center; gap: 6px; }
-  .slot dt i { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
-  .slot dd { margin: 6px 0 0; font: 400 21px/1.15 var(--display); min-height: 24px; overflow-wrap: anywhere; }
-  .slot dd.none { color: rgba(23,20,15,.25); }
+  .slot dt { display: flex; align-items: center; gap: 6px; font-size: .74rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .slot dt i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .slot dd { margin: 5px 0 0; min-height: 24px; font-size: 1.12rem; font-weight: 600; overflow-wrap: anywhere; }
+  .slot dd.none { color: var(--line); }
   .slot.flash dd { animation: flash 1.2s ease-out; }
-  @keyframes flash { 0% { background: rgba(207,46,27,.18); } 100% { background: transparent; } }
+  @keyframes flash { 0% { background: rgb(242 166 90 / .3); } 100% { background: transparent; } }
   .slot.wide { grid-column: 1 / -1; }
-  .slot.notes dd { font: 400 16px/1.35 var(--text); }
-  .task { font: 600 10px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--paper); background: var(--ink); padding: 4px 6px; }
+  .slot.notes dd { font-size: .95rem; font-weight: 500; }
+  .task { padding: 3px 9px; border-radius: 99px; background: var(--accent); color: var(--accent-ink); font-size: .74rem; font-weight: 650; }
 
-  .log { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; max-height: 250px; overflow-y: auto; }
-  .log li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 8px; font-size: 15px; line-height: 1.35; animation: rise .35s ease-out; }
-  .log li i { font: 700 11px/1.5 var(--mono); font-style: normal; color: var(--ink-3); text-align: center; }
-  .log li.book i, .log li.book { color: var(--green); }
+  .log { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .log li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 8px; font-size: .93rem; animation: rise .35s ease-out; }
+  .log li i { font-family: var(--mono); font-style: normal; font-weight: 700; color: var(--muted); text-align: center; }
+  .log li.book, .log li.book i { color: var(--good); }
   .log li.book { font-weight: 600; }
-  .log li.staff i, .log li.handoff i { color: var(--red); }
-  .log li.staff, .log li.handoff { color: var(--red); }
-  .log li.cancel i, .log li.move i { color: var(--c-time); }
-  .log .sms-text { grid-column: 2; margin-top: 3px; background: #e7f3ea; border-radius: 12px 12px 12px 3px; padding: 8px 11px; font: 400 14px/1.4 -apple-system, "Segoe UI", system-ui, sans-serif; color: #1f3326; max-width: 330px; }
-  .log .none { color: var(--ink-3); font-style: italic; }
-  @keyframes rise { from { opacity: 0; transform: translateY(4px); } }
+  .log li.staff, .log li.handoff, .log li.staff i, .log li.handoff i { color: var(--bad); }
+  .log li.cancel i, .log li.move i { color: var(--warn); }
+  .log .sms-text { grid-column: 2; margin-top: 3px; max-width: 320px; padding: 8px 11px; border-radius: 14px 14px 14px 4px; background: #dff3e6; color: #17301f; font-size: .88rem; }
+  .log .none { color: var(--muted); }
 
+  /* the floor plan stays a printed plan, light on the dark rail */
+  .plan { padding: 10px; border-radius: 10px; background: #f7f3ea; }
   .room svg { display: block; width: 100%; height: auto; }
-  .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 8px 0 0; font: 600 10px/1.2 var(--mono); letter-spacing: .06em; color: var(--ink-3); }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 10px 0 0; font-size: .8rem; color: var(--muted); }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
-  .legend i { width: 11px; height: 11px; display: inline-block; border: 1.5px solid var(--ink); }
-  .legend .free { background: var(--card); } .legend .taken { background: #4d463b; border-color: #4d463b; }
-  .legend .this { background: var(--red); border-color: var(--red); } .legend .rel { background: transparent; border: 1.5px dashed var(--green); }
+  .legend i { width: 11px; height: 11px; display: inline-block; border-radius: 3px; border: 1.5px solid var(--muted); }
+  .legend .free { background: #fbf9f3; } .legend .taken { background: #4d463b; border-color: #4d463b; }
+  .legend .this { background: #cf2e1b; border-color: #cf2e1b; } .legend .rel { border-style: dashed; border-color: var(--good); }
   .held { animation: held 1.3s ease-in-out infinite; }
   @keyframes held { 50% { opacity: .55; } }
+  .covers-link { display: grid; gap: 8px; margin-top: 14px; font-size: .9rem; color: var(--muted); }
+  .linked { display: inline-flex; align-items: center; gap: 6px; font-size: .85rem; font-weight: 600; color: var(--good); }
+  .linked i { width: 8px; height: 8px; border-radius: 50%; background: var(--good); animation: blip 2s infinite; }
 
-  .covers-link { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin: 16px 0 0; font-size: 16px; color: var(--ink-2); }
-  .covers-link a { font: 700 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; border: 1.5px solid var(--ink); padding: 10px 12px; color: var(--ink); }
-  .covers-link a:hover { background: var(--ink); color: var(--paper); }
-  .linked { font: 600 10.5px/1 var(--mono); letter-spacing: .06em; color: var(--green); display: inline-flex; align-items: center; gap: 6px; }
-  .linked i { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: blip 2s infinite; }
-
-  /* ── below the demo ──────────────────────────────────────────────────── */
-  section.band { margin-top: 84px; }
-  .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; counter-reset: s; border-top: 1px solid var(--ink); }
-  .steps li { padding: 16px 16px 4px 0; margin-right: 16px; border-right: 1px solid var(--rule); counter-increment: s; }
-  .steps li:last-child { border-right: 0; margin-right: 0; }
-  .steps li::before { content: counter(s, decimal-leading-zero); display: block; font: 600 11px/1 var(--mono); color: var(--red); letter-spacing: .1em; margin-bottom: 10px; }
-  .steps b { display: block; font: 400 24px/1.1 var(--display); margin-bottom: 6px; }
-  .steps p { margin: 0; font-size: 15.5px; line-height: 1.5; color: var(--ink-2); }
-  .steps .tag { display: inline-block; margin-top: 10px; font: 600 9.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 4px 6px; border: 1px solid currentColor; }
-  .tag.ai { color: var(--red); } .tag.code { color: var(--ink-3); }
-
-  .scores { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
-  .score { border-top: 2px solid var(--ink); padding-top: 12px; }
-  .score .big { font: 400 clamp(46px, 6vw, 68px)/1 var(--display); letter-spacing: -.02em; }
-  .score .big small { font-size: .45em; color: var(--ink-3); }
-  .score p { margin: 8px 0 0; font-size: 15.5px; color: var(--ink-2); line-height: 1.5; }
-  details.cases { margin-top: 22px; border-top: 1px solid var(--rule-2); }
-  details.cases summary { cursor: pointer; padding: 12px 0; font: 600 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); }
-  .case-list { list-style: none; margin: 0; padding: 0; columns: 2; column-gap: 34px; font-size: 14.5px; }
-  .case-list li { break-inside: avoid; padding: 5px 0; border-bottom: 1px dashed var(--rule); display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 8px; }
-  .case-list li i { font-style: normal; font: 700 11px/1.6 var(--mono); color: var(--green); }
-  .case-list li.bad i { color: var(--red); }
-  .case-list .got { display: block; font: 500 11px/1.4 var(--mono); color: var(--ink-3); }
-  .case-list .set { font: 600 9px/1 var(--mono); color: var(--ink-3); letter-spacing: .08em; text-transform: uppercase; margin-left: 6px; }
-
-  .ship { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 40px; }
-  .ship div { border-top: 1px solid var(--rule-2); padding-top: 12px; }
-  .ship b { display: block; font: 400 22px/1.15 var(--display); margin-bottom: 6px; }
-  .ship p { margin: 0; color: var(--ink-2); font-size: 16px; line-height: 1.55; }
-  .ship .state { font: 600 9.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; margin-left: 8px; vertical-align: 3px; }
-  .state.done { color: var(--green); } .state.todo { color: var(--ink-3); }
-
-  footer { margin-top: 80px; padding-top: 18px; border-top: 1px solid var(--ink); display: flex; flex-wrap: wrap; gap: 10px 24px; justify-content: space-between; font-size: 15px; color: var(--ink-2); }
-  footer a { color: var(--ink); }
-
-  @media (max-width: 980px) {
-    .picker { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .console { grid-template-columns: minmax(0, 1fr); }
-    .steps { grid-template-columns: minmax(0, 1fr); }
-    .steps li { border-right: 0; margin-right: 0; border-bottom: 1px solid var(--rule); padding-bottom: 14px; }
-    .scores, .ship { grid-template-columns: minmax(0, 1fr); }
-    .case-list { columns: 1; }
-  }
-  @media (max-width: 640px) {
-    main { padding: 70px 16px 80px; }
-    .facts { grid-template-columns: minmax(0, 1fr); }
-    .facts li { border-right: 0; margin-right: 0; border-bottom: 1px solid var(--rule); padding-bottom: 12px; }
-    .picker { grid-template-columns: minmax(0, 1fr); }
-    .pick span { display: none; }
+  @media (max-width: 960px) {
+    .handset { height: 72dvh; }
     .turn { grid-template-columns: minmax(0, 1fr); gap: 2px; }
-    .turn .words { font-size: 17px; }
-    .transcript { padding: 12px 14px 6px; min-height: 320px; max-height: 470px; }
-    .handset { min-height: 0; }
     .slots { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .controls { padding: 10px 12px; }
   }
-  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
 </head>
 <body>
-<a class="back" href="../../index.html">← INDEX</a>
-<main>
-  <header>
-    <p class="kicker">Case study · Voice AI · Restaurants</p>
-    <h1>Front <em>Desk</em></h1>
-    <p class="lead">An AI receptionist for a busy restaurant. It answers the phone, works out what the caller wants, checks the real table plan and books them in — so the staff can keep serving.</p>
-    <ul class="facts">
-      <li><b>Books into the real system</b><span>It uses the same table plan and rules as the restaurant's host stand, so it can never promise a table that isn't there.</span></li>
-      <li><b>Runs on this device</b><span>No server and no API key. Nothing you type or say to it leaves your browser.</span></li>
-      <li><b id="factTests">Tested on every phrasing</b><span id="factTestsSub">Measured against a list of real-world things callers say, including ones it was never tuned on.</span></li>
-    </ul>
-  </header>
+<a class="skip" href="#stage">Skip to the call</a>
+<header class="top">
+  <h1 class="brand">
+    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1L6.6 10.8Z"/></svg>
+    Front Desk
+  </h1>
+  <p class="tagline">An AI receptionist that books straight into the table plan.</p>
+  <nav class="top-actions" aria-label="About Front Desk">
+    <a class="top-link wide" href="#about">How it works</a>
+    <a class="top-link" href="../../index.html">Portfolio</a>
+    <a class="icon-button" href="https://github.com/Mohamed-Sucule/Projects/tree/main/apps/frontdesk" aria-label="Source code on GitHub"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/></svg></a>
+  </nav>
+</header>
 
-  <section class="calls" aria-labelledby="callsHead">
-    <h2 id="callsHead">Listen in on a call — or ring it yourself</h2>
-    <div class="picker" id="picker"></div>
-  </section>
-
-  <section class="console" aria-label="The call">
-    <div class="handset">
-      <div class="handset-bar" id="phoneBar">
-        <span class="dot"></span>
-        <span id="callState">READY</span>
-        <span class="who">Bartlett &amp; Vine <i>· a fictional restaurant · Sat 14 Mar</i></span>
+<main class="studio">
+  <section class="stage" id="stage" aria-label="The call" tabindex="-1">
+    <div class="sheet handset">
+      <div class="sheet-bar" id="phoneBar">
+        <span class="live-dot"></span>
+        <b id="callState">READY</b>
+        <span class="who">Bartlett &amp; Vine · a fictional restaurant · Saturday 14 March</span>
         <span class="clock" id="clock">00:00</span>
       </div>
-      <ol class="transcript" id="transcript" aria-live="polite"></ol>
+      <ol class="transcript" id="transcript" aria-live="polite" tabindex="0" aria-label="What was said on the call"></ol>
       <div class="controls" id="controls">
-        <button class="btn" id="playBtn" type="button">▶ Play</button>
+        <button class="btn accent" id="playBtn" type="button">▶ Play the call</button>
         <button class="btn ghost small" id="skipBtn" type="button">Skip to the end</button>
         <span class="grow"></span>
         <label class="toggle"><input type="checkbox" id="fast" /> Faster</label>
         <label class="toggle"><input type="checkbox" id="sound" /> Sound</label>
       </div>
       <form class="say" id="sayForm" hidden autocomplete="off">
-        <input id="sayInput" type="text" placeholder="Type what you'd say on the phone…" aria-label="What you say" />
-        <button class="btn mic" id="micBtn" type="button" title="Speak instead of typing">🎙</button>
-        <button class="btn" type="submit">Say it</button>
+        <input class="field" id="sayInput" type="text" placeholder="Type what you'd say on the phone…" aria-label="What you say" />
+        <button class="btn ghost mic" id="micBtn" type="button" title="Speak instead of typing" aria-label="Speak instead of typing">🎙</button>
+        <button class="btn accent" type="submit">Say it</button>
       </form>
-      <div class="suggest" id="suggest" hidden></div>
+      <div class="suggest chips" id="suggest" hidden></div>
       <div class="models" id="models" hidden>
         <div class="row"><span id="asrChip"></span><button class="btn ghost small" id="asrOn" type="button">Turn on voice</button></div>
         <div class="row"><span id="embedChip"></span><button class="btn ghost small" id="embedOn" type="button">Turn on</button></div>
       </div>
     </div>
-
-    <aside class="side">
-      <section class="card understood">
-        <h3>What it understood <small id="taskTag"></small></h3>
-        <dl class="slots" id="slots"></dl>
-      </section>
-      <section class="card">
-        <h3>What it did</h3>
-        <ol class="log" id="log"><li class="none">Nothing yet.</li></ol>
-      </section>
-      <section class="card room">
-        <h3><span id="roomTitle">The room</span> <small id="roomCount"></small></h3>
-        <svg id="room" role="img" aria-label="Floor plan of the restaurant"></svg>
-        <p class="legend"><span><i class="free"></i>free</span><span><i class="taken"></i>taken</span><span><i class="this"></i>this call</span><span><i class="rel"></i>just freed</span></p>
-      </section>
-    </aside>
   </section>
 
-  <p class="covers-link">
-    <a href="../covers/index.html" target="covers" id="coversLink">Open the table plan ↗</a>
-    <span>That's <b>Covers</b>, the restaurant's host-stand system. Open it in another tab and bookings made here appear there live.</span>
-    <span class="linked" id="linked" hidden><i></i>Covers is open — connected</span>
-  </p>
-
-  <section class="band" aria-labelledby="howHead">
-    <h2 id="howHead">How it works</h2>
-    <ol class="steps">
-      <li><b>Hears</b><p>Speech becomes text with Whisper, a speech-recognition model that runs on your own device. Or just type.</p><span class="tag ai">AI model · on device</span></li>
-      <li><b>Understands</b><p>A reader built for this one job pulls out the party size, day, time, name, number and anything the kitchen needs to know. A small language model catches the phrasings it wasn't written for.</p><span class="tag ai">Parser + AI fallback</span></li>
-      <li><b>Checks the floor</b><p>It asks the restaurant's own booking engine whether a table is free, and if not, finds the nearest times that are.</p><span class="tag code">Rules, fully tested</span></li>
-      <li><b>Replies</b><p>One question at a time, never for something already said. It reads everything back before booking, and hands over to a person when it should.</p><span class="tag code">Conversation logic</span></li>
-      <li><b>Writes it in</b><p>The booking goes into the table plan, the allergy goes to the kitchen, the confirmation text is drafted, and it checks the table is still free at the moment it writes.</p><span class="tag code">Live sync with Covers</span></li>
-    </ol>
-  </section>
-
-  <section class="band" aria-labelledby="scoreHead">
-    <h2 id="scoreHead">How well it understands</h2>
-    <div class="scores">
-      <div class="score"><div class="big" id="sTuning">–</div><p>phrasings in the set it was built against, read with every detail right: party, day, time, name, number and notes.</p></div>
-      <div class="score"><div class="big" id="sHeld">–</div><p id="sHeldText">phrasings written afterwards and never used to tune it — the honest number, taken the first time they were run.</p></div>
-      <div class="score"><div class="big" id="sCalls">–</div><p>random callers booking random nights in a test run before every release, with the book checked for a single double-booking afterwards.</p></div>
-    </div>
-    <details class="cases">
-      <summary>See every phrasing it is tested on</summary>
-      <ul class="case-list" id="caseList"></ul>
-    </details>
-  </section>
-
-  <section class="band" aria-labelledby="shipHead">
-    <h2 id="shipHead">Taking it to a real restaurant</h2>
-    <div class="ship">
-      <div><b>The phone line <span class="state todo">next step</span></b><p>A telephony provider streams the call audio to the same pipeline. The conversation logic doesn't change — it already takes text in and gives text out.</p></div>
-      <div><b>Their booking system <span class="state done">designed for</span></b><p>The receptionist asks one question of the book — is there a table? — so connecting a different booking system is one adapter, not a rewrite.</p></div>
-      <div><b>Knowing when to stop <span class="state done">built</span></b><p>Parties over ten, complaints, a name it can't find, three misunderstandings in a row: each one becomes a callback for the manager instead of a guess.</p></div>
-      <div><b>Getting better every week <span class="state done">built</span></b><p>Every call it gets wrong becomes a new line in the test set. The score above is recomputed every time the page loads, and the tests fail if it ever goes down.</p></div>
-    </div>
-  </section>
-
-  <footer>
-    <span>Bartlett &amp; Vine is fictional; the booking engine, the floor plan and the Saturday night are the ones in <a href="../covers/index.html">Covers</a>.</span>
-    <span><a href="README.md">How it's built</a> · <a href="../../index.html">Everything else</a></span>
-  </footer>
+  <aside class="rail" aria-label="What the receptionist is doing">
+    <section class="step" aria-labelledby="s1">
+      <h2 id="s1"><span class="step-n">1</span>Choose a call</h2>
+      <div class="choices compact" id="picker"></div>
+      <p class="choice-about" id="pickAbout"></p>
+    </section>
+    <section class="step" aria-labelledby="s2">
+      <h2 id="s2"><span class="step-n">2</span>What it understood <small id="taskTag"></small></h2>
+      <dl class="slots" id="slots"></dl>
+    </section>
+    <section class="step room" aria-labelledby="s3">
+      <h2 id="s3"><span class="step-n">3</span><span id="roomTitle">The room</span> <small id="roomCount"></small></h2>
+      <div class="plan"><svg id="room" role="img" aria-label="Floor plan of the restaurant"></svg></div>
+      <p class="legend"><span><i class="free"></i>free</span><span><i class="taken"></i>taken</span><span><i class="this"></i>this call</span><span><i class="rel"></i>just freed</span></p>
+      <div class="covers-link">
+        <span>The room is <b>Covers</b>, the restaurant's host-stand system. Open it in another tab and bookings made here appear there live.</span>
+        <span class="row"><a class="btn ghost small" href="../covers/index.html" target="covers" id="coversLink">Open the table plan ↗</a><span class="linked" id="linked" hidden><i></i>Covers is open and connected</span></span>
+      </div>
+    </section>
+    <section class="step" aria-labelledby="s4">
+      <h2 id="s4"><span class="step-n">4</span>What it did</h2>
+      <ol class="log" id="log"><li class="none">Nothing yet.</li></ol>
+    </section>
+  </aside>
 </main>
+
+<section class="about" id="about" aria-labelledby="aboutHead">
+  <div class="about-in">
+    <p class="kicker">Voice AI · Restaurants</p>
+    <h2 id="aboutHead">A receptionist that answers the phone, so the staff can keep serving.</h2>
+    <p class="lead">It works out what the caller wants, checks the real table plan, offers the nearest free times, takes allergies and occasions, and books straight into the restaurant's system. It runs entirely in your browser.</p>
+    <ul class="facts">
+      <li><b>Books into the real system</b><span>It uses the same table plan and rules as the restaurant's host stand, so it can never promise a table that isn't there.</span></li>
+      <li><b>Runs on this device</b><span>No server and no API key. Nothing you type or say to it leaves your browser.</span></li>
+      <li><b id="factTests">Tested on every phrasing</b><span id="factTestsSub">Measured against a list of real-world things callers say, including ones it was never tuned on.</span></li>
+    </ul>
+
+    <section class="band" aria-labelledby="howHead">
+      <h3 id="howHead">How it works</h3>
+      <ol class="steps">
+        <li><b>Hears</b><p>Speech becomes text with Whisper, a speech-recognition model that runs on your own device. Or just type.</p><span class="tag ai">AI model · on device</span></li>
+        <li><b>Understands</b><p>A reader built for this one job pulls out the party size, day, time, name, number and anything the kitchen needs to know. A small language model catches the phrasings it wasn't written for.</p><span class="tag ai">Parser + AI fallback</span></li>
+        <li><b>Checks the floor</b><p>It asks the restaurant's own booking engine whether a table is free, and if not, finds the nearest times that are.</p><span class="tag code">Rules, fully tested</span></li>
+        <li><b>Replies</b><p>One question at a time, never for something already said. It reads everything back before booking, and hands over to a person when it should.</p><span class="tag code">Conversation logic</span></li>
+        <li><b>Writes it in</b><p>The booking goes into the table plan, the allergy goes to the kitchen, the confirmation text is drafted, and it checks the table is still free at the moment it writes.</p><span class="tag code">Live sync with Covers</span></li>
+      </ol>
+    </section>
+
+    <section class="band" aria-labelledby="scoreHead">
+      <h3 id="scoreHead">How well it understands</h3>
+      <div class="scores">
+        <div class="score"><div class="big" id="sTuning">–</div><p>phrasings in the set it was built against, read with every detail right: party, day, time, name, number and notes.</p></div>
+        <div class="score"><div class="big" id="sHeld">–</div><p id="sHeldText">phrasings written afterwards and never used to tune it: the honest number, taken the first time they were run.</p></div>
+        <div class="score"><div class="big" id="sCalls">–</div><p>random callers booking random nights in a test run before every release, with the book checked for a single double-booking afterwards.</p></div>
+      </div>
+      <details class="cases">
+        <summary>See every phrasing it is tested on</summary>
+        <ul class="case-list" id="caseList"></ul>
+      </details>
+    </section>
+
+    <section class="band" aria-labelledby="shipHead">
+      <h3 id="shipHead">Taking it to a real restaurant</h3>
+      <div class="ship">
+        <div><b>The phone line <span class="state todo">next step</span></b><p>A telephony provider streams the call audio to the same pipeline. The conversation logic doesn't change: it already takes text in and gives text out.</p></div>
+        <div><b>Their booking system <span class="state done">designed for</span></b><p>The receptionist asks one question of the book (is there a table?), so connecting a different booking system is one adapter, not a rewrite.</p></div>
+        <div><b>Knowing when to stop <span class="state done">built</span></b><p>Parties over ten, complaints, a name it can't find, three misunderstandings in a row: each one becomes a callback for the manager instead of a guess.</p></div>
+        <div><b>Getting better every week <span class="state done">built</span></b><p>Every call it gets wrong becomes a new line in the test set. The score above is recomputed every time the page loads, and the tests fail if it ever goes down.</p></div>
+      </div>
+    </section>
+
+    <footer>
+      <span>Bartlett &amp; Vine is fictional; the booking engine, the floor plan and the Saturday night are the ones in <a href="../covers/index.html">Covers</a>.</span>
+      <span><a href="README.md">How it's built</a> · <a href="../../index.html">Everything else</a></span>
+    </footer>
+  </div>
+</section>
 
 <script type="module">
 import { understand, shortDate, hm } from './understand.js';
@@ -432,7 +305,11 @@ function buildPicker() {
   host.append(you);
 }
 function markPicked(id) {
-  for (const b of $('picker').children) b.classList.toggle('on', b.dataset.id === id);
+  for (const b of $('picker').children) {
+    b.classList.toggle('on', b.dataset.id === id);
+    b.setAttribute('aria-pressed', String(b.dataset.id === id));
+    if (b.dataset.id === id) $('pickAbout').textContent = b.querySelector('span')?.textContent ?? '';
+  }
 }
 
 /* ── playback: pacing, pausing, cancelling ───────────────────────────────── */
@@ -750,7 +627,7 @@ function finishCall() {
   setLive(false, 'CALL ENDED');
   stopClock();
   skipping = false;
-  $('playBtn').textContent = '↺ Play again';
+  $('playBtn').textContent = '↺ Play it again';
   mode = mode === 'sample' ? 'ended' : mode;
 }
 
@@ -942,12 +819,13 @@ buildPicker();
 clearPanels();
 drawRoom();
 scores();
+current = CALLS[0];
+markPicked(current.id);
 {
   const li = el('li', 'empty');
-  li.append(el('b', null, 'Pick a call to listen in.'), document.createTextNode('Only the caller’s lines are scripted — every reply is worked out live against the table plan.'));
+  li.append(el('b', null, `Press play to listen in on “${current.title}”.`), document.createTextNode('Only the caller’s lines are scripted. Every reply is worked out live against the table plan, and you can ring it yourself.'));
   $('transcript').append(li);
 }
-current = CALLS[0];
 
 window.frontdesk = { get call() { return call; }, get diary() { return diary; }, playSample, startLive, CALLS };
 </script>
