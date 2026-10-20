@@ -23,7 +23,7 @@ import { fromSearch, toSearch } from './state/url';
 
 const reducer = withHistory(reducePoster);
 
-/** Set when the app is built into the portfolio, so there is a way back to the gallery. */
+/** Set when the app is built into the portfolio, so there is a way back to the front page. */
 const PORTFOLIO_URL = import.meta.env.VITE_PORTFOLIO_URL as string | undefined;
 
 function initialPoster(): { poster: Poster; fromLink: boolean } {

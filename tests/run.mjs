@@ -10,7 +10,7 @@ import { pathToFileURL } from 'node:url';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { readFileSync } from 'node:fs';
-import { tally, test } from './harness.mjs';
+import { tally, test, assert } from './harness.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const filter = process.argv[2];
@@ -27,13 +27,17 @@ if (!files.length) {
   process.exit(1);
 }
 
+/* How many tests each file ran, so a page that quotes a file's count can be checked. */
+const perFile = new Map();
 for (const f of files) {
   process.stdout.write('\n' + c('1;36', f.replace('.test.mjs', '')) + '\n');
+  const before = tally.passed + tally.failed;
   await import(pathToFileURL(join(here, f)).href);
+  perFile.set(`tests/${f}`, tally.passed + tally.failed - before);
 }
 
-/* The site says how many tests there are — on the front page, twice in the
-   playground and once in the README. Those numbers went stale three times over before this
+/* The site says how many tests there are — on the front page and in the
+   README. Those numbers went stale three times over before this
    check existed, once in the embarrassing direction: five pieces were cut,
    their tests went with them, and the page went on saying "over 800" about a
    suite of 785. So when the whole suite has run, every claimed count is read
@@ -43,12 +47,19 @@ if (!filter) {
   const read = (f) => readFileSync(join(here, '..', f), 'utf8');
   const claims = [
     ['the front page', read('index.html').match(/<b data-claim="tests">([\d,]+)<\/b>/)?.[1]],
-    ['the playground specification', read('playground.html').match(/Tests, run before publishing<\/dt><dd>([\d,]+)\+<\/dd>/)?.[1]],
-    ['the playground colophon', read('playground.html').match(/over ([\d,]+) tests, run in CI/)?.[1]],
     ['the README', read('README.md').match(/Over ([\d,]+) tests run in CI/)?.[1]],
-    ['the Portal Atlas', read('atlas/index.html').match(/<b data-claim="tests">([\d,]+)\+<\/b>/)?.[1]],
   ];
   process.stdout.write('\n' + c('1;36', 'claims') + '\n');
+  /* Each case study's "N tests" is that project's own test file, counted as it ran. */
+  const { PROJECTS } = await import(pathToFileURL(join(here, '..', 'work', 'projects.js')).href);
+  for (const [id, p] of Object.entries(PROJECTS)) {
+    const quoted = p.proof.find(([, what]) => /^tests\b/.test(what));
+    if (!quoted) continue;
+    test(`${id}'s case study quotes the tests that ran`, () => {
+      if (!p.tests) throw new Error(`${id} quotes a test count but names no test file`);
+      assert.equal(Number(quoted[0]), perFile.get(p.tests), `${id} says ${quoted[0]} tests; ${p.tests} ran ${perFile.get(p.tests)}`);
+    });
+  }
   const ran = tally.passed + tally.failed;
   for (const [where, n] of claims) {
     test(`${where} does not claim more tests than ran`, () => {

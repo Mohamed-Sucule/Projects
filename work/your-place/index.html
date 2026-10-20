@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Your Place: Any place on Earth, as a print-ready map poster — Mohamed Sucule</title>
+<meta name="description" content="A poster of a place that matters is a favourite gift, and the free ways to make one are command-line scripts. Type a town, a street or an address, pick a style, and download a file ready to print,…" />
+<link rel="icon" href="../../favicon.svg" />
+<meta name="theme-color" content="#f6f5f1" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Your Place — Any place on Earth, as a print-ready map poster" />
+<meta property="og:description" content="A poster of a place that matters is a favourite gift, and the free ways to make one are command-line scripts. Type a town, a street or an address, pick a style, and download a file ready to print,…" />
+<meta property="og:url" content="https://mohamed-sucule.github.io/Projects/work/your-place/" />
+<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/assets/og-card.png" />
+<link rel="canonical" href="https://mohamed-sucule.github.io/Projects/work/your-place/" />
+<link rel="preload" href="../../assets/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="../../assets/fonts/outfit.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="../../assets/site.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to the project</a>
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="../../">Mohamed Sucule</a>
+    <nav aria-label="Main">
+      <a href="../../#work">Work</a>
+      <a href="../../#writing">Writing</a>
+      <a href="../../#experience">Experience</a>
+      <a href="../../#contact">Contact</a>
+      <a class="cv" href="../../cv/">CV</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="study-head" aria-labelledby="title">
+    <div class="wrap">
+      <p class="crumbs"><a href="../../#work">Selected work</a> · 2 of 12</p>
+      <p class="label">React 19 · TypeScript (strict) · Web Workers · OffscreenCanvas · SVG · Vitest · Playwright</p>
+      <h1 id="title">Your Place</h1>
+      <p class="line">Any place on Earth, as a print-ready map poster.</p>
+      <p class="lede">A poster of a place that matters is a favourite gift, and the free ways to make one are command-line scripts. Type a town, a street or an address, pick a style, and download a file ready to print, drawn in the browser from OpenStreetMap.</p>
+      <div class="links">
+        <a class="go" href="../../your-place/index.html">Open Your Place</a>
+        <a href="../../writing/fast-map-posters/">How I made it fast</a>
+        <a href="https://github.com/Mohamed-Sucule/Projects/blob/main/your-place/README.md">README</a>
+        <a href="https://github.com/Mohamed-Sucule/Projects/tree/main/your-place">Source</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="study-shot" aria-label="Screenshot">
+    <div class="wrap">
+      <a href="../../your-place/index.html"><img src="../../assets/shots/your-place-960.webp" srcset="../../assets/shots/your-place-960.webp 960w, ../../assets/shots/your-place-1920.webp 1920w" sizes="(min-width: 1200px) 1120px, 94vw" width="960" height="600" alt="Your Place making a poster of Zürich in its Noir and gold style, with the place search, the styles and the download beside it" /></a>
+    </div>
+  </section>
+
+  <section class="study-body" aria-label="How it works">
+    <div class="wrap">
+      <div>
+        <h2>What’s hard about it</h2>
+        <ul class="hard">
+          <li>A map engine written from scratch: vector tiles are decoded into typed arrays and painted in a Web Worker on an OffscreenCanvas, so dragging the map never waits for drawing.</li>
+          <li>Profiling took the first poster from 41.7 seconds to 0.39: a third of the tiles showed the same streets, and one Chromium path call grew with the path it was closing.</li>
+          <li>One geometry pass writes both the canvas and the SVG, so the 300 dpi print matches the preview line for line.</li>
+        </ul>
+        <div class="decision">
+          <h2>A decision worth explaining</h2>
+          <h3>Draw off the main thread</h3>
+          <p>A city at print resolution is hundreds of thousands of path segments. Drawn on the main thread, every drag of the map would freeze the page while it painted. In a Web Worker on an OffscreenCanvas, the interface stays responsive and the poster arrives when it is ready.</p>
+        </div>
+      </div>
+      <div>
+        <h2>In numbers</h2>
+        <div class="proof">
+          <div><b>0.39 s</b><span>first poster, down from 41.7 s</span></div>
+          <div><b>62</b><span>unit tests</span></div>
+          <div><b>12 × 2</b><span>end-to-end scenarios, desktop and phone</span></div>
+        </div>
+        <h2>Built with</h2>
+        <ul class="built">
+          <li>React 19</li>
+          <li>TypeScript (strict)</li>
+          <li>Web Workers</li>
+          <li>OffscreenCanvas</li>
+          <li>SVG</li>
+          <li>Vitest</li>
+          <li>Playwright</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <nav class="pager" aria-label="More projects">
+    <div class="wrap">
+      <a class="prev" href="../cells/"><span class="label">Previous</span><b>Cells</b></a>
+      <a class="next" href="../ember/"><span class="label">Next</span><b>Ember</b></a>
+    </div>
+  </nav>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>© 2026 Mohamed Sucule · Birmingham, UK</p>
+    <p><a href="../../">All work</a> · <a href="../../cv/">CV</a> · <a href="https://github.com/Mohamed-Sucule/Projects">Source on GitHub</a></p>
+  </div>
+</footer>
+<script type="module" src="../../shared/navigator.js"></script>
+</body>
+</html>

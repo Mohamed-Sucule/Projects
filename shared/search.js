@@ -1,6 +1,6 @@
 /* shared/search.js — the retrieval behind the navigator.
 
-   BM25 over a thirty-one document collection, plus intent routing. That is a
+   BM25 over the site's twelve projects, plus intent routing. That is a
    comically large hammer for a list this short, and it is the right one for a
    reason that has nothing to do with scale: a `.includes()` filter can only
    match what somebody typed, and people do not type the words on the page.
@@ -162,7 +162,7 @@ export function detectIntent(query) {
 /* Which pieces answer "show me the best thing here". Hand-picked, because the
    honest answer to that question is a judgement and pretending a ranking
    function made it would be a small lie. */
-export const FEATURED = ['attention', 'covers', 'room', 'evals'];
+export const FEATURED = ['cells', 'your-place', 'covers', 'ember'];
 
 /* Words that ask for a recommendation rather than name a subject. They are never
    typos to be corrected: "start" is one letter from "star", and reading it that way
@@ -259,6 +259,9 @@ function fallback(docs, intent, limit) {
     return shuffled.slice(0, limit).map((d) => ({ entry: d.entry, score: 0, why: [] }));
   }
   const ranked = docs.slice().sort((a, b) => {
+    /* Asked for something short and nothing is that short: the shortest
+       pieces, rather than the featured ones, which are the longest. */
+    if (intent.maxMinutes && a.entry.minutes !== b.entry.minutes) return a.entry.minutes - b.entry.minutes;
     const af = FEATURED.indexOf(a.entry.id), bf = FEATURED.indexOf(b.entry.id);
     if (af !== bf) return (af === -1 ? 99 : af) - (bf === -1 ? 99 : bf);
     return a.entry.minutes - b.entry.minutes;

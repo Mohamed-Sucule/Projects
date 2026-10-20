@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>OKLCH Studio: A colour palette that still passes when someone audits it — Mohamed Sucule</title>
+<meta name="description" content="Most palette tools generate colour in HSL, which lies: yellow and navy can claim the same lightness. Build a ramp that way and the same text colour passes contrast on one accent and fails on the…" />
+<link rel="icon" href="../../favicon.svg" />
+<meta name="theme-color" content="#f6f5f1" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="OKLCH Studio — A colour palette that still passes when someone audits it" />
+<meta property="og:description" content="Most palette tools generate colour in HSL, which lies: yellow and navy can claim the same lightness. Build a ramp that way and the same text colour passes contrast on one accent and fails on the…" />
+<meta property="og:url" content="https://mohamed-sucule.github.io/Projects/work/oklch-studio/" />
+<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/assets/og-card.png" />
+<link rel="canonical" href="https://mohamed-sucule.github.io/Projects/work/oklch-studio/" />
+<link rel="preload" href="../../assets/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="../../assets/fonts/outfit.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="../../assets/site.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to the project</a>
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="../../">Mohamed Sucule</a>
+    <nav aria-label="Main">
+      <a href="../../#work">Work</a>
+      <a href="../../#writing">Writing</a>
+      <a href="../../#experience">Experience</a>
+      <a href="../../#contact">Contact</a>
+      <a class="cv" href="../../cv/">CV</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="study-head" aria-labelledby="title">
+    <div class="wrap">
+      <p class="crumbs"><a href="../../#tools">Tools for engineers</a> · 11 of 12</p>
+      <p class="label">OKLCH colour space · Gamut mapping · WCAG 2.1 contrast · APCA contrast</p>
+      <h1 id="title">OKLCH Studio</h1>
+      <p class="line">A colour palette that still passes when someone audits it.</p>
+      <p class="lede">Most palette tools generate colour in HSL, which lies: yellow and navy can claim the same lightness. Build a ramp that way and the same text colour passes contrast on one accent and fails on the next, and you find out in the accessibility audit after the brand is signed off. OKLCH Studio builds palettes in a perceptual colour space and audits every pair.</p>
+      <div class="links">
+        <a class="go" href="../../projects/oklch-studio/index.html">Open OKLCH Studio</a>
+        <a href="https://github.com/Mohamed-Sucule/Projects/blob/main/projects/oklch-studio/README.md">How it works</a>
+        <a href="https://github.com/Mohamed-Sucule/Projects/tree/main/projects/oklch-studio">Source</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="study-shot" aria-label="Screenshot">
+    <div class="wrap">
+      <a href="../../projects/oklch-studio/index.html"><img src="../../assets/shots/oklch-studio-960.webp" srcset="../../assets/shots/oklch-studio-960.webp 960w, ../../assets/shots/oklch-studio-1920.webp 1920w" sizes="(min-width: 1200px) 1120px, 94vw" width="960" height="600" alt="OKLCH Studio: ramp controls, a palette of five colour families in eleven steps, and the contrast matrix scoring each pair" /></a>
+    </div>
+  </section>
+
+  <section class="study-body" aria-label="How it works">
+    <div class="wrap">
+      <div>
+        <h2>What’s hard about it</h2>
+        <ul class="hard">
+          <li>Generates in OKLCH, so a step down the ramp is the same perceptual step in every family, and primary-600 and danger-600 behave the same against the same surface.</li>
+          <li>Says what the gamut cost: colours with no sRGB equivalent are mapped by bisecting chroma at fixed lightness and hue, and every swatch that was mapped is marked with what it lost.</li>
+          <li>Audits pairs, not colours, against both WCAG 2.1 and APCA, and previews a real fragment of interface built from the tokens, in light and dark.</li>
+        </ul>
+        <div class="decision">
+          <h2>A decision worth explaining</h2>
+          <h3>Never clip silently</h3>
+          <p>The usual answer to an out-of-gamut colour is to clip the channels, which quietly shifts the hue and flattens the end of a ramp. Here saturation is given up instead of lightness or hue, and the swatch says so, because a silent clip is a lie about what you designed.</p>
+        </div>
+      </div>
+      <div>
+        <h2>In numbers</h2>
+        <div class="proof">
+          <div><b>2</b><span>contrast models on the same palette</span></div>
+          <div><b>Lc 106</b><span>black on white, matching APCA’s reference</span></div>
+          <div><b>15</b><span>tests</span></div>
+        </div>
+        <h2>Built with</h2>
+        <ul class="built">
+          <li>OKLCH colour space</li>
+          <li>Gamut mapping</li>
+          <li>WCAG 2.1 contrast</li>
+          <li>APCA contrast</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <nav class="pager" aria-label="More projects">
+    <div class="wrap">
+      <a class="prev" href="../diff-forge/"><span class="label">Previous</span><b>Diff Forge</b></a>
+      <a class="next" href="../regex-lab/"><span class="label">Next</span><b>Regex Lab</b></a>
+    </div>
+  </nav>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>© 2026 Mohamed Sucule · Birmingham, UK</p>
+    <p><a href="../../">All work</a> · <a href="../../cv/">CV</a> · <a href="https://github.com/Mohamed-Sucule/Projects">Source on GitHub</a></p>
+  </div>
+</footer>
+<script type="module" src="../../shared/navigator.js"></script>
+</body>
+</html>

@@ -18,8 +18,8 @@ import { test, assert } from './harness.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
-const pages = ['index.html', 'playground.html', 'cv/index.html', 'atlas/index.html'];
-for (const dir of ['apps', 'play', 'projects', 'atlas/projects', 'writing']) {
+const pages = ['index.html', 'cv/index.html', '404.html'];
+for (const dir of ['apps', 'play', 'projects', 'work', 'writing']) {
   for (const name of readdirSync(join(root, dir)).sort()) {
     const href = `${dir}/${name}/index.html`;
     if (existsSync(join(root, href))) pages.push(href);
@@ -103,7 +103,9 @@ test('internal links point at files that exist', () => {
     const html = read(href);
     const dir = dirname(join(root, href));
     for (const m of html.matchAll(/(?:href|src)="(?!https?:|mailto:|#|data:)([^"?#]+)[^"]*"/g)) {
-      const target = join(dir, m[1]);
+      /* The 404 page is served at whatever address was missing, so its links
+         are absolute, from the site's root on GitHub Pages. */
+      const target = m[1].startsWith('/Projects/') ? join(root, m[1].slice('/Projects/'.length)) : join(dir, m[1]);
       assert.ok(existsSync(target), `${href} links to missing ${m[1]}`);
     }
   }

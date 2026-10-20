@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Covers: A restaurant floor and booking system, opened mid-service — Mohamed Sucule</title>
+<meta name="description" content="You arrive at 19:42 on a Saturday. Thirty-one bookings are in the book, eleven parties are eating, one is twenty-five minutes late and there is a double-booking on table 2 to sort out before half…" />
+<link rel="icon" href="../../favicon.svg" />
+<meta name="theme-color" content="#f6f5f1" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Covers — A restaurant floor and booking system, opened mid-service" />
+<meta property="og:description" content="You arrive at 19:42 on a Saturday. Thirty-one bookings are in the book, eleven parties are eating, one is twenty-five minutes late and there is a double-booking on table 2 to sort out before half…" />
+<meta property="og:url" content="https://mohamed-sucule.github.io/Projects/work/covers/" />
+<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/assets/og-card.png" />
+<link rel="canonical" href="https://mohamed-sucule.github.io/Projects/work/covers/" />
+<link rel="preload" href="../../assets/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="../../assets/fonts/outfit.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="../../assets/site.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to the project</a>
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="../../">Mohamed Sucule</a>
+    <nav aria-label="Main">
+      <a href="../../#work">Work</a>
+      <a href="../../#writing">Writing</a>
+      <a href="../../#experience">Experience</a>
+      <a href="../../#contact">Contact</a>
+      <a class="cv" href="../../cv/">CV</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="study-head" aria-labelledby="title">
+    <div class="wrap">
+      <p class="crumbs"><a href="../../#products">Products</a> · 5 of 12</p>
+      <p class="label">JavaScript · SVG floor plan · Drag and drop · Constraint-checked scheduling · BroadcastChannel</p>
+      <h1 id="title">Covers</h1>
+      <p class="line">A restaurant floor and booking system, opened mid-service.</p>
+      <p class="lede">You arrive at 19:42 on a Saturday. Thirty-one bookings are in the book, eleven parties are eating, one is twenty-five minutes late and there is a double-booking on table 2 to sort out before half past eight. Every booking demo opens on an empty grid; an empty restaurant tells you nothing about whether the system is any good.</p>
+      <div class="links">
+        <a class="go" href="../../apps/covers/index.html">Open Covers</a>
+        <a href="https://github.com/Mohamed-Sucule/Projects/blob/main/apps/covers/README.md">How it works</a>
+        <a href="https://github.com/Mohamed-Sucule/Projects/tree/main/apps/covers">Source</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="study-shot" aria-label="Screenshot">
+    <div class="wrap">
+      <a href="../../apps/covers/index.html"><img src="../../assets/shots/covers-960.webp" srcset="../../assets/shots/covers-960.webp 960w, ../../assets/shots/covers-1920.webp 1920w" sizes="(min-width: 1200px) 1120px, 94vw" width="960" height="600" alt="Covers at 19:42 on a Saturday: the parties due at the door on the left, the floor plan with every table’s party, and the night’s totals along the bottom" /></a>
+    </div>
+  </section>
+
+  <section class="study-body" aria-label="How it works">
+    <div class="wrap">
+      <div>
+        <h2>What’s hard about it</h2>
+        <ul class="hard">
+          <li>Drag a party onto a table and it says whether they fit, and when they do not, why not and what to do instead: “Table 1 seats 2. This is a party of 6. → 30 is free at 20:30.”</li>
+          <li>When the answer is no, it searches the night for a rearrangement that makes it a yes, never moving anybody who has already sat down, and shows what a re-plan buys before anything moves.</li>
+          <li>Turn times, the fifteen minutes to re-lay a table, and tables that join the way the room allows. Open it in two windows and they stay in step, because a restaurant has more than one screen.</li>
+        </ul>
+        <div class="decision">
+          <h2>A decision worth explaining</h2>
+          <h3>The refusal is the product</h3>
+          <p>The rules live in a module with no interface code in it, every question goes through them, and the screen never has an opinion of its own about the room. That is also how the one conflict it ships with was found: the night was hand-written to look fine, and the rules found the clash.</p>
+        </div>
+      </div>
+      <div>
+        <h2>In numbers</h2>
+        <div class="proof">
+          <div><b>67</b><span>tests on the rules, the planner and the floor plan</span></div>
+          <div><b>31</b><span>bookings in the night it opens on</span></div>
+          <div><b>0</b><span>refusals without a reason, checked by a test</span></div>
+        </div>
+        <h2>Built with</h2>
+        <ul class="built">
+          <li>JavaScript</li>
+          <li>SVG floor plan</li>
+          <li>Drag and drop</li>
+          <li>Constraint-checked scheduling</li>
+          <li>BroadcastChannel</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <nav class="pager" aria-label="More projects">
+    <div class="wrap">
+      <a class="prev" href="../lamplighter/"><span class="label">Previous</span><b>The Lamplighter</b></a>
+      <a class="next" href="../frontdesk/"><span class="label">Next</span><b>Front Desk</b></a>
+    </div>
+  </nav>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>© 2026 Mohamed Sucule · Birmingham, UK</p>
+    <p><a href="../../">All work</a> · <a href="../../cv/">CV</a> · <a href="https://github.com/Mohamed-Sucule/Projects">Source on GitHub</a></p>
+  </div>
+</footer>
+<script type="module" src="../../shared/navigator.js"></script>
+</body>
+</html>

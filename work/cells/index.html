@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Cells: A spreadsheet, written from scratch — Mohamed Sucule</title>
+<meta name="description" content="A spreadsheet is the most used app in any office, and one of the hardest interfaces to build: a million rows, a formula language, and keys that people’s hands already know. Cells is one written…" />
+<link rel="icon" href="../../favicon.svg" />
+<meta name="theme-color" content="#f6f5f1" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Cells — A spreadsheet, written from scratch" />
+<meta property="og:description" content="A spreadsheet is the most used app in any office, and one of the hardest interfaces to build: a million rows, a formula language, and keys that people’s hands already know. Cells is one written…" />
+<meta property="og:url" content="https://mohamed-sucule.github.io/Projects/work/cells/" />
+<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/assets/og-card.png" />
+<link rel="canonical" href="https://mohamed-sucule.github.io/Projects/work/cells/" />
+<link rel="preload" href="../../assets/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="../../assets/fonts/outfit.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="../../assets/site.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to the project</a>
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="../../">Mohamed Sucule</a>
+    <nav aria-label="Main">
+      <a href="../../#work">Work</a>
+      <a href="../../#writing">Writing</a>
+      <a href="../../#experience">Experience</a>
+      <a href="../../#contact">Contact</a>
+      <a class="cv" href="../../cv/">CV</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="study-head" aria-labelledby="title">
+    <div class="wrap">
+      <p class="crumbs"><a href="../../#work">Selected work</a> · 1 of 12</p>
+      <p class="label">React 19 · TypeScript (strict) · Vite · Virtualised ARIA grid · Vitest · fast-check · Playwright</p>
+      <h1 id="title">Cells</h1>
+      <p class="line">A spreadsheet, written from scratch.</p>
+      <p class="lede">A spreadsheet is the most used app in any office, and one of the hardest interfaces to build: a million rows, a formula language, and keys that people’s hands already know. Cells is one written from nothing, with a formula engine, a grid and live editing across tabs.</p>
+      <div class="links">
+        <a class="go" href="../../cells/index.html">Open Cells</a>
+        <a href="../../writing/recalculating-a-spreadsheet/">How I made it fast</a>
+        <a href="https://github.com/Mohamed-Sucule/Projects/blob/main/cells/README.md">README</a>
+        <a href="https://github.com/Mohamed-Sucule/Projects/tree/main/cells">Source</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="study-shot" aria-label="Screenshot">
+    <div class="wrap">
+      <a href="../../cells/index.html"><img src="../../assets/shots/cells-960.webp" srcset="../../assets/shots/cells-960.webp 960w, ../../assets/shots/cells-1920.webp 1920w" sizes="(min-width: 1200px) 1120px, 94vw" width="960" height="600" alt="Cells with a year of shop orders open, a SUMIFS formula being typed, and each of its references outlined on the grid in its own colour" /></a>
+    </div>
+  </section>
+
+  <section class="study-body" aria-label="How it works">
+    <div class="wrap">
+      <div>
+        <h2>What’s hard about it</h2>
+        <ul class="hard">
+          <li>A formula engine of my own: a Pratt parser, 116 functions with Excel’s rules for blanks, text, errors and dates, and a dependency graph that recalculates only what changed and catches circular references.</li>
+          <li>A grid of 1,048,576 rows that scrolls past the browser’s height limit, works the way Excel does from the keyboard, lets you point at cells while typing a formula, and that a screen reader can follow to the last row.</li>
+          <li>Profiling took a 100,000-formula recalculation from 681 ms to 133: the cost was in maps keyed by numbers too big for V8’s small integers, not in the formulas.</li>
+        </ul>
+        <div class="decision">
+          <h2>A decision worth explaining</h2>
+          <h3>Test the engine against a slower, obviously correct one</h3>
+          <p>A recalculation that skips one dependent cell does not throw; it leaves a wrong number on screen. So a property test makes thousands of random edits and, after each one, checks every cell against a plain evaluator that recalculates everything from scratch. The fast engine has to agree with the slow one, always.</p>
+        </div>
+      </div>
+      <div>
+        <h2>In numbers</h2>
+        <div class="proof">
+          <div><b>133 ms</b><span>200,001 cells recalculated, down from 681</span></div>
+          <div><b>209</b><span>unit tests, one checking every cell against a plain evaluator</span></div>
+          <div><b>16</b><span>end-to-end tests, desktop and phone, with axe</span></div>
+        </div>
+        <h2>Built with</h2>
+        <ul class="built">
+          <li>React 19</li>
+          <li>TypeScript (strict)</li>
+          <li>Vite</li>
+          <li>Virtualised ARIA grid</li>
+          <li>Vitest</li>
+          <li>fast-check</li>
+          <li>Playwright</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <nav class="pager" aria-label="More projects">
+    <div class="wrap">
+      <a class="next" href="../your-place/"><span class="label">Next</span><b>Your Place</b></a>
+    </div>
+  </nav>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>© 2026 Mohamed Sucule · Birmingham, UK</p>
+    <p><a href="../../">All work</a> · <a href="../../cv/">CV</a> · <a href="https://github.com/Mohamed-Sucule/Projects">Source on GitHub</a></p>
+  </div>
+</footer>
+<script type="module" src="../../shared/navigator.js"></script>
+</body>
+</html>

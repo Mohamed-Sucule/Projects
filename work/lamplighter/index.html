@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>The Lamplighter: One night at a lighthouse, told by scrolling and drawn as you read — Mohamed Sucule</title>
+<meta name="description" content="A lighthouse keeper’s last winter, told in five minutes while the sun goes down, the gale gets up, the rain comes sideways and the light keeps turning. There is not an image or a sound file in its…" />
+<link rel="icon" href="../../favicon.svg" />
+<meta name="theme-color" content="#0e0b09" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="The Lamplighter — One night at a lighthouse, told by scrolling and drawn as you read" />
+<meta property="og:description" content="A lighthouse keeper’s last winter, told in five minutes while the sun goes down, the gale gets up, the rain comes sideways and the light keeps turning. There is not an image or a sound file in its…" />
+<meta property="og:url" content="https://mohamed-sucule.github.io/Projects/work/lamplighter/" />
+<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/assets/og-card.png" />
+<link rel="canonical" href="https://mohamed-sucule.github.io/Projects/work/lamplighter/" />
+<link rel="preload" href="../../assets/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="../../assets/fonts/outfit.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="../../assets/site.css" />
+</head>
+<body class="night">
+<a class="skip" href="#main">Skip to the project</a>
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="../../">Mohamed Sucule</a>
+    <nav aria-label="Main">
+      <a href="../../#work">Work</a>
+      <a href="../../#writing">Writing</a>
+      <a href="../../#experience">Experience</a>
+      <a href="../../#contact">Contact</a>
+      <a class="cv" href="../../cv/">CV</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="study-head" aria-labelledby="title">
+    <div class="wrap">
+      <p class="crumbs"><a href="../../#creative">Creative work</a> · 4 of 12</p>
+      <p class="label">Canvas 2D · Scroll-linked animation · Web Audio · No image files</p>
+      <h1 id="title">The Lamplighter</h1>
+      <p class="line">One night at a lighthouse, told by scrolling and drawn as you read.</p>
+      <p class="lede">A lighthouse keeper’s last winter, told in five minutes while the sun goes down, the gale gets up, the rain comes sideways and the light keeps turning. There is not an image or a sound file in its folder: the sky, the sea, the tower, the rain, the beam and the foghorn are all made in code.</p>
+      <div class="links">
+        <a class="go" href="../../apps/lamplighter/index.html">Read The Lamplighter</a>
+        <a href="https://github.com/Mohamed-Sucule/Projects/blob/main/apps/lamplighter/README.md">How it works</a>
+        <a href="https://github.com/Mohamed-Sucule/Projects/tree/main/apps/lamplighter">Source</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="study-shot" aria-label="Screenshot">
+    <div class="wrap">
+      <a href="../../apps/lamplighter/index.html"><img src="../../assets/shots/lamplighter-960.webp" srcset="../../assets/shots/lamplighter-960.webp 960w, ../../assets/shots/lamplighter-1920.webp 1920w" sizes="(min-width: 1200px) 1120px, 94vw" width="960" height="600" alt="The Lamplighter at dusk: a lighthouse on a rock against a red sky, its beam out over the sea, and the first lines of the story" /></a>
+    </div>
+  </section>
+
+  <section class="study-body" aria-label="How it works">
+    <div class="wrap">
+      <div>
+        <h2>What’s hard about it</h2>
+        <ul class="hard">
+          <li>Scrolling is time, not travel: the scroll position is the hour of the night, and the sun’s height, the colour of the sky, the wind, the rain and the sea are all functions of that one number.</li>
+          <li>Two clocks, kept apart: the reader’s is the scroll bar, the lighthouse’s is wall time. The beam turns every 11.2 seconds whether or not anybody is reading, so the place goes on existing when you stop.</li>
+          <li>The words are pinned to the middle of the frame and cross-fade, with opacities that always add up to one, so the view stays where it is while the night changes around it.</li>
+        </ul>
+        <div class="decision">
+          <h2>A decision worth explaining</h2>
+          <h3>A lighthouse, not a chimney</h3>
+          <p>Sizing the tower’s width from the viewport width and its height from the viewport height drew a tower three and a half times as tall as it was wide on a laptop and nineteen times on a phone. Everything now comes off one tower height, capped against the viewport width, so a narrow screen gets a smaller lighthouse and more sky.</p>
+        </div>
+      </div>
+      <div>
+        <h2>In numbers</h2>
+        <div class="proof">
+          <div><b>0</b><span>image or sound files: all of it is drawn or synthesised</span></div>
+          <div><b>11.2 s</b><span>one turn of the beam, on wall time, not scroll</span></div>
+          <div><b>21</b><span>tests, from the path of the sun to one chapter readable at a time</span></div>
+        </div>
+        <h2>Built with</h2>
+        <ul class="built">
+          <li>Canvas 2D</li>
+          <li>Scroll-linked animation</li>
+          <li>Web Audio</li>
+          <li>No image files</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <nav class="pager" aria-label="More projects">
+    <div class="wrap">
+      <a class="prev" href="../ember/"><span class="label">Previous</span><b>Ember</b></a>
+      <a class="next" href="../covers/"><span class="label">Next</span><b>Covers</b></a>
+    </div>
+  </nav>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>© 2026 Mohamed Sucule · Birmingham, UK</p>
+    <p><a href="../../">All work</a> · <a href="../../cv/">CV</a> · <a href="https://github.com/Mohamed-Sucule/Projects">Source on GitHub</a></p>
+  </div>
+</footer>
+<script type="module" src="../../shared/navigator.js"></script>
+</body>
+</html>

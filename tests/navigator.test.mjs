@@ -11,7 +11,7 @@ import { readdirSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test, assert } from './harness.mjs';
-import { ATLAS, KINDS, HOME, byId, resolveHref, currentEntry } from '../shared/atlas.js';
+import { ATLAS, EVERYTHING, SECTIONS, KINDS, HOME, byId, resolveHref, currentEntry } from '../shared/atlas.js';
 import {
   normalise, tokenise, buildIndex, search, detectIntent, explain,
   nearest, withinOneEdit, FEATURED,
@@ -28,15 +28,15 @@ test('every entry points at a page that exists', () => {
   /* The single most important test here. A navigator that offers a 404 is
      worse than no navigator, and this is checked against the disk rather than
      against my recollection of what I named things. */
-  for (const entry of [...ATLAS, HOME]) {
+  for (const entry of [...EVERYTHING, HOME]) {
     assert.ok(existsSync(join(root, entry.href)), `${entry.id} points at missing ${entry.href}`);
   }
 });
 
 test('every page on disk is in the catalogue', () => {
-  /* The other direction, which is the one that rots. Adding a page and
-     forgetting to list it means it exists and cannot be found, which is the
-     same as it not existing. */
+  /* The other direction, which is the one that rots. A page that is not in
+     EVERYTHING is one nobody decided about: neither shown nor deliberately
+     left off the site. */
   const onDisk = [];
   for (const dir of ['apps', 'play', 'projects']) {
     for (const name of readdirSync(join(root, dir))) {
@@ -47,17 +47,34 @@ test('every page on disk is in the catalogue', () => {
   /* Your Place, Your Sky and Cells have folders of their own at the top, because each
      has a toolchain of its own. */
   for (const href of ['your-place/index.html', 'your-sky/index.html', 'cells/index.html']) if (existsSync(join(root, href))) onDisk.push(href);
-  const listed = new Set(ATLAS.map((e) => e.href));
-  for (const href of onDisk) assert.ok(listed.has(href), `${href} is not in the atlas`);
+  const listed = new Set(EVERYTHING.map((e) => e.href));
+  for (const href of onDisk) assert.ok(listed.has(href), `${href} is not in the catalogue`);
   assert.equal(listed.size, onDisk.length);
 });
 
 test('ids are unique', () => {
+  assert.equal(new Set(EVERYTHING.map((e) => e.id)).size, EVERYTHING.length);
+});
+
+test('the lineup is twelve real projects, each shown once', () => {
+  const ids = SECTIONS.flatMap((s) => s.ids);
+  assert.equal(ids.length, 12);
+  assert.equal(new Set(ids).size, ids.length, 'a project is in two sections');
+  for (const id of ids) assert.ok(EVERYTHING.some((e) => e.id === id), `the lineup lists "${id}", which is not in the catalogue`);
+  assert.deep(ATLAS.map((e) => e.id), ids, 'the lineup is not in section order');
   assert.equal(byId.size, ATLAS.length);
 });
 
+test('the navigator only knows the lineup', () => {
+  /* A project left off the site must not come back through the search box. */
+  const shown = new Set(ATLAS.map((e) => e.id));
+  for (const q of ['sudoku', 'minesweeper', 'transformer', 'split the bill', 'star map', 'tune my guitar']) {
+    for (const h of search(q, index, { limit: 5 })) assert.ok(shown.has(h.entry.id), `"${q}" offered ${h.entry.id}`);
+  }
+});
+
 test('every entry is completely filled in', () => {
-  for (const e of ATLAS) {
+  for (const e of EVERYTHING) {
     assert.ok(e.id && e.title && e.href, `${e.id} is missing a core field`);
     assert.ok(KINDS[e.kind], `${e.id} has an unknown kind "${e.kind}"`);
     assert.ok(['skim', 'play', 'study'].includes(e.depth), `${e.id} has a strange depth`);
@@ -100,10 +117,12 @@ test('links resolve correctly however the site is served', () => {
 });
 
 test('a page knows which entry it is', () => {
-  assert.equal(currentEntry('/apps/tokens/index.html')?.id, 'tokens');
-  assert.equal(currentEntry('/play/ace/')?.id, 'ace');
-  assert.equal(currentEntry('/Projects/projects/raft-lab/index.html')?.id, 'raft-lab');
+  assert.equal(currentEntry('/apps/covers/index.html')?.id, 'covers');
+  assert.equal(currentEntry('/play/ember/')?.id, 'ember');
+  assert.equal(currentEntry('/Projects/projects/regex-lab/index.html')?.id, 'regex-lab');
   assert.equal(currentEntry('/index.html'), null);
+  /* A page left off the site is nobody's neighbour. */
+  assert.equal(currentEntry('/apps/tokens/index.html'), null);
 });
 
 /* ── normalising ────────────────────────────────────────────────────────── */
@@ -135,28 +154,28 @@ test('tokenising keeps the characters that carry meaning', () => {
      "b" — which is fine, because the tag list carries "a/b" and tokenises the
      same way. The thing worth asserting is the behaviour, not the internals. */
   assert.deep(tokenise('A/B test'), ['b', 'test']);
-  assert.equal(search('a/b test', index, { limit: 1 })[0].entry.id, 'evals');
 });
 
 /* ── ranking ────────────────────────────────────────────────────────────── */
 
 test('a rare word beats a common one', () => {
-  /* "induction" appears in one document; "game" in many. A substring filter
-     would treat them identically. */
-  assert.equal(top('induction'), 'attention');
-  assert.equal(top('mcnemar'), 'evals');
+  /* Each of these appears in one document; a substring filter would treat
+     them like any other word. */
   assert.equal(top('oklch'), 'oklch-studio');
-  assert.equal(top('raft'), 'raft-lab');
+  assert.equal(top('myers'), 'diff-forge');
+  assert.equal(top('tesseract'), 'claims');
+  assert.equal(top('meddicc'), 'callcoach');
 });
 
 test('matching every word beats matching half of them', () => {
-  const hits = search('paper plane canyon', index, { limit: 3 });
-  assert.equal(hits[0].entry.id, 'ace');
+  assert.equal(top('restaurant phone receptionist'), 'frontdesk');
+  assert.equal(top('insurance claim scan'), 'claims');
 });
 
 test('a typo still finds the page', () => {
-  assert.equal(top('attension'), 'attention');
-  assert.equal(top('tokeniser'), 'tokens');
+  assert.equal(top('spredsheet'), 'cells');
+  assert.equal(top('lighthose'), 'lamplighter');
+  assert.equal(top('reciptionist'), 'frontdesk');
   assert.equal(top('regexp'), 'regex-lab');
 });
 
@@ -192,7 +211,7 @@ test('the same query twice gives the same answer', () => {
 /* ── intent ─────────────────────────────────────────────────────────────── */
 
 test('a time budget is understood as a constraint, not as words', () => {
-  for (const q of ['i have 2 minutes', 'two minutes', 'got 3 mins', 'something quick']) {
+  for (const q of ['got 3 mins', 'something quick']) {
     const hits = search(q, index, { limit: 6 });
     assert.ok(hits.length > 0, `"${q}" found nothing`);
     for (const h of hits) {
@@ -201,10 +220,19 @@ test('a time budget is understood as a constraint, not as words', () => {
   }
 });
 
+test('a budget nothing fits still offers the shortest pieces, shortest first', () => {
+  /* Nothing here takes two minutes. Answering with the featured pieces would
+     answer with the longest ones. */
+  const minutes = search('i have 2 minutes', index, { limit: 6 }).map((h) => h.entry.minutes);
+  const shortest = Math.min(...ATLAS.map((e) => e.minutes));
+  assert.equal(minutes[0], shortest);
+  assert.deep(minutes, minutes.slice().sort((a, b) => a - b));
+});
+
 test('a longer budget opens more up', () => {
-  const short = search('2 minutes', index, { limit: 30 }).length;
+  const short = search('3 minutes', index, { limit: 30 }).length;
   const long = search('10 minutes', index, { limit: 30 }).length;
-  assert.ok(long > short, `10 minutes offered ${long}, 2 minutes offered ${short}`);
+  assert.ok(long > short, `10 minutes offered ${long}, 3 minutes offered ${short}`);
 });
 
 test('"surprise me" is random, not a search for the word surprise', () => {
@@ -237,30 +265,19 @@ test('depth is understood', () => {
 /* ── the plain-English queries people actually type ─────────────────────── */
 
 const EXPECTED = [
-  ['the ai stuff', ['frontdesk', 'attention', 'tokens', 'evals', 'agents']],
-  ['machine learning', ['attention', 'tokens', 'evals', 'agents']],
-  ['murder mystery', ['room']],
-  ['scary', ['nightshift']],
-  ['play with a friend', ['sumo']],
-  ['my own data', ['sift']],
-  ['why is it bad at maths', ['tokens']],
-  ['did it actually improve', ['evals']],
-  ['tool calling', ['agents']],
-  ['distributed systems', ['raft-lab']],
+  ['the ai stuff', ['frontdesk', 'claims', 'callcoach']],
+  ['a game', ['ember']],
+  ['lighthouse', ['lamplighter']],
+  ['something creative', ['ember', 'lamplighter']],
+  ['restaurant', ['covers', 'frontdesk']],
+  ['phone receptionist', ['frontdesk']],
+  ['insurance claim', ['claims']],
+  ['sales call', ['callcoach']],
+  ['slow request', ['trace-explorer']],
+  ['observability', ['trace-explorer']],
   ['merge conflict', ['diff-forge']],
   ['colour palette', ['oklch-studio']],
-  ['split the bill', ['split']],
-  ['who owes who after the holiday', ['split']],
-  ['tune my guitar', ['tuner']],
-  ['make a qr code', ['qr']],
-  ['wifi password for guests', ['qr']],
-  ['minesweeper', ['sweeper']],
-  ['sudoku', ['sudoku']],
-  ['make a beat', ['beats']],
-  ['restaurant', ['covers']],
-  ['slow request', ['trace-explorer']],
-  ['star map', ['your-sky']],
-  ['the night sky on our wedding day', ['your-sky']],
+  ['regular expression', ['regex-lab']],
   ['map of my home town', ['your-place']],
   ['spreadsheet', ['cells']],
   ['like excel in the browser', ['cells']],
@@ -276,33 +293,21 @@ for (const [query, acceptable] of EXPECTED) {
 }
 
 test('a generic word does not outrank the meaningful one', () => {
-  /* In a thirty-document collection, "work" is RARE — so IDF handed it more
-     weight than "ai", and "the ai work" returned the restaurant booking system
-     on the strength of its "client work" tag. Filler words that are common in
-     English and accidentally rare here are stop words now. */
-  for (const q of ['machine learning', 'llm']) {
-    const four = ids(q, 4);
-    assert.deep(four.slice().sort(), ['agents', 'attention', 'evals', 'tokens'],
-      `"${q}" returned ${four.join(', ')}`);
-    assert.equal(four[0], 'attention', `"${q}" did not lead with the flagship`);
-  }
-  /* "AI" now also means the AI products, which is right — what must not come
-     back is anything that is neither, on the strength of a filler word. */
+  /* In a small collection, "work" is RARE — so IDF handed it more weight than
+     "ai", and "the ai work" once returned the restaurant booking system on the
+     strength of its "client work" tag. Filler words that are common in English
+     and accidentally rare here are stop words now. */
   for (const q of ['the ai work', 'the ai stuff']) {
-    const four = ids(q, 4);
-    for (const id of four) assert.ok(['ai', 'ml'].includes(byId.get(id).kind), `"${q}" returned ${four.join(', ')}`);
+    const three = ids(q, 3);
+    for (const id of three) assert.equal(byId.get(id).kind, 'ai', `"${q}" returned ${three.join(', ')}`);
   }
 });
 
 test('a phrase beats the sum of its words', () => {
-  /* "machine learning" is one concept. Matching it whole is stronger evidence
-     than matching "machine" somewhere and "learn" somewhere else — which is
-     how a regular-expression visualiser came second for it, on the strength of
-     a "learn" tag. */
-  assert.equal(top('machine learning'), 'attention');
-  assert.ok(!ids('machine learning', 4).includes('regex-lab'));
-  /* And the word on its own still finds it, because the tag is still there. */
-  assert.ok(ids('learn about regular expressions', 3).includes('regex-lab'));
+  /* "floor plan" is one thing. The receptionist mentions plans and the floor
+     separately; the booking system is the floor plan. */
+  assert.equal(top('floor plan'), 'covers');
+  assert.equal(top('critical path'), 'trace-explorer');
 });
 
 test('a word that is genuinely specific still works', () => {
