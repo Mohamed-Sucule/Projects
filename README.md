@@ -63,9 +63,12 @@ against facts, from Polaris standing as high as the latitude to real full and ne
 
 ## Everything else
 
-The rest is the playground: four AI products of the kind a business might need, and thirty more things I built
-for fun and to learn, from a Minesweeper that never makes you guess to a transformer trained with an autodiff
-engine written from nothing. None of it needs an install, a sign-up or an API key.
+The rest is the playground. The games come first, led by [**Ember**](play/ember/), an action game in the dark
+whose light is a visibility polygon cast from the flame on every frame, with generated maps, three bosses written
+as generator functions and a score synthesised as you play; its tests play it to the ending and fail if any blow
+lands with less than 0.3 s of warning. Then four AI products of the kind a business might need, and the rest of
+thirty pieces built for fun and to learn, from a Minesweeper that never makes you guess to a transformer trained
+with an autodiff engine written from nothing. None of it needs an install, a sign-up or an API key.
 
 **[Open the playground](https://mohamed-sucule.github.io/Projects/playground.html)** ·
 **[or walk through the gallery](https://mohamed-sucule.github.io/Projects/atlas/)**, the same work as six

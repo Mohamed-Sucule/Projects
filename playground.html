@@ -218,7 +218,7 @@
   button.quiet-link { background: none; border: 0; border-bottom: 1px solid var(--rule-2); cursor: pointer; padding: 0 0 2px; }
   #surprise .face { min-width: 17ch; text-align: left; }
 
-  /* ── §1, the four products ──────────────────────────────────────────────
+  /* ── §2, the four products ──────────────────────────────────────────────
      Each one opens on the sentence a client would actually say, then a
      small picture of the thing working, set in the app's own type, then what
      it does in plain English and what was measured. A recruiter should get
@@ -739,9 +739,9 @@
   <nav class="top" aria-label="Sections">
     <a class="brand" href="#top">Playground</a>
     <a class="keep" href="./">&larr; Front page</a>
-    <a href="#work"><span class="sec">&sect;1</span>AI products</a>
-    <a href="#stories"><span class="sec">&sect;2</span>Check these out</a>
-    <a href="#run"><span class="sec">&sect;3</span>Games &amp; apps</a>
+    <a href="#run"><span class="sec">&sect;1</span>Games &amp; apps</a>
+    <a href="#work"><span class="sec">&sect;2</span>AI products</a>
+    <a href="#stories"><span class="sec">&sect;3</span>Check these out</a>
     <a href="#ml"><span class="sec">&sect;4</span>The models</a>
     <a href="#deep"><span class="sec">&sect;5</span>Engineering</a>
     <a class="keep" href="#errata">Errata</a>
@@ -790,7 +790,7 @@
 
   <div class="foot" aria-hidden="true">
     <span class="bar"><i style="background:#00a3e0"></i><i style="background:#e5007e"></i><i style="background:#ffe600"></i><i style="background:#17140f"></i><i style="background:#17140f;opacity:.6"></i><i style="background:#17140f;opacity:.3"></i><i style="background:#cf2e1b"></i></span>
-    <a class="cue" href="#work" tabindex="-1">The four products, then thirty more to play with &darr;</a>
+    <a class="cue" href="#run" tabindex="-1">Thirty pieces to play with, and the four products &darr;</a>
     <span>p. i</span>
   </div>
 </header>
@@ -871,12 +871,28 @@
     </div>
   </aside>
 
-  <!-- ── §1 AI products ──────────────────────────────────────────────────────
+  <!-- ── §1 games and apps ─────────────────────────────────────────────────
+       Straight after the plates: Ember first, then the other games, then the
+       small apps. -->
+  <section class="section" id="run">
+    <header>
+      <div class="runhead"><span class="no">&sect; 1</span><span>Games &amp; apps</span><span class="nm">seventeen figures</span></div>
+      <h2>Things to put your <em>hands on</em></h2>
+      <p class="lede">
+        Games first, starting with the long one, then small apps you would actually use, then
+        physics you can put your finger in and one horror story. <b>After Ember, nothing here has
+        a menu or a tutorial</b>: the first ten seconds teach you the rest.
+      </p>
+    </header>
+    <div class="figs" id="toys" style="--min:330px"></div>
+  </section>
+
+  <!-- ── §2 AI products ──────────────────────────────────────────────────────
        The four products. Each one opens on the sentence a client would say,
        because that is where every real project starts. -->
   <section class="section" id="work" style="--accent: 207,46,27">
     <header>
-      <div class="runhead"><span class="no">&sect; 1</span><span>AI products</span><span class="nm">four products</span></div>
+      <div class="runhead"><span class="no">&sect; 2</span><span>AI products</span><span class="nm">four products</span></div>
       <h2>Four things a business <em>might need</em></h2>
       <p class="lede">
         Each one starts from a sentence somebody at work might say, and ends as working software &mdash;
@@ -989,8 +1005,8 @@
     </div>
   </section>
 
-  <!-- ── fig. 1 ──────────────────────────────────────────────────────────────
-       The contact sheet. Built by script from the atlas, so it can never list
+  <!-- ── the contact sheet ───────────────────────────────────────────────────
+       Everything that is not a product. Built by script from the atlas, so it can never list
        something the navigator does not. -->
   <figure class="fig1" id="sheet">
     <div class="sheet" id="film">
@@ -998,7 +1014,7 @@
       <svg class="grease" id="grease" aria-hidden="true"></svg>
     </div>
     <figcaption>
-      <span class="fn">Fig. 1</span>
+      <span class="fn" data-fig>Fig. 1</span>
       <span>Contact sheet. Thirty more things I built for fun and to learn, every one of them running
       &mdash; games along the top, the engineering at the bottom, my picks in grease pencil, and
       <b id="liveCount">&hellip;</b> of them running as you read this.
@@ -1006,10 +1022,10 @@
     </figcaption>
   </figure>
 
-  <!-- ── §2 stories ──────────────────────────────────────────────────────── -->
+  <!-- ── §3 stories ──────────────────────────────────────────────────────── -->
   <section class="section" id="stories" style="--accent: 255,209,102">
     <header>
-      <div class="runhead"><span class="no">&sect; 2</span><span>Check these out</span><span class="nm">two figures</span></div>
+      <div class="runhead"><span class="no">&sect; 3</span><span>Check these out</span><span class="nm">two figures</span></div>
       <h2>Two to get <em>lost in</em></h2>
       <p class="lede">
         Off the clock: a murder you solve by looking at things, and a short story drawn from
@@ -1044,20 +1060,6 @@
         </div>
       </a>
     </div>
-  </section>
-
-  <!-- ── §3 games and apps ───────────────────────────────────────────────── -->
-  <section class="section" id="run">
-    <header>
-      <div class="runhead"><span class="no">&sect; 3</span><span>Games &amp; apps</span><span class="nm">seventeen figures</span></div>
-      <h2>Things to put your <em>hands on</em></h2>
-      <p class="lede">
-        Games first, starting with the long one, then small apps you would actually use, then
-        physics you can put your finger in and one horror story. <b>After Ember, nothing here has
-        a menu or a tutorial</b>: the first ten seconds teach you the rest.
-      </p>
-    </header>
-    <div class="figs" id="toys" style="--min:330px"></div>
   </section>
 
   <!-- ── §4 inside the models ────────────────────────────────────────────── -->
@@ -1217,7 +1219,7 @@
       <li class="reveal">
         <span class="en">E3</span>
         <div>
-          <p class="where"><a href="play/sandbox/index.html">Sandbox</a> &middot; &sect;3</p>
+          <p class="where"><a href="play/sandbox/index.html">Sandbox</a> &middot; &sect;1</p>
           <p class="for"><i>For</i> <s>an hourglass</s> <i>read</i> <ins>an X</ins></p>
           <p class="why">It leaked sand out of its sides, because it had been drawn as two crossed lines rather than a funnel.</p>
           <p class="how">Caught by <b>looking at it</b></p>
@@ -1226,7 +1228,7 @@
       <li class="reveal" style="--d:70ms">
         <span class="en">E4</span>
         <div>
-          <p class="where"><a href="play/sandbox/index.html">Sandbox</a> &middot; &sect;3</p>
+          <p class="where"><a href="play/sandbox/index.html">Sandbox</a> &middot; &sect;1</p>
           <p class="for"><i>For</i> <s>a forest fire</s> <i>read</i> <ins>one tree</ins></p>
           <p class="why">It burned one tree and went out. The match had been lit on an isolated tree at the edge of the map.</p>
           <p class="how">Caught by <b>looking at it</b></p>
@@ -1235,7 +1237,7 @@
       <li class="reveal">
         <span class="en">E5</span>
         <div>
-          <p class="where"><a href="play/island/index.html">Islandsmith</a> &middot; &sect;3</p>
+          <p class="where"><a href="play/island/index.html">Islandsmith</a> &middot; &sect;1</p>
           <p class="for"><i>For</i> <s>a new island</s> <i>read</i> <ins>a smooth green ellipse</ins></p>
           <p class="why">Every one of them. The noise frequency was so low that the entire map sat inside a single noise cell.</p>
           <p class="how">Caught by <b>looking at it</b></p>
@@ -1262,7 +1264,7 @@
       <li class="reveal" style="--d:70ms">
         <span class="en">E8</span>
         <div>
-          <p class="where"><a href="apps/qr/index.html">QR codes</a> &middot; &sect;3</p>
+          <p class="where"><a href="apps/qr/index.html">QR codes</a> &middot; &sect;1</p>
           <p class="for"><i>For</i> <s>a bug in the encoder</s> <i>read</i> <ins>a bug in the test</ins></p>
           <p class="why">Two checks failed: a capacity of 666 and a format word, both typed from memory. The encoder said 669 and a different word; an independent QR reader had already decoded fifty-six of its codes without a fault. The test was wrong, and was corrected against the published table.</p>
           <p class="how">Caught by <b>not assuming the test is the one that is right</b></p>
@@ -1374,7 +1376,7 @@ const SERIF = '"Instrument Serif", Georgia, serif';
    back was "put the games at the top".
 
    The Room and The Lamplighter are not in this list: they are the two panes
-   of §2. Putting them here as well would be the same thing twice. */
+   of §3. Putting them here as well would be the same thing twice. */
 const TOYS = [
   {
     href: 'play/ember/index.html', tag: 'the epic one', kind: 'game', wide: true,
@@ -1996,9 +1998,9 @@ mount(document.getElementById('mlEvals'), evalsPreview);
 mount(document.getElementById('mlAgents'), agentsPreview);
 
 /* Figures are numbered in the order they are set, the way a book numbers
-   them — the contact sheet is Fig. 1 and everything after counts on from it,
-   so moving a figure renumbers the lot instead of leaving a gap. */
-document.querySelectorAll('[data-fig]').forEach((el, i) => { el.textContent = `Fig. ${i + 2}`; });
+   them, so moving a figure renumbers the lot instead of leaving a gap. The
+   games come first now, so the contact sheet is numbered where it falls. */
+document.querySelectorAll('[data-fig]').forEach((el, i) => { el.textContent = `Fig. ${i + 1}`; });
 
 for (const el of document.querySelectorAll('.section > header')) el.classList.add('reveal');
 watchReveals();

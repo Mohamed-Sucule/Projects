@@ -33,6 +33,8 @@ const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'e
   'twenty-seven', 'twenty-eight', 'twenty-nine', 'thirty', 'thirty-one', 'thirty-two', 'thirty-three',
   'thirty-four', 'thirty-five', 'thirty-six', 'thirty-seven', 'thirty-eight', 'thirty-nine', 'forty'];
 
+const capital = (w) => w[0].toUpperCase() + w.slice(1);
+
 const listIn = (name) => {
   const block = html.match(new RegExp(`const ${name} = \\[([\\s\\S]*?)\\];`));
   assert.ok(block, `could not find ${name} in playground.html`);
@@ -99,7 +101,7 @@ test('the specification and the way down agree with the atlas', () => {
   const ai = EVERYTHING.filter((e) => e.kind === 'ai').length;
   assert.equal(Number(html.match(/<dd data-ai-count>(\d+)<\/dd>/)?.[1]), ai);
   const cue = (html.match(/<a class="cue"[^>]*>([^<]*)</)?.[1] ?? '').replace(/&mdash;/g, '—').replace(/\s*&darr;\s*$/, '').trim();
-  assert.equal(cue, `The ${WORDS[ai]} products, then ${WORDS[ATLAS.length]} more to play with`, `the cue says "${cue}"`);
+  assert.equal(cue, `${capital(WORDS[ATLAS.length])} pieces to play with, and the ${WORDS[ai]} products`, `the cue says "${cue}"`);
 });
 
 test('each running head counts what is under it', () => {
@@ -143,7 +145,6 @@ test('each product’s "measured" line is what the product measures', () => {
    without the site beside it to check it against. */
 const home = readFileSync(join(root, 'index.html'), 'utf8');
 const cv = readFileSync(join(root, 'cv/index.html'), 'utf8');
-const capital = (w) => w[0].toUpperCase() + w.slice(1);
 
 test('the front page and the CV count the projects that run here', () => {
   const running = EVERYTHING.length;
@@ -153,9 +154,12 @@ test('the front page and the CV count the projects that run here', () => {
   assert.equal(cvSaid, running, `the CV says ${cvSaid}; ${running} run on the site`);
 });
 
+const sectionOf = (id) => home.match(new RegExp(`<section id="${id}"[\\s\\S]*?</section>`))?.[0] ?? '';
+
 test('the front page features every flagship, and every tile is a real project', () => {
-  /* Two flagships get a case study each; any others are tiles under "More of my work". */
-  const cases = [...home.matchAll(/<a class="go" href="([^"]+)">/g)].map((m) => m[1]);
+  /* Two flagships get a case study each under "Selected work"; any others are
+     tiles under "More of my work". */
+  const cases = [...sectionOf('work').matchAll(/<a class="go" href="([^"]+)">/g)].map((m) => m[1]);
   const tiles = [...home.matchAll(/<a class="tile" href="([^"]+)"/g)].map((m) => m[1]);
   assert.equal(cases.length, 2, `the front page has ${cases.length} case studies`);
   for (const href of cases) assert.ok(FLAGSHIPS.some((e) => e.href === href), `the case study for ${href} is not a flagship`);
@@ -165,6 +169,19 @@ test('the front page features every flagship, and every tile is a real project',
   const hrefs = new Set(EVERYTHING.map((e) => e.href));
   assert.ok(tiles.length >= 3, `only ${tiles.length} tiles under "More of my work"`);
   for (const t of tiles) assert.ok(hrefs.has(t), `the tile for ${t} is not in the atlas`);
+});
+
+test('the games come straight after the work, led by Ember, and count every game', () => {
+  const order = [...home.matchAll(/<section id="([a-z-]+)"/g)].map((m) => m[1]);
+  assert.equal(order[order.indexOf('work') + 1], 'games', `the section after the work is "${order[order.indexOf('work') + 1]}"`);
+  const games = sectionOf('games');
+  const all = EVERYTHING.filter((e) => e.kind === 'game');
+  const linked = [...games.matchAll(/<a class="(?:go|tile)" href="([^"]+)"/g)].map((m) => m[1]);
+  assert.equal(linked[0], byId.get('ember').href, 'the games section does not lead with Ember');
+  for (const href of linked) assert.ok(all.some((e) => e.href === href), `the games section links ${href}, which is not a game`);
+  const said = games.match(/<p class="intro">(\S+) games/)?.[1];
+  assert.equal(said, capital(WORDS[all.length]), `the games section says "${said}"; the atlas has ${all.length} games`);
+  assert.ok(games.includes(`See all ${WORDS[all.length]} games`), 'the link to the rest of the games miscounts them');
 });
 
 test('the CV is offered as a PDF wherever it is linked', () => {

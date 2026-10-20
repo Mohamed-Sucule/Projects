@@ -148,6 +148,18 @@
   .tile .label { margin-top: auto; padding-top: 6px; }
   .more { margin: 30px 0 0; display: flex; flex-wrap: wrap; gap: 10px 26px; }
   .more a { font-weight: 560; text-underline-offset: 4px; }
+  /* ── games ───────────────────────────────────────────────── */
+  /* Lit like Ember: the page goes dark here, and the one warm colour is the flame. */
+  .games {
+    --paper: #0e0b09; --card: #17120f; --ink: #f3ebe1; --soft: #cdbfae; --mute: #a8998a;
+    --rule: #2d2620; --rule-strong: #4a4037; --wash: #1e1814; --accent: #f2a65a; --accent-ink: #1b1007;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .6), 0 30px 70px -28px rgba(242, 166, 90, .28);
+    background: radial-gradient(120% 70% at 22% 0%, #1f1610 0%, var(--paper) 60%); color: var(--ink);
+    border-top: 0; color-scheme: dark;
+  }
+  .games + section { border-top: 0; }
+  .games .shot { box-shadow: 0 0 0 1px var(--rule), var(--shadow); }
+  .games .grid { margin-top: clamp(48px, 7vw, 80px); }
 
   /* ── writing ─────────────────────────────────────────────── */
   .posts { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 22px; }
@@ -218,6 +230,7 @@
     <a class="mark" href="./">Mohamed Sucule</a>
     <nav aria-label="Main">
       <a href="#work">Work</a>
+      <a href="#games">Games</a>
       <a href="#writing">Writing</a>
       <a href="#experience">Experience</a>
       <a href="#contact">Contact</a>
@@ -321,11 +334,59 @@
     </div>
   </section>
 
+  <section id="games" class="games" aria-labelledby="games-title">
+    <div class="wrap">
+      <p class="label">Games</p>
+      <h2 id="games-title">Games made of nothing but code</h2>
+      <p class="intro">Eight games run on this site with no engine, no image files and no sound files. Every sprite, shadow and note is made in the browser as you play. Each game has its own tests, and the hardest are played to the end by a program before you see them.</p>
+
+      <article class="case" aria-labelledby="ember-title">
+        <a class="shot" href="play/ember/index.html" tabindex="-1" aria-hidden="true"><img src="atlas/shots/ember-960.webp" srcset="atlas/shots/ember-960.webp 960w, atlas/shots/ember-1920.webp 1920w" sizes="(min-width: 900px) 460px, 92vw" width="960" height="600" alt="" loading="lazy" decoding="async" /></a>
+        <div>
+          <p class="label">Canvas 2D · Web Audio · Generator functions · Gamepad &amp; touch</p>
+          <h3 id="ember-title">Ember</h3>
+          <p class="line">An action game in the dark, where your flame is your light and your life.</p>
+          <ul class="hard">
+            <li>The light is geometry, not a picture: rays go from the flame to every wall corner in reach, and the shape they make is cut out of the dark on every frame, so shadows swing as you move.</li>
+            <li>Every run is a new map: a tree of rooms grown on a 5 × 4 grid, with the boss in the deepest dead end. The three bosses are generator functions, so an attack reads like a script: draw the circle, wait 0.8 s, land it.</li>
+            <li>Fair by construction: the tests play the whole game and fail if any blow lands less than 0.3 s after it was first shown. An autopilot plays from the first room to the ending on every seed.</li>
+          </ul>
+          <div class="proof">
+            <div><b>0.38 s</b><span>the least warning any attack gives, against a rule of 0.3</span></div>
+            <div><b>40</b><span>generated maps checked, every room reachable</span></div>
+            <div><b>20</b><span>tests, with an autopilot that plays to the ending</span></div>
+          </div>
+          <div class="links">
+            <a class="go" href="play/ember/index.html">Play Ember</a>
+            <a href="https://github.com/Mohamed-Sucule/Projects/tree/main/play/ember#readme">How it works</a>
+            <a href="https://github.com/Mohamed-Sucule/Projects/tree/main/play/ember">Source</a>
+          </div>
+        </div>
+      </article>
+
+      <div class="grid">
+        <a class="tile" href="play/sweeper/index.html">
+          <img src="atlas/shots/sweeper-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
+          <div><h3>Minesweeper</h3><p>Every board is played by a solver before you see it and thrown away if it needs a guess. A hint rings the square it can prove safe, and says why.</p><span class="label">Constraint solving · Keyboard play</span></div>
+        </a>
+        <a class="tile" href="play/sudoku/index.html">
+          <img src="atlas/shots/sudoku-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
+          <div><h3>Sudoku</h3><p>A daily puzzle with exactly one answer and a path to it without guessing. The hint names the technique and shows where it applies.</p><span class="label">Bitmask search · Daily seed</span></div>
+        </a>
+        <a class="tile" href="play/tether/index.html">
+          <img src="atlas/shots/tether-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
+          <div><h3>Tether</h3><p>Swing round a planet and tap to let go. You fly off along the tangent, exactly as fast as you were going.</p><span class="label">Orbital physics · One button</span></div>
+        </a>
+      </div>
+      <p class="more"><a href="atlas/#r-games">See all eight games</a></p>
+    </div>
+  </section>
+
   <section aria-labelledby="more-title">
     <div class="wrap">
       <p class="label">More of my work</p>
       <h2 id="more-title">Interfaces for hard problems</h2>
-      <p class="intro"><span data-count="atlas">Thirty-seven</span> projects run on this site, every one in the browser with nothing to install. These six show the range: tools, products, games and sound.</p>
+      <p class="intro"><span data-count="atlas">Thirty-seven</span> projects run on this site, every one in the browser with nothing to install. These six show the range: tools, products, machine learning and sound.</p>
       <div class="grid">
         <a class="tile" href="projects/oklch-studio/index.html">
           <img src="atlas/shots/oklch-studio-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
@@ -343,9 +404,9 @@
           <img src="atlas/shots/frontdesk-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
           <div><h3>Front Desk</h3><p>A phone receptionist that books real tables, with speech recognition running on the visitor's own device.</p><span class="label">In-browser machine learning</span></div>
         </a>
-        <a class="tile" href="play/sweeper/index.html">
-          <img src="atlas/shots/sweeper-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
-          <div><h3>Minesweeper</h3><p>Every board is proven solvable by logic before you see it, so a game never comes down to a coin flip.</p><span class="label">Game · Constraint solving</span></div>
+        <a class="tile" href="projects/diff-forge/index.html">
+          <img src="atlas/shots/diff-forge-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
+          <div><h3>Diff Forge</h3><p>The merge conflict, software's most hated screen, rebuilt as a choice you can actually read.</p><span class="label">Interaction design · Diffing</span></div>
         </a>
         <a class="tile" href="apps/tuner/index.html">
           <img src="atlas/shots/tuner-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
