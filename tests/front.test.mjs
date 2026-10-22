@@ -101,4 +101,7 @@ test('the CV is offered as a PDF wherever it is linked', () => {
   assert.ok(home.includes(`href="${pdf}"`), 'the front page does not link the CV PDF');
   assert.ok(cv.includes('href="Mohamed-Sucule-CV.pdf"'), 'the CV page does not link its PDF');
   assert.ok(existsSync(join(root, pdf)), `${pdf} has not been built: run node cv/build.mjs`);
+  /* The same CV in Word, for the applications that ask for one. */
+  assert.ok(cv.includes('href="Mohamed-Sucule-CV.docx"'), 'the CV page does not offer the Word version');
+  assert.ok(existsSync(join(root, 'cv/Mohamed-Sucule-CV.docx')), 'the Word CV has not been built: run node cv/build.mjs');
 });
