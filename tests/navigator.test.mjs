@@ -56,9 +56,9 @@ test('ids are unique', () => {
   assert.equal(new Set(EVERYTHING.map((e) => e.id)).size, EVERYTHING.length);
 });
 
-test('the lineup is twelve real projects, each shown once', () => {
+test('the lineup is fourteen real projects, each shown once', () => {
   const ids = SECTIONS.flatMap((s) => s.ids);
-  assert.equal(ids.length, 12);
+  assert.equal(ids.length, 14);
   assert.equal(new Set(ids).size, ids.length, 'a project is in two sections');
   for (const id of ids) assert.ok(EVERYTHING.some((e) => e.id === id), `the lineup lists "${id}", which is not in the catalogue`);
   assert.deep(ATLAS.map((e) => e.id), ids, 'the lineup is not in section order');
@@ -163,13 +163,14 @@ test('a rare word beats a common one', () => {
      them like any other word. */
   assert.equal(top('oklch'), 'oklch-studio');
   assert.equal(top('myers'), 'diff-forge');
-  assert.equal(top('tesseract'), 'claims');
-  assert.equal(top('meddicc'), 'callcoach');
+  assert.equal(top('harkness'), 'room');
+  assert.equal(top('sequencer'), 'beats');
 });
 
 test('matching every word beats matching half of them', () => {
   assert.equal(top('restaurant phone receptionist'), 'frontdesk');
-  assert.equal(top('insurance claim scan'), 'claims');
+  assert.equal(top('liquid metal sunset'), 'mercury');
+  assert.equal(top('locked room murder'), 'room');
 });
 
 test('a typo still finds the page', () => {
@@ -265,16 +266,20 @@ test('depth is understood', () => {
 /* ── the plain-English queries people actually type ─────────────────────── */
 
 const EXPECTED = [
-  ['the ai stuff', ['frontdesk', 'claims', 'callcoach']],
+  ['the ai stuff', ['frontdesk']],
   ['a game', ['ember']],
   ['lighthouse', ['lamplighter']],
-  ['something creative', ['ember', 'lamplighter']],
+  ['something creative', ['ember', 'lamplighter', 'mercury', 'beats', 'island']],
+  ['something beautiful', ['lamplighter', 'mercury']],
+  ['a story to read', ['lamplighter', 'nightshift', 'room']],
+  ['scary', ['nightshift']],
+  ['horror', ['nightshift']],
+  ['murder mystery', ['room']],
+  ['liquid metal', ['mercury']],
+  ['island', ['island']],
+  ['drum machine', ['beats']],
   ['restaurant', ['covers', 'frontdesk']],
   ['phone receptionist', ['frontdesk']],
-  ['insurance claim', ['claims']],
-  ['sales call', ['callcoach']],
-  ['slow request', ['trace-explorer']],
-  ['observability', ['trace-explorer']],
   ['merge conflict', ['diff-forge']],
   ['colour palette', ['oklch-studio']],
   ['regular expression', ['regex-lab']],
@@ -297,17 +302,14 @@ test('a generic word does not outrank the meaningful one', () => {
      "ai", and "the ai work" once returned the restaurant booking system on the
      strength of its "client work" tag. Filler words that are common in English
      and accidentally rare here are stop words now. */
-  for (const q of ['the ai work', 'the ai stuff']) {
-    const three = ids(q, 3);
-    for (const id of three) assert.equal(byId.get(id).kind, 'ai', `"${q}" returned ${three.join(', ')}`);
-  }
+  for (const q of ['the ai work', 'the ai stuff']) assert.equal(byId.get(top(q)).kind, 'ai', `"${q}" returned ${top(q)}`);
 });
 
 test('a phrase beats the sum of its words', () => {
   /* "floor plan" is one thing. The receptionist mentions plans and the floor
      separately; the booking system is the floor plan. */
   assert.equal(top('floor plan'), 'covers');
-  assert.equal(top('critical path'), 'trace-explorer');
+  assert.equal(top('liquid metal'), 'mercury');
 });
 
 test('a word that is genuinely specific still works', () => {

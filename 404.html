@@ -29,19 +29,20 @@
   <p><a id="go" href="/Projects/">Go to the portfolio</a></p>
 </main>
 <script type="module">
-  /* The playground and the gallery were folded into the front page, and each
-     project the gallery showed now has a case study at work/<id>/. Old links
-     to any of them are sent to where that content lives now. */
+  /* The playground, the gallery and the case studies at work/<id>/ were all
+     folded into the front page, where every project in the lineup has its
+     own place (an element with the project's id). Old links to any of them
+     are sent to where that project is now. */
   const root = location.pathname.startsWith('/Projects/') ? '/Projects/' : '/';
   const path = location.pathname.slice(root.length);
   const { ATLAS } = await import(`${root}shared/atlas.js`);
-  const project = path.match(/^atlas\/projects\/([a-z0-9-]+)/)?.[1];
+  const project = path.match(/^(?:atlas\/projects|work)\/([a-z0-9-]+)/)?.[1];
   let to = null;
-  if (project) to = ATLAS.some((e) => e.id === project) ? `${root}work/${project}/` : root;
-  else if (/^(playground\.html|atlas\/?)/.test(path)) to = `${root}#work`;
+  if (project) to = ATLAS.some((e) => e.id === project) ? `${root}#${project}` : root;
+  else if (/^(playground\.html|atlas\/?|work\/?)/.test(path)) to = root;
   if (to) {
     document.getElementById('title').textContent = 'This page has moved';
-    document.getElementById('why').textContent = 'The playground and the gallery are now part of the portfolio. Taking you there…';
+    document.getElementById('why').textContent = 'Every project now lives on the front page. Taking you there…';
     document.getElementById('go').href = to;
     location.replace(to);
   } else {

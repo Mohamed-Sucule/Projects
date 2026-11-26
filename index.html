@@ -3,26 +3,25 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Mohamed Sucule — Frontend Engineer (React, TypeScript)</title>
-<meta name="description" content="Mohamed Sucule, frontend engineer in Birmingham, UK. React and TypeScript, accessibility and performance. Twelve projects built end to end, from a spreadsheet written from scratch to products for real businesses, plus 4+ years at Capgemini and SynchrTrade." />
+<title>Mohamed Sucule — Interfaces, designed and built</title>
+<meta name="description" content="Mohamed Sucule designs and builds interfaces people can feel. One night of work, from dusk to morning: a game lit by its own flame, a story told by scrolling, map posters, a restaurant at full service and more, every one live in the browser." />
 <link rel="icon" href="favicon.svg" />
-<meta name="theme-color" content="#f6f5f1" media="(prefers-color-scheme: light)" />
-<meta name="theme-color" content="#0f1115" media="(prefers-color-scheme: dark)" />
+<meta name="theme-color" content="#2f3b78" />
 <meta property="og:type" content="profile" />
-<meta property="og:title" content="Mohamed Sucule — Frontend Engineer" />
-<meta property="og:description" content="React and TypeScript, accessibility and performance. Twelve projects built end to end: a spreadsheet and a map renderer written from scratch, products for real businesses, a game and tools for engineers." />
+<meta property="og:title" content="Mohamed Sucule — Interfaces, designed and built" />
+<meta property="og:description" content="One night of work, from dusk to morning: a game lit by its own flame, a story told by scrolling, map posters you would hang, and a restaurant at full service. Every piece runs in the browser." />
 <meta property="og:url" content="https://mohamed-sucule.github.io/Projects/" />
 <meta property="og:image" content="https://mohamed-sucule.github.io/Projects/assets/og-card.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Mohamed Sucule — Frontend Engineer" />
-<meta name="twitter:description" content="React and TypeScript, accessibility and performance. Twelve projects built end to end, live and tested." />
+<meta name="twitter:title" content="Mohamed Sucule — Interfaces, designed and built" />
+<meta name="twitter:description" content="One night of work, from dusk to morning. Every piece runs in the browser." />
 <meta name="twitter:image" content="https://mohamed-sucule.github.io/Projects/assets/og-card.png" />
 <link rel="canonical" href="https://mohamed-sucule.github.io/Projects/" />
 <link rel="me" href="https://www.linkedin.com/in/mohamed-sucule-bb8747439" />
 <link rel="me" href="https://github.com/Mohamed-Sucule" />
-<link rel="preload" href="assets/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="preload" href="assets/fonts/outfit.woff2" as="font" type="font/woff2" crossorigin />
 <script type="application/ld+json">
 {
@@ -30,389 +29,393 @@
   "@type": "Person",
   "name": "Mohamed Sucule",
   "jobTitle": "Frontend Engineer",
+  "description": "Designs and builds interfaces: games, interactive stories, product UI and tools, all in the browser.",
   "url": "https://mohamed-sucule.github.io/Projects/",
   "email": "mailto:mohamedsucule@gmail.com",
   "address": { "@type": "PostalAddress", "addressLocality": "Birmingham", "addressCountry": "GB" },
   "alumniOf": { "@type": "CollegeOrUniversity", "name": "Aston University" },
-  "knowsAbout": ["React", "TypeScript", "JavaScript", "Web accessibility", "Web performance", "Canvas", "SVG", "WebGL", "Playwright"],
+  "knowsAbout": ["UI design", "Interaction design", "React", "TypeScript", "Web accessibility", "Motion design", "Canvas", "WebGL", "Web Audio"],
   "sameAs": ["https://www.linkedin.com/in/mohamed-sucule-bb8747439", "https://github.com/Mohamed-Sucule"]
 }
 </script>
-<link rel="stylesheet" href="assets/site.css" />
+<script>document.documentElement.classList.add('js');</script>
+<link rel="stylesheet" href="assets/night.css" />
 </head>
 <body>
 <a class="skip" href="#main">Skip to the work</a>
 
+<!-- The sky behind everything. night.js colours it from the scroll position. -->
+<div class="sky" aria-hidden="true">
+  <div class="sun"></div>
+  <div class="moon"></div>
+  <canvas></canvas>
+</div>
+
 <header class="top">
-  <div class="wrap">
-    <a class="mark" href="./">Mohamed Sucule</a>
-    <nav aria-label="Main">
-      <a href="#work">Work</a>
-      <a href="#writing">Writing</a>
-      <a href="#experience">Experience</a>
-      <a href="#contact">Contact</a>
-      <a class="cv" href="cv/">CV</a>
-    </nav>
+  <a class="mark" href="#dusk">Mohamed Sucule</a>
+  <span class="clock" aria-hidden="true"><time>17:30</time><span class="now">Golden hour</span></span>
+  <div class="tools">
+    <button class="motion" type="button" aria-pressed="true" aria-label="Motion" title="Turn the moving parts of this page on or off">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path class="on" fill="currentColor" d="M8 5.5v13l10-6.5-10-6.5Z"/><path class="off" fill="currentColor" d="M7 5h3.5v14H7V5Zm6.5 0H17v14h-3.5V5Z"/></svg>
+      <span class="word">Motion</span>
+    </button>
+    <button class="index" type="button" aria-expanded="false" aria-controls="night">The night</button>
+    <a class="cv" href="cv/">CV</a>
   </div>
 </header>
 
+<nav class="rail" id="night" aria-label="The night, hour by hour">
+  <ol>
+    <li><a href="#dusk"><time>17:30</time><span>Golden hour</span></a></li>
+    <li><a href="#your-place"><time>18:00</time><span>Your Place</span></a></li>
+    <li><a href="#covers"><time>19:42</time><span>Covers</span></a></li>
+    <li><a href="#frontdesk"><time>21:00</time><span>Front Desk</span></a></li>
+    <li><a href="#nightshift"><time>22:00</time><span>Nightshift</span></a></li>
+    <li><a href="#ember"><time>00:00</time><span>Ember</span></a></li>
+    <li><a href="#lamplighter"><time>02:00</time><span>The Lamplighter</span></a></li>
+    <li><a href="#small-hours"><time>04:00</time><span>Small hours</span></a></li>
+    <li><a href="#oklch-studio"><time>06:15</time><span>OKLCH Studio</span></a></li>
+    <li><a href="#room"><time>07:00</time><span>The Room</span></a></li>
+    <li><a href="#morning"><time>08:00</time><span>Good morning</span></a></li>
+  </ol>
+</nav>
+
 <main id="main">
-  <section class="hero" aria-labelledby="hero-title">
+
+  <!-- 17:30 -->
+  <section id="dusk" class="scene hero" data-at="0" data-hour="17:30" data-name="Golden hour" aria-labelledby="hero-title">
     <div class="wrap">
-      <div>
-        <p class="label">Frontend engineer · Birmingham, UK</p>
-        <h1 id="hero-title">I build fast, accessible web apps in <em>React and TypeScript.</em></h1>
-        <p class="lede">
-          Four years shipping web applications at Capgemini and SynchrTrade, for product teams and for
-          public-sector clients under SC clearance. Below are <span data-count="lineup">twelve</span> things I designed and
-          built end to end: two full apps, two creative pieces, four products for real businesses and four tools for
-          engineers. Every one runs in your browser.
-        </p>
+      <p class="hour rise"><time>17:30</time><span>Golden hour</span></p>
+      <h1 id="hero-title" class="rise">Mohamed <em>Sucule</em></h1>
+      <div class="glass rise">
+        <p class="lede">I design and build interfaces people can feel.</p>
+        <p>This is one night of my work. Scroll, and the sun goes down: <span data-count="night">eight</span> projects through the evening, a sketchbook from the small hours, and in the morning, who I am and how to reach me.</p>
         <div class="ctas">
-          <a class="btn primary" href="cv/Mohamed-Sucule-CV.pdf">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 3h2v9.17l3.59-3.58L18 10l-6 6-6-6 1.41-1.41L11 12.17V3ZM5 19h14v2H5v-2Z"/></svg>
-            Download my CV
-          </a>
-          <a class="btn" href="https://www.linkedin.com/in/mohamed-sucule-bb8747439">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0Z"/></svg>
-            LinkedIn
-          </a>
-          <a class="btn" href="https://github.com/Mohamed-Sucule/Projects">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/></svg>
-            GitHub
-          </a>
-          <a class="btn" href="#contact">Get in touch</a>
+          <a class="go" href="#your-place">Start the night <span aria-hidden="true">↓</span></a>
+          <a class="ghost" href="#morning">Skip to the morning</a>
         </div>
-        <ul class="facts" aria-label="At a glance">
-          <li>4+ years commercial experience</li>
-          <li>SC security cleared</li>
-          <li>UK right to work</li>
-        </ul>
       </div>
-      <figure class="posters" aria-label="Two of the apps">
-        <a class="p2" href="cells/index.html"><img src="assets/shots/cells-960.webp" srcset="assets/shots/cells-960.webp 960w, assets/shots/cells-1920.webp 1920w" sizes="(min-width: 900px) 440px, 60vw" width="960" height="600" alt="Cells, the spreadsheet: a year of shop orders, with a SUMIFS formula being typed and each of its references outlined on the grid in its own colour" /></a>
-        <a class="p1" href="your-place/index.html"><img src="assets/your-place-poster.webp" width="680" height="962" alt="A map poster of Zürich made with Your Place: streets in gold on black, the city's name below" /></a>
+      <p class="role rise">Frontend engineer · Birmingham, UK · 4+ years at Capgemini and SynchrTrade</p>
+    </div>
+  </section>
+
+  <!-- 18:00 -->
+  <section id="your-place" class="scene" data-at="30" data-hour="18:00" data-name="Your Place" aria-labelledby="your-place-title">
+    <div class="wrap">
+      <div class="copy glass rise">
+        <p class="hour"><time>18:00</time><span>Dusk</span></p>
+        <h2 id="your-place-title">Your Place</h2>
+        <p class="kicker">Any place on Earth, as a poster you would hang.</p>
+        <p>Type a town, a street or an address, pick a style, and download a file ready to print. A present people actually want, drawn in the browser from OpenStreetMap.</p>
+        <ul class="notes">
+          <li><b>Five looks, not fifty settings.</b> Noir &amp; gold, Paper, Blueprint, Ink and Terracotta: pick one and the whole poster changes with it.</li>
+          <li><b>The print matches the screen.</b> One drawing pass makes both the preview and the 300 dpi file, line for line.</li>
+          <li><b>Quick enough to play with.</b> The first poster appears in 0.39 seconds. It used to take 41.7.</li>
+        </ul>
+        <a class="go" href="your-place/index.html">Make a poster <span aria-hidden="true">→</span></a>
+      </div>
+      <figure class="frame duo rise">
+        <a class="screen" href="your-place/index.html" tabindex="-1" aria-hidden="true" data-url="your place">
+          <img src="assets/shots/your-place-960.webp" srcset="assets/shots/your-place-960.webp 960w, assets/shots/your-place-1920.webp 1920w" sizes="(min-width: 1000px) 620px, 92vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+        </a>
+        <img class="print" src="assets/your-place-poster.webp" width="680" height="962" alt="A poster of Zürich made with Your Place: the streets in gold on black, and the city’s name below" loading="lazy" decoding="async" />
+        <figcaption>Zürich in Noir &amp; gold, as it comes out of the app</figcaption>
       </figure>
     </div>
   </section>
 
-  <section id="work" aria-labelledby="work-title">
+  <!-- 19:42 -->
+  <section id="covers" class="scene flip" data-at="132" data-hour="19:42" data-name="Covers" aria-labelledby="covers-title">
     <div class="wrap">
-      <p class="label">Selected work</p>
-      <h2 id="work-title">Two apps, built end to end</h2>
-      <p class="intro">Both are React 19 and TypeScript in strict mode, with unit tests, end-to-end tests on a desktop and a phone, automated accessibility checks and their own CI. Each solves a hard problem a user never has to think about.</p>
-
-      <!-- build:work -->
-      <article class="case" aria-labelledby="cells-title">
-        <a class="shot" href="cells/index.html" tabindex="-1" aria-hidden="true"><img src="assets/shots/cells-960.webp" srcset="assets/shots/cells-960.webp 960w, assets/shots/cells-1920.webp 1920w" sizes="(min-width: 900px) 460px, 92vw" width="960" height="600" alt="" loading="lazy" decoding="async" /></a>
-        <div>
-          <p class="label">React 19 · TypeScript (strict) · Vite · Virtualised ARIA grid</p>
-          <h3 id="cells-title">Cells</h3>
-          <p class="line">A spreadsheet, written from scratch.</p>
-          <ul class="hard">
-            <li>A formula engine of my own: a Pratt parser, 116 functions with Excel’s rules for blanks, text, errors and dates, and a dependency graph that recalculates only what changed and catches circular references.</li>
-            <li>A grid of 1,048,576 rows that scrolls past the browser’s height limit, works the way Excel does from the keyboard, lets you point at cells while typing a formula, and that a screen reader can follow to the last row.</li>
-            <li>Profiling took a 100,000-formula recalculation from 681 ms to 133: the cost was in maps keyed by numbers too big for V8’s small integers, not in the formulas.</li>
-          </ul>
-          <div class="proof">
-            <div><b>133 ms</b><span>200,001 cells recalculated, down from 681</span></div>
-            <div><b>209</b><span>unit tests, one checking every cell against a plain evaluator</span></div>
-            <div><b>16</b><span>end-to-end tests, desktop and phone, with axe</span></div>
-          </div>
-          <div class="links">
-            <a class="go" href="cells/index.html">Open Cells</a>
-            <a href="work/cells/">Case study</a>
-            <a href="writing/recalculating-a-spreadsheet/">How I made it fast</a>
-            <a href="https://github.com/Mohamed-Sucule/Projects/tree/main/cells">Source</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="case flip" aria-labelledby="your-place-title">
-        <a class="shot" href="your-place/index.html" tabindex="-1" aria-hidden="true"><img src="assets/shots/your-place-960.webp" srcset="assets/shots/your-place-960.webp 960w, assets/shots/your-place-1920.webp 1920w" sizes="(min-width: 900px) 460px, 92vw" width="960" height="600" alt="" loading="lazy" decoding="async" /></a>
-        <div>
-          <p class="label">React 19 · TypeScript (strict) · Web Workers · OffscreenCanvas</p>
-          <h3 id="your-place-title">Your Place</h3>
-          <p class="line">Any place on Earth, as a print-ready map poster.</p>
-          <ul class="hard">
-            <li>A map engine written from scratch: vector tiles are decoded into typed arrays and painted in a Web Worker on an OffscreenCanvas, so dragging the map never waits for drawing.</li>
-            <li>Profiling took the first poster from 41.7 seconds to 0.39: a third of the tiles showed the same streets, and one Chromium path call grew with the path it was closing.</li>
-            <li>One geometry pass writes both the canvas and the SVG, so the 300 dpi print matches the preview line for line.</li>
-          </ul>
-          <div class="proof">
-            <div><b>0.39 s</b><span>first poster, down from 41.7 s</span></div>
-            <div><b>62</b><span>unit tests</span></div>
-            <div><b>12 × 2</b><span>end-to-end scenarios, desktop and phone</span></div>
-          </div>
-          <div class="links">
-            <a class="go" href="your-place/index.html">Open Your Place</a>
-            <a href="work/your-place/">Case study</a>
-            <a href="writing/fast-map-posters/">How I made it fast</a>
-            <a href="https://github.com/Mohamed-Sucule/Projects/tree/main/your-place">Source</a>
-          </div>
-        </div>
-      </article>
-      <!-- /build:work -->
-    </div>
-  </section>
-
-  <section id="creative" class="night" aria-labelledby="creative-title">
-    <div class="wrap">
-      <p class="label">Creative work</p>
-      <h2 id="creative-title">Light, sound and story, all in code</h2>
-      <p class="intro">Two pieces where the interface is the experience. Neither has an image or a sound file: every shadow, sky and note is drawn or synthesised in the browser as you go.</p>
-
-      <!-- build:creative -->
-      <article class="case" aria-labelledby="ember-title">
-        <a class="shot" href="play/ember/index.html" tabindex="-1" aria-hidden="true"><img src="assets/shots/ember-960.webp" srcset="assets/shots/ember-960.webp 960w, assets/shots/ember-1920.webp 1920w" sizes="(min-width: 900px) 460px, 92vw" width="960" height="600" alt="" loading="lazy" decoding="async" /></a>
-        <div>
-          <p class="label">Canvas 2D · Web Audio · Generator functions · Gamepad API</p>
-          <h3 id="ember-title">Ember</h3>
-          <p class="line">An action game in the dark, where your flame is your light and your life.</p>
-          <ul class="hard">
-            <li>The light is geometry, not a picture: rays go from the flame to every wall corner in reach, and the shape they make is cut out of the dark on every frame, so shadows swing as you move.</li>
-            <li>Every run is a new map: a tree of rooms grown on a 5 × 4 grid, with the boss in the deepest dead end. The three bosses are generator functions, so an attack reads like a script: draw the circle, wait 0.8 s, land it.</li>
-            <li>Fair by construction: the tests play the whole game and fail if any blow lands less than 0.3 s after it was first shown. An autopilot plays from the first room to the ending on every seed.</li>
-          </ul>
-          <div class="proof">
-            <div><b>0.38 s</b><span>the least warning any attack gives, against a rule of 0.3</span></div>
-            <div><b>40</b><span>generated maps checked, every room reachable</span></div>
-            <div><b>20</b><span>tests, with an autopilot that plays to the ending</span></div>
-          </div>
-          <div class="links">
-            <a class="go" href="play/ember/index.html">Play Ember</a>
-            <a href="work/ember/">Case study</a>
-            <a href="https://github.com/Mohamed-Sucule/Projects/tree/main/play/ember">Source</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="case flip" aria-labelledby="lamplighter-title">
-        <a class="shot" href="apps/lamplighter/index.html" tabindex="-1" aria-hidden="true"><img src="assets/shots/lamplighter-960.webp" srcset="assets/shots/lamplighter-960.webp 960w, assets/shots/lamplighter-1920.webp 1920w" sizes="(min-width: 900px) 460px, 92vw" width="960" height="600" alt="" loading="lazy" decoding="async" /></a>
-        <div>
-          <p class="label">Canvas 2D · Scroll-linked animation · Web Audio · No image files</p>
-          <h3 id="lamplighter-title">The Lamplighter</h3>
-          <p class="line">One night at a lighthouse, told by scrolling and drawn as you read.</p>
-          <ul class="hard">
-            <li>Scrolling is time, not travel: the scroll position is the hour of the night, and the sun’s height, the colour of the sky, the wind, the rain and the sea are all functions of that one number.</li>
-            <li>Two clocks, kept apart: the reader’s is the scroll bar, the lighthouse’s is wall time. The beam turns every 11.2 seconds whether or not anybody is reading, so the place goes on existing when you stop.</li>
-            <li>The words are pinned to the middle of the frame and cross-fade, with opacities that always add up to one, so the view stays where it is while the night changes around it.</li>
-          </ul>
-          <div class="proof">
-            <div><b>0</b><span>image or sound files: all of it is drawn or synthesised</span></div>
-            <div><b>11.2 s</b><span>one turn of the beam, on wall time, not scroll</span></div>
-            <div><b>21</b><span>tests, from the path of the sun to one chapter readable at a time</span></div>
-          </div>
-          <div class="links">
-            <a class="go" href="apps/lamplighter/index.html">Read The Lamplighter</a>
-            <a href="work/lamplighter/">Case study</a>
-            <a href="https://github.com/Mohamed-Sucule/Projects/tree/main/apps/lamplighter">Source</a>
-          </div>
-        </div>
-      </article>
-      <!-- /build:creative -->
-    </div>
-  </section>
-
-  <section id="products" aria-labelledby="products-title">
-    <div class="wrap">
-      <p class="label">Products</p>
-      <h2 id="products-title">Software a business would pay for</h2>
-      <p class="intro">A restaurant’s floor and booking system, and three AI tools of the kind companies are buying now: a receptionist that books into it, a claims desk and a sales-call coach. Everything runs on your device, and nothing you type or say leaves the page.</p>
-
-      <!-- build:products -->
-      <ul class="cards two">
-        <li><a class="card" href="work/covers/">
-          <img src="assets/shots/covers-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
-          <div>
-            <h3>Covers</h3>
-            <p>A restaurant’s floor plan and bookings, opened mid-service on a Saturday with a double booking to sort out.</p>
-            <p class="measure">Explains every refusal in a sentence a head waiter could say</p>
-            <span class="label">Product UI · Drag and drop</span>
-          </div>
-        </a></li>
-        <li><a class="card" href="work/frontdesk/">
-          <img src="assets/shots/frontdesk-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
-          <div>
-            <h3>Front Desk</h3>
-            <p>A phone receptionist that books real tables, with speech recognition on the caller’s own device.</p>
-            <p class="measure">75 of 82 new phrasings understood first time</p>
-            <span class="label">AI product · Speech</span>
-          </div>
-        </a></li>
-        <li><a class="card" href="work/claims/">
-          <img src="assets/shots/claims-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
-          <div>
-            <h3>Claims Desk</h3>
-            <p>Reads an insurance claim with OCR in the browser and recommends a decision, with the evidence for each line.</p>
-            <p class="measure">A misread only ever sends a claim to a person</p>
-            <span class="label">AI product · OCR</span>
-          </div>
-        </a></li>
-        <li><a class="card" href="work/callcoach/">
-          <img src="assets/shots/callcoach-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
-          <div>
-            <h3>Call Coach</h3>
-            <p>The answer on screen the moment a prospect objects, and the notes and follow-up written when the call ends.</p>
-            <p class="measure">27 of 28 new lines tagged right first time</p>
-            <span class="label">AI product · Sales</span>
-          </div>
-        </a></li>
-      </ul>
-      <!-- /build:products -->
-    </div>
-  </section>
-
-  <section id="tools" aria-labelledby="tools-title">
-    <div class="wrap">
-      <p class="label">Tools for engineers</p>
-      <h2 id="tools-title">The screens engineers fight with, rebuilt</h2>
-      <p class="intro">A trace waterfall, a merge conflict, a colour palette and a regular expression: four interfaces that usually leave you on your own at the hard moment, rebuilt around it. Each opens with a plain-English briefing of what it is and why it matters.</p>
-
-      <!-- build:tools -->
-      <ul class="cards four">
-        <li><a class="card" href="work/trace-explorer/">
-          <img src="assets/shots/trace-explorer-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
-          <div>
-            <h3>Trace Explorer</h3>
-            <p>A slow request’s spans as a waterfall, with the critical path marked and the findings in sentences.</p>
-            <p class="measure">Opens on the worst of 260 traces, and says why</p>
-            <span class="label">Observability</span>
-          </div>
-        </a></li>
-        <li><a class="card" href="work/diff-forge/">
-          <img src="assets/shots/diff-forge-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
-          <div>
-            <h3>Diff Forge</h3>
-            <p>The merge-conflict screen rebuilt around the decision, with two diff algorithms written from scratch.</p>
-            <p class="measure">Myers and patience diff, written from scratch</p>
-            <span class="label">Interaction design</span>
-          </div>
-        </a></li>
-        <li><a class="card" href="work/oklch-studio/">
-          <img src="assets/shots/oklch-studio-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
-          <div>
-            <h3>OKLCH Studio</h3>
-            <p>A palette builder that works in a perceptual colour space and checks every pair for contrast.</p>
-            <p class="measure">Every pair checked against WCAG 2.1 and APCA</p>
-            <span class="label">Design systems · Accessibility</span>
-          </div>
-        </a></li>
-        <li><a class="card" href="work/regex-lab/">
-          <img src="assets/shots/regex-lab-960.webp" width="960" height="600" alt="" loading="lazy" decoding="async" />
-          <div>
-            <h3>Regex Lab</h3>
-            <p>A regular expression as an automaton you can watch run, including the kind that takes a website down.</p>
-            <p class="measure">Catastrophic backtracking, made visible</p>
-            <span class="label">Visualisation</span>
-          </div>
-        </a></li>
-      </ul>
-      <!-- /build:tools -->
-    </div>
-  </section>
-
-  <section id="writing" aria-labelledby="writing-title">
-    <div class="wrap">
-      <p class="label">Writing</p>
-      <h2 id="writing-title">How the hard parts were solved</h2>
-      <p class="intro">Two write-ups of problems from the apps, with the measurements and the dead ends.</p>
-      <div class="posts">
-        <a class="post" href="writing/recalculating-a-spreadsheet/">
-          <span class="label">Performance · Cells</span>
-          <h3>From 681 ms to 133: recalculating 200,000 formulas</h3>
-          <p>Why the formulas were the cheap part, and what a JavaScript engine does with numbers past a billion.</p>
+      <div class="copy glass rise">
+        <p class="hour"><time>19:42</time><span>Saturday service</span></p>
+        <h2 id="covers-title">Covers</h2>
+        <p class="kicker">A restaurant’s floor plan and bookings, opened at the busiest moment of the week.</p>
+        <p>Every booking demo opens on an empty grid, and an empty restaurant tells you nothing. This one drops you in at 19:42 on a Saturday: thirty-one bookings, eleven parties eating, one running late, and a double booking on table 2 to sort out.</p>
+        <ul class="notes">
+          <li><b>Every no comes with a way forward.</b> Drag a party to a table that is wrong for them and it says why, and what to do instead.</li>
+          <li><b>Nobody already seated gets moved.</b> When the answer is no, it looks for a rearrangement that makes it a yes, and shows what that would change first.</li>
+          <li><b>Press play and the evening runs.</b> Parties arrive, eat and leave while you watch.</li>
+        </ul>
+        <blockquote class="said"><p>“Table 1 seats 2. This is a party of 6. → 30 is free at 20:30.”</p></blockquote>
+        <a class="go" href="apps/covers/index.html">Open Covers <span aria-hidden="true">→</span></a>
+      </div>
+      <figure class="frame rise">
+        <a class="screen" href="apps/covers/index.html" tabindex="-1" aria-hidden="true" data-url="covers">
+          <video muted loop playsinline preload="none" width="1280" height="800" poster="assets/media/covers.webp"><source src="assets/media/covers.mp4" type="video/mp4" /></video>
         </a>
-        <a class="post" href="writing/fast-map-posters/">
-          <span class="label">Performance · Your Place</span>
-          <h3>From 41.7 seconds to 0.39: making a map poster fast</h3>
-          <p>Profiling a canvas renderer, finding a cost that grows with every shape drawn, and moving the work off the main thread.</p>
+        <figcaption>Recorded in the app: Saturday service running on its own</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 21:00 -->
+  <section id="frontdesk" class="scene" data-at="210" data-hour="21:00" data-name="Front Desk" aria-labelledby="frontdesk-title">
+    <div class="wrap">
+      <div class="copy glass rise">
+        <p class="hour"><time>21:00</time><span>A table for two</span></p>
+        <h2 id="frontdesk-title">Front Desk</h2>
+        <p class="kicker">An AI receptionist that answers the phone, so the staff can keep serving.</p>
+        <p>Ask for a table, typed or spoken. It checks the real plan in Covers, offers the nearest free time when yours has gone, and hands over to a person when it should.</p>
+        <ul class="notes">
+          <li><b>One question at a time,</b> like a good host. It remembers what you have said, and copes when you change your mind halfway through.</li>
+          <li><b>Kind when it is lost.</b> If it cannot follow you three times in a row, it offers a call back instead of going round in circles.</li>
+          <li><b>Private by design.</b> The speech recognition runs on your own device. Nothing you say leaves the page.</li>
+        </ul>
+        <a class="go" href="apps/frontdesk/index.html">Call Front Desk <span aria-hidden="true">→</span></a>
+      </div>
+      <figure class="frame rise">
+        <a class="screen" href="apps/frontdesk/index.html" tabindex="-1" aria-hidden="true" data-url="front desk">
+          <video muted loop playsinline preload="none" width="1280" height="800" poster="assets/media/frontdesk.webp"><source src="assets/media/frontdesk.mp4" type="video/mp4" /></video>
         </a>
-      </div>
+        <figcaption>Recorded in the app: a caller booking a table</figcaption>
+      </figure>
     </div>
   </section>
 
-  <section id="experience" aria-labelledby="exp-title">
+  <!-- 22:00 -->
+  <section id="nightshift" class="scene flip" data-at="270" data-hour="22:00" data-name="Nightshift" aria-labelledby="nightshift-title">
     <div class="wrap">
-      <p class="label">Experience</p>
-      <h2 id="exp-title">Where I've worked</h2>
-      <p class="intro">Product and consultancy teams, from technical discovery to live support.</p>
-      <div class="roles">
-        <div class="role">
-          <p class="when">July 2022 – present</p>
-          <div>
-            <h3>Software Engineer <span>· Capgemini</span></h3>
-            <p>Responsive front-end features in React, TypeScript and JavaScript, integrated with production services through REST APIs, for major public- and private-sector clients, including programmes under SC clearance. Requirements worked out directly with senior stakeholders; delivery in Agile teams from discovery to live support.</p>
-          </div>
-        </div>
-        <div class="role">
-          <p class="when">2021 – 2022</p>
-          <div>
-            <h3>Web Developer <span>· SynchrTrade</span></h3>
-            <p>Responsive web interfaces in React and JavaScript for commercial users, built with back-end engineers and designers inside agile sprints, and refined as feedback and requirements changed.</p>
-          </div>
-        </div>
+      <div class="copy glass rise">
+        <p class="hour"><time>22:00</time><span>Watch commenced</span></p>
+        <h2 id="nightshift-title">Nightshift</h2>
+        <p class="kicker">A short horror story, told as a coastal watch log from November 1987.</p>
+        <p>It opens with the weather and the shipping, and it does not stay there. There is no game and nothing to press: you scroll, and the page reads you scrolling.</p>
+        <ul class="notes">
+          <li><b>Deliberately boring.</b> No flicker, no heartbeat, no dark theme. It looks like an archive transcription, so nothing warns you.</li>
+          <li><b>The page is part of the story.</b> It notices how you read, and even the scroll bar has a part to play.</li>
+          <li><b>Best alone, with the sound on.</b> It takes about five minutes.</li>
+        </ul>
+        <a class="go" href="apps/nightshift/index.html">Read Nightshift <span aria-hidden="true">→</span></a>
       </div>
-      <p class="creds">BEng Mechanical Engineering, Aston University (2021) · AWS Certified Cloud Practitioner · Microsoft Azure AI Fundamentals (AI-900) · GitLab Certified · <a href="cv/">Full CV</a></p>
+      <figure class="frame rise">
+        <a class="screen paper" href="apps/nightshift/index.html" tabindex="-1" aria-hidden="true" data-url="nightshift">
+          <img src="assets/shots/nightshift-960.webp" srcset="assets/shots/nightshift-960.webp 960w, assets/shots/nightshift-1920.webp 1920w" sizes="(min-width: 1000px) 620px, 92vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+        </a>
+        <figcaption>Coastal Watch, Station K: the first hour of the log</figcaption>
+      </figure>
     </div>
   </section>
 
-  <section aria-labelledby="ways-title">
+  <!-- 00:00 -->
+  <section id="ember" class="scene ember" data-at="390" data-hour="00:00" data-name="Ember" aria-labelledby="ember-title">
     <div class="wrap">
-      <p class="label">How I work</p>
-      <h2 id="ways-title">What you can count on</h2>
-      <p class="intro">The habits behind the work above, each with the evidence on this site.</p>
-      <ul class="ways">
-        <li><h3>Accessible from the start</h3><p>Every page here is checked with axe in CI, in light and dark mode, and the two React apps test their keyboard paths end to end.</p></li>
-        <li><h3>Measured, not guessed</h3><p>I profile before I optimise. That is how the first Your Place poster went from 41.7 seconds to 0.39.</p></li>
-        <li><h3>Tested before it ships</h3><p>Over <b data-claim="tests">900</b> tests gate every deploy of this site, and each React app runs its own unit and end-to-end suites.</p></li>
-        <li><h3>Easy to pick up</h3><p>Strict TypeScript, pure logic kept apart from the interface, and a write-up for every project that explains its decisions.</p></li>
+      <div class="copy glass rise">
+        <p class="hour"><time>00:00</time><span>Midnight</span></p>
+        <h2 id="ember-title">Ember</h2>
+        <p class="kicker">An action game in the dark, where your flame is your light and your life.</p>
+        <p>Three acts, three bosses and nine ash-stones, in a kingdom where the only light is the one you carry. Take a hit and it burns lower, and the dark comes closer.</p>
+        <ul class="notes">
+          <li><b>Your health is your light.</b> You feel how hurt you are before you read it, in how far you can see.</li>
+          <li><b>Shadows that swing.</b> Light is cast from the flame to every corner in reach, every frame, so the room moves as you do.</li>
+          <li><b>Fair you can see.</b> Every attack is drawn on the floor before it lands. The tests play the whole game and fail if any blow gives less than 0.3 seconds of warning.</li>
+          <li><b>Nothing downloaded.</b> No engine, and no image or sound file: every room, shadow and note of the score is made as you play.</li>
+        </ul>
+        <a class="go" href="play/ember/index.html">Play Ember <span aria-hidden="true">→</span></a>
+      </div>
+      <figure class="frame rise">
+        <a class="screen" href="play/ember/index.html" tabindex="-1" aria-hidden="true" data-url="ember">
+          <video muted loop playsinline preload="none" width="1280" height="800" poster="assets/media/ember.webp"><source src="assets/media/ember.mp4" type="video/mp4" /></video>
+        </a>
+        <figcaption>Recorded in the game: the first boss, by the light of the flame</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 02:00 -->
+  <section id="lamplighter" class="scene flip" data-at="510" data-hour="02:00" data-name="The Lamplighter" aria-labelledby="lamplighter-title">
+    <div class="wrap">
+      <div class="copy glass rise">
+        <p class="hour"><time>02:00</time><span>The worst of it</span></p>
+        <h2 id="lamplighter-title">The Lamplighter</h2>
+        <p class="kicker">One night at a lighthouse, told by scrolling and drawn as you read.</p>
+        <p>A keeper’s last winter before a machine replaces him, in five minutes. The sun goes down, the gale gets up, the rain comes sideways, and the light keeps turning.</p>
+        <ul class="notes">
+          <li><b>Scrolling is time.</b> The scroll bar is the hour of the night, and the sky, the wind, the rain and the sea all follow it. This page borrows the idea.</li>
+          <li><b>The light keeps turning,</b> once every 11.2 seconds, whether or not you are reading. The place goes on when you stop.</li>
+          <li><b>Drawn, not downloaded.</b> The sky, the sea, the tower, the rain, the beam and the foghorn are all code. There is not an image or a sound file in its folder.</li>
+        </ul>
+        <a class="go" href="apps/lamplighter/index.html">Read The Lamplighter <span aria-hidden="true">→</span></a>
+      </div>
+      <figure class="frame rise">
+        <a class="screen" href="apps/lamplighter/index.html" tabindex="-1" aria-hidden="true" data-url="the lamplighter">
+          <video muted loop playsinline preload="none" width="1280" height="800" poster="assets/media/lamplighter.webp"><source src="assets/media/lamplighter.mp4" type="video/mp4" /></video>
+        </a>
+        <figcaption>Recorded in the story: scrolling from dusk into the storm</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 04:00 -->
+  <section id="small-hours" class="scene sketches" data-at="630" data-hour="04:00" data-name="Small hours" aria-labelledby="sketches-title">
+    <div class="wrap">
+      <div class="glass head rise">
+        <p class="hour"><time>04:00</time><span>Small hours</span></p>
+        <h2 id="sketches-title">Things I make at four in the morning</h2>
+        <p>Small pieces, each one idea taken as far as it will go. Pick one up and play with it.</p>
+      </div>
+      <ul class="polaroids">
+        <li id="mercury" class="rise">
+          <a href="apps/mercury/index.html">
+            <img src="assets/shots/mercury-960.webp" width="960" height="600" alt="Mercury: a blob of liquid metal floating over a rippling silver sea at sunset" loading="lazy" decoding="async" />
+            <b>Mercury</b>
+            <span class="hand">liquid metal under a sunset. drag it.</span>
+            <span class="fine">No 3D model, no texture: every pixel is worked out sixty times a second.</span>
+          </a>
+        </li>
+        <li id="island" class="rise">
+          <a href="play/island/index.html">
+            <img src="assets/shots/island-960.webp" width="960" height="600" alt="Islandsmith: a generated island called Gallow Spit, with mountains, forests and a smaller island beside it" loading="lazy" decoding="async" />
+            <b>Islandsmith</b>
+            <span class="hand">one number, one new world.</span>
+            <span class="fine">Coastline, mountains, forests, rivers and a name, all grown from a single seed.</span>
+          </a>
+        </li>
+        <li id="beats" class="rise">
+          <a href="play/beats/index.html">
+            <img src="assets/shots/beats-960.webp" width="960" height="600" alt="Beat Lab: a step sequencer, its pads lit in pink, blue, purple and green for each drum" loading="lazy" decoding="async" />
+            <b>Beat Lab</b>
+            <span class="hand">a drum machine with no sounds in it.</span>
+            <span class="fine">Every kick, snare and hi-hat is synthesised from scratch as it plays.</span>
+          </a>
+        </li>
       </ul>
     </div>
   </section>
 
-  <section class="contact" id="contact" aria-labelledby="contact-title">
+  <!-- 06:15 -->
+  <section id="oklch-studio" class="scene" data-at="765" data-hour="06:15" data-name="OKLCH Studio" aria-labelledby="oklch-title">
     <div class="wrap">
-      <p class="label">Contact</p>
-      <h2 id="contact-title">Let's talk</h2>
-      <p class="intro">If you're hiring for a frontend role, or have an interface problem nobody has solved yet, I'd like to hear about it.</p>
-      <a class="mail" href="mailto:mohamedsucule@gmail.com">mohamedsucule@gmail.com</a>
-      <div class="ctas">
-        <button class="btn primary" type="button" id="copyMail" data-mail="mohamedsucule@gmail.com">Copy email address</button>
-        <a class="btn" href="https://www.linkedin.com/in/mohamed-sucule-bb8747439">LinkedIn</a>
-        <a class="btn" href="cv/Mohamed-Sucule-CV.pdf">CV (PDF)</a>
+      <div class="copy glass rise">
+        <p class="hour"><time>06:15</time><span>First light</span></p>
+        <h2 id="oklch-title">OKLCH Studio</h2>
+        <p class="kicker">Colour comes back. A palette builder for colours that stay readable.</p>
+        <p>Most palette tools work in HSL, where yellow and navy can claim the same lightness, so a palette that looks fine in the design file fails the accessibility audit. This one works the way eyes do.</p>
+        <ul class="notes">
+          <li><b>Evenly spaced means evenly seen.</b> Each step down a ramp is the same visible step in every colour family.</li>
+          <li><b>Readable, and checked.</b> Every pair of colours is scored for contrast against two standards, WCAG 2.1 and APCA.</li>
+          <li><b>Honest about compromise.</b> When a colour cannot be shown on an ordinary screen, it says what was changed to make it fit.</li>
+        </ul>
+        <a class="go" href="projects/oklch-studio/index.html">Open OKLCH Studio <span aria-hidden="true">→</span></a>
       </div>
-      <p class="note" id="copyNote" role="status" aria-live="polite"></p>
+      <figure class="frame rise">
+        <a class="screen" href="projects/oklch-studio/index.html" tabindex="-1" aria-hidden="true" data-url="oklch studio">
+          <video muted loop playsinline preload="none" width="1280" height="800" poster="assets/media/oklch-studio.webp"><source src="assets/media/oklch-studio.mp4" type="video/mp4" /></video>
+        </a>
+        <figcaption>Recorded in the app: one hue swung round the wheel, every score updating</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 07:00 -->
+  <section id="room" class="scene flip" data-at="810" data-hour="07:00" data-name="The Room" aria-labelledby="room-title">
+    <div class="wrap">
+      <div class="copy glass rise">
+        <p class="hour"><time>07:00</time><span>The morning after</span></p>
+        <h2 id="room-title">The Room</h2>
+        <p class="kicker">A locked-room murder mystery you solve by reasoning, not guessing.</p>
+        <p>Edmund Harkness is dead at his desk. The door was locked from the inside, and the key was in his pocket.</p>
+        <ul class="notes">
+          <li><b>Look, don’t guess.</b> Nineteen things to examine, four people to question, five contradictions hidden among them, and not one multiple-choice question.</li>
+          <li><b>A notebook that notices.</b> When two facts disagree, it sets them facing each other with a <i>but</i> between them.</li>
+          <li><b>Name somebody.</b> When you think you know, say who.</li>
+        </ul>
+        <a class="go" href="apps/room/index.html">Solve The Room <span aria-hidden="true">→</span></a>
+      </div>
+      <figure class="frame rise">
+        <a class="screen" href="apps/room/index.html" tabindex="-1" aria-hidden="true" data-url="the room">
+          <img src="assets/shots/room-960.webp" srcset="assets/shots/room-960.webp 960w, assets/shots/room-1920.webp 1920w" sizes="(min-width: 1000px) 620px, 92vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
+        </a>
+        <figcaption>The study at Harkness Hall, drawn as a plate you look into</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 08:00 -->
+  <section id="morning" class="scene morning" data-at="870" data-hour="08:00" data-name="Good morning" aria-labelledby="morning-title">
+    <div class="wrap">
+      <div class="paper rise">
+        <p class="hour"><time>08:00</time><span>Good morning</span></p>
+        <h2 id="morning-title">Good morning. <em>This is who I am.</em></h2>
+
+        <div class="about">
+          <div>
+            <p class="lede">I’m Mohamed, a frontend engineer in Birmingham, and I design as much as I build.</p>
+            <p>For four years I have built web applications at Capgemini and SynchrTrade, for product teams and for public-sector clients under SC clearance. In my own time I make things like the ones you have just scrolled past: interfaces where the feeling is the point, built from scratch so every detail is mine to get right.</p>
+            <div class="ctas">
+              <a class="go" href="cv/Mohamed-Sucule-CV.pdf">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 3h2v9.17l3.59-3.58L18 10l-6 6-6-6 1.41-1.41L11 12.17V3ZM5 19h14v2H5v-2Z"/></svg>
+                Download my CV
+              </a>
+              <a class="ghost" href="cv/">Read it here</a>
+              <a class="ghost" href="https://www.linkedin.com/in/mohamed-sucule-bb8747439">LinkedIn</a>
+              <a class="ghost" href="https://github.com/Mohamed-Sucule/Projects">GitHub</a>
+            </div>
+            <ul class="facts" aria-label="At a glance">
+              <li>4+ years commercial experience</li>
+              <li>SC security cleared</li>
+              <li>UK right to work</li>
+            </ul>
+          </div>
+          <ul class="ways">
+            <li><h3>Design and code in one pair of hands</h3><p>From the first sketch to the shipped interface: layout, type, motion, colour and sound, and the code that makes them hold up.</p></li>
+            <li><h3>A point of view</h3><p>A restaurant system that opens mid-service. A story where scrolling is time. I start from how a thing should feel, then make it work.</p></li>
+            <li><h3>Accessible by default</h3><p>Every page here is checked with axe in light and dark, works from the keyboard, and calms down when you ask for less motion.</p></li>
+            <li><h3>Built to last</h3><p>Over <b data-claim="tests">850</b> tests run before every deploy of this site, and the React apps run their own unit and end-to-end suites.</p></li>
+          </ul>
+        </div>
+
+        <div class="career" id="experience">
+          <h3 class="label">Where I have worked</h3>
+          <div class="role">
+            <p class="when">July 2022 – present</p>
+            <div>
+              <h4>Software Engineer <span>· Capgemini</span></h4>
+              <p>Responsive front-end features in React, TypeScript and JavaScript, integrated with production services through REST APIs, for major public- and private-sector clients, including programmes under SC clearance. Requirements worked out directly with senior stakeholders; delivery in Agile teams from discovery to live support.</p>
+            </div>
+          </div>
+          <div class="role">
+            <p class="when">2021 – 2022</p>
+            <div>
+              <h4>Web Developer <span>· SynchrTrade</span></h4>
+              <p>Responsive web interfaces in React and JavaScript for commercial users, built with back-end engineers and designers inside agile sprints, and refined as feedback and requirements changed.</p>
+            </div>
+          </div>
+          <p class="creds">BEng Mechanical Engineering, Aston University (2021) · AWS Certified Cloud Practitioner · Microsoft Azure AI Fundamentals (AI-900) · GitLab Certified</p>
+        </div>
+
+        <aside class="under" id="under" aria-labelledby="under-title">
+          <h3 id="under-title" class="label">Under the surface</h3>
+          <p>For engineers: the same hands, one layer down.</p>
+          <ul>
+            <li id="cells"><a href="cells/index.html">Cells</a> A spreadsheet written from scratch, with its own formula engine and a grid of a million rows.</li>
+            <li id="diff-forge"><a href="projects/diff-forge/index.html">Diff Forge</a> The merge-conflict screen, rebuilt around the decision you have to make.</li>
+            <li id="regex-lab"><a href="projects/regex-lab/index.html">Regex Lab</a> A search pattern as a machine you can watch run, one character at a time.</li>
+          </ul>
+          <p class="posts">Write-ups: <a href="writing/recalculating-a-spreadsheet/">From 681 ms to 133, recalculating a spreadsheet</a> · <a href="writing/fast-map-posters/">From 41.7 seconds to 0.39, making a map poster fast</a></p>
+        </aside>
+
+        <div class="contact" id="contact">
+          <h3>Let’s make something.</h3>
+          <p>If you are hiring for a frontend or UI role, or have an interface that should feel better than it does, I would like to hear about it.</p>
+          <a class="mail" href="mailto:mohamedsucule@gmail.com">mohamedsucule@gmail.com</a>
+          <div class="ctas">
+            <button class="go" type="button" id="copyMail" data-mail="mohamedsucule@gmail.com">Copy email address</button>
+            <a class="ghost" href="https://www.linkedin.com/in/mohamed-sucule-bb8747439">Message me on LinkedIn</a>
+          </div>
+          <p class="note" id="copyNote" role="status" aria-live="polite"></p>
+        </div>
+      </div>
     </div>
   </section>
 </main>
 
 <footer>
-  <div class="wrap">
-    <p>© 2026 Mohamed Sucule · Birmingham, UK</p>
-    <p><a href="cv/">CV</a> · <a href="https://github.com/Mohamed-Sucule/Projects">Source on GitHub</a></p>
-  </div>
+  <p>© 2026 Mohamed Sucule · Birmingham, UK · Everything here was designed and built by hand, including the sky.</p>
+  <p><a href="#dusk">Back to dusk</a> · <a href="cv/">CV</a> · <a href="https://github.com/Mohamed-Sucule/Projects">Source on GitHub</a></p>
 </footer>
 
-<script>
-  // copy the address, and say so; if the clipboard is refused, select it so it can be copied by hand
-  document.getElementById('copyMail').addEventListener('click', async (e) => {
-    const note = document.getElementById('copyNote');
-    const mail = e.currentTarget.dataset.mail;
-    try {
-      await navigator.clipboard.writeText(mail);
-      note.textContent = 'Copied ' + mail + '.';
-    } catch {
-      const a = document.querySelector('.contact .mail');
-      const r = document.createRange();
-      r.selectNodeContents(a);
-      const s = getSelection();
-      s.removeAllRanges();
-      s.addRange(r);
-      note.textContent = 'Press Ctrl+C or ⌘C to copy the selected address.';
-    }
-  });
-</script>
+<script type="module" src="assets/night.js"></script>
 <script type="module" src="shared/navigator.js"></script>
 </body>
 </html>

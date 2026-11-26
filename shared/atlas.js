@@ -6,7 +6,7 @@
    and next links between projects come out of its order.
 
    Two lists. EVERYTHING is every page in the repository, so a test can check
-   that nothing on disk has been forgotten. SECTIONS is the lineup: the twelve
+   that nothing on disk has been forgotten. SECTIONS is the lineup: the
    projects the site actually puts in front of people, in the order it puts
    them there. Anything in the first list and not the second still runs at its
    address, but nothing on the site links to it and the search does not offer
@@ -423,12 +423,14 @@ export const EVERYTHING = [
   },
 ];
 
-/* The lineup, section by section, in the order the front page shows it. */
+/* The lineup, section by section, in the order the front page shows it. The
+   front page is one night: each project in `night` appears at the hour it
+   belongs to, the small hours hold a few sketches, and the engineering is a
+   footnote in the morning. */
 export const SECTIONS = [
-  { id: 'work', title: 'Selected work', ids: ['cells', 'your-place'] },
-  { id: 'creative', title: 'Creative work', ids: ['ember', 'lamplighter'] },
-  { id: 'products', title: 'Products', ids: ['covers', 'frontdesk', 'claims', 'callcoach'] },
-  { id: 'tools', title: 'Tools for engineers', ids: ['trace-explorer', 'diff-forge', 'oklch-studio', 'regex-lab'] },
+  { id: 'night', title: 'One night of work', ids: ['your-place', 'covers', 'frontdesk', 'nightshift', 'ember', 'lamplighter', 'oklch-studio', 'room'] },
+  { id: 'sketches', title: 'Small hours', ids: ['mercury', 'island', 'beats'] },
+  { id: 'engineering', title: 'Under the surface', ids: ['cells', 'diff-forge', 'regex-lab'] },
 ];
 
 const everything = new Map(EVERYTHING.map((e) => [e.id, e]));
@@ -439,7 +441,7 @@ export const ATLAS = SECTIONS.flatMap((s) => s.ids.map((id) => ({ ...everything.
 export const HOME = {
   id: 'home', title: 'Front page', href: 'index.html',
   kind: 'product', depth: 'skim', minutes: 1,
-  blurb: 'The front page: the twelve projects, the writing, the experience and how to get in touch.',
+  blurb: 'The front page: one night of work, from dusk to morning, then who I am and how to get in touch.',
   hook: 'Start here.',
   tags: ['home', 'front', 'index', 'everything', 'all', 'start', 'back', 'browse', 'list', 'cv', 'contact'],
 };

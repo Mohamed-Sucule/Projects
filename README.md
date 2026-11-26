@@ -1,9 +1,10 @@
-# Mohamed Sucule, frontend engineer
+# Mohamed Sucule, interfaces designed and built
 
-React, TypeScript, accessibility and performance. Four years shipping web applications at Capgemini
-(Software Engineer, SC cleared) and SynchrTrade. Birmingham, UK.
+I design and build interfaces people can feel. Four years shipping web applications at Capgemini (Software
+Engineer, SC cleared) and SynchrTrade, in React and TypeScript. Birmingham, UK.
 
-This repository is my portfolio. The site shows twelve projects, and every one of them runs in the browser.
+This repository is my portfolio. The site is one night of work, from dusk to morning: fourteen projects, and
+every one of them runs in the browser.
 
 **[Portfolio](https://mohamed-sucule.github.io/Projects/)** ·
 **[CV (PDF)](https://mohamed-sucule.github.io/Projects/cv/Mohamed-Sucule-CV.pdf)** ·
@@ -12,44 +13,22 @@ This repository is my portfolio. The site shows twelve projects, and every one o
 
 | | |
 |---|---|
-| **Selected work** | [Cells](#cells), a spreadsheet written from scratch · [Your Place](#your-place), any place on Earth as a map poster |
-| **Creative work** | [Ember](#ember), an action game in the dark · [The Lamplighter](#the-lamplighter), a story told by scrolling |
-| **Products** | [Covers](#covers), a restaurant floor and booking system · [Front Desk, Claims Desk and Call Coach](#three-ai-products), three AI products |
-| **Tools for engineers** | [Trace Explorer, Diff Forge, OKLCH Studio and Regex Lab](#tools-for-engineers) |
+| **The night** | [Your Place](#your-place) · [Covers](#covers) · [Front Desk](#front-desk) · [Nightshift](#nightshift) · [Ember](#ember) · [The Lamplighter](#the-lamplighter) · [OKLCH Studio](#oklch-studio) · [The Room](#the-room) |
+| **Small hours** | [Mercury, Islandsmith and Beat Lab](#small-hours), three sketches |
+| **Under the surface** | [Cells](#cells), a spreadsheet written from scratch · [Diff Forge and Regex Lab](#tools-for-engineers) |
 
-Each project also has a case study on the site, at `work/<id>/`.
+## The front page
 
-## Selected work
-
-Both are React 19 and TypeScript in strict mode, with Vite, ESLint, Vitest and Playwright, and each has its own
-CI. The end-to-end tests run on a desktop and a phone against the production build, with axe.
-
-### Cells
-
-**[Cells](cells/)** is a spreadsheet, written from scratch. Its formula engine is a hand-written lexer and Pratt
-parser with 116 functions and Excel's rules for blanks, text, errors and dates. A dependency index and Tarjan's
-algorithm recalculate only what a change touches and catch circular references. The grid holds 1,048,576 rows,
-scrolls past the browser's height limit, takes Excel's keyboard, lets you point at cells while typing a formula,
-and is an ARIA grid a screen reader can follow to the last row. Two tabs edit the same sheet live. Profiling took
-a 200,001-cell recalculation from 681 ms to 133, and a property test checks every cell against a plain evaluator
-after any sequence of edits.
-**[Open it](https://mohamed-sucule.github.io/Projects/cells/)** ·
-[how it was made fast](https://mohamed-sucule.github.io/Projects/writing/recalculating-a-spreadsheet/) ·
-[README](cells/README.md)
-
-### Your Place
-
-**[Your Place](your-place/)** is any place on Earth as a poster. Type a town, a street or an address, pick a
-style and download a file ready to print, drawn in the browser from OpenStreetMap. The map engine is written
-from scratch: vector tiles decoded into typed arrays, painted in a Web Worker on an `OffscreenCanvas`, and the
-same geometry written out as SVG for print. Two performance fixes took the first poster from 41.7 s to 0.39 s.
-**[Make one](https://mohamed-sucule.github.io/Projects/your-place/)** ·
-[how it was made fast](https://mohamed-sucule.github.io/Projects/writing/fast-map-posters/) ·
-[README](your-place/README.md)
+The site is one long page that runs from 17:30 to 08:00. Each project appears at the hour it belongs to, and the
+sky behind the page is drawn from the scroll position: the sun sets, the stars come out, a storm passes at two,
+and it gets light again for the part about me. The clips are recorded from the real apps by
+[`assets/media/record.mjs`](assets/media/record.mjs) and play only while they are on screen. They stop, along
+with the stars and the rain, when the motion button is pressed or the system asks for reduced motion.
 
 ## Creative work
 
-Two pieces where the interface is the experience. Neither has an image or a sound file.
+Pieces where the interface is the experience. None of them has an image or a sound file of its own: every
+shadow, sky and note is drawn or synthesised in the browser.
 
 ### Ember
 
@@ -89,7 +68,43 @@ once every 11.2 seconds whether or not anybody is reading, so the place goes on 
 pins it by the shape of the function: `assert.equal(beam.length, 1)`, because it takes seconds and there is
 nowhere to pass a scroll value. [Full write-up](apps/lamplighter/README.md).
 
+### Nightshift
+
+**[Nightshift](apps/nightshift/)** is a short horror story, told as a coastal watch log from the night of
+14 November 1987. It opens with the weather and the shipping, and it does not stay there. There is no video, no
+game and nothing to play: you scroll, and the page reads you scrolling. The page is deliberately boring, because
+a dark theme and a flickering serif tell a reader what kind of thing they are looking at in the first half
+second. [Full write-up](apps/nightshift/README.md), which spoils it, so read the story first.
+
+### The Room
+
+**[The Room](apps/room/)** is a locked-room murder. Edmund Harkness is dead at his desk, the door was locked from
+the inside and the key was in his pocket. Nineteen things to look at, four people to question, five
+contradictions hidden among them, and nothing anywhere that is a multiple-choice question. The case is data:
+every piece of evidence and every word anybody says gives a value to a plain claim about the night, and the
+notebook sets two that disagree facing each other, with BUT in between. [Full write-up](apps/room/README.md).
+
+### Small hours
+
+Three sketches, each one idea taken as far as it will go. **[Mercury](apps/mercury/)** is a sheet of liquid
+metal under a sunset sky, with no 3D model and no texture: every pixel is worked out on the graphics card, sixty
+times a second. **[Islandsmith](play/island/)** grows a coastline, mountains, forests, rivers and a name from a
+single number. **[Beat Lab](play/beats/)** is a drum machine with no sound files in it: every kick and snare is
+synthesised as it plays.
+
 ## Products
+
+Software a business would use, designed around the moment it is needed most.
+
+### Your Place
+
+**[Your Place](your-place/)** is any place on Earth as a poster. Type a town, a street or an address, pick a
+style and download a file ready to print, drawn in the browser from OpenStreetMap. The map engine is written
+from scratch: vector tiles decoded into typed arrays, painted in a Web Worker on an `OffscreenCanvas`, and the
+same geometry written out as SVG for print. Two performance fixes took the first poster from 41.7 s to 0.39 s.
+**[Make one](https://mohamed-sucule.github.io/Projects/your-place/)** ·
+[how it was made fast](https://mohamed-sucule.github.io/Projects/writing/fast-map-posters/) ·
+[README](your-place/README.md)
 
 ### Covers
 
@@ -107,29 +122,48 @@ windows and they stay in step, because a restaurant has more than one screen.
 **The one conflict it ships with was not planted.** The night was hand-written to look fine, and the rules found
 it. [Full write-up](apps/covers/README.md).
 
-### Three AI products
+### Front Desk
 
-These start from a sentence somebody at work might say, and end as working software. Each runs entirely in the
-browser, and nothing typed or said into it is sent anywhere. The businesses are invented; the software is not.
+**[Front Desk](apps/frontdesk/)** starts from a sentence a restaurant owner might say: "we miss calls during
+service". It is an AI phone receptionist that books straight into the Covers table plan, offers the nearest free
+times, tells the kitchen about allergies, and hands over to a person when it should. It understood 75 of 82 new
+phrasings first time, and 400 random callers never double-booked a table. It runs entirely in the browser, and
+nothing typed or said into it is sent anywhere.
 
-| | The brief | What it is | Measured |
-|---|---|---|---|
-| **[Front Desk](apps/frontdesk/)** | "We miss calls during service." | An AI phone receptionist that books straight into the Covers table plan, offers the nearest free times, tells the kitchen about allergies, and hands over to a person when it should. | 75 of 82 new phrasings understood first time; 400 random callers, no double-bookings |
-| **[Claims Desk](apps/claims/)** | "Our handlers spend their day retyping claims." | Reads an insurance claim (email, scanned form, invoice) with OCR in the browser, checks it against the policy and itself, and recommends approve, decline or refer, with evidence for every line. | 11 of 11 fields read from each scan; on 180 smudged scans a misread only ever sends a claim to a person |
-| **[Call Coach](apps/callcoach/)** | "Our reps lose deals on the same objections." | A live assistant for sales calls: the battlecard on screen the moment a prospect objects, then MEDDICC notes, a CRM record and the follow-up email, all from what was said. | 27 of 28 new lines tagged exactly right, first time; every quote in its notes checked against the call |
+- **The right tool for the job, not the biggest model.** Where a purpose-built parser or a rule is faster,
+  cheaper, testable and can't make things up, it does the work. On-device speech recognition and sentence
+  embeddings handle what those can't: listening, and understanding meaning.
+- **Measured on questions it never saw.** Its held-out test set was written after it was built and run once. The
+  first-run score is recorded in the code and never edited.
+- **Safe when unsure.** If it cannot follow three things in a row, it offers a call back instead of looping.
 
-The same few rules apply to all three:
+### OKLCH Studio
 
-- **The right tool for the job, not the biggest model.** Where a purpose-built parser, a search index or a rule
-  is faster, cheaper, testable and can't make things up, it does the work. The on-device models (speech
-  recognition, sentence embeddings, OCR) handle what those can't: listening, understanding meaning, reading a
-  scan.
-- **Measured on questions it never saw.** Each has a held-out test set, written after it was built and run
-  once. The first-run score is recorded in the code and never edited, even when it's bad.
-- **Safe when unsure.** The receptionist hands over to a person, and the claims desk refers anything it can't
-  read.
+**[OKLCH Studio](projects/oklch-studio/)** builds a colour palette in a perceptual colour space, so a step down a
+ramp is the same visible step in every colour family. Colours with no sRGB equivalent are mapped honestly, each
+marked with what it lost, and every pair is checked for contrast against WCAG 2.1 and APCA, with a preview of real
+interface in light and dark. [README](projects/oklch-studio/README.md).
 
-## Tools for engineers
+## Under the surface
+
+The engineering underneath, for engineers. Cells and Your Place are React 19 and TypeScript in strict mode, with
+Vite, ESLint, Vitest and Playwright, and each has its own CI. The end-to-end tests run on a desktop and a phone
+against the production build, with axe.
+
+### Cells
+
+**[Cells](cells/)** is a spreadsheet, written from scratch. Its formula engine is a hand-written lexer and Pratt
+parser with 116 functions and Excel's rules for blanks, text, errors and dates. A dependency index and Tarjan's
+algorithm recalculate only what a change touches and catch circular references. The grid holds 1,048,576 rows,
+scrolls past the browser's height limit, takes Excel's keyboard, lets you point at cells while typing a formula,
+and is an ARIA grid a screen reader can follow to the last row. Two tabs edit the same sheet live. Profiling took
+a 200,001-cell recalculation from 681 ms to 133, and a property test checks every cell against a plain evaluator
+after any sequence of edits.
+**[Open it](https://mohamed-sucule.github.io/Projects/cells/)** ·
+[how it was made fast](https://mohamed-sucule.github.io/Projects/writing/recalculating-a-spreadsheet/) ·
+[README](cells/README.md)
+
+### Tools for engineers
 
 The screens engineers fight with every day, rebuilt around the moment they usually leave you on your own. Each
 opens with a plain-English briefing of what it is and why it matters, kept in one file,
@@ -137,9 +171,7 @@ opens with a plain-English briefing of what it is and why it matters, kept in on
 
 | | |
 |---|---|
-| **[Trace Explorer](projects/trace-explorer/)** | Where a slow web request actually spent its time: a span waterfall with the critical path marked, and the findings written in sentences, each with the share of the trace it explains. |
 | **[Diff Forge](projects/diff-forge/)** | The merge conflict, rebuilt as a choice you can read, on Myers diff, patience diff and a three-way merge written from scratch. |
-| **[OKLCH Studio](projects/oklch-studio/)** | A colour palette built in a perceptual colour space, with honest gamut mapping and every pair checked against WCAG 2.1 and APCA. |
 | **[Regex Lab](projects/regex-lab/)** | A search pattern compiled into an automaton you can watch run, with a linear-time engine and a backtracker side by side, including the kind of pattern that quietly takes a website down. |
 
 Each has its own README covering the design decisions, the algorithms and, deliberately, what it does **not**
@@ -147,17 +179,16 @@ do.
 
 ## How the site is held together
 
-- **Every claim is written once.** [`work/projects.js`](work/projects.js) holds everything the site says about
-  the twelve projects, and [`work/build.mjs`](work/build.mjs) writes both the case studies and the front page's
-  project sections from it. The tests fail if a page has drifted from the data, if a case study quotes a test
-  count that is not the number of tests its file ran, or if a measured line disagrees with the product's own
-  evaluation.
+- **The night is checked.** [`tests/front.test.mjs`](tests/front.test.mjs) fails if a project in the lineup has
+  no place on the front page, if the scenes, the index and the sky in [`assets/night.js`](assets/night.js)
+  disagree about any hour, if a recording is missing or over 1 MB, or if the CV counts different projects from
+  the site.
 - **Every page is checked for accessibility.** [`tests/a11y/scan.mjs`](tests/a11y/scan.mjs) serves the site,
   opens every page in Chromium in light and dark mode, and fails CI on any serious or critical axe finding.
 - **Every page meets the same baseline** of doctype, language, charset, viewport, description, social card,
   working internal links and unique ids ([`tests/pages.test.mjs`](tests/pages.test.mjs)).
-- **One design system.** The front page and every case study are set from
-  [`assets/site.css`](assets/site.css), in the same typefaces as the two React apps.
+- **Every piece keeps its own look.** The front page has its own stylesheet,
+  [`assets/night.css`](assets/night.css); each project was designed as a piece of its own and keeps its style.
 - **The poster apps share code instead of copying it.** Your Place is an npm workspace beside
   [`packages/poster-kit`](packages/poster-kit/): undo and redo, poster sizes, typefaces, place search and the
   search box are written and tested once, and CI checks every app that uses it whenever any of it changes.
@@ -178,11 +209,11 @@ algorithm, with no DOM, testable from a terminal) and the interface. The module 
 interface has to be *understood*. Different jobs.
 
 ```
-index.html                the front page; its project sections are written by work/build.mjs
-assets/site.css           the design system for the front page and the case studies
-work/projects.js          everything the site says about each project
-work/build.mjs            writes work/<id>/ and the front page's project sections
-shared/atlas.js           the catalogue: every page in the repo, and the twelve the site shows
+index.html                the front page: one night, from 17:30 to 08:00
+assets/night.css          its look
+assets/night.js           the sky, the clock and the index, all following the scroll bar
+assets/media/record.mjs   records the front page's clips from the real apps
+shared/atlas.js           the catalogue: every page in the repo, and the fourteen the site shows
 shared/navigator.js       ⌘K on every page: BM25 search over the lineup (search.js)
 cells/                    React + TypeScript: the formula engine, the grid, persistence and sync
 your-place/               React + TypeScript: the map engine, the worker and the poster UI
@@ -196,8 +227,7 @@ apps/covers/
   schedule.js             the rules: turn times, clashes, and why something is a no
   optimise.js             turning a no into a yes, and re-planning the night
   floor.js · plan.js      the room, what can join what, and where the chairs go
-apps/frontdesk/ claims/ callcoach/
-                          each an engine, its held-out evaluation, and the interface
+apps/frontdesk/           an engine, its held-out evaluation, and the interface
 projects/<tool>/
   engine.js               the algorithm, pure and DOM-free
   index.html              the interface
@@ -208,10 +238,9 @@ tests/run.mjs             the site's test suite: no framework, no install
 ```bash
 npx http-server        # the pages use ES modules, so they need a server
 node tests/run.mjs     # run the tests
-node work/build.mjs    # after editing work/projects.js
 ```
 
-Over 900 tests run in CI before anything here is published, on top of each React app's own unit and end-to-end
+Over 850 tests run in CI before anything here is published, on top of each React app's own unit and end-to-end
 suites.
 
 ### Also in this repository
