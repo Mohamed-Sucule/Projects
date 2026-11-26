@@ -36,7 +36,9 @@ jobs:
 
   e2e:
     name: End-to-end (desktop and phone)
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest became 26.04, which Playwright 1.56 cannot install
+    # its browser on. Move back to ubuntu-latest once Playwright supports it.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
