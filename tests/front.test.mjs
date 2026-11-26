@@ -1,58 +1,99 @@
-/* tests/front.test.mjs — the front page, the case studies and the CV agree
-   with the lineup.
+/* tests/front.test.mjs — the front page, its night and the CV agree with the
+   lineup.
 
-   The site shows twelve projects (SECTIONS in shared/atlas.js), and says so in
-   three places a person reads without anything beside it to check against:
-   the front page, each project's own page, and the CV. Each of those is
-   hand-written or generated from a list that gets edited, and the day a
-   project joins or leaves the lineup is exactly the day one of them will be
-   forgotten. So they are checked against the lineup, which is the one list
-   the navigator and the search already trust. */
+   The front page is one night, from 17:30 to 08:00, with a scene for each hour
+   (SECTIONS in shared/atlas.js says which projects are in it). Its hours are
+   written in four places: the scenes, the index down the side, the clock, and
+   the sky's colours in assets/night.js. The day a scene moves, one of the four
+   will be forgotten, so they are checked against each other here, along with
+   the counts a person reads with nothing beside them to check against. */
 
-import { readFileSync, existsSync } from 'node:fs';
-import { execFileSync } from 'node:child_process';
+import { readFileSync, existsSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test, assert } from './harness.mjs';
 import { ATLAS, EVERYTHING, SECTIONS } from '../shared/atlas.js';
-import { PROJECTS } from '../work/projects.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (f) => readFileSync(join(root, f), 'utf8');
 const home = read('index.html');
 const cv = read('cv/index.html');
+const script = read('assets/night.js');
 
 const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
   'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty'];
 
-const sectionOf = (id) => home.match(new RegExp(`<section id="${id}"[\\s\\S]*?</section>`))?.[0] ?? '';
+const scenes = [...home.matchAll(/<section id="([a-z-]+)" class="scene[^"]*" data-at="(\d+)" data-hour="(\d\d:\d\d)" data-name="([^"]+)"[^>]*>([\s\S]*?)<\/section>/g)]
+  .map(([, id, at, hour, name, html]) => ({ id, at: Number(at), hour, name, html }));
+const section = (id) => SECTIONS.find((s) => s.id === id);
+/* The element whose id is the project's: a scene, a print in the sketchbook, or a line in the footnote. */
+const placeOf = (id) => home.match(new RegExp(`<(section|li) id="${id}"[\\s\\S]*?</\\1>`))?.[0] ?? '';
 
-test('the front page shows the lineup, section by section, in order', () => {
-  const order = [...home.matchAll(/<section id="([a-z-]+)"/g)].map((m) => m[1]);
-  assert.deep(order.slice(0, SECTIONS.length), SECTIONS.map((s) => s.id), `the sections run ${order.join(', ')}`);
-  for (const s of SECTIONS) {
-    const html = sectionOf(s.id);
-    /* A case study's first link opens the project; a card's goes to its case study. */
-    const shown = [...html.matchAll(/<a class="go" href="([^"]+)"|<a class="card" href="work\/([a-z0-9-]+)\/"/g)]
-      .map((m) => (m[1] ? ATLAS.find((e) => e.href === m[1])?.id : m[2]));
-    assert.deep(shown, s.ids, `the ${s.id} section shows ${shown.join(', ')}`);
-  }
+test('the night is in order, and every project in it has a scene of its own', () => {
+  assert.ok(scenes.length > 0, 'found no scenes');
+  for (let i = 1; i < scenes.length; i++) assert.ok(scenes[i].at > scenes[i - 1].at, `${scenes[i].id} comes before ${scenes[i - 1].id} in the night`);
+  const night = scenes.map((s) => s.id).filter((id) => section('night').ids.includes(id));
+  assert.deep(night, section('night').ids, `the night runs ${night.join(', ')}`);
 });
 
-test('every project in the lineup has its case study and its screenshot', () => {
+test('every project in the lineup has a place on the front page that opens it', () => {
   for (const e of ATLAS) {
-    assert.ok(PROJECTS[e.id], `work/projects.js has nothing on ${e.title}`);
-    assert.ok(existsSync(join(root, 'work', e.id, 'index.html')), `${e.title} has no case study`);
-    for (const w of [960, 1920]) assert.ok(existsSync(join(root, `assets/shots/${e.id}-${w}.webp`)), `${e.title} has no ${w}px screenshot`);
-    assert.ok(home.includes(`href="work/${e.id}/"`), `the front page does not link ${e.title}'s case study`);
+    const html = placeOf(e.id);
+    assert.ok(html, `nothing on the front page has the id "${e.id}"`);
+    assert.ok(html.includes(`href="${e.href}"`), `${e.title}'s place on the front page does not open ${e.href}`);
   }
-  assert.equal(Object.keys(PROJECTS).length, ATLAS.length, 'work/projects.js describes a project that is not in the lineup');
+  /* The sketchbook holds the small hours; the footnote holds the engineering. */
+  const sketches = scenes.find((s) => s.id === 'small-hours').html;
+  for (const id of section('sketches').ids) assert.ok(sketches.includes(`id="${id}"`), `${id} is not in the small hours`);
+  const under = home.match(/<aside class="under"[\s\S]*?<\/aside>/)?.[0] ?? '';
+  for (const id of section('engineering').ids) assert.ok(under.includes(`id="${id}"`), `${id} is not under the surface`);
 });
 
-test('the case studies and the front page are built from the current data', () => {
-  /* They are generated by work/build.mjs and committed. If the data changed and
-     nobody ran it, the pages are saying something the data no longer says. */
-  execFileSync(process.execPath, [join(root, 'work/build.mjs'), '--check'], { stdio: 'pipe' });
+test('each scene says its own hour, and the clock agrees', () => {
+  for (const s of scenes) {
+    const minutes = (17 * 60 + 30 + s.at) % (24 * 60);
+    const hour = `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
+    assert.equal(s.hour, hour, `${s.id} is at ${s.at} minutes, which is ${hour}, not ${s.hour}`);
+    assert.ok(s.html.includes(`<time>${s.hour}</time>`), `${s.id} does not show ${s.hour}`);
+  }
+});
+
+test('the index down the side lists every scene at its hour', () => {
+  const rail = home.match(/<nav class="rail"[\s\S]*?<\/nav>/)?.[0] ?? '';
+  const listed = [...rail.matchAll(/<a href="#([a-z-]+)"><time>(\d\d:\d\d)<\/time><span>([^<]+)<\/span><\/a>/g)].map(([, id, hour, name]) => ({ id, hour, name }));
+  assert.deep(listed.map((l) => l.id), scenes.map((s) => s.id), 'the index and the scenes disagree');
+  for (const [i, l] of listed.entries()) {
+    assert.equal(l.hour, scenes[i].hour, `the index puts ${l.id} at ${l.hour}`);
+    assert.equal(l.name, scenes[i].name, `the index calls ${l.id} "${l.name}"; the clock will say "${scenes[i].name}"`);
+  }
+});
+
+test('the sky has a look for every scene, at the same hour', () => {
+  /* night.js pairs the n-th scene with the n-th sky. */
+  const keys = [...script.matchAll(/\{ at: (\d+), top: '#[0-9a-f]{6}'/g)].map((m) => Number(m[1]));
+  assert.deep(keys, scenes.map((s) => s.at), 'assets/night.js has a different set of hours from the page');
+});
+
+test('every picture and recording on the front page is there, and the recordings are light', () => {
+  const files = new Set();
+  for (const m of home.matchAll(/(?:src|poster)="(assets\/[^"]+)"/g)) files.add(m[1]);
+  for (const m of home.matchAll(/srcset="([^"]+)"/g)) for (const part of m[1].split(',')) files.add(part.trim().split(' ')[0]);
+  for (const f of files) assert.ok(existsSync(join(root, f)), `${f} is missing`);
+  const videos = [...home.matchAll(/<video([^>]*)>([\s\S]*?)<\/video>/g)];
+  assert.ok(videos.length >= 5, `only ${videos.length} recordings`);
+  for (const [, attrs, inner] of videos) {
+    /* Silent, looping, inline on a phone, and nothing fetched until it is on screen. */
+    for (const a of ['muted', 'loop', 'playsinline', 'preload="none"', 'poster="']) assert.ok(attrs.includes(a), `a recording is missing ${a}: ${attrs}`);
+    const src = inner.match(/src="([^"]+\.mp4)"/)?.[1];
+    assert.ok(src && existsSync(join(root, src)), `a recording has no file: ${inner}`);
+    assert.ok(statSync(join(root, src)).size < 1_000_000, `${src} is over 1 MB`);
+  }
+});
+
+test('the moving parts can be stopped', () => {
+  /* WCAG 2.2.2: anything that moves on its own for more than five seconds can be paused. */
+  assert.ok(/<button class="motion" type="button" aria-pressed="true" aria-label="Motion"/.test(home), 'no motion button');
+  assert.ok(script.includes("matchMedia('(prefers-reduced-motion: reduce)')"), 'night.js ignores prefers-reduced-motion');
 });
 
 test('nothing left off the site is linked from it', () => {
@@ -60,8 +101,7 @@ test('nothing left off the site is linked from it', () => {
      not point at it. */
   const shown = new Set(ATLAS.map((e) => e.href));
   const hidden = EVERYTHING.filter((e) => !shown.has(e.href));
-  const pages = ['index.html', 'cv/index.html', ...ATLAS.map((e) => `work/${e.id}/index.html`)];
-  for (const page of pages) {
+  for (const page of ['index.html', 'cv/index.html']) {
     const html = read(page);
     for (const e of hidden) {
       const path = e.href.replace(/index\.html$/, '');
@@ -71,27 +111,10 @@ test('nothing left off the site is linked from it', () => {
 });
 
 test('the front page and the CV count the projects the site shows', () => {
-  const said = home.match(/<span data-count="lineup">([^<]*)<\/span>/)?.[1];
-  assert.equal(said, WORDS[ATLAS.length], `the front page says "${said}"; the lineup has ${ATLAS.length}`);
+  const said = home.match(/<span data-count="night">([^<]*)<\/span>/)?.[1];
+  assert.equal(said, WORDS[section('night').ids.length], `the front page says "${said}" projects in the evening; there are ${section('night').ids.length}`);
   const cvSaid = Number(cv.match(/Portfolio <span>· (\d+) projects/)?.[1]);
   assert.equal(cvSaid, ATLAS.length, `the CV says ${cvSaid}; the lineup has ${ATLAS.length}`);
-});
-
-/* The measured lines are claims in large type on the pages most people see
-   first, so they are checked against the products' own numbers: the same
-   numbers each product's page computes and its tests hold it to. */
-import { HELD_OUT_FIRST_RUN as FD_FIRST } from '../apps/frontdesk/eval.js';
-import { RANDOM_CALLERS } from '../apps/frontdesk/calls.js';
-import { HELD_OUT_FIRST_RUN as CC_FIRST } from '../apps/callcoach/labels.js';
-
-test('each measured line is what the product measures', () => {
-  const fd = PROJECTS.frontdesk;
-  assert.equal(fd.proof[0][0], `${FD_FIRST.right} / ${FD_FIRST.cases}`);
-  assert.equal(fd.proof[1][0], String(RANDOM_CALLERS));
-  assert.ok(fd.card.measure.startsWith(`${FD_FIRST.right} of ${FD_FIRST.cases} `), fd.card.measure);
-  const cc = PROJECTS.callcoach;
-  assert.equal(cc.proof[0][0], `${CC_FIRST.exact} / ${CC_FIRST.lines}`);
-  assert.ok(cc.card.measure.startsWith(`${CC_FIRST.exact} of ${CC_FIRST.lines} `), cc.card.measure);
 });
 
 test('the CV is offered as a PDF wherever it is linked', () => {

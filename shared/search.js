@@ -1,6 +1,6 @@
 /* shared/search.js — the retrieval behind the navigator.
 
-   BM25 over the site's twelve projects, plus intent routing. That is a
+   BM25 over the projects the site shows, plus intent routing. That is a
    comically large hammer for a list this short, and it is the right one for a
    reason that has nothing to do with scale: a `.includes()` filter can only
    match what somebody typed, and people do not type the words on the page.
@@ -162,7 +162,7 @@ export function detectIntent(query) {
 /* Which pieces answer "show me the best thing here". Hand-picked, because the
    honest answer to that question is a judgement and pretending a ranking
    function made it would be a small lie. */
-export const FEATURED = ['cells', 'your-place', 'covers', 'ember'];
+export const FEATURED = ['ember', 'lamplighter', 'your-place', 'covers'];
 
 /* Words that ask for a recommendation rather than name a subject. They are never
    typos to be corrected: "start" is one letter from "star", and reading it that way

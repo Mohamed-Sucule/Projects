@@ -4,8 +4,8 @@
    tap the pill) and ask for what you want in whatever words you have. "the ai
    products". "something creative". "i have two minutes". "surprise me". The
    ranking behind it is BM25 with an intent layer — see search.js, which is
-   tested separately. It offers only the twelve projects the site shows, and
-   the previous and next project in that lineup.
+   tested separately. It offers only the projects the site shows, and the
+   previous and next project in that lineup.
 
    SHADOW DOM, and not for fashion. This markup lands inside many different
    stylesheets written months apart, several of which style bare `button`,
@@ -29,9 +29,9 @@ const previous = position > 0 ? ATLAS[position - 1] : null;
 const next = position !== -1 && position < ATLAS.length - 1 ? ATLAS[position + 1] : null;
 
 const SUGGESTIONS = [
-  'the AI products',
-  'something creative',
-  'tools for engineers',
+  'a game',
+  'a story to read',
+  'something beautiful',
   'what should I look at first',
   'surprise me',
 ];
@@ -203,7 +203,7 @@ function render(query) {
     `<a class="row all" data-i="${ui.hits.length}" data-href="${link(HOME.href)}" role="option">
        <span class="bar" style="--a:154,165,184"></span>
        <span class="text"><span class="top"><b>Back to the front page</b></span>
-       <span class="blurb">All ${ATLAS.length} projects, the writing, the CV and how to get in touch.</span></span>
+       <span class="blurb">One night of work, from dusk to morning, and how to get in touch.</span></span>
        <span class="go">↵</span>
      </a>`;
   paintActive();

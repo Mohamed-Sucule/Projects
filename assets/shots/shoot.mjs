@@ -62,6 +62,8 @@ const SETUP = {
     await p.waitForFunction(() => window.__ember.game?.boss && window.__ember.game.mode === 'play', null, { timeout: 180000 });
     await p.waitForTimeout(5000);
   },
+  /* Its frame-rate readout measures this headless browser, not a real screen. */
+  mercury: async (p) => { await p.addStyleTag({ content: '#stats { display: none !important; }' }); await p.waitForTimeout(1500); },
   /* Dusk, with the beam out over the water. */
   lamplighter: async (p) => {
     await p.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight * 0.15));
