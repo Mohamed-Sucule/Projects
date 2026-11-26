@@ -424,11 +424,11 @@ export const EVERYTHING = [
 ];
 
 /* The lineup, section by section, in the order the front page shows it. The
-   front page is one night: each project in `night` appears at the hour it
+   front page runs from dusk to morning: each project in `night` appears at the hour it
    belongs to, the small hours hold a few sketches, and the engineering is a
    footnote in the morning. */
 export const SECTIONS = [
-  { id: 'night', title: 'One night of work', ids: ['your-place', 'covers', 'frontdesk', 'nightshift', 'ember', 'lamplighter', 'oklch-studio', 'room'] },
+  { id: 'night', title: 'Selected work', ids: ['your-place', 'covers', 'frontdesk', 'nightshift', 'ember', 'lamplighter', 'oklch-studio', 'room'] },
   { id: 'sketches', title: 'Small hours', ids: ['mercury', 'island', 'beats'] },
   { id: 'engineering', title: 'Under the surface', ids: ['cells', 'diff-forge', 'regex-lab'] },
 ];
@@ -441,7 +441,7 @@ export const ATLAS = SECTIONS.flatMap((s) => s.ids.map((id) => ({ ...everything.
 export const HOME = {
   id: 'home', title: 'Front page', href: 'index.html',
   kind: 'product', depth: 'skim', minutes: 1,
-  blurb: 'The front page: one night of work, from dusk to morning, then who I am and how to get in touch.',
+  blurb: 'The front page: selected work, then who I am and how to get in touch.',
   hook: 'Start here.',
   tags: ['home', 'front', 'index', 'everything', 'all', 'start', 'back', 'browse', 'list', 'cv', 'contact'],
 };
