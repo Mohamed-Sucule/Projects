@@ -3,7 +3,7 @@
 I design and build interfaces people can feel. Four years shipping web applications at Capgemini (Software
 Engineer, SC cleared) and SynchrTrade, in React and TypeScript. Birmingham, UK.
 
-This repository is my portfolio. The site is one night of work, from dusk to morning: fourteen projects, and
+This repository is my portfolio. The site shows fourteen projects I designed and built, and
 every one of them runs in the browser.
 
 **[Portfolio](https://mohamed-sucule.github.io/Projects/)** ·
@@ -209,7 +209,7 @@ algorithm, with no DOM, testable from a terminal) and the interface. The module 
 interface has to be *understood*. Different jobs.
 
 ```
-index.html                the front page: one night, from 17:30 to 08:00
+index.html                the front page, its sky running from 17:30 to 08:00
 assets/night.css          its look
 assets/night.js           the sky, the clock and the index, all following the scroll bar
 assets/media/record.mjs   records the front page's clips from the real apps

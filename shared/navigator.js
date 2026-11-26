@@ -203,7 +203,7 @@ function render(query) {
     `<a class="row all" data-i="${ui.hits.length}" data-href="${link(HOME.href)}" role="option">
        <span class="bar" style="--a:154,165,184"></span>
        <span class="text"><span class="top"><b>Back to the front page</b></span>
-       <span class="blurb">One night of work, from dusk to morning, and how to get in touch.</span></span>
+       <span class="blurb">Selected work, who I am, and how to get in touch.</span></span>
        <span class="go">↵</span>
      </a>`;
   paintActive();
