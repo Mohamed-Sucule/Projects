@@ -26,7 +26,7 @@
   :focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; border-radius: 8px; }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
-  #stage { position: fixed; inset: 0; touch-action: none; cursor: crosshair; user-select: none; -webkit-user-select: none; }
+  #stage { position: fixed; inset: 0; touch-action: none; cursor: default; user-select: none; -webkit-user-select: none; }
   #stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
 
   .back, .stats, .controls, .intro, .hint, .how, .end, .smaller { position: fixed; z-index: 5; }
@@ -34,11 +34,9 @@
     top: 14px; left: 14px; padding: 9px 14px; border-radius: 999px; background: var(--glass); border: 1px solid var(--edge);
     -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); color: var(--ink); text-decoration: none; font: 500 14px/1 var(--sans);
   }
-  .stats {
-    top: 14px; right: 14px; padding: 8px 12px; border-radius: 12px; background: var(--glass); border: 1px solid var(--edge);
-    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); font: 400 12px/1.6 var(--mono); color: var(--soft); text-align: right;
-  }
-  .stats b { color: var(--ink); font-weight: 600; }
+  .stats { top: 64px; right: 20px; margin: 0; font: italic 400 17px/1.3 var(--serif); color: var(--soft); text-align: right; text-shadow: 0 1px 12px rgba(20, 10, 40, .5); pointer-events: none; }
+  .stats b { color: var(--ink); font-weight: 400; font-variant-numeric: tabular-nums; }
+  .how .live { font: 400 13px/1.5 var(--mono); color: var(--soft); border-top: 1px solid var(--edge); padding-top: 12px; margin-top: 16px; }
 
   .intro { left: 50%; top: 22%; transform: translateX(-50%); width: min(92vw, 640px); text-align: center; pointer-events: none; transition: opacity 1.6s, transform 1.6s; }
   .intro h1 { margin: 0; font: italic 400 clamp(54px, 10vw, 112px)/.9 var(--serif); letter-spacing: -.02em; text-shadow: 0 4px 40px rgba(20, 10, 40, .45); }
@@ -83,7 +81,6 @@
 
   /* The site's search pill goes to the top corner here, clear of the controls; the numbers go under it. */
   [data-navigator]::part(pill) { top: 14px; bottom: auto; }
-  .stats { top: 62px; }
 
   .smaller { left: 50%; top: 70px; transform: translateX(-50%); padding: 8px 14px; border-radius: 12px; background: var(--glass); font-size: 13.5px; color: var(--soft); width: max-content; max-width: calc(100vw - 28px); text-align: center; }
 
@@ -103,7 +100,6 @@
 <div id="stage" aria-hidden="true">
   <canvas id="sky"></canvas>
   <canvas id="birds"></canvas>
-  <canvas id="hunter"></canvas>
   <canvas id="reeds"></canvas>
 </div>
 
@@ -112,7 +108,7 @@
     <h1>Murmuration</h1>
     <p>Starlings over the reeds at dusk. You are the falcon.</p>
   </header>
-  <p class="sr">A flock of <span id="count-said">thousands of</span> starlings swirls over a reedbed as the sun goes down, folding and stretching as it turns. Moving the pointer, or pressing Send the falcon, sends a falcon at them, and the flock opens around it. After about two and a half minutes the light goes and the whole flock drops into the reeds for the night.</p>
+  <p class="sr">A flock of <span id="count-said">thousands of</span> starlings swirls over a reedbed as the sun goes down, folding and stretching as it turns. Pointing at the sky, or pressing Send the falcon, sends a peregrine falcon after them, and the flock opens around it. After about two and a half minutes the light goes and the whole flock drops into the reeds for the night.</p>
   <p class="sr" role="status" aria-live="polite" id="said"></p>
   <p class="smaller" id="smaller" hidden>This browser cannot run the full flock on its graphics card, so this is a smaller one, flying by the same rules.</p>
 
@@ -122,7 +118,9 @@
     <p>A murmuration has no leader. Each starling watches <b>its six or seven nearest neighbours</b> and does three things: turns to fly the way they fly, closes on them, and keeps its distance. Researchers who filmed real flocks in Rome found it is seven birds, not every bird within some distance, which is why a flock can stretch thin and still hold together.</p>
     <p>Every bird here follows those rules, <b>all of them at once, sixty times a second, on your graphics card</b>. Finding the seven nearest of tens of thousands of birds for every bird would be too slow even there, so the sky is cut into boxes at three sizes. Each frame every box counts the birds in it and adds up where they are and which way they are going. A bird looks at the smallest boxes around it that hold about seven others.</p>
     <p>Two more rules: stay over the reedbed where they will sleep, and get away from the falcon. Only the birds nearest the falcon can see it, but their neighbours turn with them, and theirs with them. The turn spreads across the flock as a wave of dark and light, which is what you see in a real murmuration when a falcon goes through.</p>
+    <p>The falcon is a peregrine, in the same sky as the flock. Point, and it goes there, faster than any starling and carrying its speed through the turns, so it overshoots and swings round for another go. Hold the button and it folds its wings back and dives.</p>
     <p>There is no animation here, no image and no sound file. The birds, the sky, the reeds and the sound are all made as you watch.</p>
+    <p class="live">On this screen: <span id="count-live">—</span> starlings at <span id="fps">—</span> frames a second.</p>
   </section>
 
   <div class="end" id="end" hidden>
@@ -134,8 +132,8 @@
   </div>
 </main>
 
-<div class="stats" aria-hidden="true"><b id="count">—</b> starlings<br><b id="fps">—</b> fps</div>
-<p class="hint" id="hint" aria-hidden="true"><span class="mouse"><b>Move</b> to hunt · <b>hold</b> to dive</span><span class="touch"><b>Drag</b> across the sky to hunt</span></p>
+<p class="stats" aria-hidden="true"><b id="count">—</b> starlings</p>
+<p class="hint" id="hint" aria-hidden="true"><span class="mouse"><b>Point</b> and the falcon goes there · <b>hold</b> to dive</span><span class="touch"><b>Touch</b> the sky and the falcon goes there</span></p>
 
 <nav class="controls" aria-label="Murmuration">
   <button id="falcon" type="button">

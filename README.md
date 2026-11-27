@@ -43,8 +43,9 @@ shadow, sky and note is drawn or synthesised in the browser.
 
 **[Be the falcon](apps/murmuration/)** · Tens of thousands of starlings over a reedbed at sunset, and you are
 the falcon. Each bird keeps to its seven nearest neighbours, the rule real starlings are thought to fly by
-(Ballerini and others, PNAS, 2008), and nothing else holds the flock together. Move through it and it folds away
-from you; leave it alone and a falcon comes by on its own now and then. The birds stream in from the edges,
+(Ballerini and others, PNAS, 2008), and nothing else holds the flock together. Point, and the falcon, a
+peregrine in the same sky, goes there, banking into its turns and folding its wings to dive, and the flock folds
+away from it; leave it alone and it comes by on its own now and then. The birds stream in from the edges,
 swirl as the sun goes down, and drop into the reeds as the light goes, about two and a half minutes in all.
 
 Every bird is simulated on the graphics card, up to 49,152 of them, as many as the machine keeps up with. Finding
@@ -252,8 +253,9 @@ play/ember/
   render.js               tiles, fire, the dark and the shadows every wall casts
   audio.js                the score and every noise, synthesised live
 apps/murmuration/
-  field.js                the rules, the camera, the evening, and the flock on the processor
-  shaders.js              the flock on the graphics card: count, fly, draw
+  field.js                the rules, the camera, the evening, the falcon, and the flock on the processor
+  shaders.js              the flock on the graphics card: count, fly, draw; and the falcon's jointed wings
+  scenery.js              the sky, the clouds, the water and the reedbed, lit from behind
 apps/lamplighter/
   scene.js                the story, and every function that says what the night is doing
 apps/covers/

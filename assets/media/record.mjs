@@ -58,7 +58,10 @@ const CLIPS = {
     href: 'apps/murmuration/index.html?test&t=34&rows=128&size=1.7',
     seconds: 8,
     frames: async (p, k, fps) => {
-      if (k === 0) await p.addStyleTag({ content: '.back, .stats, .controls, .intro, .hint { display: none !important; }' });
+      if (k === 0) {
+        await p.addStyleTag({ content: '.back, .stats, .controls, .intro, .hint { display: none !important; }' });
+        await p.evaluate(() => window.__evening.run(5)); // let the flock find its shape before the camera rolls
+      }
       if (k === 45) await p.evaluate(() => window.__evening.falcon());
       await p.evaluate((dt) => window.__evening.frame(dt), 1 / fps);
     },

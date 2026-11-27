@@ -6,8 +6,9 @@
    of textures (where each one is, and where it is going) and swaps them every
    frame, and it draws everything that is not a bird on ordinary canvases. */
 
-import { BOX, LEVELS, RULES, EVENING, space, arrival, camera, centre as centreAt, evening, falconAt, horizon, project, random, shuffle, startingPlace, createReference } from './field.js';
-import { COUNT_VERT, COUNT_FRAG, QUAD_VERT, FLY_FRAG, DRAW_VERT, DRAW_FRAG, BIRD } from './shaders.js';
+import { BOX, LEVELS, RULES, EVENING, FALCON, FALCON_SHAPE, space, arrival, camera, centre as centreAt, evening, falconAt, project, random, shuffle, startingPlace, createReference, createFalcon } from './field.js';
+import { COUNT_VERT, COUNT_FRAG, QUAD_VERT, FLY_FRAG, DRAW_VERT, DRAW_FRAG, FALCON_VERT, BIRD } from './shaders.js';
+import { createScenery } from './scenery.js';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -17,11 +18,8 @@ const coarse = matchMedia('(pointer: coarse)').matches;
 
 const skyCanvas = $('sky');
 const birdCanvas = $('birds');
-const hunterCanvas = $('hunter');
 const reedCanvas = $('reeds');
-const sky = skyCanvas.getContext('2d');
-const hunter = hunterCanvas.getContext('2d');
-const reeds = reedCanvas.getContext('2d');
+const scenery = createScenery(skyCanvas, reedCanvas);
 
 let W = 0, H = 0, dpr = 1;
 /* Where the flock's space is and how big, for the shape of this screen. */
@@ -31,193 +29,51 @@ let t = Number(params.get('t')) || 0;
 let running = !reduced;
 let flock = null; // the graphics-card flock, or the smaller one on the processor
 
-/* ── the sky and the reeds ────────────────────────────────────────────── */
-
-const GOLD = { top: [43, 56, 118], mid: [160, 104, 150], low: [255, 184, 124], glow: [255, 228, 182] };
-const DUSK = { top: [13, 18, 46], mid: [58, 50, 94], low: [176, 96, 92], glow: [226, 150, 120] };
-const mixc = (a, b, k) => a.map((x, i) => Math.round(x + (b[i] - x) * k));
-const rgb = (c, a = 1) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
-let haze = [0.6, 0.45, 0.55];
-
-function paintSky(ev) {
-  const k = 1 - ev.light;
-  const top = mixc(GOLD.top, DUSK.top, k), mid = mixc(GOLD.mid, DUSK.mid, k), low = mixc(GOLD.low, DUSK.low, k), glow = mixc(GOLD.glow, DUSK.glow, k);
-  haze = mid.map((x) => x / 255);
-  const hy = horizon(cam) * H;
-  const g = sky.createLinearGradient(0, 0, 0, hy);
-  g.addColorStop(0, rgb(top));
-  g.addColorStop(0.62, rgb(mid));
-  g.addColorStop(1, rgb(low));
-  sky.fillStyle = g;
-  sky.fillRect(0, 0, W, H);
-  /* The sun, low over the reeds, and the glow it leaves after it has gone. */
-  const sx = W * 0.7;
-  const perDegree = H / cam.fov;
-  const sy = hy - ev.sun * perDegree;
-  const r = Math.max(14, H * 0.034);
-  const halo = sky.createRadialGradient(sx, sy, 0, sx, sy, Math.max(W, H) * 0.55);
-  halo.addColorStop(0, rgb(glow, 0.75 * (0.35 + 0.65 * ev.light)));
-  halo.addColorStop(0.25, rgb(low, 0.35 * ev.light + 0.1));
-  halo.addColorStop(1, rgb(low, 0));
-  sky.fillStyle = halo;
-  sky.fillRect(0, 0, W, H);
-  if (ev.sun > -1.2) {
-    sky.save();
-    sky.beginPath();
-    sky.rect(0, 0, W, hy);
-    sky.clip();
-    const disc = sky.createRadialGradient(sx, sy, 0, sx, sy, r * 1.25);
-    disc.addColorStop(0, 'rgba(255,250,232,1)');
-    disc.addColorStop(0.7, 'rgba(255,222,160,1)');
-    disc.addColorStop(1, 'rgba(255,200,140,0)');
-    sky.fillStyle = disc;
-    sky.beginPath();
-    sky.arc(sx, sy, r * 1.25, 0, Math.PI * 2);
-    sky.fill();
-    sky.restore();
-  }
-  /* The far bank: a line of trees and hedges along the horizon. */
-  const rand = random(5);
-  sky.fillStyle = rgb(mixc([58, 36, 62], [20, 16, 34], k));
-  sky.beginPath();
-  sky.moveTo(0, hy + 4);
-  for (let x = 0; x <= W + 20; x += 14) sky.lineTo(x, hy - 2 - rand() ** 3 * H * 0.022 - (Math.sin(x * 0.004) + 1) * H * 0.004);
-  sky.lineTo(W, hy + 4);
-  sky.fill();
-  /* Open water in front of it, holding the last of the light, with the sun's
-     track across it. */
-  const water = sky.createLinearGradient(0, hy + 4, 0, hy + H * 0.14);
-  water.addColorStop(0, rgb(mixc(low, [44, 30, 58], 0.45)));
-  water.addColorStop(1, rgb(mixc(mid, [12, 9, 22], 0.7)));
-  sky.fillStyle = water;
-  sky.fillRect(0, hy + 4, W, H - hy);
-  const light = Math.max(0, Math.min(1, (ev.sun + 3) / 5)) * ev.light;
-  if (light > 0.02) {
-    const ripple = random(3);
-    for (let y = hy + 6; y < hy + H * 0.11; y += 2) {
-      const k2 = (y - hy) / (H * 0.11);
-      const half = r * (0.6 + k2 * 2.4) * (0.4 + ripple() * 0.8);
-      sky.fillStyle = rgb(glow, light * (0.55 - k2 * 0.45) * (0.5 + ripple() * 0.5));
-      sky.fillRect(sx - half + (ripple() - 0.5) * r * 0.6, y, half * 2, 1.2);
-    }
-  }
-}
-
-/* The reedbed in front of everything, the roost the flock drops into. */
-function paintReeds() {
-  reeds.clearRect(0, 0, W, H);
-  const hy = horizon(cam) * H;
-  const rand = random(9);
-  const g = reeds.createLinearGradient(0, hy - H * 0.04, 0, H);
-  g.addColorStop(0, '#1b1424');
-  g.addColorStop(1, '#07050b');
-  reeds.fillStyle = g;
-  reeds.strokeStyle = g;
-  /* A dark bank of reeds, then stems and seed heads standing out of it. */
-  reeds.beginPath();
-  reeds.moveTo(0, H);
-  for (let x = 0; x <= W + 10; x += 6) reeds.lineTo(x, hy + H * 0.085 + Math.sin(x * 0.02) * 4 + rand() * H * 0.014);
-  reeds.lineTo(W, H);
-  reeds.fill();
-  const n = Math.round(W / 4.5);
-  for (let k = 0; k < n; k++) {
-    const x = rand() * W;
-    const tall = hy - H * 0.01 + rand() ** 0.55 * H * 0.12;
-    const lean = (rand() - 0.5) * H * 0.05;
-    reeds.lineWidth = 0.8 + rand() * 1.2;
-    reeds.beginPath();
-    reeds.moveTo(x, H);
-    reeds.quadraticCurveTo(x + lean * 0.3, (tall + H) / 2, x + lean, tall);
-    reeds.stroke();
-    if (rand() < 0.55) {
-      /* A plume, bent with the stem. */
-      reeds.save();
-      reeds.translate(x + lean, tall);
-      reeds.rotate(lean / (H * 0.12) + (rand() - 0.5) * 0.3);
-      reeds.beginPath();
-      reeds.ellipse(0, -H * 0.012, 2 + rand() * 2.2, H * (0.012 + rand() * 0.01), 0, 0, Math.PI * 2);
-      reeds.fill();
-      reeds.restore();
-    }
-  }
-}
-
 /* ── the falcon ───────────────────────────────────────────────────────── */
 
-/* The pointer is the falcon. It follows a little behind, banks as it turns,
-   and reaches further when it dives (the button held, or a finger down). */
-const falcon = { on: false, x: 0, y: 0, tx: 0, ty: 0, vx: 0, stoop: false, seen: 0, pass: null };
-const FALCON = new Path2D('M0 -5C3-5 5-2 6 0L30 6 31 9 8 6 6 8 9 18 4 17 0 9-4 17-9 18-6 8-8 6-31 9-30 6-6 0C-5-2-3-5 0-5Z');
+/* The pointer says where the falcon should go, at the depth of the flock; the
+   falcon (field.js) gets there under its own steam. Hold the button, or keep a
+   finger down, and it dives. */
+const falcon = createFalcon();
+let pointer = null; // where the pointer is, on the screen, while it is hunting
+let stooping = false;
 
-function stepFalcon(dt) {
-  if (falcon.pass) {
-    /* Sent from the button: a straight run through the middle of the flock. */
-    falcon.pass.k += dt / 2.4;
-    const k = falcon.pass.k;
-    const a = falcon.pass.from, b = falcon.pass.to;
-    const p = project(cam, [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k]);
-    falcon.tx = (p.x + 1) / 2 * W;
-    falcon.ty = (1 - p.y) / 2 * H;
-    falcon.on = true;
-    falcon.stoop = true;
-    if (k >= 1) { falcon.pass = null; falcon.on = false; falcon.stoop = false; }
-  }
-  const px = falcon.x;
-  const ease = 1 - Math.exp(-dt * 9);
-  falcon.x += (falcon.tx - falcon.x) * ease;
-  falcon.y += (falcon.ty - falcon.y) * ease;
-  falcon.vx = (falcon.x - px) / Math.max(dt, 1e-3);
-  falcon.seen += ((falcon.on ? 1 : 0) - falcon.seen) * (1 - Math.exp(-dt * 5));
+/* The falcon flies nearer than the flock, about halfway out to it: big enough
+   to read as a falcon, not a speck among specks. The flock feels it where it
+   would be at the flock's own distance, on the same line from the eye, so the
+   hole opens right behind it on the screen. */
+const NEAR = 0.52;
+const toward = (p, k) => p.map((v, i) => cam.eye[i] + (v - cam.eye[i]) * k);
+const flockDepth = () => { const c = centre(t); return Math.hypot(c[0] - cam.eye[0], c[1] - cam.eye[1], c[2] - cam.eye[2]); };
+
+function aimAt(x, y) {
+  return falconAt(cam, (x / W) * 2 - 1, 1 - (y / H) * 2, flockDepth() * NEAR);
+}
+function threat() {
+  const th = falcon.threat();
+  return th && { at: toward(th.at, 1 / NEAR), reach: th.reach };
 }
 
-function falconInSky() {
-  if (!falcon.on && falcon.seen < 0.05) return null;
-  const c = centre(t);
-  const d = Math.hypot(c[0] - cam.eye[0], c[1] - cam.eye[1], c[2] - cam.eye[2]);
-  const at = falconAt(cam, falcon.x / W * 2 - 1, 1 - falcon.y / H * 2, d);
-  return { at, reach: falcon.stoop ? RULES.stoop : RULES.falcon };
-}
-
-function drawFalcon() {
-  hunter.clearRect(0, 0, W, H);
-  if (falcon.seen < 0.02) return;
-  const size = Math.max(0.9, Math.min(1.5, H / 700));
-  hunter.save();
-  hunter.globalAlpha = falcon.seen;
-  hunter.translate(falcon.x, falcon.y);
-  hunter.rotate(Math.max(-0.6, Math.min(0.6, falcon.vx / 1800)));
-  hunter.scale(size * (falcon.stoop ? 0.85 : 1), size * (falcon.stoop ? 1.15 : 1));
-  hunter.fillStyle = '#0d0a12';
-  hunter.strokeStyle = 'rgba(255, 214, 170, .35)';
-  hunter.lineWidth = 1;
-  hunter.fill(FALCON);
-  hunter.stroke(FALCON);
-  hunter.restore();
-}
-
-function aim(e) {
+function hunt(e) {
   idleSince = performance.now();
-  falcon.tx = e.clientX;
-  falcon.ty = e.clientY;
-  if (!falcon.on) { falcon.x = falcon.tx; falcon.y = falcon.ty; }
-  falcon.on = true;
-  clearTimeout(aim.timer);
-  aim.timer = setTimeout(() => { if (!falcon.pass) falcon.on = false; }, e.pointerType === 'mouse' ? 2600 : 900);
+  pointer = [e.clientX, e.clientY];
+  clearTimeout(hunt.timer);
+  /* A still mouse, or a lifted finger, and the falcon gives up and goes. */
+  hunt.timer = setTimeout(() => { pointer = null; }, e.pointerType === 'mouse' ? 12000 : 2500);
 }
 const stage = $('stage');
-stage.addEventListener('pointermove', (e) => { if (!falcon.pass) aim(e); });
-stage.addEventListener('pointerdown', (e) => { if (falcon.pass) return; aim(e); falcon.stoop = true; dive(); hideHint(); });
-addEventListener('pointerup', () => { if (!falcon.pass) falcon.stoop = false; });
-stage.addEventListener('pointerleave', () => { if (!falcon.pass) falcon.on = false; });
+stage.addEventListener('pointermove', hunt);
+stage.addEventListener('pointerdown', (e) => { hunt(e); stooping = true; hideHint(); });
+addEventListener('pointerup', () => { stooping = false; });
+stage.addEventListener('pointerleave', () => { pointer = null; stooping = false; });
+
+function stepFalcon(dt) {
+  falcon.aim(pointer ? aimAt(...pointer) : null, stooping);
+  falcon.step(dt);
+}
 
 function sendFalcon() {
-  const c = flock.middle();
-  const side = Math.random() < 0.5 ? -1 : 1;
-  falcon.pass = { k: 0, from: [c[0] - side * 420, c[1] + 160, c[2] + 60], to: [c[0] + side * 420, c[1] - 90, c[2] - 60] };
-  const p = project(cam, falcon.pass.from);
-  falcon.x = (p.x + 1) / 2 * W;
-  falcon.y = (1 - p.y) / 2 * H;
-  dive();
+  falcon.pass(toward(flock.middle(), NEAR));
   if (!running) play(true);
 }
 
@@ -253,13 +109,15 @@ function startSound() {
   sound.ctx = ctx;
 }
 
-function dive() { sound.rush = 1; }
-
 function stepSound(dt, ev) {
   if (!sound.on || !sound.ctx) return;
   const ctx = sound.ctx;
-  const near = falcon.seen > 0.3 ? 0.55 : 0;
-  sound.rush = Math.max(near, sound.rush - dt * 0.6);
+  /* The rush of wings swells as the falcon gets among the flock. */
+  const f = falcon.state;
+  const c = centre(t);
+  const where = toward(f.p, 1 / NEAR);
+  const near = falcon.flying ? Math.max(0, 1 - Math.hypot(where[0] - c[0], where[1] - c[1], where[2] - c[2]) / 420) : 0;
+  sound.rush = Math.max(near * (f.stoop ? 1 : 0.6), sound.rush - dt * 0.6);
   sound.wings.gain.setTargetAtTime(0.04 + sound.rush * 0.55, ctx.currentTime, 0.15);
   /* Chatter: quick rising whistles and clicks, more of them as the flock comes down. */
   if (ctx.currentTime > sound.next && running) {
@@ -312,6 +170,7 @@ function gpuFlock() {
   const count = program(COUNT_VERT, COUNT_FRAG);
   const fly = program(QUAD_VERT, FLY_FRAG);
   const draw = program(DRAW_VERT, DRAW_FRAG);
+  const hunter = program(FALCON_VERT, DRAW_FRAG);
 
   function texture(w, h, format, data = null) {
     const tex = gl.createTexture();
@@ -357,6 +216,12 @@ function gpuFlock() {
   gl.enableVertexAttribArray(0);
   gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0);
   const empty = gl.createVertexArray();
+  const falconShape = gl.createVertexArray();
+  gl.bindVertexArray(falconShape);
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(gl.ARRAY_BUFFER, FALCON_SHAPE, gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0);
+  gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0);
 
   /* Every bird gets a place in the evening (when it arrives) that stays the
      same however many birds this screen can manage. */
@@ -456,8 +321,24 @@ function gpuFlock() {
     gl.uniform1f(draw.u.u_pixels, birdCanvas.height / 2 / cam.tan);
     gl.uniform1f(draw.u.u_size, Number(params.get('size')) || 1.35);
     gl.uniform3f(draw.u.u_ink, 0.075, 0.055, 0.1);
-    gl.uniform3fv(draw.u.u_haze, haze);
+    gl.uniform3fv(draw.u.u_haze, scenery.haze);
     gl.drawArraysInstanced(gl.TRIANGLES, 0, 12, SIDE * rows);
+    /* The falcon, in the same sky and the same ink, a shade darker. */
+    if (falcon.flying) {
+      const f = falcon.state;
+      gl.useProgram(hunter.p);
+      gl.bindVertexArray(falconShape);
+      gl.uniformMatrix4fv(hunter.u.u_viewProj, false, cam.viewProj);
+      gl.uniform3fv(hunter.u.u_p, f.p);
+      gl.uniform3fv(hunter.u.u_fwd, f.v);
+      gl.uniform1f(hunter.u.u_bank, f.bank);
+      gl.uniform1f(hunter.u.u_beat, Math.sin(f.wing) * f.beat);
+      gl.uniform1f(hunter.u.u_tuck, f.tuck);
+      gl.uniform1f(hunter.u.u_size, FALCON.size);
+      gl.uniform3f(hunter.u.u_ink, 0.045, 0.032, 0.06);
+      gl.uniform3fv(hunter.u.u_haze, scenery.haze);
+      gl.drawArrays(gl.TRIANGLES, 0, FALCON_SHAPE.length / 4);
+    }
     gl.disable(gl.BLEND);
   }
 
@@ -506,21 +387,42 @@ function cpuFlock() {
     render() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, W, H);
-      ctx.strokeStyle = 'rgba(19,14,26,.9)';
-      ctx.lineWidth = 1.3;
+      /* Each bird as the graphics card draws it, seen from below: its wings
+         across its line of flight, looking longer and shorter as they beat. */
+      ctx.strokeStyle = 'rgba(19,14,26,.92)';
+      ctx.lineCap = 'round';
+      ctx.lineWidth = 1.5;
       ctx.beginPath();
       for (let i = 0; i < ref.count; i++) {
         const b = ref.bird(i);
         if (b.state !== 1) continue;
         const p = project(cam, [b.x, b.y, b.z]);
         if (p.w <= 0) continue;
+        const q = project(cam, [b.x + b.vx * 0.05, b.y + b.vy * 0.05, b.z + b.vz * 0.05]);
         const x = (p.x + 1) / 2 * W, y = (1 - p.y) / 2 * H;
-        const span = Math.max(1.2, 2.6 * (850 / p.w)) * (0.5 + 0.5 * Math.abs(Math.cos(b.wing)));
-        ctx.moveTo(x - span, y - span * 0.3);
-        ctx.lineTo(x, y);
-        ctx.lineTo(x + span, y - span * 0.3);
+        let hx = (q.x - p.x) * W, hy = (p.y - q.y) * H;
+        const len = Math.hypot(hx, hy) || 1;
+        hx /= len; hy /= len;
+        const span = Math.max(0.9, 2.4 * (850 / p.w)) * (0.4 + 0.6 * Math.abs(Math.cos(b.wing)));
+        ctx.moveTo(x - hy * span - hx * span * 0.35, y + hx * span - hy * span * 0.35);
+        ctx.lineTo(x + hx * span * 0.3, y + hy * span * 0.3);
+        ctx.lineTo(x + hy * span - hx * span * 0.35, y - hx * span - hy * span * 0.35);
       }
       ctx.stroke();
+      if (falcon.flying) {
+        ctx.fillStyle = '#0b0810';
+        ctx.beginPath();
+        const tri = falcon.triangles();
+        for (let k = 0; k < tri.length; k += 3) {
+          for (let m = 0; m < 3; m++) {
+            const q = project(cam, tri[k + m]);
+            const x = (q.x + 1) / 2 * W, y = (1 - q.y) / 2 * H;
+            if (m === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+          }
+          ctx.closePath();
+        }
+        ctx.fill();
+      }
     },
     restart() { ref.restart(); },
     middle() {
@@ -548,15 +450,16 @@ function size() {
   dpr = Math.min(2, devicePixelRatio || 1);
   W = innerWidth;
   H = innerHeight;
-  for (const c of [skyCanvas, birdCanvas, hunterCanvas, reedCanvas]) {
+  for (const c of [skyCanvas, birdCanvas, reedCanvas]) {
     c.width = Math.round(W * dpr);
     c.height = Math.round(H * dpr);
   }
-  for (const c of [sky, hunter, reeds]) c.setTransform(dpr, 0, 0, dpr, 0, 0);
   cam = camera(W / H);
-  paintReeds();
+  scenery.resize(W, H, dpr, cam);
   paintSky(evening(t));
+  scenery.drawReeds(t, evening(t).light, false);
 }
+const paintSky = (ev) => scenery.paintSky(ev);
 
 let shownLight = -1;
 let last = performance.now();
@@ -592,7 +495,7 @@ let idleSince = performance.now();
 let nextRaid = 32;
 function raid() {
   if (params.has('test')) return; // the tests send the falcon themselves
-  if (falcon.pass || falcon.on || performance.now() - idleSince < 9000) return;
+  if (falcon.flying || pointer || performance.now() - idleSince < 9000) return;
   if (t < nextRaid || t > EVENING.dropFrom - 4) return;
   sendFalcon();
   nextRaid = t + 11 + Math.random() * 8;
@@ -602,13 +505,13 @@ function advance(dt) {
   const before = t;
   t += dt;
   raid();
-  stepFalcon(dt / SPEED);
+  stepFalcon(dt);
   const ev = evening(t);
   /* The sky changes slowly: repaint it a few times a second, not every frame. */
   if (Math.abs(ev.light - shownLight) > 0.004 || (ev.sun > -2 && t - painted > 0.15)) { paintSky(ev); shownLight = ev.light; painted = t; }
-  flock.step(dt, before, t, falconInSky());
+  flock.step(dt, before, t, threat());
   flock.render();
-  drawFalcon();
+  scenery.drawReeds(t, ev.light, running);
   stepSound(dt, ev);
   if (ev.over && $('end').hidden) finish();
 }
@@ -627,7 +530,7 @@ function again() {
   t = 0;
   painted = -1;
   nextRaid = 32;
-  falcon.pass = null;
+  pointer = null;
   shownLight = -1;
   flock.restart();
   paintSky(evening(0));
@@ -644,7 +547,7 @@ function play(on) {
 }
 
 function showCount() {
-  $('count').textContent = flock.count.toLocaleString('en-GB');
+  $('count').textContent = $('count-live').textContent = flock.count.toLocaleString('en-GB');
 }
 
 /* ── the controls ─────────────────────────────────────────────────────── */
@@ -704,6 +607,7 @@ if (reduced) {
   }
   paintSky(evening(t));
   flock.render();
+  scenery.drawReeds(t, evening(t).light, false);
   play(false);
 } else {
   play(true);
@@ -724,6 +628,7 @@ if (params.has('test')) {
       }
       paintSky(evening(t));
       flock.render();
+      scenery.drawReeds(t, evening(t).light, false);
       return t;
     },
     positions: () => Array.from(flock.positions?.() ?? []),
@@ -733,6 +638,7 @@ if (params.has('test')) {
     /* One whole frame, falcon, sky and all: for recording a clip frame by frame. */
     frame: (dt) => { play(false); advance(dt); },
     falcon: () => sendFalcon(),
+    get hunter() { return falcon.state; },
     onScreen: (p) => { const q = project(cam, p); return [(q.x + 1) / 2 * W, (1 - q.y) / 2 * H]; },
   };
 }

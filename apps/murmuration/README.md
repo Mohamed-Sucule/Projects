@@ -4,9 +4,9 @@ Tens of thousands of starlings over a reedbed at sunset. You are the falcon.
 
 **→ [Be the falcon](https://mohamed-sucule.github.io/Projects/apps/murmuration/)**
 
-Move the pointer through the flock and it folds away from you. Hold the button down and the falcon dives, and
-reaches further. On a phone, drag across the sky. **Send the falcon** does it for you, and if nobody hunts for a
-while a falcon comes by on its own. The evening lasts about two and a half minutes: the birds stream in from the
+Point at the sky and the falcon goes there, and the flock folds away from it. Hold the button down and it folds
+its wings and dives. On a phone, touch the sky. **Send the falcon** sends it straight through the flock, and if
+nobody hunts for a while it comes by on its own. The evening lasts about two and a half minutes: the birds stream in from the
 edges, swirl as the sun goes down, and drop into the reeds as the light goes.
 
 ---
@@ -53,8 +53,22 @@ card, and checks the same things of the shader version, along with the fallback 
 
 ## Everything else
 
-The sky, the sun's track on the water, the far bank and the reeds are drawn on ordinary canvases; the falcon is
-a silhouette that follows the pointer a little behind and banks as it turns. The sound, off until asked for, is
+## The falcon
+
+A peregrine, in the same sky and drawn the same way as the starlings, with jointed wings: it beats them when it
+climbs or slows, glides when it has speed, and folds them back to dive. The pointer is not the falcon; it is
+where the falcon is going. The falcon gets there faster than any starling, carrying its speed through the turns
+and banking into them, so it overshoots and swings round, and once there it circles, as a falcon waits on above
+its prey. It flies at about half the flock's distance, so it is big enough to read as a falcon, and the flock
+feels it on the same line from the eye at the flock's own distance, so the hole opens right behind it.
+
+## The marsh
+
+[`scenery.js`](scenery.js) draws the rest on ordinary canvases. The sky is repainted a few times a second as the
+light goes, with clouds lit from below by the sun while it is up and grey-violet once it has gone, the first
+stars, the sun's track on the water, and a fine grain so the long gradients do not band. The reeds are drawn
+once for each size of screen, in three depths, each with a warm copy for where the sun is behind them, and laid
+over the picture every frame with a lean that comes and goes with the wind. The sound, off until asked for, is
 made as it plays: wind over the reeds, the rush of wings, which swells when the falcon is among them, and
 chatter that grows as the flock comes down. There is no image and no sound file.
 

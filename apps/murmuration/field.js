@@ -349,3 +349,166 @@ function multiply(a, b) {
   for (let c = 0; c < 4; c++) for (let r = 0; r < 4; r++) for (let k = 0; k < 4; k++) o[c * 4 + r] += a[k * 4 + r] * b[c * 4 + k];
   return o;
 }
+
+/* ── the falcon ───────────────────────────────────────────────────────── */
+
+/* A peregrine, in the same sky as the flock. It is not the pointer: the
+   pointer says where it should go, and it gets there the way a falcon would,
+   faster than the starlings, carrying its speed through the turns and
+   banking into them, beating and gliding, and folding its wings back to dive
+   when the button is held. The flock runs from the bird, not from the pointer. */
+export const FALCON = {
+  cruise: 190, //  units a second, at half the flock's distance: on the screen, twice a starling's speed
+  dive: 340,
+  grip: 3.4, //    how quickly it can change its velocity
+  size: 4.4, //    flown at half the distance, this reads as a peregrine against a starling
+};
+
+/* The bird in its own frame, looking down on its back, x to the right wing,
+   z forward, in triangles: x, y, z, and which part (0 body and tail, 1 arm,
+   2 hand). The wings are long and pointed and swept back, the tail narrow:
+   the anchor shape a peregrine has against the sky. */
+export const FALCON_SHAPE = (() => {
+  const body = [
+    [0, 0.8], [0.13, 0.56], [-0.13, 0.56],
+    [0.13, 0.56], [0.2, 0.24], [-0.2, 0.24], [0.13, 0.56], [-0.2, 0.24], [-0.13, 0.56],
+    [0.2, 0.24], [0.15, -0.28], [-0.15, -0.28], [0.2, 0.24], [-0.15, -0.28], [-0.2, 0.24],
+    [0.15, -0.28], [0.18, -0.86], [-0.18, -0.86], [0.15, -0.28], [-0.18, -0.86], [-0.15, -0.28],
+  ].map(([x, z]) => [x, 0, z, 0]);
+  const wing = (s) => [
+    /* the arm: shoulder to wrist */
+    [0.17, 0.22, 1], [0.96, 0.17, 1], [0.92, -0.17, 1],
+    [0.17, 0.22, 1], [0.92, -0.17, 1], [0.55, -0.27, 1],
+    [0.17, 0.22, 1], [0.55, -0.27, 1], [0.17, -0.22, 1],
+    /* the hand: wrist to the pointed tip */
+    [0.96, 0.17, 2], [1.45, 0.02, 2], [1.36, -0.21, 2],
+    [0.96, 0.17, 2], [1.36, -0.21, 2], [0.92, -0.17, 2],
+    [1.45, 0.02, 2], [1.88, -0.36, 2], [1.36, -0.21, 2],
+  ].map(([x, z, part]) => [x * s, 0, z, part]);
+  return new Float32Array([...body, ...wing(1), ...wing(-1)].flat());
+})();
+
+const SHOULDER = 0.17;
+const WRIST = 0.96;
+
+/* Where one point of the bird is, in its own frame, with its wings where they
+   are in the beat. shaders.js does the same sum for every vertex. */
+export function articulate([x, y, z, part], beat, tuck) {
+  if (part === 0) return [x, y, z];
+  const s = x < 0 ? -1 : 1;
+  const ax = Math.abs(x);
+  const a1 = beat * 0.55 + 0.07;
+  const a2 = a1 + beat * 0.35;
+  let px, py;
+  if (part === 1) { px = SHOULDER + (ax - SHOULDER) * Math.cos(a1); py = (ax - SHOULDER) * Math.sin(a1); }
+  else {
+    px = SHOULDER + (WRIST - SHOULDER) * Math.cos(a1) + (ax - WRIST) * Math.cos(a2);
+    py = (WRIST - SHOULDER) * Math.sin(a1) + (ax - WRIST) * Math.sin(a2);
+  }
+  /* Folded back for the dive. */
+  const sweep = 0.1 + tuck * 1.0;
+  const out = px - SHOULDER;
+  return [s * (SHOULDER + out * Math.cos(sweep)), py, z - out * Math.sin(sweep)];
+}
+
+export function createFalcon() {
+  const f = {
+    p: [0, 900, -1500], v: [0, 0, -FALCON.cruise], mode: 'away',
+    target: null, stoop: false, wing: 0, beat: 0, tuck: 0, bank: 0, exit: null, pass: null,
+  };
+
+  /* Where the pointer says to go (or null: nobody is hunting). */
+  function aim(target, stoop = false) {
+    if (f.mode === 'pass') return;
+    f.stoop = !!target && stoop;
+    if (!target) {
+      if (f.mode === 'hunt') leave();
+      return;
+    }
+    f.target = target;
+    if (f.mode === 'away') {
+      /* In from high on the near side of where it is going, already moving. */
+      const side = target[0] >= 0 ? 1 : -1;
+      f.p = [target[0] + side * 320, target[1] + 260, target[2] + 120];
+      f.v = scale(norm(sub(target, f.p)), FALCON.cruise);
+    }
+    f.mode = 'hunt';
+  }
+
+  /* A run straight through the flock, from the button or on its own. */
+  function pass(through) {
+    const side = Math.random() < 0.5 ? -1 : 1;
+    f.p = [through[0] - side * 330, through[1] + 150, through[2] + 60];
+    const dir = norm(sub(through, f.p));
+    f.v = scale(dir, FALCON.dive);
+    f.pass = add(through, scale(dir, 420));
+    f.target = f.pass;
+    f.stoop = true;
+    f.mode = 'pass';
+  }
+
+  function leave() {
+    f.mode = 'leave';
+    f.stoop = false;
+    const side = f.v[0] >= 0 ? 1 : -1;
+    f.exit = [f.p[0] + side * 800, f.p[1] + 420, f.p[2] - 200];
+    f.target = f.exit;
+  }
+
+  function step(dt) {
+    if (f.mode === 'away') return;
+    const speed = f.stoop ? FALCON.dive : FALCON.cruise;
+    const to = sub(f.target, f.p);
+    const d = Math.hypot(...to) || 1;
+    if (f.mode === 'pass' && dot(to, f.v) < 0) { leave(); return; }
+    if (f.mode === 'leave' && (d < 80 || f.p[1] > 900)) { f.mode = 'away'; return; }
+    /* Steer for the target at speed, with only so much grip: it overshoots,
+       and swings round for another go, as a falcon does. */
+    let want = scale(to, speed / d);
+    /* Arrived: it circles over the spot rather than stopping on it, as a
+       falcon waits on above its prey. */
+    if (f.mode === 'hunt' && d < 70) {
+      const round = norm(cross([0, 1, 0], to));
+      want = add(scale(to, (speed * 0.35) / d), scale(round, speed * 0.94));
+    }
+    const before = f.v;
+    f.v = add(f.v, scale(sub(want, f.v), Math.min(1, FALCON.grip * dt)));
+    const sp = Math.hypot(...f.v) || 1;
+    f.v = scale(f.v, Math.min(FALCON.dive, Math.max(FALCON.cruise * 0.6, sp)) / sp);
+    f.p = add(f.p, scale(f.v, dt));
+    /* Banks into its turns: the sideways part of the change in its heading. */
+    const turn = cross(norm(before), norm(f.v));
+    const want_bank = Math.max(-1.1, Math.min(1.1, -turn[1] * 26));
+    f.bank += (want_bank - f.bank) * Math.min(1, dt * 6);
+    /* Beats when climbing or slow, glides when it has speed, folds to dive. */
+    f.tuck += ((f.stoop ? 1 : 0) - f.tuck) * Math.min(1, dt * 5);
+    const working = f.v[1] > 20 || sp < FALCON.cruise * 0.95 ? 1 : 0.15;
+    f.beat += (working * (1 - f.tuck) - f.beat) * Math.min(1, dt * 3);
+    f.wing += dt * 13;
+  }
+
+  return {
+    aim,
+    pass,
+    step,
+    get state() { return f; },
+    get flying() { return f.mode !== 'away'; },
+    /* What the flock sees: where the falcon is and how far it threatens. */
+    threat() { return f.mode === 'away' ? null : { at: f.p, reach: f.stoop || f.mode === 'pass' ? RULES.stoop : RULES.falcon }; },
+    /* The bird's triangles in the sky, for the processor's drawing and the tests. */
+    triangles() {
+      const fwd = norm(f.v);
+      const r0 = norm(cross(fwd, [0, 1, 0]));
+      const u0 = cross(r0, fwd);
+      const c = Math.cos(f.bank), s = Math.sin(f.bank);
+      const right = add(scale(r0, c), scale(u0, s));
+      const up = add(scale(r0, -s), scale(u0, c));
+      const out = [];
+      for (let i = 0; i < FALCON_SHAPE.length; i += 4) {
+        const l = articulate([FALCON_SHAPE[i], FALCON_SHAPE[i + 1], FALCON_SHAPE[i + 2], FALCON_SHAPE[i + 3]], Math.sin(f.wing) * f.beat, f.tuck);
+        out.push(add(f.p, scale(add(add(scale(right, l[0]), scale(up, l[1])), scale(fwd, l[2])), FALCON.size)));
+      }
+      return out;
+    },
+  };
+}
