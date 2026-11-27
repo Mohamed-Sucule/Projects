@@ -6,10 +6,18 @@
    rain are set from that time. The clock in the corner says what time it is,
    and the index marks where you are.
 
+   A flock of starlings keeps the same hours (flock.js): it swirls over the
+   sunset, comes down as the evening goes on, some of it onto the wire along
+   the bottom of the screen, and leaves at first light. The index is that
+   wire: each hour is a bird on it, and the one you pick flies to its scene.
+
    Motion is on unless the visitor has asked for less, and the button in the
    top bar turns it off and on again: off, the stars stop twinkling, the rain
-   stops falling and the recordings show their first frame. The sky still
-   follows the scroll bar, because that is reading, not animation. */
+   stops falling, the birds keep still and the recordings show their first
+   frame. The sky and the flock still follow the scroll bar, because that is
+   reading, not animation. */
+
+import { createFlock, createMessenger, PERCH_SHAPE } from './flock.js';
 
 const root = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)');
@@ -61,7 +69,8 @@ const ease = (t) => t * t * t * (t * (t * 6 - 15) + 10);
 /* ── where each scene sits ────────────────────────────────────────────── */
 
 const scenes = [...document.querySelectorAll('.scene[data-at]')];
-const links = new Map([...document.querySelectorAll('.rail a')].map((a) => [a.hash.slice(1), a]));
+const rail = document.getElementById('night');
+const links = new Map([...rail.querySelectorAll('ol a')].map((a) => [a.hash.slice(1), a]));
 const clock = document.querySelector('.clock time');
 const clockName = document.querySelector('.clock .now');
 const themeColour = document.querySelector('meta[name="theme-color"]');
@@ -85,6 +94,8 @@ const state = { stars: 0, rain: 0 };
 let shownScene = -1;
 let shownMinute = -1;
 let lightTop = null;
+let lightLow = null;
+let night = 0; // how far into the night the scroll bar is, in minutes
 
 function paint() {
   const y = scrollY;
@@ -115,9 +126,19 @@ function paint() {
     root.style.setProperty('--top-glass', light ? 'rgba(251, 247, 240, .74)' : 'rgba(10, 11, 30, .62)');
   }
   themeColour.setAttribute('content', hex(top));
+  /* The wire hangs against the bottom of the sky, so it goes by that. */
+  const low = luminance(labToRgb(mixLab(LAB[i].low, LAB[i + 1].low, t))) > 0.17;
+  if (low !== lightLow) {
+    lightLow = low;
+    wireInk = low ? '#1c1527' : '#efe9df';
+    root.style.setProperty('--wire-ink', wireInk);
+  }
 
   /* The clock: 17:30 plus however far into the night the scroll bar is. */
-  const minute = Math.round(mix(a.at, b.at, t));
+  night = mix(a.at, b.at, t);
+  flock?.setMinute(night);
+  if (wire.on) rail.style.setProperty('--lit', (1 - (wire.x0 + (night / LAST) * (wire.x1 - wire.x0)) / W).toFixed(4));
+  const minute = Math.round(night);
   if (minute !== shownMinute) {
     shownMinute = minute;
     const m = (17 * 60 + 30 + minute) % (24 * 60);
@@ -134,7 +155,7 @@ function paint() {
       else link.removeAttribute('aria-current');
     }
   }
-  if (!moving) drawSky(performance.now());
+  if (!moving) { flock?.snap(); drawSky(performance.now()); }
 }
 
 /* ── stars and rain ───────────────────────────────────────────────────── */
@@ -162,6 +183,10 @@ function size() {
     x: rand() * W, y: rand() ** 1.6 * H * 0.9, r: 0.35 + rand() ** 3 * 1.35, phase: rand() * Math.PI * 2, speed: 0.4 + rand() * 1.6,
   }));
   drops = Array.from({ length: Math.round((W * H) / 5200) }, () => ({ x: rand() * W * 1.2, y: rand() * H, len: 10 + rand() * 18, v: 900 + rand() * 600 }));
+  front.width = Math.round(W * dpr);
+  front.height = Math.round(H * dpr);
+  fctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  layWire();
 }
 
 let last = performance.now();
@@ -220,14 +245,151 @@ function drawSky(now) {
     ctx.stroke();
   }
   ctx.globalAlpha = 1;
+  if (flock) {
+    ctx.globalAlpha = 0.9;
+    flock.drawBehind(ctx, '#1c1527');
+    ctx.globalAlpha = 1;
+  }
+  drawFront();
+}
+
+/* In front of the page: the birds on the wire, the morning's leavers and any
+   bird of the index that has been sent somewhere. */
+function drawFront() {
+  if (!wire.on) return; // on a phone there is no wire, and nothing flies in front
+  fctx.clearRect(0, 0, W, H);
+  if (flock) flock.drawInFront(fctx, { perch: wireInk, leave: wireInk, shape: PERCH_SHAPE_2D });
+  for (const m of messengers.values()) m.draw(fctx, PERCH_SHAPE_2D);
 }
 
 let moving = false;
 let frame = 0;
+let stepped = performance.now();
 function loop(now) {
+  const dt = Math.min(0.05, (now - stepped) / 1000);
+  stepped = now;
+  flock?.step(dt);
+  for (const [a, m] of messengers) if (!m.step(dt)) messengers.delete(a);
   drawSky(now);
   frame = requestAnimationFrame(loop);
 }
+
+/* ── the flock ────────────────────────────────────────────────────────── */
+
+const front = document.querySelector('canvas.front');
+const fctx = front.getContext('2d');
+const PERCH_SHAPE_2D = new Path2D(PERCH_SHAPE);
+let wireInk = '#1c1527';
+let flock = null;
+
+/* Started once the page has been drawn: the flock spends a moment finding its
+   shape first, and the sky should not wait for that. */
+function hatch() {
+  flock = createFlock({ count: Math.max(160, Math.min(760, Math.round((W * H) / 1700))) });
+  flock.resize(W, H, wire.slots);
+  flock.setMinute(night);
+  if (!moving) flock.snap();
+  drawSky(performance.now());
+}
+
+/* The pointer is a falcon: the flock opens and folds away from it. On a touch
+   screen, a tap in the sky does the same for a moment. */
+let hawkTimer = 0;
+const hawk = (e) => {
+  flock?.setHawk({ x: e.clientX, y: e.clientY, r: 150 });
+  clearTimeout(hawkTimer);
+  hawkTimer = setTimeout(() => flock?.setHawk(null), e.pointerType === 'mouse' ? 1400 : 700);
+};
+addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') hawk(e); }, { passive: true });
+addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse') hawk(e); }, { passive: true });
+document.documentElement.addEventListener('mouseleave', () => flock?.setHawk(null));
+
+/* ── the wire ─────────────────────────────────────────────────────────── */
+
+/* The wire runs edge to edge and dips in the middle; the hours sit along it
+   from 17:30 at the left to 08:00 at the right. Every position is worked out
+   here, in pixels, so the birds drawn by the stylesheet and the birds drawn on
+   the canvas stand on exactly the same line. */
+const LAST = Number(scenes[scenes.length - 1].dataset.at);
+const RAIL = 104; //  the height of the strip it is strung across
+const wire = { on: false, top: 0, y0: 62, sag: 12, x0: 40, x1: 0, slots: [] };
+const wireY = (x) => wire.y0 + 4 * wire.sag * (x / W) * (1 - x / W);
+const perchOf = (li) => {
+  const x = parseFloat(li.style.getPropertyValue('--x'));
+  return { x, y: wire.top + wireY(x) };
+};
+
+function layWire() {
+  wire.on = matchMedia('(min-width: 901px)').matches;
+  rail.classList.toggle('wired', wire.on);
+  wire.slots = [];
+  if (wire.on) {
+    wire.top = H - RAIL;
+    wire.x1 = W - 40;
+    const d = `M0 ${wire.y0} Q${W / 2} ${wire.y0 + 2 * wire.sag} ${W} ${wire.y0}`;
+    for (const path of rail.querySelectorAll('.wire path')) path.setAttribute('d', d);
+    rail.querySelector('.wire').setAttribute('viewBox', `0 0 ${W} ${RAIL}`);
+    const xs = [];
+    rail.querySelectorAll('li').forEach((li, k) => {
+      const x = wire.x0 + (Number(scenes[k].dataset.at) / LAST) * (wire.x1 - wire.x0);
+      xs.push(x);
+      li.style.setProperty('--x', `${x.toFixed(1)}px`);
+      li.style.setProperty('--y', `${wireY(x).toFixed(1)}px`);
+    });
+    /* Places for the flock to sleep: along the wire, clear of the index. */
+    let seed = 11;
+    const rand = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+    for (let x = 18; x < W - 18; x += 19 + rand() * 9) {
+      if (xs.some((b) => Math.abs(b - x) < 24) || rand() < 0.3) continue;
+      wire.slots.push({ x, y: wire.top + wireY(x) });
+    }
+  }
+  flock?.resize(W, H, wire.slots);
+}
+
+/* Pointing at a bird, or tabbing to it, says which hour it is. */
+const label = rail.querySelector('.perch');
+function name(a) {
+  if (!wire.on) return;
+  label.querySelector('time').textContent = a.querySelector('time').textContent;
+  label.querySelector('span').textContent = a.querySelector('span').textContent;
+  const x = perchOf(a.parentElement).x;
+  label.classList.add('on');
+  const half = label.offsetWidth / 2;
+  label.style.setProperty('--px', `${Math.min(W - half - 12, Math.max(half + 12, x)).toFixed(1)}px`);
+}
+const unname = () => label.classList.remove('on');
+for (const a of links.values()) {
+  a.addEventListener('pointerenter', () => name(a));
+  a.addEventListener('pointerleave', () => { if (!a.matches(':focus-visible')) unname(); });
+  a.addEventListener('focus', () => { if (a.matches(':focus-visible')) name(a); });
+  a.addEventListener('blur', unname);
+}
+
+/* Choosing an hour sends its bird ahead: it flies to the scene and stands on
+   the scene's clock while the page catches up, then flies home. */
+const messengers = new Map();
+rail.addEventListener('click', (e) => {
+  const a = e.target.closest('a');
+  if (!a || !wire.on || !moving || messengers.has(a)) return;
+  unname();
+  const hour = document.getElementById(a.hash.slice(1)).querySelector('.hour time');
+  const li = a.parentElement;
+  a.classList.add('away');
+  messengers.set(a, createMessenger({
+    from: perchOf(li),
+    colour: getComputedStyle(hour).color,
+    target: () => {
+      const r = hour.getBoundingClientRect();
+      /* On top of the last figure of the hour. */
+      const x = r.right - r.width * 0.13;
+      const y = r.top + r.height * 0.19;
+      return { x, y, off: r.bottom < 70 || r.top > H - RAIL, near: { x, y: Math.min(H - RAIL, Math.max(70, y)) } };
+    },
+    home: () => perchOf(li),
+    onHome: () => a.classList.remove('away'),
+  }));
+});
 
 /* ── the recordings ───────────────────────────────────────────────────── */
 
@@ -268,7 +430,15 @@ function setMotion(on, remember) {
   button.setAttribute('aria-pressed', String(on));
   if (remember) try { localStorage.setItem('night:motion', on ? 'on' : 'off'); } catch { /* not kept, still works */ }
   cancelAnimationFrame(frame);
-  if (on) frame = requestAnimationFrame(loop); else drawSky(performance.now());
+  if (on) {
+    stepped = performance.now();
+    frame = requestAnimationFrame(loop);
+  } else {
+    for (const a of messengers.keys()) a.classList.remove('away');
+    messengers.clear();
+    flock?.snap();
+    drawSky(performance.now());
+  }
   videos.forEach(syncVideo);
 }
 button.addEventListener('click', () => setMotion(!moving, true));
@@ -276,7 +446,6 @@ reduce.addEventListener('change', () => { if (saved === null) setMotion(!reduce.
 
 /* ── the index, on a small screen ─────────────────────────────────────── */
 
-const rail = document.getElementById('night');
 const toggle = document.querySelector('.index');
 const closeIndex = () => { rail.classList.remove('open'); toggle.setAttribute('aria-expanded', 'false'); };
 toggle.addEventListener('click', () => {
@@ -288,6 +457,7 @@ toggle.addEventListener('click', () => {
 rail.addEventListener('click', (e) => { if (e.target.closest('a')) closeIndex(); });
 addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && rail.classList.contains('open')) { closeIndex(); toggle.focus(); }
+  if (e.key === 'Escape') unname();
 });
 
 /* ── the email address ────────────────────────────────────────────────── */
@@ -322,5 +492,6 @@ setMotion(saved ? saved === 'on' : !reduce.matches, false);
 paint();
 addEventListener('scroll', onScroll, { passive: true });
 addEventListener('resize', () => { size(); measure(); paint(); });
+if ('requestIdleCallback' in window) requestIdleCallback(hatch, { timeout: 700 }); else setTimeout(hatch, 120);
 /* Pictures and fonts arriving change the page's height, so measure again. */
 new ResizeObserver(() => { measure(); paint(); }).observe(document.body);
