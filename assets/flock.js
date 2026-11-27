@@ -14,8 +14,8 @@
    murmuration holds together while it stretches and folds.
 
    Nothing here touches the page. night.js owns the canvases, the wire and the
-   scroll, and tells the flock the hour, the size of the screen and where the
-   pointer is. That also means the flock can be tested without a browser. */
+   scroll, and tells the flock the hour and the size of the screen. That also
+   means the flock can be tested without a browser. */
 
 /* A perched starling, facing right, in a 32 by 32 box with its feet at the
    bottom middle. night.css draws the birds of the index with the same shape. */
@@ -23,8 +23,8 @@ export const PERCH_SHAPE = 'M28 10.4 24.6 9.4C24 7 22 5.8 19.9 6c-2.5.3-3.7 2.3-
 
 /* The night, in minutes after 17:30 (the front page's own clock). */
 export const HOURS = {
-  settleFrom: 150, // 20:00: the first birds come down
-  settled: 250, //    21:40: the last are down, before the night scenes
+  settleFrom: 10, //  17:40: the first birds come down, as you start to scroll
+  settled: 55, //     18:25: the last are down, before the first scene of the night
   leaveFrom: 770, //  06:20: first light, and the first birds go
   gone: 860, //       07:50: the last have gone by the time it is morning
 };
@@ -104,7 +104,7 @@ export function createFlock({ count, seed = 1830 } = {}) {
   let slots = [];
   let down = 0, gone = 0;
   let clock = 0;
-  let hawk = null; //        the pointer, when there is one
+  let hawk = null; //        a falcon placed by hand (the tests do this)
   let raider = null; //      a falcon of the flock's own, now and then, when nobody is playing
   let nextRaid = 6;
 

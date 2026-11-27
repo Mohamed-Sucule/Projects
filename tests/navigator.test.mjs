@@ -56,9 +56,9 @@ test('ids are unique', () => {
   assert.equal(new Set(EVERYTHING.map((e) => e.id)).size, EVERYTHING.length);
 });
 
-test('the lineup is fifteen real projects, each shown once', () => {
+test('the lineup is fourteen real projects, each shown once', () => {
   const ids = SECTIONS.flatMap((s) => s.ids);
-  assert.equal(ids.length, 15);
+  assert.equal(ids.length, 14);
   assert.equal(new Set(ids).size, ids.length, 'a project is in two sections');
   for (const id of ids) assert.ok(EVERYTHING.some((e) => e.id === id), `the lineup lists "${id}", which is not in the catalogue`);
   assert.deep(ATLAS.map((e) => e.id), ids, 'the lineup is not in section order');
@@ -269,11 +269,8 @@ const EXPECTED = [
   ['the ai stuff', ['frontdesk']],
   ['a game', ['ember']],
   ['lighthouse', ['lamplighter']],
-  ['something creative', ['ember', 'lamplighter', 'mercury', 'beats', 'island', 'murmuration']],
-  ['something beautiful', ['lamplighter', 'mercury', 'murmuration']],
-  ['birds', ['murmuration']],
-  ['starlings at sunset', ['murmuration']],
-  ['flocking simulation', ['murmuration']],
+  ['something creative', ['ember', 'lamplighter', 'mercury', 'beats', 'island']],
+  ['something beautiful', ['lamplighter', 'mercury']],
   ['a story to read', ['lamplighter', 'nightshift', 'room']],
   ['scary', ['nightshift']],
   ['horror', ['nightshift']],

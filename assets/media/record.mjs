@@ -52,20 +52,6 @@ const glide = (p, from, to, ms) => p.evaluate(([from, to, ms]) => new Promise((d
 
 /* Each clip: where it opens, what to do before recording, and what happens on camera. */
 const CLIPS = {
-  /* Too heavy to record in real time on a machine without a graphics card, so
-     it is stepped and photographed one frame at a time instead. */
-  murmuration: {
-    href: 'apps/murmuration/index.html?test&t=34&rows=128&size=1.7',
-    seconds: 8,
-    frames: async (p, k, fps) => {
-      if (k === 0) {
-        await p.addStyleTag({ content: '.back, .stats, .controls, .intro, .hint { display: none !important; }' });
-        await p.evaluate(() => window.__evening.run(5)); // let the flock find its shape before the camera rolls
-      }
-      if (k === 45) await p.evaluate(() => window.__evening.falcon());
-      await p.evaluate((dt) => window.__evening.frame(dt), 1 / fps);
-    },
-  },
   ember: {
     href: 'play/ember/index.html',
     seconds: 9,
@@ -138,25 +124,6 @@ const browser = await chromium.launch({
 const tmp = await mkdtemp(join(tmpdir(), 'clips-'));
 for (const [id, clip] of Object.entries(CLIPS)) {
   if (only.length && !only.includes(id)) continue;
-  if (clip.frames) {
-    const page = await (await browser.newContext({ viewport: { width: 1280, height: 800 } })).newPage();
-    page.setDefaultTimeout(0);
-    await page.goto(`${base}/${clip.href}`, { waitUntil: 'load' });
-    await page.addStyleTag({ content: '[data-navigator] { display: none !important; }' });
-    await page.waitForTimeout(1500);
-    const fps = 25;
-    for (let k = 0; k < clip.seconds * fps; k++) {
-      await clip.frames(page, k, fps);
-      await page.screenshot({ path: join(tmp, `${id}-${String(k).padStart(4, '0')}.png`) });
-    }
-    await page.context().close();
-    /* Thousands of specks barely compress: smaller, and a little softer, to stay under 1 MB. */
-    ffmpeg(['-framerate', String(fps), '-i', join(tmp, `${id}-%04d.png`), '-vf', 'scale=960:-2', '-c:v', 'libx264', '-preset', 'slow', '-crf', '33',
-      '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-an', join(here, `${id}.mp4`)]);
-    ffmpeg(['-i', join(tmp, `${id}-0000.png`), '-frames:v', '1', '-c:v', 'libwebp', '-quality', '82', join(here, `${id}.webp`)]);
-    console.log(`${id}: ${clip.seconds}s, frame by frame`);
-    continue;
-  }
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 }, recordVideo: { dir: tmp, size: { width: 1280, height: 800 } } });
   const page = await ctx.newPage();
   const t0 = Date.now();
