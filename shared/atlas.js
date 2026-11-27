@@ -428,7 +428,7 @@ export const EVERYTHING = [
    belongs to, the small hours hold a few sketches, and the engineering is a
    footnote in the morning. */
 export const SECTIONS = [
-  { id: 'night', title: 'Selected work', ids: ['ember', 'covers', 'frontdesk', 'nightshift', 'lamplighter', 'oklch-studio', 'room', 'your-place'] },
+  { id: 'night', title: 'Selected work', ids: ['ember', 'lamplighter', 'nightshift', 'room', 'oklch-studio', 'your-place', 'covers', 'frontdesk'] },
   { id: 'sketches', title: 'Small hours', ids: ['mercury', 'island', 'beats'] },
   { id: 'engineering', title: 'Under the surface', ids: ['cells', 'diff-forge', 'regex-lab'] },
 ];

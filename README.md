@@ -13,15 +13,17 @@ every one of them runs in the browser.
 
 | | |
 |---|---|
-| **The night** | [Ember](#ember) · [Covers](#covers) · [Front Desk](#front-desk) · [Nightshift](#nightshift) · [The Lamplighter](#the-lamplighter) · [OKLCH Studio](#oklch-studio) · [The Room](#the-room) · [Your Place](#your-place) |
+| **The night** | [Ember](#ember) · [The Lamplighter](#the-lamplighter) · [Nightshift](#nightshift) · [The Room](#the-room) |
+| **Morning** | [OKLCH Studio](#oklch-studio) · [Your Place](#your-place) · [Covers](#covers) · [Front Desk](#front-desk) |
 | **Small hours** | [Mercury, Islandsmith and Beat Lab](#small-hours), three sketches |
 | **Under the surface** | [Cells](#cells), a spreadsheet written from scratch · [Diff Forge and Regex Lab](#tools-for-engineers) |
 
 ## The front page
 
-The site is one long page that runs from 17:30 to 08:00. Each project appears at the hour it belongs to, and the
-sky behind the page is drawn from the scroll position: the sun sets, the stars come out, a storm passes at two,
-and it gets light again for the part about me. The clips are recorded from the real apps by
+The site is one long page that runs from 17:30 to 08:00. The creative work comes out after dark (a game, a
+story told by scrolling, a horror story, a murder mystery and a few sketches) and the product work at first
+light, and the sky behind the page is drawn from the scroll position: the sun sets, a storm passes at eight,
+the stars come out, and it gets light again for the tools, the products and the part about me. The clips are recorded from the real apps by
 [`assets/media/record.mjs`](assets/media/record.mjs) and play only while they are on screen.
 
 A flock of starlings keeps the same hours ([`assets/flock.js`](assets/flock.js)). When you land it is swirling
