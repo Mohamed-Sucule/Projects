@@ -217,6 +217,15 @@ p { text-wrap: pretty; }
 }
 .ember .screen { box-shadow: 0 0 0 1px rgba(255, 180, 110, .25), 0 0 120px -20px rgba(242, 140, 60, .55), 0 50px 100px -40px rgba(0, 0, 0, .9); }
 
+/* The lead piece: the width of the page, with its words over the bottom corner of it */
+.scene.feature > .wrap { grid-template-columns: minmax(0, 1fr); gap: 0; }
+.scene.feature .frame { text-align: right; }
+.scene.feature .screen { text-align: left; }
+.scene.feature .copy { position: relative; z-index: 1; max-width: 560px; margin: -170px 0 0 clamp(16px, 4vw, 56px); }
+/* Without the room for both side by side, the words sit under the recording. */
+@media (max-width: 1200px) { .scene.feature .copy { margin: 24px 0 0; } }
+@media (max-width: 900px) { .scene.feature .copy { margin: 0; max-width: none; } }
+
 /* Your Place: the app, and the print it made */
 .duo { padding-bottom: 8%; }
 .duo .screen { width: 88%; }

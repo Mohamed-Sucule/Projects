@@ -54,22 +54,27 @@ const glide = (p, from, to, ms) => p.evaluate(([from, to, ms]) => new Promise((d
 const CLIPS = {
   ember: {
     href: 'play/ember/index.html',
-    seconds: 9,
-    /* An autopilot plays a real game until the first boss is in the room. */
+    seconds: 10,
+    /* Straight into the second boss, the Choir: three masks, their beams and
+       their rings of light. The autopilot plays it; it cannot be hurt. */
     before: async (p) => {
       await p.evaluate(async () => {
         const { autopilot } = await import('./engine.js');
-        window.__ember.begin(null);
+        window.__ember.begin({ seed: 20261127, act: 2, boons: [], lore: [], gentle: false });
         const g = window.__ember.game;
         g.cheat.invulnerable = true;
         const mem = {};
         const step = g.step.bind(g);
         g.step = (dt) => step(dt, autopilot(g, mem));
+        /* Walking into the boss room is what starts the fight. */
+        const room = g.map.boss;
+        g.player.x = room.mx * 32 + 16;
+        g.player.y = room.my * 32 + 16 + 120;
       });
-      await p.waitForFunction(() => window.__ember.game?.boss && window.__ember.game.mode === 'play', null, { timeout: 240000 });
-      await p.waitForTimeout(1500);
+      await p.waitForFunction(() => window.__ember.game.boss && window.__ember.game.mode === 'play', null, { timeout: 60000 });
+      await p.waitForTimeout(2200); // the boss's name off the screen
     },
-    during: async (p) => p.waitForTimeout(9000),
+    during: async (p) => p.waitForTimeout(10500),
   },
   lamplighter: {
     href: 'apps/lamplighter/index.html',
