@@ -3,7 +3,7 @@
 I design and build interfaces people can feel. Four years shipping web applications at Capgemini (Software
 Engineer, SC cleared) and SynchrTrade, in React and TypeScript. Birmingham, UK.
 
-This repository is my portfolio. The site shows fourteen projects I designed and built, and
+This repository is my portfolio. The site shows fifteen projects I designed and built, and
 every one of them runs in the browser.
 
 **[Portfolio](https://mohamed-sucule.github.io/Projects/)** ·
@@ -13,17 +13,18 @@ every one of them runs in the browser.
 
 | | |
 |---|---|
-| **The night** | [Ember](#ember) · [The Lamplighter](#the-lamplighter) · [Nightshift](#nightshift) · [The Room](#the-room) |
-| **Morning** | [OKLCH Studio](#oklch-studio) · [Your Place](#your-place) · [Covers](#covers) · [Front Desk](#front-desk) |
+| **The night** | [Ember](#ember) · [Your Place](#your-place) · [Flurdle](#flurdle) · [The Lamplighter](#the-lamplighter) · [Nightshift](#nightshift) · [The Room](#the-room) |
+| **Morning** | [OKLCH Studio](#oklch-studio) · [Covers](#covers) · [Front Desk](#front-desk) |
 | **Small hours** | [Mercury, Islandsmith and Beat Lab](#small-hours), three sketches |
 | **Under the surface** | [Cells](#cells), a spreadsheet written from scratch · [Diff Forge and Regex Lab](#tools-for-engineers) |
 
 ## The front page
 
-The site is one long page that runs from 17:30 to 08:00. The creative work comes out after dark (a game, a
-story told by scrolling, a horror story, a murder mystery and a few sketches) and the product work at first
-light, and the sky behind the page is drawn from the scroll position: the sun sets, a storm passes at eight,
-the stars come out, and it gets light again for the tools, the products and the part about me. The clips are recorded from the real apps by
+The site is one long page that runs from 17:30 to 08:00. The creative work comes out after dark (a game, map
+posters, a daily puzzle site, a story told by scrolling, a horror story, a murder mystery and a few sketches)
+and the product work at first light, and the sky behind the page is drawn from the scroll position: the sun
+sets, a storm passes at half past nine, the stars come out, and it gets light again for the tools, the products
+and the part about me. The clips are recorded from the real apps by
 [`assets/media/record.mjs`](assets/media/record.mjs) and play only while they are on screen.
 
 A flock of starlings keeps the same hours ([`assets/flock.js`](assets/flock.js)). When you land it is swirling
@@ -102,6 +103,18 @@ metal under a sunset sky, with no 3D model and no texture: every pixel is worked
 times a second. **[Islandsmith](play/island/)** grows a coastline, mountains, forests, rivers and a name from a
 single number. **[Beat Lab](play/beats/)** is a drum machine with no sound files in it: every kick and snare is
 synthesised as it plays.
+
+## Published on its own
+
+### Flurdle
+
+**[Flurdle](https://flurdle.com/)** is a daily puzzle site I launched on its own domain. Four puzzles a day: a
+wildfire to hold (Fireline), a riddle with unmarked glasses, an orchard to plant by logic alone and five glasses
+to pour by eye. In Fireline every number on the map is a countdown to the flames, and you cut firebreaks before
+the fire gets there. Every fire is generated, and an exact constraint solver proves the best possible score, so
+the best line you are measured against is the best there is. Today's four are free for everyone; Flurdle Plus
+opens every day before today. Its code is not in this repository: the clip on the front page is recorded from
+the live site. **[Play today's puzzles](https://flurdle.com/)**
 
 ## Products
 
@@ -227,7 +240,7 @@ assets/night.css          its look
 assets/night.js           the sky, the clock and the index, all following the scroll bar
 assets/flock.js           the starlings: the murmuration, the night on the wire, and the bird you send ahead
 assets/media/record.mjs   records the front page's clips from the real apps
-shared/atlas.js           the catalogue: every page in the repo, and the fourteen the site shows
+shared/atlas.js           the catalogue: every page in the repo, and the fifteen the site shows
 shared/navigator.js       ⌘K on every page: BM25 search over the lineup (search.js)
 cells/                    React + TypeScript: the formula engine, the grid, persistence and sync
 your-place/               React + TypeScript: the map engine, the worker and the poster UI

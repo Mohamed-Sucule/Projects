@@ -2,7 +2,7 @@
   "name": "mohamed-sucule-portfolio",
   "version": "1.0.0",
   "private": true,
-  "description": "The portfolio of Mohamed Sucule, frontend engineer: fourteen projects that run in the browser, two of them React and TypeScript apps.",
+  "description": "The portfolio of Mohamed Sucule, frontend engineer: fifteen projects that run in the browser, two of them React and TypeScript apps.",
   "type": "module",
   "workspaces": [
     "packages/poster-kit",

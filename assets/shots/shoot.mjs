@@ -80,6 +80,8 @@ const BUILT = new Set(['cells', 'your-place']);
 for (const entry of ATLAS) {
   if (only.length && !only.includes(entry.id)) continue;
   if (BUILT.has(entry.id) && !process.env.BUILT) { console.log(`${entry.id}: skipped, needs BUILT=<preview url>`); continue; }
+  /* Flurdle is not in this repository; its picture is the recording in assets/media. */
+  if (/^https?:/.test(entry.href)) continue;
   const page = await ctx.newPage();
   await page.goto(BUILT.has(entry.id) ? process.env.BUILT : `${base}/${entry.href}`, { waitUntil: 'load' });
   await page.addStyleTag({ content: '[data-navigator] { display: none !important; }' });
