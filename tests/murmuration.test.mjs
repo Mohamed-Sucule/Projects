@@ -60,9 +60,9 @@ test('the falcon is exactly where the pointer is', () => {
 });
 
 test('the shaders fly by the same numbers as the processor', () => {
-  /* The falcon's reach is handed over each frame; everything else is written into the shader. */
-  const main = readFileSync(new URL('../apps/murmuration/main.js', import.meta.url), 'utf8');
-  assert.ok(main.includes('RULES.stoop') && main.includes('RULES.falcon'), 'the falcon does not use its reach');
+  /* The falcon's reach is handed over each frame (by createFalcon().threat()); everything else is written into the shader. */
+  const field = readFileSync(new URL('../apps/murmuration/field.js', import.meta.url), 'utf8');
+  assert.ok(field.includes('RULES.stoop') && field.includes('RULES.falcon'), 'the falcon does not use its reach');
   for (const [name, value] of Object.entries(RULES)) {
     if (name === 'falcon' || name === 'stoop') continue;
     const written = Number.isInteger(value) ? `${value}.0` : String(value);
@@ -125,4 +125,83 @@ test('as the light goes the whole flock drops into the reeds', () => {
   assert.equal(flown.census().asleep, 0, 'birds are down before the drop');
   run(EVENING.down + 6);
   assert.equal(flown.census().asleep, flown.count, `still up after the drop: ${JSON.stringify(flown.census())}`);
+});
+
+/* ── the falcon ───────────────────────────────────────────────────────── */
+
+import { FALCON, FALCON_SHAPE, articulate, createFalcon } from '../apps/murmuration/field.js';
+import { FALCON_VERT } from '../apps/murmuration/shaders.js';
+
+const fly = (f, seconds) => { for (let k = 0; k < seconds * 60; k++) f.step(1 / 60); };
+
+test('pointed at a spot, the falcon flies there and circles it, never stopping', () => {
+  const f = createFalcon();
+  const spot = [80, 120, -430];
+  f.aim(spot);
+  fly(f, 4);
+  const near = [];
+  for (let k = 0; k < 120; k++) {
+    f.step(1 / 60);
+    const s = f.state;
+    near.push(Math.hypot(s.p[0] - spot[0], s.p[1] - spot[1], s.p[2] - spot[2]));
+    const speed = Math.hypot(...s.v);
+    assert.ok(speed >= FALCON.cruise * 0.6 - 1e-6, `it has slowed to ${speed.toFixed(0)}: a falcon cannot hover`);
+  }
+  assert.ok(Math.max(...near) < 160, `it strays ${Math.max(...near).toFixed(0)} from where it was sent`);
+});
+
+test('a falcon banks into its turns, and folds its wings to dive', () => {
+  const f = createFalcon();
+  f.aim([0, 150, -430]);
+  fly(f, 3);
+  let most = 0;
+  for (let k = 0; k < 120; k++) { f.step(1 / 60); most = Math.max(most, Math.abs(f.state.bank)); }
+  assert.ok(most > 0.2, `it circles without banking (at most ${most.toFixed(2)})`);
+  f.aim([0, 150, -430], true);
+  fly(f, 1);
+  assert.ok(f.state.tuck > 0.9, 'it dives with its wings out');
+  assert.ok(f.threat().reach === RULES.stoop, 'a dive reaches no further than a glide');
+});
+
+test('left alone, the falcon goes, and the flock has nothing to fear', () => {
+  const f = createFalcon();
+  f.aim([0, 150, -430]);
+  fly(f, 2);
+  f.aim(null);
+  fly(f, 8);
+  assert.equal(f.flying, false, 'it is still about');
+  assert.equal(f.threat(), null);
+});
+
+test('sent from the button, it goes straight through the flock and out the other side', () => {
+  const f = createFalcon();
+  const through = [40, 140, -430];
+  f.pass(through);
+  let closest = Infinity;
+  for (let k = 0; k < 600 && f.state.mode === 'pass'; k++) {
+    f.step(1 / 60);
+    const p = f.state.p;
+    closest = Math.min(closest, Math.hypot(p[0] - through[0], p[1] - through[1], p[2] - through[2]));
+  }
+  assert.ok(closest < 25, `it passes ${closest.toFixed(0)} from the middle of the flock`);
+  assert.equal(f.state.mode, 'leave');
+});
+
+test('the falcon has two wings that match, and the shader moves them as field.js does', () => {
+  const pts = [];
+  for (let i = 0; i < FALCON_SHAPE.length; i += 4) pts.push([FALCON_SHAPE[i], FALCON_SHAPE[i + 1], FALCON_SHAPE[i + 2], FALCON_SHAPE[i + 3]]);
+  const right = pts.filter((p) => p[3] > 0 && p[0] > 0).map((p) => [p[0], p[2]].join()).sort();
+  const left = pts.filter((p) => p[3] > 0 && p[0] < 0).map((p) => [-p[0], p[2]].join()).sort();
+  assert.deep(left, right, 'the wings are not mirror images');
+  /* Mid-beat, folded or open, the wingtips stay level with each other. */
+  for (const [beat, tuck] of [[0, 0], [0.8, 0], [-0.8, 0], [0, 1]]) {
+    const tips = pts.filter((p) => Math.abs(p[0]) > 1.8).map((p) => articulate(p, beat, tuck));
+    assert.close(tips[0][1], tips[1][1], 1e-9);
+    assert.close(tips[0][0], -tips[1][0], 1e-9);
+  }
+  /* Folded for a dive, the wings sweep back and the span shrinks. */
+  const tip = pts.find((p) => p[0] > 1.8);
+  const open = articulate(tip, 0, 0), folded = articulate(tip, 0, 1);
+  assert.ok(folded[0] < open[0] * 0.7 && folded[2] < open[2], 'the wings do not fold back');
+  assert.ok(FALCON_VERT.includes('const float SHOULDER = 0.17;') && FALCON_VERT.includes('const float WRIST = 0.96;'), 'the shader joints are elsewhere');
 });

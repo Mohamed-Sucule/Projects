@@ -19,6 +19,7 @@
    cannot drift apart. */
 
 import { BOX, LEVELS, SEVEN, RULES, SPACE, STREAMS, ROOST, EVENING } from './field.js';
+export { FALCON_SHAPE } from './field.js';
 
 const f = (x) => (Number.isInteger(x) ? `${x}.0` : String(x));
 const v3 = (a) => `vec3(${a.map(f).join(', ')})`;
@@ -259,4 +260,42 @@ void main() {
   float a = 0.94 - v_far * 0.32;
   vec3 c = mix(u_ink, u_haze, v_far * 0.5);
   o = vec4(c * a, a);
+}`;
+
+/* The falcon: one bird, from uniforms rather than textures, with jointed
+   wings. The same sums as articulate() in field.js. */
+export const FALCON_VERT = `${COMMON}
+layout(location = 0) in vec4 a_shape;
+uniform vec3 u_p;
+uniform vec3 u_fwd;
+uniform float u_bank;
+uniform float u_beat;
+uniform float u_tuck;
+uniform float u_size;
+uniform mat4 u_viewProj;
+out float v_far;
+const float SHOULDER = 0.17;
+const float WRIST = 0.96;
+void main() {
+  vec3 l = a_shape.xyz;
+  if (a_shape.w > 0.5) {
+    float s = l.x < 0.0 ? -1.0 : 1.0;
+    float ax = abs(l.x);
+    float a1 = u_beat * 0.55 + 0.07;
+    float a2 = a1 + u_beat * 0.35;
+    float px, py;
+    if (a_shape.w < 1.5) { px = SHOULDER + (ax - SHOULDER) * cos(a1); py = (ax - SHOULDER) * sin(a1); }
+    else { px = SHOULDER + (WRIST - SHOULDER) * cos(a1) + (ax - WRIST) * cos(a2); py = (WRIST - SHOULDER) * sin(a1) + (ax - WRIST) * sin(a2); }
+    float sweep = 0.1 + u_tuck;
+    float o = px - SHOULDER;
+    l = vec3(s * (SHOULDER + o * cos(sweep)), py, l.z - o * sin(sweep));
+  }
+  vec3 fwd = normalize(u_fwd);
+  vec3 r0 = normalize(cross(fwd, vec3(0.0, 1.0, 0.0)) + vec3(0.00001));
+  vec3 u0 = cross(r0, fwd);
+  vec3 right = r0 * cos(u_bank) + u0 * sin(u_bank);
+  vec3 up = -r0 * sin(u_bank) + u0 * cos(u_bank);
+  vec4 middle = u_viewProj * vec4(u_p, 1.0);
+  gl_Position = u_viewProj * vec4(u_p + (right * l.x + up * l.y + fwd * l.z) * u_size, 1.0);
+  v_far = clamp((middle.w - 650.0) / 1500.0, 0.0, 1.0) * 0.6;
 }`;
