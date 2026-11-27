@@ -114,7 +114,8 @@ to pour by eye. In Fireline every number on the map is a countdown to the flames
 the fire gets there. Every fire is generated, and an exact constraint solver proves the best possible score, so
 the best line you are measured against is the best there is. Today's four are free for everyone; Flurdle Plus
 opens every day before today. Its code is not in this repository: the clip on the front page is recorded from
-the live site. **[Play today's puzzles](https://flurdle.com/)**
+the live site. **[Play today's puzzles](https://flurdle.com/)** ·
+[the case study: designing Fireline](https://mohamed-sucule.github.io/Projects/writing/designing-fireline/)
 
 ## Products
 

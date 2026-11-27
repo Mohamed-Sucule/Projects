@@ -190,6 +190,9 @@ p { text-wrap: pretty; }
 .go:hover { transform: translateY(-1px); box-shadow: 0 14px 34px -12px rgba(255, 207, 138, .9); }
 .go svg { width: 18px; height: 18px; }
 .ghost { border-color: color-mix(in srgb, currentColor 40%, transparent); color: inherit; }
+/* A second, quieter way in beside a scene's button: the write-up behind the work. */
+.doors { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 20px; }
+.also { display: inline-flex; align-items: center; min-height: 46px; color: var(--ink); font: 500 15.5px/1 var(--sans); text-underline-offset: 4px; }
 .ghost:hover { background: color-mix(in srgb, currentColor 10%, transparent); }
 .ctas { display: flex; flex-wrap: wrap; gap: 10px; }
 

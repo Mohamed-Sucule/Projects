@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Designing Fireline — a daily puzzle played on a map of the future, by Mohamed Sucule</title>
+<meta name="description" content="A case study: how I chose one game from twelve scored concepts, proved it had depth before building it, shipped it on flurdle.com, and redesigned it when players found it small and hard to read." />
+<link rel="icon" href="../../favicon.svg" />
+<meta name="theme-color" content="#f6f5f1" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0f1115" media="(prefers-color-scheme: dark)" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Designing Fireline: a daily puzzle played on a map of the future" />
+<meta property="og:description" content="Twelve concepts scored, depth measured before a screen was drawn, and a redesign after players found the map small and hard to read." />
+<meta property="og:url" content="https://mohamed-sucule.github.io/Projects/writing/designing-fireline/" />
+<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/assets/media/flurdle.webp" />
+<link rel="canonical" href="https://mohamed-sucule.github.io/Projects/writing/designing-fireline/" />
+<link rel="stylesheet" href="../writing.css" />
+<style>
+  /* The charts: Fireline (or the plan) in the accent, everything it is measured against in a grey that
+     recedes. Both at least 3:1 on the page in each mode; every bar also carries its number. */
+  :root { --viz-rest: #7d828c; --viz-hi: #1f4fd1; }
+  @media (prefers-color-scheme: dark) { :root { --viz-rest: #767c89; --viz-hi: #7a98f5; } }
+
+  .brief { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 22px; margin: 0 0 32px; padding: 18px 22px; border-radius: 12px; background: var(--wash); font-size: 16px; line-height: 1.5; }
+  .brief dt { font: 400 12.5px/1.9 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mute); }
+  .brief dd { margin: 0; }
+
+  video { width: 100%; height: auto; display: block; border-radius: 6px; background: #121719; box-shadow: 0 1px 2px rgba(21, 23, 28, .1), 0 20px 40px -24px rgba(21, 23, 28, .5); }
+
+  .chart { width: 100%; height: auto; display: block; margin: 6px 0 0; font-family: var(--sans); }
+  .chart .grid { stroke: var(--rule); stroke-width: 1; }
+  .chart .tick { fill: var(--mute); font: 400 12px var(--mono); }
+  .chart .name { fill: var(--soft); font-size: 14px; }
+  .chart .sub { fill: var(--mute); font-size: 12px; }
+  .chart .val { fill: var(--soft); font: 400 13px var(--mono); }
+  .chart .bar { fill: var(--viz-rest); }
+  .chart .hi .bar { fill: var(--viz-hi); }
+  .chart .hi .name, .chart .hi .val { fill: var(--ink); font-weight: 600; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 20px; margin: 4px 0 0; padding: 0; list-style: none; font-size: 14.5px; color: var(--soft); }
+  .legend li { display: flex; align-items: center; gap: 8px; margin: 0; }
+  .legend i { width: 16px; height: 10px; border-radius: 0 3px 3px 0; background: var(--viz-rest); }
+  .legend .hi i { background: var(--viz-hi); }
+
+  details { margin: 12px 0 0; font-size: 15px; }
+  summary { cursor: pointer; color: var(--soft); }
+  .scroll { overflow-x: auto; }
+  .matrix { border-collapse: collapse; min-width: 620px; margin-top: 8px; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .matrix th, .matrix td { padding: 6px 7px; border-bottom: 1px solid var(--rule); text-align: right; }
+  .matrix th:first-child, .matrix td:first-child { text-align: left; }
+  .matrix th { font-weight: 600; font-size: 13px; }
+  .matrix .hi td { font-weight: 620; }
+
+  .moments { width: 100%; margin: 6px 0 24px; border-collapse: collapse; font-size: 15.5px; line-height: 1.5; }
+  .moments th, .moments td { padding: 9px 8px 9px 0; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+  .moments th { font-weight: 600; }
+  .moments td:first-child { font-weight: 600; white-space: nowrap; }
+  .moments td.score { white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+  blockquote { margin: 0 0 22px; padding: 4px 0 4px 20px; border-left: 3px solid var(--viz-hi); font: italic 400 21px/1.45 var(--display); }
+  blockquote p { margin: 0; }
+  .shot h3 { margin: 0 0 8px; font: 400 13px/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mute); }
+  .shot + .shot { margin-top: 24px; }
+
+  @media (max-width: 560px) {
+    .brief { grid-template-columns: 1fr; gap: 2px; }
+    .brief dd { margin-bottom: 10px; }
+    .moments td:first-child { white-space: normal; }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#article">Skip to the article</a>
+<header class="top">
+  <div class="in">
+    <a class="mark" href="../../">Mohamed Sucule</a>
+    <nav aria-label="Main">
+      <a href="../../">Work</a>
+      <a href="../../#under">Writing</a>
+      <a href="../../#morning">About</a>
+      <a href="../../cv/">CV</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<article id="article">
+  <p class="label">Case study · Product design · Flurdle</p>
+  <h1>Fireline: designing a daily puzzle played on a map of the future</h1>
+  <p class="standfirst">How I chose one game from twelve concepts, proved it had depth before drawing a screen, put it live on flurdle.com, and redesigned it when players found it small and hard to read.</p>
+  <p class="byline">Mohamed Sucule · <a href="https://flurdle.com/">Play today's fire</a> · <a href="../../index.html#flurdle">Back to the work</a></p>
+
+  <dl class="brief">
+    <dt>Role</dt><dd>Solo: research, game and interaction design, art direction, sound, the puzzle generator and solver, and the build.</dd>
+    <dt>Timeline</dt><dd>Fire #1 on 3 November 2026, and a new fire every day since. Flurdle itself began on 24 October.</dd>
+    <dt>Built with</dt><dd>TypeScript and SVG, Web Audio, a Python generator and a CP-SAT solver, Vitest and Playwright. The site runs on Cloudflare, Supabase and Stripe.</dd>
+  </dl>
+
+  <figure>
+    <video controls muted loop playsinline preload="none" width="1280" height="800" poster="../../assets/media/flurdle.webp" aria-label="Fireline at night, replaying the solver's best line"><source src="../../assets/media/flurdle.mp4" type="video/mp4" /></video>
+    <figcaption>Fire #25, at night: the solver's best line replayed, seven firebreaks that save 74 of 100 acres.</figcaption>
+  </figure>
+
+  <ul class="numbers">
+    <li><b>12</b><span>concepts generated and scored before one was chosen</span></li>
+    <li><b>~25%</b><span>of the best possible save is what a player who only looks one move ahead manages</span></li>
+    <li><b>771</b><span>fires in the first catalogue, each with a best line a solver proved</span></li>
+    <li><b>42 → 54 px</b><span>a cell on a phone, after players found the map small</span></li>
+  </ul>
+
+  <h2>The question</h2>
+  <p>Before any game, I wrote down what makes people come back to a daily puzzle, and what makes them show it to someone else.</p>
+  <ul>
+    <li>People return to <strong>short challenges with a clear end</strong>, the same for everyone that day, where they can see themselves get better.</li>
+    <li>A small action is satisfying when <strong>a small cause you planned has a large consequence</strong>: a wall that holds.</li>
+    <li>What lingers is the <strong>counterfactual</strong>, "if I had cut there first". A game that shows the best line after you've committed plants that thought.</li>
+    <li>Fresh every day, without making every puzzle by hand, means <strong>generating them, and proving each one's best answer</strong>, so the yardstick is real.</li>
+  </ul>
+  <p>And one gap. Most strategy boards show the present and leave you to simulate the future in your head. A board that shows <em>when</em> things will happen, and redraws that future after every move, turns a hard mental simulation into something you can see. Fireline is built around that.</p>
+
+  <h2>Twelve concepts, scored</h2>
+  <p>I wrote up twelve concepts, each a different kind of thinking: tactics, chain reactions, perception, working out a hidden rule, guessing what other people will do. I scored each out of ten on ten things: originality, appeal, depth, retention, how quickly it's learned, mastery, shareability, visual identity, feasibility and room to grow.</p>
+  <figure>
+    <svg class="chart" viewBox="0 0 680 350" role="img" aria-labelledby="c1-t c1-d">
+    <title id="c1-t">Twelve concepts, each scored out of 100</title>
+    <desc id="c1-d">Fireline scored 80. The next best, Cairn and Glow, scored 67; the lowest, Crease and Watershed, 57.</desc>
+    <line class="grid" x1="112" x2="112" y1="4" y2="320"/><text class="tick" x="112" y="338" text-anchor="middle">0</text>
+    <line class="grid" x1="212" x2="212" y1="4" y2="320"/><text class="tick" x="212" y="338" text-anchor="middle">20</text>
+    <line class="grid" x1="312" x2="312" y1="4" y2="320"/><text class="tick" x="312" y="338" text-anchor="middle">40</text>
+    <line class="grid" x1="412" x2="412" y1="4" y2="320"/><text class="tick" x="412" y="338" text-anchor="middle">60</text>
+    <line class="grid" x1="512" x2="512" y1="4" y2="320"/><text class="tick" x="512" y="338" text-anchor="middle">80</text>
+    <line class="grid" x1="612" x2="612" y1="4" y2="320"/><text class="tick" x="612" y="338" text-anchor="middle">100</text>
+    <g class="hi"><title>Fireline: 80 out of 100</title><text class="name" x="102" y="25" text-anchor="end">Fireline</text><path class="bar" d="M112 14h396.0a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-396.0z"/><text class="val" x="520" y="25">80</text></g>
+    <g><title>Cairn: 67 out of 100</title><text class="name" x="102" y="51" text-anchor="end">Cairn</text><path class="bar" d="M112 40h331.0a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-331.0z"/><text class="val" x="455" y="51">67</text></g>
+    <g><title>Glow: 67 out of 100</title><text class="name" x="102" y="77" text-anchor="end">Glow</text><path class="bar" d="M112 66h331.0a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-331.0z"/><text class="val" x="455" y="77">67</text></g>
+    <g><title>Laws: 66 out of 100</title><text class="name" x="102" y="103" text-anchor="end">Laws</text><path class="bar" d="M112 92h326.0a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-326.0z"/><text class="val" x="450" y="103">66</text></g>
+    <g><title>Nocturne: 64 out of 100</title><text class="name" x="102" y="129" text-anchor="end">Nocturne</text><path class="bar" d="M112 118h316.0a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-316.0z"/><text class="val" x="440" y="129">64</text></g>
+    <g><title>Claim: 64 out of 100</title><text class="name" x="102" y="155" text-anchor="end">Claim</text><path class="bar" d="M112 144h316.0a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-316.0z"/><text class="val" x="440" y="155">64</text></g>
+    <g><title>Sundial: 63 out of 100</title><text class="name" x="102" y="181" text-anchor="end">Sundial</text><path class="bar" d="M112 170h311.0a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-311.0z"/><text class="val" x="435" y="181">63</text></g>
+    <g><title>Gust: 62 out of 100</title><text class="name" x="102" y="207" text-anchor="end">Gust</text><path class="bar" d="M112 196h306.0a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-306.0z"/><text class="val" x="430" y="207">62</text></g>
+    <g><title>Hunch: 62 out of 100</title><text class="name" x="102" y="233" text-anchor="end">Hunch</text><path class="bar" d="M112 222h306.0a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-306.0z"/><text class="val" x="430" y="233">62</text></g>
+    <g><title>Consensus: 60 out of 100</title><text class="name" x="102" y="259" text-anchor="end">Consensus</text><path class="bar" d="M112 248h296.0a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-296.0z"/><text class="val" x="420" y="259">60</text></g>
+    <g><title>Crease: 57 out of 100</title><text class="name" x="102" y="285" text-anchor="end">Crease</text><path class="bar" d="M112 274h281.0a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-281.0z"/><text class="val" x="405" y="285">57</text></g>
+    <g><title>Watershed: 57 out of 100</title><text class="name" x="102" y="311" text-anchor="end">Watershed</text><path class="bar" d="M112 300h281.0a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-281.0z"/><text class="val" x="405" y="311">57</text></g>
+    </svg>
+    <details>
+      <summary>All twelve, criterion by criterion</summary>
+      <div class="scroll" tabindex="0" role="region" aria-label="The scoring table">
+        <table class="matrix">
+          <thead><tr><th scope="col">Concept</th><th scope="col">Original</th><th scope="col">Appeal</th><th scope="col">Depth</th><th scope="col">Retention</th><th scope="col">Learn</th><th scope="col">Mastery</th><th scope="col">Share</th><th scope="col">Visual</th><th scope="col">Feasible</th><th scope="col">Grow</th><th scope="col">Total</th></tr></thead>
+          <tbody>
+            <tr class="hi"><td>Fireline</td><td>7</td><td>8</td><td>8</td><td>8</td><td>9</td><td>8</td><td>7</td><td>8</td><td>8</td><td>9</td><td>80</td></tr>
+            <tr><td>Cairn</td><td>6</td><td>8</td><td>6</td><td>6</td><td>7</td><td>5</td><td>7</td><td>7</td><td>9</td><td>6</td><td>67</td></tr>
+            <tr><td>Glow</td><td>6</td><td>7</td><td>6</td><td>6</td><td>8</td><td>6</td><td>5</td><td>8</td><td>9</td><td>6</td><td>67</td></tr>
+            <tr><td>Laws</td><td>9</td><td>6</td><td>8</td><td>8</td><td>4</td><td>7</td><td>7</td><td>5</td><td>3</td><td>9</td><td>66</td></tr>
+            <tr><td>Nocturne</td><td>6</td><td>8</td><td>5</td><td>6</td><td>9</td><td>5</td><td>4</td><td>9</td><td>6</td><td>6</td><td>64</td></tr>
+            <tr><td>Claim</td><td>6</td><td>6</td><td>7</td><td>6</td><td>7</td><td>7</td><td>5</td><td>8</td><td>6</td><td>6</td><td>64</td></tr>
+            <tr><td>Sundial</td><td>8</td><td>7</td><td>6</td><td>6</td><td>5</td><td>6</td><td>5</td><td>9</td><td>5</td><td>6</td><td>63</td></tr>
+            <tr><td>Gust</td><td>8</td><td>5</td><td>7</td><td>6</td><td>6</td><td>7</td><td>3</td><td>6</td><td>8</td><td>6</td><td>62</td></tr>
+            <tr><td>Hunch</td><td>6</td><td>7</td><td>4</td><td>6</td><td>9</td><td>4</td><td>7</td><td>5</td><td>9</td><td>5</td><td>62</td></tr>
+            <tr><td>Consensus</td><td>7</td><td>8</td><td>3</td><td>8</td><td>9</td><td>2</td><td>9</td><td>5</td><td>2</td><td>7</td><td>60</td></tr>
+            <tr><td>Crease</td><td>5</td><td>7</td><td>5</td><td>5</td><td>6</td><td>4</td><td>6</td><td>8</td><td>6</td><td>5</td><td>57</td></tr>
+            <tr><td>Watershed</td><td>7</td><td>5</td><td>5</td><td>5</td><td>6</td><td>4</td><td>5</td><td>7</td><td>8</td><td>5</td><td>57</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+    <figcaption>Each concept's total out of 100. Fireline came out thirteen points clear, but not on originality.</figcaption>
+  </figure>
+  <p>I gave Fireline a 7 for originality, not a 9: holding back a spreading threat is familiar, and the problem underneath is known graph theory. What's new is the board. Of the rest:</p>
+  <ul>
+    <li><strong>Laws</strong>, a hidden law of physics each day, was the most original and the riskiest. Making fair, discoverable rules every day is an unsolved problem, and one confusing law ruins a day.</li>
+    <li><strong>Cairn and Glow</strong> had lovely chain reactions but shallow decisions underneath.</li>
+    <li><strong>Nocturne and Claim</strong> came down to dragging things until a number went up.</li>
+    <li><strong>Consensus</strong>, tap where everyone else will tap, couldn't be honest without real community data behind it.</li>
+  </ul>
+  <p>Two ideas from the runners-up survived. Laws' daily character became each fire's weather and danger level, and Consensus' reason to come back tomorrow became tomorrow's forecast on the results screen.</p>
+
+  <h2>Proving the depth before drawing a screen</h2>
+  <p>A puzzle is only worth a daily habit if thinking ahead beats reacting. So before designing anything, I measured it. On prototype maps, I compared a player who always makes the best next move (perfect one-move lookahead) with the solver's optimal plan.</p>
+  <figure>
+    <ul class="legend" aria-hidden="true"><li><i></i>Greedy: the best next move, every move</li><li class="hi"><i></i>The solver's plan</li></ul>
+    <svg class="chart" viewBox="0 0 680 262" role="img" aria-labelledby="c2-t c2-d">
+    <title id="c2-t">Acres saved on five prototype maps: a greedy player against the solver's plan</title>
+    <desc id="c2-d">On map 10 greedy play saved 0 acres and the plan 53; on map 16, 5 against 45; map 7, 11 against 41; map 13, 7 against 29; map 29, 15 against 49.</desc>
+    <line class="grid" x1="112" x2="112" y1="4" y2="228"/><text class="tick" x="112" y="244" text-anchor="middle">0</text>
+    <line class="grid" x1="237" x2="237" y1="4" y2="228"/><text class="tick" x="237" y="244" text-anchor="middle">20</text>
+    <line class="grid" x1="362" x2="362" y1="4" y2="228"/><text class="tick" x="362" y="244" text-anchor="middle">40</text>
+    <line class="grid" x1="487" x2="487" y1="4" y2="228"/><text class="tick" x="487" y="244" text-anchor="middle">60</text>
+    <line class="grid" x1="612" x2="612" y1="4" y2="228"/><text class="tick" x="612" y="244" text-anchor="middle">80</text>
+    <text class="name" x="102" y="19" text-anchor="end">Map 10</text><text class="sub" x="102" y="36" text-anchor="end">74 at risk</text>
+    <g><title>Map 10, greedy: 0 of 74 acres</title><path class="bar" d=""/><text class="val" x="120" y="19">0</text></g>
+    <g class="hi"><title>Map 10, the solver's plan: 53 of 74 acres</title><path class="bar" d="M112 24h327.3a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-327.3z"/><text class="val" x="451.25" y="35">53</text></g>
+    <text class="name" x="102" y="65" text-anchor="end">Map 16</text><text class="sub" x="102" y="82" text-anchor="end">63 at risk</text>
+    <g><title>Map 16, greedy: 5 of 63 acres</title><path class="bar" d="M112 54h27.3a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-27.3z"/><text class="val" x="151.25" y="65">5</text></g>
+    <g class="hi"><title>Map 16, the solver's plan: 45 of 63 acres</title><path class="bar" d="M112 70h277.3a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-277.3z"/><text class="val" x="401.25" y="81">45</text></g>
+    <text class="name" x="102" y="111" text-anchor="end">Map 7</text><text class="sub" x="102" y="128" text-anchor="end">48 at risk</text>
+    <g><title>Map 7, greedy: 11 of 48 acres</title><path class="bar" d="M112 100h64.8a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-64.8z"/><text class="val" x="188.75" y="111">11</text></g>
+    <g class="hi"><title>Map 7, the solver's plan: 41 of 48 acres</title><path class="bar" d="M112 116h252.3a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-252.3z"/><text class="val" x="376.25" y="127">41</text></g>
+    <text class="name" x="102" y="157" text-anchor="end">Map 13</text><text class="sub" x="102" y="174" text-anchor="end">49 at risk</text>
+    <g><title>Map 13, greedy: 7 of 49 acres</title><path class="bar" d="M112 146h39.8a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-39.8z"/><text class="val" x="163.75" y="157">7</text></g>
+    <g class="hi"><title>Map 13, the solver's plan: 29 of 49 acres</title><path class="bar" d="M112 162h177.3a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-177.3z"/><text class="val" x="301.25" y="173">29</text></g>
+    <text class="name" x="102" y="203" text-anchor="end">Map 29</text><text class="sub" x="102" y="220" text-anchor="end">63 at risk</text>
+    <g><title>Map 29, greedy: 15 of 63 acres</title><path class="bar" d="M112 192h89.8a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-89.8z"/><text class="val" x="213.75" y="203">15</text></g>
+    <g class="hi"><title>Map 29, the solver's plan: 49 of 63 acres</title><path class="bar" d="M112 208h302.3a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-302.3z"/><text class="val" x="426.25" y="219">49</text></g>
+    </svg>
+    <figcaption>Acres saved on five prototype maps. On map 10, greedy play saved nothing; the plan saved 53.</figcaption>
+  </figure>
+  <p>Looking one move ahead loses badly, so planning is the skill, and every fire that ships has to keep it that way: the generator rejects a fire unless the solver's plan beats greedy play by a clear margin.</p>
+
+  <h2>The design, in one sentence</h2>
+  <blockquote><p>A wildfire spreads across a map that shows when it will reach every acre. Each turn you cut one firebreak, and try to bend that future so the fire burns as little as possible.</p></blockquote>
+  <ul>
+    <li><strong>Select, preview, commit.</strong> Tap a cell and the map redraws the future as if you'd cut there; tap again to cut. The preview comes from the same engine that plays the turn, so "+25 if cut" is exactly what happens.</li>
+    <li><strong>An incident map, not game UI.</strong> It borrows the symbols of real wildfire maps: black hatched firelines, a red perimeter, a danger dial, a rubber stamp at the end. By day it's warm topographic paper; at night, "night ops" charcoal.</li>
+    <li><strong>You can't lose, you save fewer acres.</strong> Every result is a number to beat tomorrow, measured against a best line the solver proves and labelled as exactly that.</li>
+    <li><strong>What it refuses.</strong> No streak freezes to buy, no currencies, unlocks, random rewards or notifications, and no invented community numbers. "41% matched the best line today" would need real data behind it, so I didn't build it rather than fake it.</li>
+  </ul>
+
+  <h2>Playing it before anyone else</h2>
+  <p>I played fires by hand before looking at their solutions.</p>
+  <table class="moments">
+    <thead><tr><th scope="col">Fire</th><th scope="col">What happened</th><th scope="col">Acres saved</th></tr></thead>
+    <tbody>
+      <tr><td>#7, low danger</td><td>I matched the best line with a different plan from the solver's. I'd predicted 26 acres and the engine scored 26, so the rules are clear enough to plan with.</td><td class="score">26 · best 26</td></tr>
+      <tr><td>#5, extreme</td><td>I kept my walls far from the fire. The best line built its wall right beside it, on the upwind side, where the fire crawls.</td><td class="score">26 · best 36</td></tr>
+    </tbody>
+  </table>
+  <p>That second fire caught a mistake in my own help sheet. It said "build ahead of the fire, not beside it", and the best line did the opposite. It now says: look for the shortest line the fire can't beat; upwind it crawls.</p>
+
+  <h2>Fixing the three weakest parts</h2>
+  <p>Once it was built, I scored it again against the same brief. It came to about 8.4 out of 10; I didn't call it a 10, because a 10 is earned with real players over weeks. Then I fixed the three lowest scores.</p>
+  <table class="moments">
+    <thead><tr><th scope="col">Part</th><th scope="col">The problem, and the change</th><th scope="col">Score</th></tr></thead>
+    <tbody>
+      <tr><td>First session</td><td>The idea of a map of the future depended on reading. Now a coached lesson teaches it: pulsing marks on the gap, and three steps that react to what you do.</td><td class="score">6 → 8</td></tr>
+      <tr><td>Progress</td><td>Until a wall closed, a cut seemed to do nothing, which hid the expert idea that cuts buy time. Now the preview says "Buys time: the fire reaches 12 acres later" and outlines the ground it slows.</td><td class="score">6 → 8</td></tr>
+      <tr><td>Sharing</td><td>The text result carried none of the game's identity. Now there's a report card image in the game's own type, with its stamp, crew ledger and fire curve, and no map, so no spoilers.</td><td class="score">6 → 8</td></tr>
+    </tbody>
+  </table>
+
+  <h2>How it feels</h2>
+  <p>Next came a pass on feel that changed none of the rules. I walked through every moment where the game has to answer a player, and wrote down what it did before and what it should do.</p>
+  <table class="moments">
+    <thead><tr><th scope="col">Moment</th><th scope="col">Before</th><th scope="col">After</th></tr></thead>
+    <tbody>
+      <tr><td>Finger down</td><td>Nothing until release.</td><td>A press marker appears under the finger.</td></tr>
+      <tr><td>A cell that can't be cut</td><td>A line of text.</td><td>The hex wobbles, a soft refusal sounds, and the line says why.</td></tr>
+      <tr><td>Cut, with nothing chosen</td><td>A disabled, dead button.</td><td>It always answers: "Pick a cell on the map first".</td></tr>
+      <tr><td>Ground made safe</td><td>A toast covered the fire's name.</td><td>Safety travels out from the cut that made it, the acres rise from the cell, and the chord grows with the size of the save.</td></tr>
+    </tbody>
+  </table>
+  <p>The rules I held it to: anticipation must be honest; rewards grow with what was achieved; every input gets an answer in the same frame, and no tap is dropped; nothing manipulative. Playing it frame by frame caught what no unit test would. The count-up after a save had never been visible, because the preview had already set the number, and the wave of safety had never actually played.</p>
+  <table class="timing">
+    <thead><tr><th scope="col">Measured on an emulated phone</th><th scope="col">Before</th><th scope="col">After</th></tr></thead>
+    <tbody>
+      <tr><td>Redrawing the map on hover, CPU slowed 4×</td><td>3.6 ms</td><td>0.07 ms</td></tr>
+      <tr><td>Redrawing the side panel</td><td>16–31 ms</td><td>1–2 ms</td></tr>
+      <tr><td>The worst frame of a turn, CPU slowed 4×</td><td>88 ms</td><td>58 ms</td></tr>
+    </tbody>
+  </table>
+
+  <h2>What players found, and what changed</h2>
+  <p>Ten days after the first fire, players were finding the game small and hard to read. The redesign:</p>
+  <ul>
+    <li><strong>Smaller maps, bigger cells.</strong> From fire #13 a map is 6 × 9 instead of 8 × 11, so a cell on a 390 px phone is 54 px across, where it was 42.</li>
+    <li><strong>A number on every cell</strong>: the turns until the fire arrives, red for next turn and amber for the one after. The dashed contour lines I'd built the game around became a setting for the people who liked them.</li>
+    <li><strong>The goal always in view</strong>: "Best line 26" beside the score, and a bar that fills as ground is made safe.</li>
+  </ul>
+  <p>Six days later, the first visit changed. Newcomers had met a page of rules; now a title screen plays the idea on a real strip of map in eight seconds, and one button starts a 30-second drill that leads straight into today's fire. The map lost its paper frame and took the whole screen: a cell on an iPhone 14 went from 47 px to 55. And because one fire ended a day's play a few minutes in, a day became three fires, each a step more dangerous, each with its own proven best line.</p>
+  <figure>
+    <div class="shot">
+      <h3>3 November: a page of rules, then the map</h3>
+      <img src="../../assets/flurdle/before.webp" width="1200" height="1298" alt="The first version on a phone: a How to play sheet of four rules with diagrams, then a small framed map of 8 by 11 hexes with faint dashed lines marking where the fire will be" loading="lazy" decoding="async" />
+    </div>
+    <div class="shot">
+      <h3>27 November: the idea in eight seconds, then a drill</h3>
+      <img src="../../assets/flurdle/after.webp" width="1200" height="1298" alt="Today on a phone: a title screen whose strip of map shows a firebreak saving 16 acres, and the drill, the map edge to edge with a number on every cell and two glowing cells in a river's gap to tap" loading="lazy" decoding="async" />
+    </div>
+    <figcaption>Both on a 390 px phone, on the day of fire #25. The first version was rebuilt from the game's history to take these.</figcaption>
+  </figure>
+
+  <h2>Growing the week without growing the rules</h2>
+  <p>From fire #17, each day of the week brings one mechanic: a cabin worth 10 acres that can't be cut, two crews a turn, or one backburn. Sunday's cabin and backburn is the most any fire carries. From #20 the cabin grew into a farm, a friend's suggestion: a house, a herd and a barn placed three ways round the fire, so the best line saves all three and the obvious one doesn't. Every mechanic is in the solver's exact model, so every fire still has a proven best line, and a fire is only accepted where its mechanic changes that line.</p>
+
+  <h2>From one game to a site</h2>
+  <p>Fireline is the front door of Flurdle, four puzzles a day: the fire, a riddle with unmarked glasses, an orchard to plant by logic alone, and five glasses to pour by eye. Each game keeps its own board; the frame around them is shared, and every rule in it rests on research I could point to:</p>
+  <ul>
+    <li><strong>A calm first screen.</strong> People judge a page in 17 to 50 ms, and calm, familiar layouts are judged most appealing, so the front page went from ten type sizes to six.</li>
+    <li><strong>One unmistakable next step.</strong> One control carries at least twice the visual weight of the next.</li>
+    <li><strong>Motion on springs, in four tiers</strong>: a press in 120 ms, a move in 220, progress in 360, a solve in 600. With reduced motion asked for, nothing moves across the screen.</li>
+    <li><strong>Colour never alone.</strong> A puzzle's state is also its shape (an outline, half filled, solid, a diamond at the proof), checked under simulated colour blindness.</li>
+    <li><strong>Big enough to hit.</strong> Every control at least 24 px, every main action 44, checked at 360, 390 and 430 px wide.</li>
+  </ul>
+  <figure>
+    <img src="../../assets/flurdle/puzzles.webp" width="1440" height="900" alt="The Flurdle puzzles page: the wordmark, today's date, and four cards for Fireline, Riddle, Orchard and Pour, each with its day's puzzle and a Play button, above the Flurdle Plus offer" loading="lazy" decoding="async" />
+    <figcaption>Today's four on flurdle.com/puzzles. Each card says what today's puzzle is before you open it.</figcaption>
+  </figure>
+  <p>The membership is designed the same way. Today's four are free for everyone; Flurdle Plus opens every day before today and unlimited fires, for £4 once. It's offered where people already look, never as a pop-up, and the next puzzle's Play button stays the strongest thing on the page.</p>
+
+  <h2>How I measure it</h2>
+  <p>The site keeps a weekly report, from data it already holds, in totals only and never about one player: how many new players come back the next day, after a week and after a month, against targets I set of 40%, 20% and 10%. What's still to prove is difficulty tuned on real players' results, not just the solver's measures and my own play.</p>
+
+  <aside class="next" aria-labelledby="next-title">
+    <h2 id="next-title">More on Flurdle</h2>
+    <ul>
+      <li><a href="https://flurdle.com/">Play today's fire</a>, then the riddle, the orchard and the glasses</li>
+      <li><a href="../fast-map-posters/">From 41.7 seconds to 0.39</a>, on making Your Place fast</li>
+      <li><a href="../../index.html#flurdle">Back to the work</a></li>
+    </ul>
+  </aside>
+</article>
+</main>
+
+<footer>
+  <div class="in">
+    <p style="margin:0">Mohamed Sucule · Frontend engineer, Birmingham, UK</p>
+    <p style="margin:0"><a href="mailto:mohamedsucule@gmail.com">mohamedsucule@gmail.com</a> · <a href="../../cv/">CV</a></p>
+  </div>
+</footer>
+<script type="module" src="../../shared/navigator.js"></script>
+</body>
+</html>
