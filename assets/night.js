@@ -26,7 +26,8 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)');
 
 const KEYS = [
   { at: 0, top: '#2f3b78', mid: '#b56c8e', low: '#ffb978', stars: 0, sun: 0.9, moon: 0, rain: 0 },
-  { at: 30, top: '#27306a', mid: '#8a5a8c', low: '#f29a6a', stars: 0.05, sun: 0.55, moon: 0, rain: 0 },
+  { at: 30, top: '#2b3572', mid: '#a0628c', low: '#fbab72', stars: 0, sun: 0.72, moon: 0, rain: 0 },
+  { at: 70, top: '#27306a', mid: '#8a5a8c', low: '#f29a6a', stars: 0.05, sun: 0.55, moon: 0, rain: 0 },
   { at: 132, top: '#1a2050', mid: '#43356a', low: '#a35a76', stars: 0.35, sun: 0, moon: 0.15, rain: 0 },
   { at: 210, top: '#121638', mid: '#232750', low: '#3e2f5a', stars: 0.7, sun: 0, moon: 0.5, rain: 0 },
   { at: 270, top: '#0c1029', mid: '#171b3c', low: '#262546', stars: 0.85, sun: 0, moon: 0.8, rain: 0 },

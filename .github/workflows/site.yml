@@ -1,7 +1,8 @@
 name: Site
 
 # The checks for the site itself: the unit and page tests (node tests/run.mjs),
-# and axe on every page in a real browser, in light and dark mode. They run on
+# axe on every page in a real browser, in light and dark mode, and Murmuration's
+# flock run on a (software) graphics pipeline and read back. They run on
 # every pull request, and Deploy to GitHub Pages calls this same workflow
 # before it publishes, so nothing reaches the site without passing both.
 
@@ -38,3 +39,18 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: node tests/a11y/scan.mjs
+
+  browser:
+    name: Murmuration's flock, on a graphics pipeline
+    # Pinned for the same reason as the accessibility job.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: node tests/browser/murmuration.mjs
