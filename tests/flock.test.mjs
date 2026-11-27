@@ -35,12 +35,13 @@ test('the flock keeps the hours of the night', () => {
 });
 
 test('the front page and the flock agree on the hours', () => {
-  /* In the air for the first scenes, down before the first night scene, and
-     away after first light, by the time the morning comes. */
+  /* Up over the sunset when you land, down by the first scene of the night,
+     and away after first light, by the time the morning comes. */
   const home = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
   const at = (id) => Number(home.match(new RegExp(`id="${id}" class="scene[^"]*" data-at="(\\d+)"`))[1]);
-  assert.ok(HOURS.settleFrom > at('your-place'), 'the flock comes down before Your Place has had its sunset');
-  assert.ok(HOURS.settled < at('nightshift'), 'birds are still flying over the night scenes');
+  const first = Number(home.match(/class="scene(?! hero)[^"]*" data-at="(\d+)"/)[1]);
+  assert.ok(HOURS.settleFrom > 0, 'the flock is already down when you land');
+  assert.ok(HOURS.settled < first, 'birds are still flying over the first scene of the night');
   assert.ok(HOURS.leaveFrom >= at('oklch-studio'), 'the flock leaves before first light');
   assert.ok(HOURS.gone <= at('morning'), 'the flock is still here in the morning');
 });
