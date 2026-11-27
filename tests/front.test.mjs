@@ -74,6 +74,13 @@ test('the sky has a look for every scene, at the same hour', () => {
   assert.deep(keys, scenes.map((s) => s.at), 'assets/night.js has a different set of hours from the page');
 });
 
+test('each scene shows its work once', () => {
+  for (const sc of scenes) {
+    const frames = (sc.html.match(/<figure class="frame/g) ?? []).length;
+    assert.ok(frames <= 1, `${sc.id} shows ${frames} recordings`);
+  }
+});
+
 test('every picture and recording on the front page is there, and the recordings are light', () => {
   const files = new Set();
   for (const m of home.matchAll(/(?:src|poster)="(assets\/[^"]+)"/g)) files.add(m[1]);
