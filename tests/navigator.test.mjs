@@ -29,8 +29,11 @@ test('every entry points at a page that exists', () => {
      worse than no navigator, and this is checked against the disk rather than
      against my recollection of what I named things. */
   for (const entry of [...EVERYTHING, HOME]) {
+    /* Flurdle lives at its own address; everything else is in this repository. */
+    if (/^https:\/\//.test(entry.href)) continue;
     assert.ok(existsSync(join(root, entry.href)), `${entry.id} points at missing ${entry.href}`);
   }
+  assert.deep(EVERYTHING.filter((e) => /^[a-z]+:/.test(e.href)).map((e) => e.href), ['https://flurdle.com/'], 'an entry leaves the site');
 });
 
 test('every page on disk is in the catalogue', () => {
@@ -47,7 +50,7 @@ test('every page on disk is in the catalogue', () => {
   /* Your Place, Your Sky and Cells have folders of their own at the top, because each
      has a toolchain of its own. */
   for (const href of ['your-place/index.html', 'your-sky/index.html', 'cells/index.html']) if (existsSync(join(root, href))) onDisk.push(href);
-  const listed = new Set(EVERYTHING.map((e) => e.href));
+  const listed = new Set(EVERYTHING.map((e) => e.href).filter((href) => !/^https:/.test(href)));
   for (const href of onDisk) assert.ok(listed.has(href), `${href} is not in the catalogue`);
   assert.equal(listed.size, onDisk.length);
 });
@@ -56,9 +59,9 @@ test('ids are unique', () => {
   assert.equal(new Set(EVERYTHING.map((e) => e.id)).size, EVERYTHING.length);
 });
 
-test('the lineup is fourteen real projects, each shown once', () => {
+test('the lineup is fifteen real projects, each shown once', () => {
   const ids = SECTIONS.flatMap((s) => s.ids);
-  assert.equal(ids.length, 14);
+  assert.equal(ids.length, 15);
   assert.equal(new Set(ids).size, ids.length, 'a project is in two sections');
   for (const id of ids) assert.ok(EVERYTHING.some((e) => e.id === id), `the lineup lists "${id}", which is not in the catalogue`);
   assert.deep(ATLAS.map((e) => e.id), ids, 'the lineup is not in section order');

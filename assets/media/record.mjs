@@ -10,7 +10,10 @@
    <id>.mp4 (H.264, so it plays in every browser including Safari on a phone)
    and <id>.webp, its first frame, which the page shows until the video plays
    and instead of it when someone has asked for reduced motion. The clips are
-   muted, short and loop. Development tools only; the output is committed. */
+   muted, short and loop. Development tools only; the output is committed.
+
+   Flurdle lives at its own address, so its clip is recorded from the live
+   site rather than from this repository (through HTTPS_PROXY, if one is set). */
 
 import { createServer } from 'node:http';
 import { readFile, mkdtemp, rm } from 'node:fs/promises';
@@ -96,6 +99,26 @@ const CLIPS = {
     before: async (p) => { await p.waitForTimeout(1500); },
     during: async (p) => { await p.click('#playBtn'); await p.waitForTimeout(10000); },
   },
+  flurdle: {
+    href: 'https://flurdle.com/',
+    dark: true,
+    /* Fireline, at night, replaying the solver's best line: seven firebreaks
+       cut in order while the fire runs, and every acre behind them saved.
+       Standing down is the quickest way to the replay. */
+    before: async (p) => {
+      await p.getByText('Skip it').click();
+      await p.click('[data-testid=stand-down]');
+      await p.getByRole('button', { name: /^stand down$/i }).last().click();
+      await p.getByRole('button', { name: 'Hide this bar' }).click({ timeout: 15000 });
+      await p.waitForTimeout(600);
+      await p.getByRole('button', { name: 'Watch the best line' }).click();
+      await p.getByText(/cut 1 of/i).first().waitFor();
+    },
+    /* Until the line is complete and the ground behind it is saved, and a moment on that. */
+    during: async (p) => { await p.getByText(/best line saves \d+ acres/i).first().waitFor({ timeout: 40000 }); await p.waitForTimeout(1800); },
+    /* The still is the end, the saved ground, which says more than the start. */
+    still: 'end',
+  },
   'oklch-studio': {
     href: 'projects/oklch-studio/index.html',
     seconds: 8,
@@ -125,26 +148,30 @@ const ffmpeg = (args) => execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'e
 const browser = await chromium.launch({
   executablePath: process.env.CHROME_PATH || undefined,
   args: ['--autoplay-policy=no-user-gesture-required'],
+  proxy: process.env.HTTPS_PROXY ? { server: process.env.HTTPS_PROXY, bypass: '127.0.0.1,localhost' } : undefined,
 });
 const tmp = await mkdtemp(join(tmpdir(), 'clips-'));
 for (const [id, clip] of Object.entries(CLIPS)) {
   if (only.length && !only.includes(id)) continue;
-  const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 }, recordVideo: { dir: tmp, size: { width: 1280, height: 800 } } });
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 }, colorScheme: clip.dark ? 'dark' : 'light', recordVideo: { dir: tmp, size: { width: 1280, height: 800 } } });
   const page = await ctx.newPage();
   const t0 = Date.now();
-  await page.goto(`${base}/${clip.href}`, { waitUntil: 'load' });
+  await page.goto(/^https?:/.test(clip.href) ? clip.href : `${base}/${clip.href}`, { waitUntil: clip.dark ? 'networkidle' : 'load' });
   await page.addStyleTag({ content: '[data-navigator] { display: none !important; }' });
   await clip.before(page);
   const from = (Date.now() - t0) / 1000;
   await clip.during(page);
+  /* A clip with no length of its own lasts as long as what happens in it. */
+  const seconds = clip.seconds ?? Math.round(((Date.now() - t0) / 1000 - from) * 10) / 10;
   const video = page.video();
   await ctx.close();
   const raw = await video.path();
   const at = from.toFixed(2);
-  ffmpeg(['-ss', at, '-i', raw, '-t', String(clip.seconds), '-vf', 'fps=25,scale=1280:-2', '-c:v', 'libx264', '-preset', 'slow', '-crf', '30',
+  ffmpeg(['-ss', at, '-i', raw, '-t', String(seconds), '-vf', 'fps=25,scale=1280:-2', '-c:v', 'libx264', '-preset', 'slow', '-crf', '30',
     '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-an', join(here, `${id}.mp4`)]);
-  ffmpeg(['-ss', at, '-i', raw, '-frames:v', '1', '-vf', 'scale=1280:-2', '-c:v', 'libwebp', '-quality', '82', join(here, `${id}.webp`)]);
-  console.log(`${id}: ${clip.seconds}s from ${at}s`);
+  const still = clip.still === 'end' ? (from + seconds - 0.2).toFixed(2) : at;
+  ffmpeg(['-ss', still, '-i', raw, '-frames:v', '1', '-vf', 'scale=1280:-2', '-c:v', 'libwebp', '-quality', '82', join(here, `${id}.webp`)]);
+  console.log(`${id}: ${seconds}s from ${at}s`);
 }
 await rm(tmp, { recursive: true, force: true });
 await browser.close();

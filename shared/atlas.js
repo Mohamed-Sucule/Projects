@@ -5,7 +5,8 @@
    front page and the case-study pages are checked against it, and the previous
    and next links between projects come out of its order.
 
-   Two lists. EVERYTHING is every page in the repository, so a test can check
+   Two lists. EVERYTHING is every page in the repository (and the one project
+   that lives at an address of its own, Flurdle), so a test can check
    that nothing on disk has been forgotten. SECTIONS is the lineup: the
    projects the site actually puts in front of people, in the order it puts
    them there. Anything in the first list and not the second still runs at its
@@ -57,6 +58,18 @@ export const EVERYTHING = [
            'wall art', 'gift', 'home town', 'hometown', 'where we met', 'wallpaper', 'openstreetmap',
            'osm', 'react', 'typescript', 'frontend', 'front end', 'web worker', 'canvas', 'svg',
            'personalised', 'personalized', 'new'],
+  },
+
+  /* ── published on its own: a site with an address of its own ────────────── */
+  {
+    id: 'flurdle', title: 'Flurdle', href: 'https://flurdle.com/',
+    kind: 'game', depth: 'play', minutes: 5,
+    blurb: 'Four puzzles a day on a site of its own: a wildfire to hold, a riddle with unmarked glasses, '
+         + 'an orchard to plant by logic alone and five glasses to pour by eye, scored against a solver.',
+    hook: 'Hold today’s wildfire, then watch the best line there is.',
+    tags: ['puzzle', 'puzzles', 'daily puzzle', 'daily', 'wordle', 'game', 'games', 'logic', 'logic puzzle',
+           'brain teaser', 'wildfire', 'fire', 'fireline', 'riddle', 'orchard', 'pour', 'glasses', 'solver',
+           'constraint solver', 'published', 'launched', 'live', 'membership', 'new'],
   },
 
   {
@@ -428,7 +441,7 @@ export const EVERYTHING = [
    belongs to, the small hours hold a few sketches, and the engineering is a
    footnote in the morning. */
 export const SECTIONS = [
-  { id: 'night', title: 'Selected work', ids: ['ember', 'lamplighter', 'nightshift', 'room', 'oklch-studio', 'your-place', 'covers', 'frontdesk'] },
+  { id: 'night', title: 'Selected work', ids: ['ember', 'your-place', 'flurdle', 'lamplighter', 'nightshift', 'room', 'oklch-studio', 'covers', 'frontdesk'] },
   { id: 'sketches', title: 'Small hours', ids: ['mercury', 'island', 'beats'] },
   { id: 'engineering', title: 'Under the surface', ids: ['cells', 'diff-forge', 'regex-lab'] },
 ];

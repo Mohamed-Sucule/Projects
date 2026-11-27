@@ -27,13 +27,14 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)');
 const KEYS = [
   { at: 0, top: '#2f3b78', mid: '#b56c8e', low: '#ffb978', stars: 0, sun: 0.9, moon: 0, rain: 0 },
   { at: 60, top: '#080a1a', mid: '#12142b', low: '#2a1e2c', stars: 0.9, sun: 0, moon: 0.75, rain: 0 },
-  { at: 150, top: '#070b16', mid: '#0e1526', low: '#182032', stars: 0.25, sun: 0, moon: 0.1, rain: 1 },
-  { at: 270, top: '#0c1029', mid: '#171b3c', low: '#262546', stars: 0.9, sun: 0, moon: 0.85, rain: 0 },
+  { at: 120, top: '#0b0e24', mid: '#181b38', low: '#3b2b30', stars: 0.6, sun: 0, moon: 0.6, rain: 0 },
+  { at: 180, top: '#080c14', mid: '#101a20', low: '#2e211c', stars: 0.8, sun: 0, moon: 0.5, rain: 0 },
+  { at: 240, top: '#070b16', mid: '#0e1526', low: '#182032', stars: 0.25, sun: 0, moon: 0.1, rain: 1 },
+  { at: 300, top: '#0c1029', mid: '#171b3c', low: '#262546', stars: 0.9, sun: 0, moon: 0.85, rain: 0 },
   { at: 390, top: '#05060d', mid: '#090a14', low: '#0f0f1b', stars: 1, sun: 0, moon: 1, rain: 0 },
   { at: 630, top: '#0a0f24', mid: '#151d3a', low: '#262b50', stars: 0.85, sun: 0, moon: 0.8, rain: 0 },
   { at: 690, top: '#27346a', mid: '#7a6494', low: '#f0a07a', stars: 0.2, sun: 0.3, moon: 0.2, rain: 0 },
-  { at: 750, top: '#7c9fd0', mid: '#c2cde0', low: '#f6d3ae', stars: 0, sun: 0.7, moon: 0, rain: 0 },
-  { at: 795, top: '#a8c2e6', mid: '#dbe3ee', low: '#f9e2c6', stars: 0, sun: 0.85, moon: 0, rain: 0 },
+  { at: 780, top: '#7c9fd0', mid: '#c2cde0', low: '#f6d3ae', stars: 0, sun: 0.7, moon: 0, rain: 0 },
   { at: 830, top: '#c0d4ee', mid: '#e5eaf2', low: '#fbebd6', stars: 0, sun: 0.95, moon: 0, rain: 0 },
   { at: 870, top: '#d2e3f4', mid: '#edf1f5', low: '#fbf3e4', stars: 0, sun: 1, moon: 0, rain: 0 },
 ];

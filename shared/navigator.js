@@ -21,12 +21,14 @@ import { buildIndex, search, explain } from './search.js';
 
 const link = (href) => resolveHref(href, import.meta.url);
 const here = currentEntry();
-const position = here ? ATLAS.findIndex((e) => e.id === here.id) : -1;
-
 /* Neighbours come out of the atlas order, so "next" is the next thing I would
-   have put in front of you rather than whatever is alphabetically adjacent. */
-const previous = position > 0 ? ATLAS[position - 1] : null;
-const next = position !== -1 && position < ATLAS.length - 1 ? ATLAS[position + 1] : null;
+   have put in front of you rather than whatever is alphabetically adjacent. A
+   project at an address of its own (Flurdle) is in the search, but not a stop
+   on the way through: past it there would be no way on. */
+const chain = ATLAS.filter((e) => !/^https?:/.test(e.href));
+const position = here ? chain.findIndex((e) => e.id === here.id) : -1;
+const previous = position > 0 ? chain[position - 1] : null;
+const next = position !== -1 && position < chain.length - 1 ? chain[position + 1] : null;
 
 const SUGGESTIONS = [
   'a game',
@@ -172,7 +174,7 @@ function neighbourBar() {
     : '<span class="neighbour empty"></span>';
   return `<div class="where">
     ${side(previous, 'prev')}
-    <span class="youare">You are in <b>${escape(here.title)}</b> · ${position + 1} of ${ATLAS.length}</span>
+    <span class="youare">You are in <b>${escape(here.title)}</b> · ${ATLAS.indexOf(here) + 1} of ${ATLAS.length}</span>
     ${side(next, 'next')}
   </div>`;
 }

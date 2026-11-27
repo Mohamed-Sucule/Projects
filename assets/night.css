@@ -368,5 +368,7 @@ footer p { margin: 0; padding: 8px 14px; border-radius: 999px; background: color
   .hero h1 { margin-bottom: 26px; }
   .glass { border-radius: 20px; }
   .duo .print { width: 38%; }
+  /* The print stands over the corner of the screen; the caption keeps to the left of it. */
+  .duo figcaption { margin-right: 41%; }
   footer { flex-direction: column; }
 }
