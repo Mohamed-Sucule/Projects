@@ -50,6 +50,10 @@
   <div class="moon"></div>
   <canvas></canvas>
 </div>
+<!-- The bottom of the sky, over the page, where the wire is strung; and the
+     birds that come down onto it, or fly over the page, drawn in front. -->
+<div class="horizon" aria-hidden="true"></div>
+<canvas class="front" aria-hidden="true"></canvas>
 
 <header class="top">
   <a class="mark" href="#dusk">Mohamed Sucule</a>
@@ -65,6 +69,7 @@
 </header>
 
 <nav class="rail" id="night" aria-label="The night, hour by hour">
+  <svg class="wire" aria-hidden="true" focusable="false"><path class="line" d="" /><path class="lit" d="" pathLength="1" /></svg>
   <ol>
     <li><a href="#dusk"><time>17:30</time><span>Golden hour</span></a></li>
     <li><a href="#your-place"><time>18:00</time><span>Your Place</span></a></li>
@@ -78,6 +83,7 @@
     <li><a href="#room"><time>07:00</time><span>The Room</span></a></li>
     <li><a href="#morning"><time>08:00</time><span>Good morning</span></a></li>
   </ol>
+  <p class="perch" aria-hidden="true"><time></time><span></span></p>
 </nav>
 
 <main id="main">
@@ -411,7 +417,7 @@
 </main>
 
 <footer>
-  <p>© 2026 Mohamed Sucule · Birmingham, UK · Everything here was designed and built by hand, including the sky.</p>
+  <p>© 2026 Mohamed Sucule · Birmingham, UK · Everything here was designed and built by hand, including the sky and the starlings.</p>
   <p><a href="#dusk">Back to dusk</a> · <a href="cv/">CV</a> · <a href="https://github.com/Mohamed-Sucule/Projects">Source on GitHub</a></p>
 </footer>
 

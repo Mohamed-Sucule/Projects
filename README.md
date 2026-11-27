@@ -22,8 +22,17 @@ every one of them runs in the browser.
 The site is one long page that runs from 17:30 to 08:00. Each project appears at the hour it belongs to, and the
 sky behind the page is drawn from the scroll position: the sun sets, the stars come out, a storm passes at two,
 and it gets light again for the part about me. The clips are recorded from the real apps by
-[`assets/media/record.mjs`](assets/media/record.mjs) and play only while they are on screen. They stop, along
-with the stars and the rain, when the motion button is pressed or the system asks for reduced motion.
+[`assets/media/record.mjs`](assets/media/record.mjs) and play only while they are on screen.
+
+A flock of starlings keeps the same hours ([`assets/flock.js`](assets/flock.js)). At dusk it swirls over the
+sunset, each bird keeping to its seven nearest neighbours, the way real murmurations are thought to hold
+together, and it parts around the pointer as it would around a falcon. As the evening goes on it comes down,
+some of it onto a wire strung along the bottom of the screen, and at first light it leaves. The wire is also the
+index: each hour of the night is a bird on it, and the one you pick flies ahead to its scene and stands on the
+scene's clock while the page catches up. On a phone the index opens from the top bar instead.
+
+The clips, the stars, the rain and the birds all stop when the motion button is pressed or the system asks for
+reduced motion. The sky and the flock still follow the scroll bar, standing still.
 
 ## Creative work
 
@@ -182,7 +191,9 @@ do.
 - **The night is checked.** [`tests/front.test.mjs`](tests/front.test.mjs) fails if a project in the lineup has
   no place on the front page, if the scenes, the index and the sky in [`assets/night.js`](assets/night.js)
   disagree about any hour, if a recording is missing or over 1 MB, or if the CV counts different projects from
-  the site.
+  the site. [`tests/flock.test.mjs`](tests/flock.test.mjs) flies the flock through the night without a browser:
+  it must hold together without collapsing, be down before the night scenes, come back when you scroll up,
+  have gone by morning, stay still with the motion off, and part for a falcon.
 - **Every page is checked for accessibility.** [`tests/a11y/scan.mjs`](tests/a11y/scan.mjs) serves the site,
   opens every page in Chromium in light and dark mode, and fails CI on any serious or critical axe finding.
 - **Every page meets the same baseline** of doctype, language, charset, viewport, description, social card,
@@ -212,6 +223,7 @@ interface has to be *understood*. Different jobs.
 index.html                the front page, its sky running from 17:30 to 08:00
 assets/night.css          its look
 assets/night.js           the sky, the clock and the index, all following the scroll bar
+assets/flock.js           the starlings: the murmuration, the night on the wire, and the bird you send ahead
 assets/media/record.mjs   records the front page's clips from the real apps
 shared/atlas.js           the catalogue: every page in the repo, and the fourteen the site shows
 shared/navigator.js       ⌘K on every page: BM25 search over the lineup (search.js)
