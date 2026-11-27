@@ -162,7 +162,7 @@ export function detectIntent(query) {
 /* Which pieces answer "show me the best thing here". Hand-picked, because the
    honest answer to that question is a judgement and pretending a ranking
    function made it would be a small lie. */
-export const FEATURED = ['ember', 'lamplighter', 'your-place', 'covers'];
+export const FEATURED = ['murmuration', 'ember', 'lamplighter', 'your-place', 'covers'];
 
 /* Words that ask for a recommendation rather than name a subject. They are never
    typos to be corrected: "start" is one letter from "star", and reading it that way

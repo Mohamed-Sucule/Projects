@@ -3,7 +3,7 @@
 I design and build interfaces people can feel. Four years shipping web applications at Capgemini (Software
 Engineer, SC cleared) and SynchrTrade, in React and TypeScript. Birmingham, UK.
 
-This repository is my portfolio. The site shows fourteen projects I designed and built, and
+This repository is my portfolio. The site shows fifteen projects I designed and built, and
 every one of them runs in the browser.
 
 **[Portfolio](https://mohamed-sucule.github.io/Projects/)** ·
@@ -13,7 +13,7 @@ every one of them runs in the browser.
 
 | | |
 |---|---|
-| **The night** | [Your Place](#your-place) · [Covers](#covers) · [Front Desk](#front-desk) · [Nightshift](#nightshift) · [Ember](#ember) · [The Lamplighter](#the-lamplighter) · [OKLCH Studio](#oklch-studio) · [The Room](#the-room) |
+| **The night** | [Murmuration](#murmuration) · [Your Place](#your-place) · [Covers](#covers) · [Front Desk](#front-desk) · [Nightshift](#nightshift) · [Ember](#ember) · [The Lamplighter](#the-lamplighter) · [OKLCH Studio](#oklch-studio) · [The Room](#the-room) |
 | **Small hours** | [Mercury, Islandsmith and Beat Lab](#small-hours), three sketches |
 | **Under the surface** | [Cells](#cells), a spreadsheet written from scratch · [Diff Forge and Regex Lab](#tools-for-engineers) |
 
@@ -38,6 +38,24 @@ reduced motion. The sky and the flock still follow the scroll bar, standing stil
 
 Pieces where the interface is the experience. None of them has an image or a sound file of its own: every
 shadow, sky and note is drawn or synthesised in the browser.
+
+### Murmuration
+
+**[Be the falcon](apps/murmuration/)** · Tens of thousands of starlings over a reedbed at sunset, and you are
+the falcon. Each bird keeps to its seven nearest neighbours, the rule real starlings are thought to fly by
+(Ballerini and others, PNAS, 2008), and nothing else holds the flock together. Move through it and it folds away
+from you; leave it alone and a falcon comes by on its own now and then. The birds stream in from the edges,
+swirl as the sun goes down, and drop into the reeds as the light goes, about two and a half minutes in all.
+
+Every bird is simulated on the graphics card, up to 49,152 of them, as many as the machine keeps up with. Finding
+the seven nearest of that many birds for every bird, sixty times a second, is too slow even there, so each
+frame the birds are counted into boxes at three sizes ([`shaders.js`](apps/murmuration/shaders.js)), and a bird
+looks in the smallest boxes around it that hold about seven others: the same rule, answered by zooming out
+until there are enough birds to answer it. The rules are written once, in
+[`field.js`](apps/murmuration/field.js), and used by both the shaders and a version that runs on the processor,
+which is what a browser without the graphics features gets. [`tests/browser/murmuration.mjs`](tests/browser/murmuration.mjs)
+runs the real shaders in CI, reads every bird back off the card and checks the flock arrives, holds together,
+parts for a falcon and is down in the reeds by nightfall.
 
 ### Ember
 
@@ -225,7 +243,7 @@ assets/night.css          its look
 assets/night.js           the sky, the clock and the index, all following the scroll bar
 assets/flock.js           the starlings: the murmuration, the night on the wire, and the bird you send ahead
 assets/media/record.mjs   records the front page's clips from the real apps
-shared/atlas.js           the catalogue: every page in the repo, and the fourteen the site shows
+shared/atlas.js           the catalogue: every page in the repo, and the fifteen the site shows
 shared/navigator.js       ⌘K on every page: BM25 search over the lineup (search.js)
 cells/                    React + TypeScript: the formula engine, the grid, persistence and sync
 your-place/               React + TypeScript: the map engine, the worker and the poster UI
@@ -233,6 +251,9 @@ play/ember/
   engine.js               map, fighting, enemies, bosses, autopilot — DOM-free
   render.js               tiles, fire, the dark and the shadows every wall casts
   audio.js                the score and every noise, synthesised live
+apps/murmuration/
+  field.js                the rules, the camera, the evening, and the flock on the processor
+  shaders.js              the flock on the graphics card: count, fly, draw
 apps/lamplighter/
   scene.js                the story, and every function that says what the night is doing
 apps/covers/
@@ -245,6 +266,7 @@ projects/<tool>/
   index.html              the interface
   README.md               the design problem, and the limits
 tests/run.mjs             the site's test suite: no framework, no install
+tests/browser/            Murmuration's flock, run on a graphics pipeline and read back
 ```
 
 ```bash

@@ -217,6 +217,13 @@ p { text-wrap: pretty; }
 }
 .ember .screen { box-shadow: 0 0 0 1px rgba(255, 180, 110, .25), 0 0 120px -20px rgba(242, 140, 60, .55), 0 50px 100px -40px rgba(0, 0, 0, .9); }
 
+/* Murmuration: the centrepiece, the width of the page, with its words over the bottom of it */
+.scene.wide > .wrap { grid-template-columns: minmax(0, 1fr); gap: 0; }
+.scene.wide .frame { text-align: right; }
+.scene.wide .screen { text-align: left; }
+.scene.wide .copy { position: relative; z-index: 1; max-width: 620px; margin: -150px 0 0 clamp(16px, 4vw, 56px); }
+@media (max-width: 900px) { .scene.wide .copy { margin: 0; max-width: none; } }
+
 /* Your Place: the app, and the print it made */
 .duo { padding-bottom: 8%; }
 .duo .screen { width: 88%; }

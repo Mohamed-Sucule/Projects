@@ -293,6 +293,16 @@ export const EVERYTHING = [
            'kids', 'destroy'],
   },
   {
+    id: 'murmuration', title: 'Murmuration', href: 'apps/murmuration/index.html',
+    kind: 'physics', depth: 'play', minutes: 3,
+    blurb: 'Tens of thousands of starlings over a reedbed at sunset, each keeping to its seven '
+         + 'nearest neighbours, all simulated on the graphics card. You are the falcon.',
+    hook: 'Move through the flock and watch it fold away from you.',
+    tags: ['birds', 'bird', 'starling', 'starlings', 'murmuration', 'flock', 'flocking', 'boids',
+           'swarm', 'nature', 'sunset', 'dusk', 'falcon', 'hunt', 'simulation', 'gpu', 'webgl',
+           'shader', 'beautiful', 'pretty', 'relaxing', 'wow', 'art', 'centrepiece', 'new'],
+  },
+  {
     id: 'mercury', title: 'Mercury', href: 'apps/mercury/index.html',
     kind: 'physics', depth: 'skim', minutes: 3,
     blurb: 'A sheet of liquid metal under a sunset sky. Drag it and the ripples bend the '
@@ -428,7 +438,7 @@ export const EVERYTHING = [
    belongs to, the small hours hold a few sketches, and the engineering is a
    footnote in the morning. */
 export const SECTIONS = [
-  { id: 'night', title: 'Selected work', ids: ['your-place', 'covers', 'frontdesk', 'nightshift', 'ember', 'lamplighter', 'oklch-studio', 'room'] },
+  { id: 'night', title: 'Selected work', ids: ['murmuration', 'your-place', 'covers', 'frontdesk', 'nightshift', 'ember', 'lamplighter', 'oklch-studio', 'room'] },
   { id: 'sketches', title: 'Small hours', ids: ['mercury', 'island', 'beats'] },
   { id: 'engineering', title: 'Under the surface', ids: ['cells', 'diff-forge', 'regex-lab'] },
 ];
