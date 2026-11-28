@@ -19,10 +19,15 @@
 
    Three of the projects take over the night for a moment as you reach them
    (takeover.js): the dark closes in on Ember, a city's streets draw across the
-   sky at Your Place, and a lighthouse beam sweeps it at The Lamplighter. */
+   sky at Your Place, and a lighthouse beam sweeps it at The Lamplighter.
+
+   And two small pleasures (whimsy.js): the sun can be pulled down, and the
+   night falls under your hand; and in the empty sky between projects the stars
+   join into the next one's emblem. */
 
 import { createFlock, createMessenger, PERCH_SHAPE } from './flock.js';
 import { startTakeovers } from './takeover.js';
+import { sunTop, pullTo, startConstellations } from './whimsy.js';
 
 const root = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)');
@@ -94,6 +99,7 @@ function measure() {
     last = at;
     return at;
   });
+  chart?.measure();
 }
 
 const state = { stars: 0, rain: 0 };
@@ -101,6 +107,7 @@ let shownScene = -1;
 let shownMinute = -1;
 let lightTop = null;
 let lightLow = null;
+let chartLight = null;
 let night = 0; // how far into the night the scroll bar is, in minutes
 
 function paint() {
@@ -118,7 +125,10 @@ function paint() {
   root.style.setProperty('--sky-low', hex(labToRgb(mixLab(LAB[i].low, LAB[i + 1].low, t))));
 
   const sun = mix(a.sun, b.sun, t);
-  root.style.setProperty('--sun-y', `${(18 + (1 - sun) * 82).toFixed(2)}vh`);
+  root.style.setProperty('--sun-y', `${sunTop(sun).toFixed(2)}vh`);
+  /* The sun can be taken hold of while it is the evening's, until it sets. */
+  root.classList.toggle('sun-up', pulling || (i === 0 && sun > 0.04));
+  root.classList.toggle('at-dusk', y < 40);
   root.style.setProperty('--sun-o', Math.min(1, sun * 2.2).toFixed(3));
   root.style.setProperty('--moon-o', mix(a.moon, b.moon, t).toFixed(3));
   state.stars = mix(a.stars, b.stars, t);
@@ -132,6 +142,13 @@ function paint() {
     root.style.setProperty('--top-glass', light ? 'rgba(251, 247, 240, .74)' : 'rgba(10, 11, 30, .62)');
   }
   themeColour.setAttribute('content', hex(top));
+  /* The constellations hang in the middle of the sky, so they go by that. */
+  const lightMid = luminance(labToRgb(mixLab(LAB[i].mid, LAB[i + 1].mid, t))) > 0.25;
+  if (lightMid !== chartLight) {
+    chartLight = lightMid;
+    root.style.setProperty('--chart-ink', lightMid ? '#2a2633' : '#fff6e6');
+    root.style.setProperty('--chart-name', lightMid ? '#8a4a12' : '#ffe2b0');
+  }
   /* The wire hangs against the bottom of the sky, so it goes by that. */
   const low = luminance(labToRgb(mixLab(LAB[i].low, LAB[i + 1].low, t))) > 0.17;
   if (low !== lightLow) {
@@ -161,6 +178,7 @@ function paint() {
       else link.removeAttribute('aria-current');
     }
   }
+  chart?.draw();
   if (!moving) { flock?.snap(); drawSky(performance.now()); }
 }
 
@@ -415,6 +433,48 @@ document.querySelectorAll('.rise').forEach((el) => risers.observe(el));
 /* ── three projects that take over the night (takeover.js) ───────────── */
 
 const takeovers = startTakeovers({ moving: () => moving });
+
+/* ── the sun, pulled down (whimsy.js) ─────────────────────────────────── */
+
+/* Take hold of the sun at dusk and it stays under the pointer: the page goes to
+   wherever the evening has the sun at that height, so the night falls as you
+   pull. It is the scroll bar in another shape, so it is hidden from assistive
+   technology and the keyboard loses nothing. */
+const grip = document.createElement('div');
+grip.className = 'sun-grip';
+grip.setAttribute('aria-hidden', 'true');
+grip.innerHTML = '<span class="hint"><svg viewBox="0 0 24 30"><path d="M20 28C8 24 4 14 6 3M6 3L2 10M6 3l7 5"/></svg>pull me down</span>';
+document.body.append(grip);
+let pulling = null;
+grip.addEventListener('pointerdown', (e) => {
+  if (e.button !== 0) return;
+  e.preventDefault();
+  const sun = document.querySelector('.sky .sun').getBoundingClientRect();
+  pulling = { id: e.pointerId, offset: e.clientY - sun.top };
+  grip.setPointerCapture(e.pointerId);
+  root.classList.add('pulling');
+});
+grip.addEventListener('pointermove', (e) => {
+  if (!pulling || e.pointerId !== pulling.id) return;
+  const top = ((e.clientY - pulling.offset) / innerHeight) * 100;
+  scrollTo(0, pullTo({ top, from: anchors[0], to: anchors[1], sunFrom: KEYS[0].sun, sunTo: KEYS[1].sun, ease }));
+});
+/* The pointer runs out of screen before the sun is quite down, so let go most of
+   the way and it sets by itself, at Ember. */
+const letGo = () => {
+  if (!pulling) return;
+  pulling = null;
+  root.classList.remove('pulling');
+  const span = anchors[1] - anchors[0];
+  if (span > 0 && (scrollY - anchors[0]) / span > 0.6) scrollTo({ top: anchors[1], behavior: moving ? 'smooth' : 'auto' });
+};
+grip.addEventListener('pointerup', letGo);
+grip.addEventListener('pointercancel', letGo);
+grip.addEventListener('lostpointercapture', letGo);
+
+/* ── the constellations between projects (whimsy.js) ─────────────────── */
+
+const chart = startConstellations(scenes);
 
 /* ── motion, on and off ───────────────────────────────────────────────── */
 

@@ -35,6 +35,13 @@ dark at Ember and the pointer carries the flame, the way the game's light is you
 streets draw themselves across the sky in gold, from the middle outwards; and at The Lamplighter a lighthouse beam
 sweeps the sky once every 11.2 seconds, as the story's does.
 
+And a few small things for whoever is paying attention ([`assets/whimsy.js`](assets/whimsy.js)). The sun at
+17:30 says *pull me down*, in pencil, and if you take hold of it, it stays under your hand while the evening
+follows it down; let go most of the way and it sets by itself, at Ember. Here and there a note is pencilled in
+the margin beside the work, the things I would say if I were sitting next to you (*try your nan's street*). And
+in the empty sky between one project and the next, the stars join into the next one's emblem and are named like a
+star chart: the Pin before Your Place, the Lighthouse before The Lamplighter, the Bell before Front Desk.
+
 A flock of starlings keeps the same hours ([`assets/flock.js`](assets/flock.js)). When you land it is swirling
 over the sunset, each bird keeping to its seven nearest neighbours, the way real murmurations are thought to hold
 together. As you scroll into the night it pours down, some of it onto a wire strung along the bottom of the
@@ -43,7 +50,8 @@ index: each hour of the night is a bird on it, and the one you pick flies ahead 
 scene's clock while the page catches up. On a phone the index opens from the top bar instead.
 
 The clips, the stars, the rain, the birds and the three takeovers all stop when the motion button is pressed or the system asks for
-reduced motion. The sky and the flock still follow the scroll bar, standing still.
+reduced motion. The sky, the flock and the constellations still follow the scroll bar, standing still, and the sun
+can still be pulled down, since that is only the scroll bar in another shape.
 
 ## Creative work
 
@@ -250,6 +258,7 @@ assets/night.js           the sky, the clock and the index, all following the sc
 assets/flock.js           the starlings: the murmuration, the night on the wire, and the bird you send ahead
 assets/takeover.js        three projects taking over the night: Ember's dark, the streets in gold, the beam
 assets/streets.mjs        writes assets/streets.svg, the streets that draw across the sky at Your Place
+assets/whimsy.js          the sun you can pull down, and the constellations between projects
 assets/media/record.mjs   records the front page's clips from the real apps
 shared/atlas.js           the catalogue: every page in the repo, and the fifteen the site shows
 shared/navigator.js       ⌘K on every page: BM25 search over the lineup (search.js)
