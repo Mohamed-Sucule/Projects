@@ -290,6 +290,9 @@ experiments that are no longer on the site also stay here, each with its own REA
 
 ## How I work
 
+**With an AI pair, and the decisions are mine.** I build with Claude as a pair programmer. I decide what to make, how it should feel and what counts as right; the tests below are how the code is
+held to that, and looking at every screen is how the rest gets caught.
+
 **Looking at it beats testing it.** Every screen here was rendered and inspected after each change, which is how
 these got caught:
 

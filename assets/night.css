@@ -89,7 +89,10 @@ p { text-wrap: pretty; }
   font: 500 14px/1 var(--sans); text-decoration: none; cursor: pointer;
 }
 .tools button:hover, .tools a:hover { background: color-mix(in srgb, currentColor 12%, transparent); }
-.motion svg, .index svg { width: 14px; height: 14px; }
+.motion svg, .index svg, .find svg { width: 14px; height: 14px; }
+/* The navigator opens from the top bar here; its floating pill would sit over the work. */
+[data-navigator]::part(pill) { display: none; }
+.find-all { display: none; }
 .motion[aria-pressed="true"] .on, .motion[aria-pressed="false"] .off { display: none; }
 .index { display: none !important; }
 
@@ -152,7 +155,6 @@ p { text-wrap: pretty; }
   .rail .perch time { font: italic 400 17px/1 var(--serif); color: var(--gold); font-variant-numeric: tabular-nums; }
   .rail .perch span { font: 400 13.5px/1 var(--sans); }
   /* The site-wide search pill sits above the wire, not on it. */
-  [data-navigator]::part(pill) { bottom: 112px; }
 }
 
 /* ── scenes ───────────────────────────────────────────────────────────── */
@@ -225,7 +227,7 @@ p { text-wrap: pretty; }
 }
 .work .hour { display: block; margin: 0; }
 .work .hour time {
-  display: block; font: 300 clamp(96px, 12vw, 200px)/.8 var(--serif); font-style: normal; letter-spacing: -.035em;
+  display: block; font: 300 clamp(64px, 7vw, 116px)/.82 var(--serif); font-style: normal; letter-spacing: -.03em;
   color: transparent; -webkit-text-stroke: 1.2px var(--line-gold);
 }
 .work .hour span { display: block; margin: 18px 0 0 4px; color: var(--gold-text); }
@@ -233,6 +235,9 @@ p { text-wrap: pretty; }
 .work .kicker { font-size: clamp(21px, 1.9vw, 27px); line-height: 1.3; max-width: 24ch; margin-bottom: 20px; }
 .work .copy > p:not(.hour):not(.kicker) { max-width: 46ch; }
 .work .notes { counter-reset: n; gap: 0; border-top: 1px solid var(--rule-soft); }
+/* One note, the best one: no number needed. */
+.work .notes li:only-child { padding-left: 0; }
+.work .notes li:only-child::before { display: none; }
 .work .notes li { counter-increment: n; padding: 13px 0 13px 44px; border-bottom: 1px solid var(--rule-soft); }
 .work .notes li::before {
   content: counter(n, decimal-leading-zero); width: auto; height: auto; background: none; box-shadow: none; border-radius: 0;
@@ -390,6 +395,7 @@ footer p { margin: 0; padding: 8px 14px; border-radius: 999px; background: color
     box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .9); max-height: calc(100vh - 80px); overflow: auto;
   }
   .rail.open { display: block; }
+  .rail .find-all { display: block; width: 100%; margin: 0 0 6px; padding: 10px 4px 12px; border: 0; border-bottom: 1px solid rgba(255, 255, 255, .16); background: none; color: inherit; font: 500 15px/1.2 var(--sans); text-align: left; cursor: pointer; }
   .rail ol { display: grid; gap: 2px; }
   .rail a { display: flex; align-items: center; gap: 12px; padding: 8px 4px; text-decoration: none; }
   .rail time { font: 400 12px/1 var(--mono); letter-spacing: .06em; opacity: .8; font-variant-numeric: tabular-nums; }
@@ -437,7 +443,7 @@ canvas.takeover.front { z-index: 3; }
   .work .frame, .work.flip .frame, .work:not(.flip):not(.feature) .frame { margin-inline: -20px; }
   .work .screen, .work.flip .screen, .work:not(.flip):not(.feature) .screen { border-radius: 0; }
   .work .frame figcaption, .work.flip .frame figcaption, .scene.feature .frame figcaption { margin-inline: 20px; }
-  .work .hour time { font-size: clamp(84px, 24vw, 132px); }
+  .work .hour time { font-size: clamp(60px, 17vw, 92px); }
   .work .copy h2 { font-size: clamp(52px, 14vw, 84px); }
   .work .copy::before { inset: -6% -20px; }
   .scene > .wrap { grid-template-columns: minmax(0, 1fr); }
@@ -453,7 +459,7 @@ canvas.takeover.front { z-index: 3; }
 }
 @media (max-width: 640px) {
   /* The CV stays in the top bar on a phone: a recruiter arriving from a link should not have to scroll for it. */
-  .clock .now, .tools .word { display: none; }
+  .clock .now, .tools .word, .tools .find { display: none; }
   .tools .cv { padding: 0 12px; }
   .tools { gap: 6px; }
   .tools button { padding: 0 12px; }

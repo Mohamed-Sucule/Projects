@@ -59,6 +59,9 @@ document.documentElement.appendChild(host);
 const pill = shadow.querySelector('.pill');
 const scrim = shadow.querySelector('.scrim');
 pill.addEventListener('click', () => toggle(true));
+/* A page can offer its own way in, a button in its own top bar, by sending this
+   event (and hide the pill with ::part(pill) if it would sit in the way). */
+addEventListener('navigator:open', () => toggle(true));
 scrim.addEventListener('click', (e) => { if (e.target === scrim) toggle(false); });
 
 /* ── keyboard ───────────────────────────────────────────────────────────── */
