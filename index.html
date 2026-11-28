@@ -64,11 +64,13 @@
       <span class="word">Motion</span>
     </button>
     <button class="index" type="button" aria-expanded="false" aria-controls="night" aria-label="The night"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 7h16M4 12h16M4 17h10"/></svg><span class="word">The night</span></button>
+    <button class="find" type="button" aria-label="Find anything" title="Find anything (⌘K)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.5 15.5 20 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
     <a class="cv" href="cv/">CV</a>
   </div>
 </header>
 
 <nav class="rail" id="night" aria-label="The night, hour by hour">
+  <button class="find-all" type="button">Find anything…</button>
   <svg class="wire" aria-hidden="true" focusable="false"><path class="line" d="" /><path class="lit" d="" pathLength="1" /></svg>
   <ol>
     <li><a href="#dusk"><time>17:30</time><span>Golden hour</span></a></li>
@@ -94,14 +96,14 @@
     <div class="wrap">
       <p class="hour rise"><time>17:30</time><span>Golden hour</span></p>
       <h1 id="hero-title" class="rise">Mohamed <em>Sucule</em></h1>
-      <p class="role rise">Design engineer · Birmingham, UK · 4+ years at Capgemini and SynchrTrade</p>
+      <p class="role rise">Design engineer · Birmingham, UK · <a href="#experience">4+ years at Capgemini and SynchrTrade</a></p>
       <div class="glass rise">
         <p class="lede">I design and build interfaces people can feel.</p>
         <p>Here are <span data-count="night">nine</span> projects I designed and built, from a game lit by its own flame and a daily puzzle site I launched to a restaurant system at full service, plus a few smaller experiments. Every one runs live in your browser. As you scroll, the sky goes from sunset to sunrise.</p>
         <p class="short">Two minutes? Start with <a href="#ember">Ember</a>, <a href="#your-place">Your Place</a> and <a href="#flurdle">Flurdle</a>.</p>
         <div class="ctas">
           <a class="go" href="#ember">See the work <span aria-hidden="true">↓</span></a>
-          <a class="ghost" href="#morning">About me</a>
+          <a class="ghost" href="#experience">My experience</a>
         </div>
       </div>
     </div>
@@ -122,10 +124,7 @@
         <p class="kicker">An action game in the dark, where your flame is your light and your life.</p>
         <p>Three acts, three bosses and nine ash-stones, in a kingdom where the only light is the one you carry. Take a hit and it burns lower, and the dark comes closer.</p>
         <ul class="notes">
-          <li><b>Your health is your light.</b> You feel how hurt you are before you read it, in how far you can see.</li>
-          <li><b>Shadows that swing.</b> Light is cast from the flame to every corner in reach, every frame, so the room moves as you do.</li>
           <li><b>Fair you can see.</b> Every attack is drawn on the floor before it lands. The tests play the whole game and fail if any blow gives less than 0.3 seconds of warning.</li>
-          <li><b>Nothing downloaded.</b> No engine, and no image or sound file: every room, shadow and note of the score is made as you play.</li>
         </ul>
         <div class="doors">
           <a class="go" href="play/ember/index.html">Play Ember <span aria-hidden="true">→</span></a>
@@ -145,8 +144,6 @@
         <p class="kicker">Any place on Earth, as a poster you would hang.</p>
         <p>Type a town, a street or an address, pick a style, and download a file ready to print. A present people actually want, drawn in the browser from OpenStreetMap.</p>
         <ul class="notes">
-          <li><b>Five looks, not fifty settings.</b> Noir &amp; gold, Paper, Blueprint, Ink and Terracotta: pick one and the whole poster changes with it.</li>
-          <li><b>The print matches the screen.</b> One drawing pass makes both the preview and the 300 dpi file, line for line.</li>
           <li><b>Quick enough to play with.</b> The first poster appears in 0.39 seconds. It used to take 41.7.</li>
         </ul>
         <div class="doors">
@@ -175,10 +172,7 @@
         <p>A wildfire to hold, a riddle with unmarked glasses, an orchard to plant by logic alone, and five glasses to pour by eye. Today’s four are free for everyone; Flurdle Plus opens every day before today.</p>
         <ul class="notes">
           <li><b>The yardstick is real.</b> Fireline makes every fire from scratch and proves the best possible score with an exact constraint solver, so the best line is the best there is.</li>
-          <li><b>Thirty seconds to learn.</b> A short drill teaches the one idea, and then you are on today’s fire.</li>
-          <li><b>Made to come back to.</b> A day map or night ops, reduced motion, play by keyboard, a card to share your result, and no account needed to play.</li>
         </ul>
-        <blockquote class="said"><p>“Every number is a countdown to the flames.”</p></blockquote>
         <div class="doors">
           <a class="go" href="https://flurdle.com/">Play today’s puzzles <span aria-hidden="true">→</span></a>
           <a class="also" href="writing/designing-fireline/">How I designed it</a>
@@ -201,11 +195,9 @@
         <p class="hour"><time>21:30</time><span>The gale gets up</span></p>
         <h2 id="lamplighter-title">The Lamplighter</h2>
         <p class="kicker">One night at a lighthouse, told by scrolling and drawn as you read.</p>
-        <p>A keeper’s last winter before a machine replaces him, in five minutes. The sun goes down, the gale gets up, the rain comes sideways, and the light keeps turning.</p>
+        <p>A keeper’s last winter before a machine replaces him, in five minutes. The sun goes down, the gale gets up, the rain comes sideways, and the light keeps turning, once every 11.2 seconds.</p>
         <ul class="notes">
           <li><b>Scrolling is time.</b> The scroll bar is the hour of the night, and the sky, the wind, the rain and the sea all follow it. This page borrows the idea.</li>
-          <li><b>The light keeps turning,</b> once every 11.2 seconds, whether or not you are reading. The place goes on when you stop.</li>
-          <li><b>Drawn, not downloaded.</b> The sky, the sea, the tower, the rain, the beam and the foghorn are all code. There is not an image or a sound file in its folder.</li>
         </ul>
         <div class="doors">
           <a class="go" href="apps/lamplighter/index.html">Read The Lamplighter <span aria-hidden="true">→</span></a>
@@ -230,9 +222,7 @@
         <p class="kicker">A short horror story, told as a coastal watch log from November 1987.</p>
         <p>It opens with the weather and the shipping, and it does not stay there. There is no game and nothing to press: you scroll, and the page reads you scrolling.</p>
         <ul class="notes">
-          <li><b>Deliberately boring.</b> No flicker, no heartbeat, no dark theme. It looks like an archive transcription, so nothing warns you.</li>
           <li><b>The page is part of the story.</b> It notices how you read, and even the scroll bar has a part to play.</li>
-          <li><b>Best alone, with the sound on.</b> It takes about five minutes.</li>
         </ul>
         <div class="doors">
           <a class="go" href="apps/nightshift/index.html">Read Nightshift <span aria-hidden="true">→</span></a>
@@ -257,9 +247,7 @@
         <p class="kicker">A locked-room murder mystery you solve by reasoning, not guessing.</p>
         <p>Edmund Harkness is dead at his desk. The door was locked from the inside, and the key was in his pocket.</p>
         <ul class="notes">
-          <li><b>Look, don’t guess.</b> Nineteen things to examine, four people to question, five contradictions hidden among them, and not one multiple-choice question.</li>
           <li><b>A notebook that notices.</b> When two facts disagree, it sets them facing each other with a <i>but</i> between them.</li>
-          <li><b>Name somebody.</b> When you think you know, say who.</li>
         </ul>
         <div class="doors">
           <a class="go" href="apps/room/index.html">Solve The Room <span aria-hidden="true">→</span></a>
@@ -321,9 +309,7 @@
         <p class="kicker">Colour comes back. A palette builder for colours that stay readable.</p>
         <p>Most palette tools work in HSL, where yellow and navy can claim the same lightness, so a palette that looks fine in the design file fails the accessibility audit. This one works the way eyes do.</p>
         <ul class="notes">
-          <li><b>Evenly spaced means evenly seen.</b> Each step down a ramp is the same visible step in every colour family.</li>
           <li><b>Readable, and checked.</b> Every pair of colours is scored for contrast against two standards, WCAG 2.1 and APCA.</li>
-          <li><b>Honest about compromise.</b> When a colour cannot be shown on an ordinary screen, it says what was changed to make it fit.</li>
         </ul>
         <div class="doors">
           <a class="go" href="projects/oklch-studio/index.html">Open OKLCH Studio <span aria-hidden="true">→</span></a>
@@ -345,14 +331,11 @@
       <div class="copy rise">
         <p class="hour"><time>06:30</time><span>Tonight’s book</span></p>
         <h2 id="covers-title">Covers</h2>
-        <p class="kicker">A restaurant’s floor plan and bookings, opened at the busiest moment of the week.</p>
+        <p class="kicker">A concept for a restaurant’s floor plan and bookings, opened at the busiest moment of the week.</p>
         <p>Every booking demo opens on an empty grid, and an empty restaurant tells you nothing. This one drops you in at 19:42 on a Saturday: thirty-one bookings, eleven parties eating, one running late, and a double booking on table 2 to sort out.</p>
         <ul class="notes">
-          <li><b>Every no comes with a way forward.</b> Drag a party to a table that is wrong for them and it says why, and what to do instead.</li>
-          <li><b>Nobody already seated gets moved.</b> When the answer is no, it looks for a rearrangement that makes it a yes, and shows what that would change first.</li>
-          <li><b>Press play and the evening runs.</b> Parties arrive, eat and leave while you watch.</li>
+          <li><b>Every no comes with a way forward.</b> Drag a party to a table that is wrong for them and it says why, and what to do instead: “Table 1 seats 2. This is a party of 6. → 30 is free at 20:30.”</li>
         </ul>
-        <blockquote class="said"><p>“Table 1 seats 2. This is a party of 6. → 30 is free at 20:30.”</p></blockquote>
         <div class="doors">
           <a class="go" href="apps/covers/index.html">Open Covers <span aria-hidden="true">→</span></a>
           <span class="takes">about 12 min</span>
@@ -376,9 +359,7 @@
         <p class="kicker">An AI receptionist that answers the phone, so the staff can keep serving.</p>
         <p>Ask for a table, typed or spoken. It checks the real plan in Covers, offers the nearest free time when yours has gone, and hands over to a person when it should.</p>
         <ul class="notes">
-          <li><b>One question at a time,</b> like a good host. It remembers what you have said, and copes when you change your mind halfway through.</li>
-          <li><b>Kind when it is lost.</b> If it cannot follow you three times in a row, it offers a call back instead of going round in circles.</li>
-          <li><b>Private by design.</b> The speech recognition runs on your own device. Nothing you say leaves the page.</li>
+          <li><b>A parser first, AI second.</b> A reader written for this one job does the understanding, scored live against 261 phrasings; Whisper hears you and a small model catches the odd phrasing it misses, both running on your own device.</li>
         </ul>
         <div class="doors">
           <a class="go" href="apps/frontdesk/index.html">Call Front Desk <span aria-hidden="true">→</span></a>
@@ -421,10 +402,10 @@
             </ul>
           </div>
           <ul class="ways">
-            <li><h3>Design and code in one pair of hands</h3><p>From the first sketch to the shipped interface: layout, type, motion, colour and sound, and the code that makes them hold up.</p></li>
+            <li><h3>Design and code together</h3><p>From the first sketch to the shipped interface: layout, type, motion, colour and sound, and the code that makes them hold up.</p></li>
             <li><h3>A point of view</h3><p>A restaurant system that opens mid-service. A story where scrolling is time. I start from how a thing should feel, then make it work.</p></li>
             <li><h3>Accessible by default</h3><p>Every page here is checked with axe in light and dark, works from the keyboard, and calms down when you ask for less motion.</p></li>
-            <li><h3>Built to last</h3><p>Over <b data-claim="tests">850</b> tests run before every deploy of this site, and the React apps run their own unit and end-to-end suites.</p></li>
+            <li><h3>Built with AI, held by tests</h3><p>I build with Claude as a pair programmer. I decide what to make, how it should feel and what counts as right, and over <b data-claim="tests">850</b> tests run before every deploy to hold the code to it.</p></li>
           </ul>
         </div>
 
@@ -478,7 +459,7 @@
 </main>
 
 <footer>
-  <p>© 2026 Mohamed Sucule · Birmingham, UK · Everything here was designed and built by hand, including the sky and the starlings.</p>
+  <p>© 2026 Mohamed Sucule · Birmingham, UK · Designed by me and built with Claude as my pair programmer, the sky and the starlings included.</p>
   <p><a href="#dusk">Back to dusk</a> · <a href="cv/">CV</a> · <a href="https://github.com/Mohamed-Sucule/Projects">Source on GitHub</a></p>
 </footer>
 

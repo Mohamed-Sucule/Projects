@@ -445,6 +445,12 @@ reduce.addEventListener('change', () => { if (saved === null) setMotion(!reduce.
 
 /* ── the index, on a small screen ─────────────────────────────────────── */
 
+/* Search lives in the top bar on this page (and in the index on a phone), not in
+   a pill floating over the work: both send the navigator its event. */
+for (const b of document.querySelectorAll('.find, .find-all')) {
+  b.addEventListener('click', () => { rail.classList.remove('open'); document.querySelector('.index').setAttribute('aria-expanded', 'false'); dispatchEvent(new Event('navigator:open')); });
+}
+
 const toggle = document.querySelector('.index');
 const closeIndex = () => { rail.classList.remove('open'); toggle.setAttribute('aria-expanded', 'false'); };
 toggle.addEventListener('click', () => {
