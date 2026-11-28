@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Designing Ember — an action game where your light is your life, by Mohamed Sucule</title>
+<meta name="description" content="A case study: how one number, the player's health and the reach of their light at once, shapes Ember, and how its tests play the whole game to prove no attack lands with less than 0.3 seconds of warning." />
+<link rel="icon" href="../../favicon.svg" />
+<meta name="theme-color" content="#f6f5f1" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0f1115" media="(prefers-color-scheme: dark)" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Designing Ember: an action game where your light is your life" />
+<meta property="og:description" content="One number for health and sight, light cast from the flame every frame, bosses written as scripts, and tests that prove every blow is shown before it lands." />
+<meta property="og:url" content="https://mohamed-sucule.github.io/Projects/writing/designing-ember/" />
+<meta property="og:image" content="https://mohamed-sucule.github.io/Projects/assets/media/ember.webp" />
+<link rel="canonical" href="https://mohamed-sucule.github.io/Projects/writing/designing-ember/" />
+<link rel="stylesheet" href="../writing.css" />
+<style>
+  .brief { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 22px; margin: 0 0 32px; padding: 18px 22px; border-radius: 12px; background: var(--wash); font-size: 16px; line-height: 1.5; }
+  .brief dt { font: 400 12.5px/1.9 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mute); }
+  .brief dd { margin: 0; }
+  video { width: 100%; height: auto; display: block; border-radius: 6px; background: #0b0b10; box-shadow: 0 1px 2px rgba(21, 23, 28, .1), 0 20px 40px -24px rgba(21, 23, 28, .5); }
+  .moments { width: 100%; margin: 6px 0 24px; border-collapse: collapse; font-size: 15.5px; line-height: 1.5; }
+  .moments th, .moments td { padding: 9px 8px 9px 0; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+  .moments th { font-weight: 600; }
+  .moments td:first-child { font-weight: 600; }
+  blockquote { margin: 0 0 22px; padding: 4px 0 4px 20px; border-left: 3px solid #d9822b; font: italic 400 21px/1.45 var(--display); }
+  blockquote p { margin: 0; }
+  @media (max-width: 560px) { .brief { grid-template-columns: 1fr; gap: 2px; } .brief dd { margin-bottom: 10px; } }
+</style>
+</head>
+<body>
+<a class="skip" href="#article">Skip to the article</a>
+<header class="top">
+  <div class="in">
+    <a class="mark" href="../../">Mohamed Sucule</a>
+    <nav aria-label="Main">
+      <a href="../../">Work</a>
+      <a href="../../#under">Writing</a>
+      <a href="../../#morning">About</a>
+      <a href="../../cv/">CV</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<article id="article">
+  <p class="label">Case study · Game design · Ember</p>
+  <h1>Ember: an action game where your light is your life</h1>
+  <p class="standfirst">One number is both how hurt you are and how far you can see. Everything else in Ember follows from that: the lighting, the fights, and the tests that make sure the dark is never unfair.</p>
+  <p class="byline">Mohamed Sucule · <a href="../../play/ember/index.html">Play Ember</a> · <a href="../../index.html#ember">Back to the work</a></p>
+
+  <dl class="brief">
+    <dt>Role</dt><dd>Solo: game design, the look (every room, shadow and creature drawn in code), the score, and the engine.</dd>
+    <dt>Built with</dt><dd>Canvas 2D, Web Audio and the Gamepad API. No engine, and no image or sound file anywhere in the game.</dd>
+    <dt>Plays on</dt><dd>A keyboard, a touch screen or a gamepad. <em>Gentle</em> on the title screen halves every blow.</dd>
+  </dl>
+
+  <figure>
+    <video controls muted loop playsinline preload="none" width="1280" height="800" poster="../../assets/media/ember.webp" aria-label="Ember: the second boss, the Choir, and its rings of light"><source src="../../assets/media/ember.mp4" type="video/mp4" /></video>
+    <figcaption>The second boss, the Choir: three masks, their beams and their rings of light, in the dark the player's flame pushes back.</figcaption>
+  </figure>
+
+  <ul class="numbers">
+    <li><b>1</b><span>number for your health and your light at once</span></li>
+    <li><b>0.3 s</b><span>the least warning any blow gives, proved by playing the whole game</span></li>
+    <li><b>40</b><span>generated maps on which every room, brazier and ash-stone is checked reachable</span></li>
+    <li><b>0</b><span>image or sound files: every room, shadow and note is made as you play</span></li>
+  </ul>
+
+  <h2>The one rule</h2>
+  <blockquote><p>Your ember is your health and your light radius at once.</p></blockquote>
+  <p>At 100 you can see across a room. At 20 you can see your own feet, and the eyes in the dark are all that tell you where things are. Cinders, dropped by everything you kill, feed it back; a flare spends it to burn everything near you and relight the braziers. That one number turns every fight into a decision about how much light you can afford.</p>
+  <p>You feel how hurt you are before you read it on the meter, in how far you can see: the room tells you first.</p>
+
+  <h2>Light you can feel</h2>
+  <p>The light is a visibility polygon. Rays are cast from the flame to every wall corner within reach, the nearest hit on each is kept, and the shape they make is punched out of a layer of darkness with a radial gradient. So every wall and pillar casts a real shadow, and the shadows swing as you move. The braziers' shadows never move, so they are worked out once and kept; yours are worked out again every frame.</p>
+  <p>The tests check the light the way a player would: light stops at walls, and the floor behind a pillar is dark while the floor in front of it is lit.</p>
+
+  <h2>Fair by construction</h2>
+  <p>A game played half in the dark has to be scrupulous about what it hides. So every attack in Ember is either a hazard drawn on the floor or a shot with a wind-up, and both carry the moment they were first shown. When something hits you, the game records how much warning you had.</p>
+  <p>The tests then play the whole game on three seeds and assert that every hit, every attack and every shot was shown at least <strong>0.3 seconds</strong> before it could land. The tightest in the game is the King's slash straight after his dash, at 0.38 seconds.</p>
+
+  <h2>Bosses written as scripts</h2>
+  <p>The three bosses are generator functions: <code>yield 0.8</code> means "wait 0.8 seconds". An attack reads like a stage direction: show where it will land, wait, land it, send the shockwave out, recover.</p>
+<pre tabindex="0" aria-label="Code: the Warden's slam"><code><span class="c">// play/ember/engine.js: the Warden's slam, from his script (the second phase's extras left out)</span>
+const warn = 0.85 * tempo;
+b.face = Math.atan2(ty - b.y, tx - b.x); b.pose = 'raise';
+const hz = g.hazard({ shape: 'circle', x: tx, y: ty, r: 86, warn, dmg: 24, by: 'slam' });
+yield warn;
+b.pose = 'slam';
+g.shake = 12;
+g.emit('slam', { x: tx, y: ty });
+g.hazard({ shape: 'ring', x: tx, y: ty, speed: 250, w: 16, maxR: 320, warnAt: hz.warnAt, dmg: 14, dur: 9, by: 'shockwave' });
+yield 0.6;
+b.pose = 'idle';</code></pre>
+  <p>Their phases are branches in the same script: the Warden's temper, the Choir grieving as its masks fall, the King's eclipse and his last light. Writing a fight this way keeps its rhythm in one place, where it can be read and tuned.</p>
+
+  <h2>A map that is a journey</h2>
+  <p>Each act grows a tree of rooms across a 5 × 4 grid, favouring the deepest branch, so an act is a path with side rooms rather than a hub you keep returning to. The boss goes in the deepest dead end and the shrine in another. The nine ash-stones, which answer the question on the title screen (who put out the Beacon?), go in the rooms least on the way, so finding them all means choosing to look.</p>
+
+  <h2>Found by playing it</h2>
+  <p>An autopilot plays from the first room to the ending, beating each boss through every phase. Sweeping it across many seeds found things no hand-written test would have:</p>
+  <table class="moments">
+    <thead><tr><th scope="col">Found</th><th scope="col">What changed</th></tr></thead>
+    <tbody>
+      <tr><td>A mite and the player, pinned forever</td><td>On 4 of 40 seeds a run never finished: the last enemy and the player were stuck against pillars on opposite sides, each walking straight at the other. Enemies now follow a shortest-path map of the room whenever something is in the way.</td></tr>
+      <tr><td>Two masks dying in the same breath</td><td>The Choir only noticed deaths between songs, so two masks falling in one attack skipped its last phase. A mask's death is now announced the moment it happens.</td></tr>
+      <tr><td>Summoned into a pillar</td><td>The Warden calls mites in around him, and sometimes "around him" was inside a column. Everything is now placed on the nearest open floor.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Checked</h2>
+  <ul>
+    <li>Every room, brazier and ash-stone of every act is reachable, on 40 seeds, and the boss is always in the deepest dead end.</li>
+    <li>The autopilot finishes the game on every seed tried, every boss goes through every phase in order, and all nine ash-stones can be reached.</li>
+    <li>Nothing hurts you without warning, and nobody, you or an enemy, ever ends up inside a wall.</li>
+    <li>The same inputs play out exactly the same way.</li>
+    <li>Dashing makes you untouchable, Gentle halves blows, and cinders refill your ember but never past the brim.</li>
+    <li>Dying wakes you at the last lit brazier; dying to a boss resets the boss.</li>
+    <li>The King takes half damage in the dark and full damage in a brazier's light, and his last words agree with the ledger of ash-stones you found.</li>
+  </ul>
+
+  <aside class="next" aria-labelledby="next-title">
+    <h2 id="next-title">More</h2>
+    <ul>
+      <li><a href="../../play/ember/index.html">Play Ember</a>: about a quarter of an hour, or longer if you look for all nine ash-stones</li>
+      <li><a href="../designing-fireline/">Designing Fireline</a>, a daily puzzle played on a map of the future</li>
+      <li><a href="../../index.html#ember">Back to the work</a></li>
+    </ul>
+  </aside>
+</article>
+</main>
+
+<footer>
+  <div class="in">
+    <p style="margin:0">Mohamed Sucule · Design engineer, Birmingham, UK</p>
+    <p style="margin:0"><a href="mailto:mohamedsucule@gmail.com">mohamedsucule@gmail.com</a> · <a href="../../cv/">CV</a></p>
+  </div>
+</footer>
+<script type="module" src="../../shared/navigator.js"></script>
+</body>
+</html>

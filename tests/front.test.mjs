@@ -81,6 +81,21 @@ test('each scene shows its work once', () => {
   }
 });
 
+test('each piece says how long it takes, and the catalogue agrees', () => {
+  /* Someone with two minutes should be able to tell what fits. The minutes are
+     written once, in the catalogue, and the page has to say the same. */
+  for (const id of section('night').ids) {
+    const sc = scenes.find((s) => s.id === id);
+    const said = Number(sc.html.match(/<span class="takes">about (\d+) min<\/span>/)?.[1]);
+    assert.equal(said, ATLAS.find((e) => e.id === id).minutes, `${id} says it takes ${said} minutes`);
+  }
+  /* And the short way round, in the first screen, goes to three pieces that are on the page. */
+  const short = home.match(/<p class="short">[\s\S]*?<\/p>/)?.[0] ?? '';
+  const picks = [...short.matchAll(/href="#([a-z-]+)"/g)].map((m) => m[1]);
+  assert.equal(picks.length, 3, 'the short way round does not name three pieces');
+  for (const id of picks) assert.ok(section('night').ids.includes(id), `the short way round goes to ${id}, which is not in the night`);
+});
+
 test('every picture and recording on the front page is there, and the recordings are light', () => {
   const files = new Set();
   for (const m of home.matchAll(/(?:src|poster)="(assets\/[^"]+)"/g)) files.add(m[1]);

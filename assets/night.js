@@ -15,9 +15,14 @@
    top bar turns it off and on again: off, the stars stop twinkling, the rain
    stops falling, the birds keep still and the recordings show their first
    frame. The sky and the flock still follow the scroll bar, because that is
-   reading, not animation. */
+   reading, not animation.
+
+   Three of the projects take over the night for a moment as you reach them
+   (takeover.js): the dark closes in on Ember, a city's streets draw across the
+   sky at Your Place, and a lighthouse beam sweeps it at The Lamplighter. */
 
 import { createFlock, createMessenger, PERCH_SHAPE } from './flock.js';
+import { startTakeovers } from './takeover.js';
 
 const root = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)');
@@ -407,6 +412,10 @@ const risers = new IntersectionObserver((entries) => {
 }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
 document.querySelectorAll('.rise').forEach((el) => risers.observe(el));
 
+/* ── three projects that take over the night (takeover.js) ───────────── */
+
+const takeovers = startTakeovers({ moving: () => moving });
+
 /* ── motion, on and off ───────────────────────────────────────────────── */
 
 const button = document.querySelector('.motion');
@@ -429,6 +438,7 @@ function setMotion(on, remember) {
     drawSky(performance.now());
   }
   videos.forEach(syncVideo);
+  takeovers?.wake();
 }
 button.addEventListener('click', () => setMotion(!moving, true));
 reduce.addEventListener('change', () => { if (saved === null) setMotion(!reduce.matches, false); });
@@ -460,7 +470,7 @@ document.getElementById('copyMail').addEventListener('click', async (e) => {
     note.textContent = `Copied ${mail}.`;
   } catch {
     const range = document.createRange();
-    range.selectNodeContents(document.querySelector('.contact .mail'));
+    range.selectNodeContents(document.querySelector('#contact .mail'));
     getSelection().removeAllRanges();
     getSelection().addRange(range);
     note.textContent = 'Press Ctrl+C or ⌘C to copy the selected address.';

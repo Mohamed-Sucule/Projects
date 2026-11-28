@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Mohamed Sucule — Interfaces, designed and built</title>
-<meta name="description" content="Mohamed Sucule, frontend engineer in Birmingham, designs and builds interfaces people can feel: a game lit by its own flame, map posters, a daily puzzle site, a story told by scrolling, a restaurant at full service and more, every one live in the browser." />
+<title>Mohamed Sucule — Design engineer. Interfaces, designed and built</title>
+<meta name="description" content="Mohamed Sucule, design engineer in Birmingham, designs and builds interfaces people can feel: a game lit by its own flame, map posters, a daily puzzle site, a story told by scrolling, a restaurant at full service and more, every one live in the browser." />
 <link rel="icon" href="favicon.svg" />
 <meta name="theme-color" content="#2f3b78" />
 <meta property="og:type" content="profile" />
-<meta property="og:title" content="Mohamed Sucule — Interfaces, designed and built" />
+<meta property="og:title" content="Mohamed Sucule — Design engineer. Interfaces, designed and built" />
 <meta property="og:description" content="A game lit by its own flame, map posters you would hang, a daily puzzle site, a story told by scrolling, and a restaurant at full service. Interfaces designed and built by Mohamed Sucule, every one live in the browser." />
 <meta property="og:url" content="https://mohamed-sucule.github.io/Projects/" />
 <meta property="og:image" content="https://mohamed-sucule.github.io/Projects/assets/og-card.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Mohamed Sucule — Interfaces, designed and built" />
+<meta name="twitter:title" content="Mohamed Sucule — Design engineer. Interfaces, designed and built" />
 <meta name="twitter:description" content="Interfaces people can feel, designed and built by Mohamed Sucule. Every piece runs in the browser." />
 <meta name="twitter:image" content="https://mohamed-sucule.github.io/Projects/assets/og-card.png" />
 <link rel="canonical" href="https://mohamed-sucule.github.io/Projects/" />
@@ -63,7 +63,7 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><path class="on" fill="currentColor" d="M8 5.5v13l10-6.5-10-6.5Z"/><path class="off" fill="currentColor" d="M7 5h3.5v14H7V5Zm6.5 0H17v14h-3.5V5Z"/></svg>
       <span class="word">Motion</span>
     </button>
-    <button class="index" type="button" aria-expanded="false" aria-controls="night">The night</button>
+    <button class="index" type="button" aria-expanded="false" aria-controls="night" aria-label="The night"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 7h16M4 12h16M4 17h10"/></svg><span class="word">The night</span></button>
     <a class="cv" href="cv/">CV</a>
   </div>
 </header>
@@ -94,28 +94,29 @@
     <div class="wrap">
       <p class="hour rise"><time>17:30</time><span>Golden hour</span></p>
       <h1 id="hero-title" class="rise">Mohamed <em>Sucule</em></h1>
+      <p class="role rise">Design engineer · Birmingham, UK · 4+ years at Capgemini and SynchrTrade</p>
       <div class="glass rise">
         <p class="lede">I design and build interfaces people can feel.</p>
         <p>Here are <span data-count="night">nine</span> projects I designed and built, from a game lit by its own flame and a daily puzzle site I launched to a restaurant system at full service, plus a few smaller experiments. Every one runs live in your browser. As you scroll, the sky goes from sunset to sunrise.</p>
+        <p class="short">Two minutes? Start with <a href="#ember">Ember</a>, <a href="#your-place">Your Place</a> and <a href="#flurdle">Flurdle</a>.</p>
         <div class="ctas">
           <a class="go" href="#ember">See the work <span aria-hidden="true">↓</span></a>
           <a class="ghost" href="#morning">About me</a>
         </div>
       </div>
-      <p class="role rise">Frontend engineer · Birmingham, UK · 4+ years at Capgemini and SynchrTrade</p>
     </div>
   </section>
 
   <!-- 18:30 -->
-  <section id="ember" class="scene ember feature" data-at="60" data-hour="18:30" data-name="Ember" aria-labelledby="ember-title">
+  <section id="ember" class="scene work ember feature" data-at="60" data-hour="18:30" data-name="Ember" aria-labelledby="ember-title">
     <div class="wrap">
       <figure class="frame rise">
-        <a class="screen" href="play/ember/index.html" tabindex="-1" aria-hidden="true" data-url="ember">
+        <a class="screen" href="play/ember/index.html" tabindex="-1" aria-hidden="true">
           <video muted loop playsinline preload="none" width="1280" height="800" poster="assets/media/ember.webp"><source src="assets/media/ember.mp4" type="video/mp4" /></video>
         </a>
         <figcaption>Recorded in the game: the second boss, the Choir, and its rings of light</figcaption>
       </figure>
-      <div class="copy glass rise">
+      <div class="copy rise">
         <p class="hour"><time>18:30</time><span>After dark</span></p>
         <h2 id="ember-title">Ember</h2>
         <p class="kicker">An action game in the dark, where your flame is your light and your life.</p>
@@ -126,15 +127,19 @@
           <li><b>Fair you can see.</b> Every attack is drawn on the floor before it lands. The tests play the whole game and fail if any blow gives less than 0.3 seconds of warning.</li>
           <li><b>Nothing downloaded.</b> No engine, and no image or sound file: every room, shadow and note of the score is made as you play.</li>
         </ul>
-        <a class="go" href="play/ember/index.html">Play Ember <span aria-hidden="true">→</span></a>
+        <div class="doors">
+          <a class="go" href="play/ember/index.html">Play Ember <span aria-hidden="true">→</span></a>
+          <a class="also" href="writing/designing-ember/">How I designed it</a>
+          <span class="takes">about 15 min</span>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- 19:30 -->
-  <section id="your-place" class="scene flip" data-at="120" data-hour="19:30" data-name="Your Place" aria-labelledby="your-place-title">
+  <section id="your-place" class="scene work flip" data-at="120" data-hour="19:30" data-name="Your Place" aria-labelledby="your-place-title">
     <div class="wrap">
-      <div class="copy glass rise">
+      <div class="copy rise">
         <p class="hour"><time>19:30</time><span>City lights</span></p>
         <h2 id="your-place-title">Your Place</h2>
         <p class="kicker">Any place on Earth, as a poster you would hang.</p>
@@ -144,10 +149,14 @@
           <li><b>The print matches the screen.</b> One drawing pass makes both the preview and the 300 dpi file, line for line.</li>
           <li><b>Quick enough to play with.</b> The first poster appears in 0.39 seconds. It used to take 41.7.</li>
         </ul>
-        <a class="go" href="your-place/index.html">Make a poster <span aria-hidden="true">→</span></a>
+        <div class="doors">
+          <a class="go" href="your-place/index.html">Make a poster <span aria-hidden="true">→</span></a>
+          <a class="also" href="writing/fast-map-posters/">How I made it fast</a>
+          <span class="takes">about 3 min</span>
+        </div>
       </div>
       <figure class="frame duo rise">
-        <a class="screen" href="your-place/index.html" tabindex="-1" aria-hidden="true" data-url="your place">
+        <a class="screen" href="your-place/index.html" tabindex="-1" aria-hidden="true">
           <img src="assets/shots/your-place-960.webp" srcset="assets/shots/your-place-960.webp 960w, assets/shots/your-place-1920.webp 1920w" sizes="(min-width: 1000px) 620px, 92vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
         </a>
         <img class="print" src="assets/your-place-poster.webp" width="680" height="962" alt="A poster of Zürich made with Your Place: the streets in gold on black, and the city’s name below" loading="lazy" decoding="async" />
@@ -157,9 +166,9 @@
   </section>
 
   <!-- 20:30 -->
-  <section id="flurdle" class="scene" data-at="180" data-hour="20:30" data-name="Flurdle" aria-labelledby="flurdle-title">
+  <section id="flurdle" class="scene work" data-at="180" data-hour="20:30" data-name="Flurdle" aria-labelledby="flurdle-title">
     <div class="wrap">
-      <div class="copy glass rise">
+      <div class="copy rise">
         <p class="hour"><time>20:30</time><span>Night ops</span></p>
         <h2 id="flurdle-title">Flurdle</h2>
         <p class="kicker">Four puzzles a day, on a site of its own.</p>
@@ -173,10 +182,11 @@
         <div class="doors">
           <a class="go" href="https://flurdle.com/">Play today’s puzzles <span aria-hidden="true">→</span></a>
           <a class="also" href="writing/designing-fireline/">How I designed it</a>
+          <span class="takes">about 5 min</span>
         </div>
       </div>
       <figure class="frame rise">
-        <a class="screen" href="https://flurdle.com/" tabindex="-1" aria-hidden="true" data-url="flurdle.com">
+        <a class="screen" href="https://flurdle.com/" tabindex="-1" aria-hidden="true">
           <video muted loop playsinline preload="none" width="1280" height="800" poster="assets/media/flurdle.webp"><source src="assets/media/flurdle.mp4" type="video/mp4" /></video>
         </a>
         <figcaption>Recorded on flurdle.com: Fireline replays the solver’s best line, seven firebreaks that save 74 acres</figcaption>
@@ -185,9 +195,9 @@
   </section>
 
   <!-- 21:30 -->
-  <section id="lamplighter" class="scene flip" data-at="240" data-hour="21:30" data-name="The Lamplighter" aria-labelledby="lamplighter-title">
+  <section id="lamplighter" class="scene work flip" data-at="240" data-hour="21:30" data-name="The Lamplighter" aria-labelledby="lamplighter-title">
     <div class="wrap">
-      <div class="copy glass rise">
+      <div class="copy rise">
         <p class="hour"><time>21:30</time><span>The gale gets up</span></p>
         <h2 id="lamplighter-title">The Lamplighter</h2>
         <p class="kicker">One night at a lighthouse, told by scrolling and drawn as you read.</p>
@@ -197,10 +207,13 @@
           <li><b>The light keeps turning,</b> once every 11.2 seconds, whether or not you are reading. The place goes on when you stop.</li>
           <li><b>Drawn, not downloaded.</b> The sky, the sea, the tower, the rain, the beam and the foghorn are all code. There is not an image or a sound file in its folder.</li>
         </ul>
-        <a class="go" href="apps/lamplighter/index.html">Read The Lamplighter <span aria-hidden="true">→</span></a>
+        <div class="doors">
+          <a class="go" href="apps/lamplighter/index.html">Read The Lamplighter <span aria-hidden="true">→</span></a>
+          <span class="takes">about 5 min</span>
+        </div>
       </div>
       <figure class="frame rise">
-        <a class="screen" href="apps/lamplighter/index.html" tabindex="-1" aria-hidden="true" data-url="the lamplighter">
+        <a class="screen" href="apps/lamplighter/index.html" tabindex="-1" aria-hidden="true">
           <video muted loop playsinline preload="none" width="1280" height="800" poster="assets/media/lamplighter.webp"><source src="assets/media/lamplighter.mp4" type="video/mp4" /></video>
         </a>
         <figcaption>Recorded in the story: scrolling from dusk into the storm</figcaption>
@@ -209,9 +222,9 @@
   </section>
 
   <!-- 22:30 -->
-  <section id="nightshift" class="scene" data-at="300" data-hour="22:30" data-name="Nightshift" aria-labelledby="nightshift-title">
+  <section id="nightshift" class="scene work" data-at="300" data-hour="22:30" data-name="Nightshift" aria-labelledby="nightshift-title">
     <div class="wrap">
-      <div class="copy glass rise">
+      <div class="copy rise">
         <p class="hour"><time>22:30</time><span>Watch commenced</span></p>
         <h2 id="nightshift-title">Nightshift</h2>
         <p class="kicker">A short horror story, told as a coastal watch log from November 1987.</p>
@@ -221,10 +234,13 @@
           <li><b>The page is part of the story.</b> It notices how you read, and even the scroll bar has a part to play.</li>
           <li><b>Best alone, with the sound on.</b> It takes about five minutes.</li>
         </ul>
-        <a class="go" href="apps/nightshift/index.html">Read Nightshift <span aria-hidden="true">→</span></a>
+        <div class="doors">
+          <a class="go" href="apps/nightshift/index.html">Read Nightshift <span aria-hidden="true">→</span></a>
+          <span class="takes">about 5 min</span>
+        </div>
       </div>
       <figure class="frame rise">
-        <a class="screen paper" href="apps/nightshift/index.html" tabindex="-1" aria-hidden="true" data-url="nightshift">
+        <a class="screen" href="apps/nightshift/index.html" tabindex="-1" aria-hidden="true">
           <img src="assets/shots/nightshift-960.webp" srcset="assets/shots/nightshift-960.webp 960w, assets/shots/nightshift-1920.webp 1920w" sizes="(min-width: 1000px) 620px, 92vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
         </a>
         <figcaption>Coastal Watch, Station K: the first hour of the log</figcaption>
@@ -233,9 +249,9 @@
   </section>
 
   <!-- 00:00 -->
-  <section id="room" class="scene flip" data-at="390" data-hour="00:00" data-name="The Room" aria-labelledby="room-title">
+  <section id="room" class="scene work flip" data-at="390" data-hour="00:00" data-name="The Room" aria-labelledby="room-title">
     <div class="wrap">
-      <div class="copy glass rise">
+      <div class="copy rise">
         <p class="hour"><time>00:00</time><span>Midnight</span></p>
         <h2 id="room-title">The Room</h2>
         <p class="kicker">A locked-room murder mystery you solve by reasoning, not guessing.</p>
@@ -245,10 +261,13 @@
           <li><b>A notebook that notices.</b> When two facts disagree, it sets them facing each other with a <i>but</i> between them.</li>
           <li><b>Name somebody.</b> When you think you know, say who.</li>
         </ul>
-        <a class="go" href="apps/room/index.html">Solve The Room <span aria-hidden="true">→</span></a>
+        <div class="doors">
+          <a class="go" href="apps/room/index.html">Solve The Room <span aria-hidden="true">→</span></a>
+          <span class="takes">about 10 min</span>
+        </div>
       </div>
       <figure class="frame rise">
-        <a class="screen" href="apps/room/index.html" tabindex="-1" aria-hidden="true" data-url="the room">
+        <a class="screen" href="apps/room/index.html" tabindex="-1" aria-hidden="true">
           <img src="assets/shots/room-960.webp" srcset="assets/shots/room-960.webp 960w, assets/shots/room-1920.webp 1920w" sizes="(min-width: 1000px) 620px, 92vw" width="960" height="600" alt="" loading="lazy" decoding="async" />
         </a>
         <figcaption>The study at Harkness Hall, drawn as a plate you look into</figcaption>
@@ -294,9 +313,9 @@
   </section>
 
   <!-- 05:00 -->
-  <section id="oklch-studio" class="scene flip" data-at="690" data-hour="05:00" data-name="OKLCH Studio" aria-labelledby="oklch-title">
+  <section id="oklch-studio" class="scene work flip" data-at="690" data-hour="05:00" data-name="OKLCH Studio" aria-labelledby="oklch-title">
     <div class="wrap">
-      <div class="copy glass rise">
+      <div class="copy rise">
         <p class="hour"><time>05:00</time><span>First light</span></p>
         <h2 id="oklch-title">OKLCH Studio</h2>
         <p class="kicker">Colour comes back. A palette builder for colours that stay readable.</p>
@@ -306,10 +325,13 @@
           <li><b>Readable, and checked.</b> Every pair of colours is scored for contrast against two standards, WCAG 2.1 and APCA.</li>
           <li><b>Honest about compromise.</b> When a colour cannot be shown on an ordinary screen, it says what was changed to make it fit.</li>
         </ul>
-        <a class="go" href="projects/oklch-studio/index.html">Open OKLCH Studio <span aria-hidden="true">→</span></a>
+        <div class="doors">
+          <a class="go" href="projects/oklch-studio/index.html">Open OKLCH Studio <span aria-hidden="true">→</span></a>
+          <span class="takes">about 4 min</span>
+        </div>
       </div>
       <figure class="frame rise">
-        <a class="screen" href="projects/oklch-studio/index.html" tabindex="-1" aria-hidden="true" data-url="oklch studio">
+        <a class="screen" href="projects/oklch-studio/index.html" tabindex="-1" aria-hidden="true">
           <video muted loop playsinline preload="none" width="1280" height="800" poster="assets/media/oklch-studio.webp"><source src="assets/media/oklch-studio.mp4" type="video/mp4" /></video>
         </a>
         <figcaption>Recorded in the app: one hue swung round the wheel, every score updating</figcaption>
@@ -318,9 +340,9 @@
   </section>
 
   <!-- 06:30 -->
-  <section id="covers" class="scene" data-at="780" data-hour="06:30" data-name="Covers" aria-labelledby="covers-title">
+  <section id="covers" class="scene work day" data-at="780" data-hour="06:30" data-name="Covers" aria-labelledby="covers-title">
     <div class="wrap">
-      <div class="copy glass rise">
+      <div class="copy rise">
         <p class="hour"><time>06:30</time><span>Tonight’s book</span></p>
         <h2 id="covers-title">Covers</h2>
         <p class="kicker">A restaurant’s floor plan and bookings, opened at the busiest moment of the week.</p>
@@ -331,10 +353,13 @@
           <li><b>Press play and the evening runs.</b> Parties arrive, eat and leave while you watch.</li>
         </ul>
         <blockquote class="said"><p>“Table 1 seats 2. This is a party of 6. → 30 is free at 20:30.”</p></blockquote>
-        <a class="go" href="apps/covers/index.html">Open Covers <span aria-hidden="true">→</span></a>
+        <div class="doors">
+          <a class="go" href="apps/covers/index.html">Open Covers <span aria-hidden="true">→</span></a>
+          <span class="takes">about 12 min</span>
+        </div>
       </div>
       <figure class="frame rise">
-        <a class="screen" href="apps/covers/index.html" tabindex="-1" aria-hidden="true" data-url="covers">
+        <a class="screen" href="apps/covers/index.html" tabindex="-1" aria-hidden="true">
           <video muted loop playsinline preload="none" width="1280" height="800" poster="assets/media/covers.webp"><source src="assets/media/covers.mp4" type="video/mp4" /></video>
         </a>
         <figcaption>Recorded in the app: Saturday service running on its own</figcaption>
@@ -343,9 +368,9 @@
   </section>
 
   <!-- 07:20 -->
-  <section id="frontdesk" class="scene flip" data-at="830" data-hour="07:20" data-name="Front Desk" aria-labelledby="frontdesk-title">
+  <section id="frontdesk" class="scene work flip day" data-at="830" data-hour="07:20" data-name="Front Desk" aria-labelledby="frontdesk-title">
     <div class="wrap">
-      <div class="copy glass rise">
+      <div class="copy rise">
         <p class="hour"><time>07:20</time><span>Bookings open</span></p>
         <h2 id="frontdesk-title">Front Desk</h2>
         <p class="kicker">An AI receptionist that answers the phone, so the staff can keep serving.</p>
@@ -355,10 +380,13 @@
           <li><b>Kind when it is lost.</b> If it cannot follow you three times in a row, it offers a call back instead of going round in circles.</li>
           <li><b>Private by design.</b> The speech recognition runs on your own device. Nothing you say leaves the page.</li>
         </ul>
-        <a class="go" href="apps/frontdesk/index.html">Call Front Desk <span aria-hidden="true">→</span></a>
+        <div class="doors">
+          <a class="go" href="apps/frontdesk/index.html">Call Front Desk <span aria-hidden="true">→</span></a>
+          <span class="takes">about 4 min</span>
+        </div>
       </div>
       <figure class="frame rise">
-        <a class="screen" href="apps/frontdesk/index.html" tabindex="-1" aria-hidden="true" data-url="front desk">
+        <a class="screen" href="apps/frontdesk/index.html" tabindex="-1" aria-hidden="true">
           <video muted loop playsinline preload="none" width="1280" height="800" poster="assets/media/frontdesk.webp"><source src="assets/media/frontdesk.mp4" type="video/mp4" /></video>
         </a>
         <figcaption>Recorded in the app: a caller booking a table</figcaption>
@@ -375,7 +403,7 @@
 
         <div class="about">
           <div>
-            <p class="lede">I’m Mohamed, a frontend engineer in Birmingham, and I design as much as I build.</p>
+            <p class="lede">I’m Mohamed, a design engineer in Birmingham: I design what I build, and build what I design.</p>
             <p>For four years I have built web applications at Capgemini and SynchrTrade, for product teams and for public-sector clients under SC clearance. In my own time I make things like the ones you have just scrolled past: interfaces where the feeling is the point, built from scratch so every detail is mine to get right.</p>
             <div class="ctas">
               <a class="go" href="cv/Mohamed-Sucule-CV.pdf">
@@ -427,20 +455,24 @@
             <li id="diff-forge"><a href="projects/diff-forge/index.html">Diff Forge</a> The merge-conflict screen, rebuilt around the decision you have to make.</li>
             <li id="regex-lab"><a href="projects/regex-lab/index.html">Regex Lab</a> A search pattern as a machine you can watch run, one character at a time.</li>
           </ul>
-          <p class="posts">Write-ups: <a href="writing/designing-fireline/">Designing Fireline, a daily puzzle on a map of the future</a> · <a href="writing/recalculating-a-spreadsheet/">From 681 ms to 133, recalculating a spreadsheet</a> · <a href="writing/fast-map-posters/">From 41.7 seconds to 0.39, making a map poster fast</a></p>
+          <p class="posts">Write-ups: <a href="writing/designing-ember/">Designing Ember, an action game where your light is your life</a> · <a href="writing/designing-fireline/">Designing Fireline, a daily puzzle on a map of the future</a> · <a href="writing/recalculating-a-spreadsheet/">From 681 ms to 133, recalculating a spreadsheet</a> · <a href="writing/fast-map-posters/">From 41.7 seconds to 0.39, making a map poster fast</a></p>
         </aside>
 
-        <div class="contact" id="contact">
-          <h3>Let’s make something.</h3>
-          <p>If you are hiring for a frontend or UI role, or have an interface that should feel better than it does, I would like to hear about it.</p>
-          <a class="mail" href="mailto:mohamedsucule@gmail.com">mohamedsucule@gmail.com</a>
-          <div class="ctas">
-            <button class="go" type="button" id="copyMail" data-mail="mohamedsucule@gmail.com">Copy email address</button>
-            <a class="ghost" href="https://www.linkedin.com/in/mohamed-sucule-bb8747439">Message me on LinkedIn</a>
-          </div>
-          <p class="note" id="copyNote" role="status" aria-live="polite"></p>
-        </div>
       </div>
+    </div>
+  </section>
+
+  <section class="finale" id="contact" aria-labelledby="contact-title">
+    <div class="rise">
+      <h2 id="contact-title">Let’s make <em>something.</em></h2>
+      <p>I’m looking for a design engineer role: somewhere the person who decides how a thing should feel also builds it, and makes it hold up. If that sounds like your team, I’d like to hear about it.</p>
+      <a class="mail" href="mailto:mohamedsucule@gmail.com">mohamedsucule@gmail.com</a>
+      <div class="ctas">
+        <button class="go" type="button" id="copyMail" data-mail="mohamedsucule@gmail.com">Copy email address</button>
+        <a class="ghost" href="cv/Mohamed-Sucule-CV.pdf">Download my CV</a>
+        <a class="ghost" href="https://www.linkedin.com/in/mohamed-sucule-bb8747439">Message me on LinkedIn</a>
+      </div>
+      <p class="note" id="copyNote" role="status" aria-live="polite"></p>
     </div>
   </section>
 </main>
