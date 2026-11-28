@@ -1,4 +1,4 @@
-# Mohamed Sucule, interfaces designed and built
+# Mohamed Sucule, design engineer
 
 I design and build interfaces people can feel. Four years shipping web applications at Capgemini (Software
 Engineer, SC cleared) and SynchrTrade, in React and TypeScript. Birmingham, UK.
@@ -27,6 +27,14 @@ sets, a storm passes at half past nine, the stars come out, and it gets light ag
 and the part about me. The clips are recorded from the real apps by
 [`assets/media/record.mjs`](assets/media/record.mjs) and play only while they are on screen.
 
+Each piece is set like a magazine spread: its hour as big as a clock on a wall, its name in display type, its
+notes as a numbered ledger, and its recording running off the edge of the page, with no browser window drawn round
+it and no box under the words (a soft pool of night sits under them instead, so they read over any sky). Three of
+them take over the night for a moment as you reach them ([`assets/takeover.js`](assets/takeover.js)): the page goes
+dark at Ember and the pointer carries the flame, the way the game's light is your health; at Your Place a city's
+streets draw themselves across the sky in gold, from the middle outwards; and at The Lamplighter a lighthouse beam
+sweeps the sky once every 11.2 seconds, as the story's does.
+
 A flock of starlings keeps the same hours ([`assets/flock.js`](assets/flock.js)). When you land it is swirling
 over the sunset, each bird keeping to its seven nearest neighbours, the way real murmurations are thought to hold
 together. As you scroll into the night it pours down, some of it onto a wire strung along the bottom of the
@@ -34,7 +42,7 @@ screen, the rest out of sight below it, and at first light it leaves. The wire i
 index: each hour of the night is a bird on it, and the one you pick flies ahead to its scene and stands on the
 scene's clock while the page catches up. On a phone the index opens from the top bar instead.
 
-The clips, the stars, the rain and the birds all stop when the motion button is pressed or the system asks for
+The clips, the stars, the rain, the birds and the three takeovers all stop when the motion button is pressed or the system asks for
 reduced motion. The sky and the flock still follow the scroll bar, standing still.
 
 ## Creative work
@@ -240,6 +248,8 @@ index.html                the front page, its sky running from 17:30 to 08:00
 assets/night.css          its look
 assets/night.js           the sky, the clock and the index, all following the scroll bar
 assets/flock.js           the starlings: the murmuration, the night on the wire, and the bird you send ahead
+assets/takeover.js        three projects taking over the night: Ember's dark, the streets in gold, the beam
+assets/streets.mjs        writes assets/streets.svg, the streets that draw across the sky at Your Place
 assets/media/record.mjs   records the front page's clips from the real apps
 shared/atlas.js           the catalogue: every page in the repo, and the fifteen the site shows
 shared/navigator.js       ⌘K on every page: BM25 search over the lineup (search.js)
